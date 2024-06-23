@@ -1,11 +1,24 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
 
+/*fun getApiKey(propertyKey: String): String {
+    return gradleLocalProperties(rootDir).getProperty(propertyKey)
+}*/
+
+fun getApiKey(propertyKey: String): String {
+    val localProps = gradleLocalProperties(rootDir)
+    return localProps.getProperty(propertyKey, "") ?: ""
+}
+
 android {
     namespace = "com.store_me.storeme"
     compileSdk = 34
+    buildFeatures.buildConfig = true
 
     defaultConfig {
         applicationId = "com.store_me.storeme"
@@ -18,15 +31,28 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        /*defaultConfig{
+            buildConfigField("String","NAVER_MAP_CLIENT_SECRET", getApiKey("naver_map_client_secret"))
+            buildConfigField("String","NAVER_MAP_CLIENT_ID", getApiKey("naver_map_client_id"))
+        }*/
     }
 
+    val properties = Properties()
+    properties.load(project.rootProject.file("local.properties").inputStream())
+
     buildTypes {
+        debug {
+            manifestPlaceholders["NAVER_MAP_CLIENT_ID"] = properties.getProperty("naver_map_client_id", "")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            manifestPlaceholders["NAVER_MAP_CLIENT_ID"] = getApiKey("naver_map_client_id")
+            manifestPlaceholders["NAVER_MAP_CLIENT_SECRET"] = getApiKey("naver_map_client_secret")
         }
     }
     compileOptions {
@@ -66,4 +92,10 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.compose.material:material:1.6.8")
+
+    //Map
+    implementation("io.github.fornewid:naver-map-compose:1.7.2")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 }
