@@ -7,14 +7,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Button
 import androidx.compose.material.Icon
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -45,7 +43,6 @@ import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.MapProperties
 import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.NaverMap
-import com.store_me.storeme.BuildConfig
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.theme.StoreMeTheme
 
@@ -84,7 +81,7 @@ class MainActivity : ComponentActivity() {
             composable(BottomNavItem.UserHome.screenRoute) { UserHomeScreen() }
             composable(BottomNavItem.Favorite.screenRoute) { FavoriteScreen() }
             composable(BottomNavItem.NearPlace.screenRoute) { NearPlaceScreen() }
-            composable(BottomNavItem.Chat.screenRoute) { ChattingScreen() }
+            composable(BottomNavItem.Chat.screenRoute) { ChatScreen() }
             composable(BottomNavItem.Profile.screenRoute) { ProfileScreen() }
         }
     }
@@ -184,9 +181,9 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun ChattingScreen() {
+    fun ChatScreen() {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-            Text(text = "Chatting Screen")
+            Text(text = "Chat Screen")
         }
     }
 
