@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "736734338375",
+    "project_id": "storeme-67dc6",
+    "storage_bucket": "storeme-67dc6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:736734338375:android:27b2939265cb3b404b0062",
+        "android_client_info": {
+          "package_name": "com.store_me.storeme"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPJsjpHcfBmRbT2spNDfcbWWn_aZuXlq0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

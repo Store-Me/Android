@@ -7,7 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun ChatListScreen(
-    chatListViewModel: ChatListViewModel = viewModel(),
+    chatListViewModel: ChatViewModel = viewModel(),
     onChatRoomClick: (String) -> Unit
 ){
     val chatRooms by chatListViewModel.chatRooms.collectAsState()

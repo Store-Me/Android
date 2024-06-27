@@ -2,6 +2,7 @@
 
 package com.store_me.storeme.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -44,11 +45,19 @@ import com.naver.maps.map.compose.MapProperties
 import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.NaverMap
 import com.store_me.storeme.R
+import com.store_me.storeme.data.Auth
+import com.store_me.storeme.ui.login.LoginActivity
 import com.store_me.storeme.ui.theme.StoreMeTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if(!Auth.isLoggedIn.value){
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+
         setContent {
             StoreMeTheme {
                 Surface(
@@ -165,12 +174,12 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun NearPlaceScreen() {
-        var mapProperties by remember {
+        val mapProperties by remember {
             mutableStateOf(
                 MapProperties(maxZoom = 10.0, minZoom = 5.0)
             )
         }
-        var mapUiSettings by remember {
+        val mapUiSettings by remember {
             mutableStateOf(
                 MapUiSettings(isLocationButtonEnabled = false)
             )
@@ -182,6 +191,8 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun ChatScreen() {
+        ChatScreen()
+
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
             Text(text = "Chat Screen")
         }
