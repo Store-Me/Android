@@ -29,7 +29,8 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun StoreMeTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    //darkTheme: Boolean = isSystemInDarkTheme(),
+    darkTheme: Boolean = false,
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
@@ -53,7 +54,7 @@ fun StoreMeTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = storeMeTypography,
         content = content
     )
 }

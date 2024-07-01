@@ -9,7 +9,7 @@ object Auth {
     }
 
     //로그인 상태 관련
-    private val _isLoggedIn = mutableStateOf<Boolean>(false)
+    private val _isLoggedIn = mutableStateOf(false)
     val isLoggedIn: State<Boolean> = _isLoggedIn
 
     /**
@@ -23,5 +23,16 @@ object Auth {
     }
 
     //계정 타입 관련
-    private val accountType = AccountType.CUSTOMER.name
+    private var _accountType = AccountType.CUSTOMER.name
+    val accountType = _accountType
+
+    /**
+     * 계정 타입 설정 함수.
+     * 사장님 계정시,OWNER
+     * 일반 계정시, CUSTOMER
+     * @param type 해당 값에 따라 계정의 타입을 설정
+     */
+    fun setAccountType(type: String) {
+        _accountType = type
+    }
 }
