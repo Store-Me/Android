@@ -11,7 +11,8 @@ import com.store_me.storeme.R
 // Set of Material typography styles to start with
 val appFontFamily = FontFamily(
     Font(R.font.nanum_square_neo_rg),
-    Font(R.font.nanum_square_neo_bd, weight = FontWeight.Bold)
+    Font(R.font.nanum_square_neo_bd, weight = FontWeight.Bold),
+    Font(R.font.nanum_square_neo_ebd, weight = FontWeight.ExtraBold)
 )
 
 val storeMeTypography = Typography(
@@ -55,5 +56,26 @@ val storeMeTypography = Typography(
         fontFamily = appFontFamily,
         fontSize = 16.sp,
         letterSpacing = 0.5.sp
-    )
+    ),
+
+    labelLarge = TextStyle(
+        fontWeight = FontWeight.ExtraBold,
+        fontFamily = appFontFamily,
+        fontSize = 20.sp,
+        letterSpacing = 0.5.sp
+    ),
+
+    labelSmall = TextStyle(
+        fontWeight = FontWeight.ExtraBold,
+        fontFamily = appFontFamily,
+        fontSize = 12.sp,
+        letterSpacing = 0.5.sp
+    ),
+
+    labelMedium = TextStyle(
+        fontWeight = FontWeight.ExtraBold,
+        fontFamily = appFontFamily,
+        fontSize = 16.sp,
+        letterSpacing = 0.5.sp
+    ),
 )
