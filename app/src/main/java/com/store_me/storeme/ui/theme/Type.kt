@@ -19,14 +19,14 @@ val storeMeTypography = Typography(
     bodyLarge = TextStyle(
         fontWeight = FontWeight.Normal,
         fontFamily = appFontFamily,
-        fontSize = 20.sp,
+        fontSize = 18.sp,
         letterSpacing = 0.5.sp
     ),
 
     bodySmall = TextStyle(
         fontWeight = FontWeight.Normal,
         fontFamily = appFontFamily,
-        fontSize = 13.sp,
+        fontSize = 12.sp,
         letterSpacing = 0.5.sp
     ),
 
@@ -40,7 +40,7 @@ val storeMeTypography = Typography(
     titleLarge = TextStyle(
         fontWeight = FontWeight.Bold,
         fontFamily = appFontFamily,
-        fontSize = 20.sp,
+        fontSize = 18.sp,
         letterSpacing = 0.5.sp
     ),
 
@@ -61,7 +61,7 @@ val storeMeTypography = Typography(
     labelLarge = TextStyle(
         fontWeight = FontWeight.ExtraBold,
         fontFamily = appFontFamily,
-        fontSize = 20.sp,
+        fontSize = 18.sp,
         letterSpacing = 0.5.sp
     ),
 

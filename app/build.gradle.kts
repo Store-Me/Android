@@ -110,4 +110,12 @@ dependencies {
 
     //Local Data Storage
     implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    //Load Url Image
+    implementation("io.coil-kt:coil-compose:1.4.0")
+
+    //indicator
+    implementation("com.google.accompanist:accompanist-pager:0.20.3")
+    implementation("com.google.accompanist:accompanist-pager-indicators:0.20.3")
+
 }
