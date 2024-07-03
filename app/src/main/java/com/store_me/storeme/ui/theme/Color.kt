@@ -15,3 +15,9 @@ val UnselectedItemColor = Color(0xFF898C93)
 
 //Home Search Box Color
 val HomeSearchBoxColor = Color(0xFFEBF3FE)
+
+//Home Coupon Title Text Color
+val HomeCouponTitleTextColor = Color(0xFFD44ADA)
+
+//Download Coupon Icon Color
+val DownloadCouponColor = Color(0xFFF393F6)

@@ -12,7 +12,8 @@ import com.store_me.storeme.R
 val appFontFamily = FontFamily(
     Font(R.font.nanum_square_neo_rg),
     Font(R.font.nanum_square_neo_bd, weight = FontWeight.Bold),
-    Font(R.font.nanum_square_neo_ebd, weight = FontWeight.ExtraBold)
+    Font(R.font.nanum_square_neo_ebd, weight = FontWeight.ExtraBold),
+    Font(R.font.nanum_square_neo_hv, weight = FontWeight.Black)
 )
 
 val storeMeTypography = Typography(

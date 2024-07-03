@@ -6,8 +6,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,6 +45,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.ui.home.HomeScreen
 import com.store_me.storeme.ui.login.LoginActivity
+import com.store_me.storeme.ui.store_detail.StoreDetailScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.ui.theme.UnselectedItemColor
 
@@ -85,15 +87,20 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun NavigationGraph(navController: NavHostController) {
         NavHost(navController, startDestination = BottomNavItem.UserHome.screenRoute,
-            enterTransition = { EnterTransition.None },
-            exitTransition = { ExitTransition.None },
-            popEnterTransition = { EnterTransition.None },
-            popExitTransition = { ExitTransition.None }){
-            composable(BottomNavItem.UserHome.screenRoute) { UserHomeScreen() }
+            enterTransition = { fadeIn(animationSpec = tween(0)) },
+            exitTransition = { fadeOut(animationSpec = tween(0)) },
+            popEnterTransition = { fadeIn(animationSpec = tween(0)) },
+            popExitTransition = { fadeOut(animationSpec = tween(0)) }){
+            composable(BottomNavItem.UserHome.screenRoute) { HomeScreen(navController) }
             composable(BottomNavItem.Favorite.screenRoute) { FavoriteScreen() }
             composable(BottomNavItem.NearPlace.screenRoute) { NearPlaceScreen() }
             composable(BottomNavItem.StoreTalk.screenRoute) { ChatScreen() }
             composable(BottomNavItem.Profile.screenRoute) { ProfileScreen() }
+
+            composable("storeDetail/{storeName}") { backStackEntry ->
+                val storeName = backStackEntry.arguments?.getString("storeName")
+                StoreDetailScreen(navController, storeName = storeName ?: "")
+            }
         }
     }
 
@@ -120,10 +127,16 @@ class MainActivity : ComponentActivity() {
                 val currentRoute = navBackStackEntry?.destination?.route
 
                 items.forEach{ item ->
+                    val isSelected = when {
+                        currentRoute == item.screenRoute -> true
+                        currentRoute?.startsWith("storeDetail") == true && item.screenRoute == BottomNavItem.UserHome.screenRoute -> true
+                        else -> false
+                    }
+
                     BottomNavigationItem(
                         icon = {
                             Icon(
-                                painter = painterResource(id = if (currentRoute == item.screenRoute) item.selectedIcon else item.icon),
+                                painter = painterResource(id = if (isSelected) item.selectedIcon else item.icon),
                                 contentDescription = stringResource(id = item.title),
                                 modifier = Modifier
                                     .width(27.dp)
@@ -133,9 +146,9 @@ class MainActivity : ComponentActivity() {
                             )
                         },
                         label = {
-                            val textColor = if(currentRoute == item.screenRoute) Black else UnselectedItemColor
+                            val textColor = if(isSelected) Black else UnselectedItemColor
                             Text(stringResource(id = item.title), fontSize = 9.sp, color = textColor, modifier = Modifier.padding(top = 3.dp)) },
-                        selected = currentRoute == item.screenRoute,
+                        selected = isSelected,
                         alwaysShowLabel = true,
                         onClick = {
                             navController.navigate(item.screenRoute) {
@@ -162,11 +175,6 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun UserHomeScreen() {
-        HomeScreen()
-    }
-
-    @Composable
     fun FavoriteScreen() {
         Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
             Text(text = "Favorite Screen")
@@ -175,7 +183,9 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun NearPlaceScreen() {
-
+        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+            Text(text = "NearPlace Screen")
+        }
     }
 
     @Composable
