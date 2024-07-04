@@ -6,9 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,6 +42,8 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.ui.home.HomeScreen
 import com.store_me.storeme.ui.login.LoginActivity
+import com.store_me.storeme.ui.mystore.MyStoreScreen
+import com.store_me.storeme.ui.notification.NotificationScreen
 import com.store_me.storeme.ui.store_detail.StoreDetailScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.ui.theme.UnselectedItemColor
@@ -87,20 +86,22 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun NavigationGraph(navController: NavHostController) {
         NavHost(navController, startDestination = BottomNavItem.UserHome.screenRoute,
-            enterTransition = { fadeIn(animationSpec = tween(0)) },
+            /*enterTransition = { fadeIn(animationSpec = tween(0)) },
             exitTransition = { fadeOut(animationSpec = tween(0)) },
             popEnterTransition = { fadeIn(animationSpec = tween(0)) },
-            popExitTransition = { fadeOut(animationSpec = tween(0)) }){
+            popExitTransition = { fadeOut(animationSpec = tween(0)) }*/){
             composable(BottomNavItem.UserHome.screenRoute) { HomeScreen(navController) }
-            composable(BottomNavItem.Favorite.screenRoute) { FavoriteScreen() }
+            composable(BottomNavItem.Favorite.screenRoute) { MyStoreScreen() }
             composable(BottomNavItem.NearPlace.screenRoute) { NearPlaceScreen() }
             composable(BottomNavItem.StoreTalk.screenRoute) { ChatScreen() }
             composable(BottomNavItem.Profile.screenRoute) { ProfileScreen() }
+            composable(NormalNavItem.NOTIFICATION.name) { NotificationScreen(navController) }
 
             composable("storeDetail/{storeName}") { backStackEntry ->
                 val storeName = backStackEntry.arguments?.getString("storeName")
                 StoreDetailScreen(navController, storeName = storeName ?: "")
             }
+
         }
     }
 
@@ -130,6 +131,7 @@ class MainActivity : ComponentActivity() {
                     val isSelected = when {
                         currentRoute == item.screenRoute -> true
                         currentRoute?.startsWith("storeDetail") == true && item.screenRoute == BottomNavItem.UserHome.screenRoute -> true
+                        currentRoute == NormalNavItem.NOTIFICATION.name && item.screenRoute == BottomNavItem.UserHome.screenRoute -> true
                         else -> false
                     }
 
@@ -174,11 +176,8 @@ class MainActivity : ComponentActivity() {
         object Profile : BottomNavItem(R.string.profile, R.drawable.bottom_mymenu, R.drawable.bottom_mymenu_selected, PROFILE)
     }
 
-    @Composable
-    fun FavoriteScreen() {
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-            Text(text = "Favorite Screen")
-        }
+    enum class NormalNavItem{
+        NOTIFICATION,
     }
 
     @Composable

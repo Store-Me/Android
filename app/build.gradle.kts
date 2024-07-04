@@ -118,4 +118,8 @@ dependencies {
     implementation("com.google.accompanist:accompanist-pager:0.20.3")
     implementation("com.google.accompanist:accompanist-pager-indicators:0.20.3")
 
+    //liveData
+    implementation("androidx.compose.runtime:runtime:1.6.8")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
+    implementation("androidx.compose.runtime:runtime-rxjava2:1.6.8")
 }

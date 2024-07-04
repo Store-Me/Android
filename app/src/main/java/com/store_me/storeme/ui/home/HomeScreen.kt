@@ -1,4 +1,5 @@
-@file:OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class
+)
 
 package com.store_me.storeme.ui.home
 
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,7 +36,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -63,6 +64,7 @@ import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.R
 import com.store_me.storeme.data.CouponData
 import com.store_me.storeme.data.StoreInfoData
+import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.theme.DownloadCouponColor
 import com.store_me.storeme.ui.theme.HomeCouponTitleTextColor
 import com.store_me.storeme.ui.theme.HomeSearchBoxColor
@@ -75,13 +77,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.Thread.yield
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
     val storeList = SampleDataUtils.sampleTodayStore()
     val couponData = SampleDataUtils.sampleCoupon()
 
     Scaffold(
-        topBar = { TopLayout() },
+        containerColor = Color.White,
+        topBar = { TopLayout(navController) },
         content = { innerPadding -> // 컨텐츠 영역
             LazyColumn(
                 modifier = Modifier
@@ -98,40 +102,46 @@ fun HomeScreen(navController: NavController) {
 }
 
 @Composable
-fun TopLayout() {
-    TopAppBar(
-        title = {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(60.dp)
-                    .padding(top = 10.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier.height(10.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.storeme_logo_black),
-                    contentDescription = "로고",
-                    modifier = Modifier
-                        .height(20.dp)
+fun TopLayout(navController: NavController) {
+    val interactionSource = remember { MutableInteractionSource() }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .padding(start = 20.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.logo_home),
+            contentDescription = "로고",
+            modifier = Modifier
+                .height(20.dp)
+        )
+        Spacer(modifier = Modifier.width(15.dp))
+        SearchField(modifier = Modifier
+            .weight(1f)
+            .height(40.dp)
+        )
+        Spacer(modifier = Modifier.width(10.dp))
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_notification_off),
+            contentDescription = "알림",
+            modifier = Modifier
+                .size(40.dp)
+                .padding(7.dp)
+                .clickable(
+                    onClick = {
+                        navController.navigate(MainActivity.NormalNavItem.NOTIFICATION.name)
+                    },
+                    interactionSource = interactionSource,
+                    indication = rememberRipple(bounded = false)
+
                 )
-                Spacer(modifier = Modifier.width(15.dp))
-                SearchField(modifier = Modifier
-                    .weight(1f)
-                    .height(40.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.notification_off),
-                    contentDescription = "알림",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .padding(7.dp)
-                )
-                Spacer(modifier = Modifier.width(13.dp))
-            }
-        },
-    )
+        )
+        Spacer(modifier = Modifier.width(13.dp))
+    }
+
 }
 @Composable
 fun SearchField(modifier: Modifier = Modifier) {
@@ -185,7 +195,7 @@ fun LocationLayout(){
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(50.dp),
+            .height(40.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
@@ -296,7 +306,7 @@ fun BannerLayout() {
                 delay(10000)
                 scope.launch {
                     val nextPage = (pagerState.currentPage + 1) % bannerUrls.size
-                    pagerState.animateScrollToPage(nextPage)
+                    pagerState.scrollToPage(nextPage)
                 }
             }
         }
@@ -386,18 +396,32 @@ fun BasicStoreListLayout(navController: NavController, storeList: MutableList<St
 
 @Composable
 fun CouponLayout(navController: NavController, couponData: MutableList<CouponData>) {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 20.dp)
     ) {
-        Text(
-            text = "\u2764 쿠폰 있는 가게",
-            style = storeMeTypography.labelLarge,
-            color = HomeCouponTitleTextColor,
-            modifier = Modifier.padding(start = 20.dp)
-        )
+        Row(
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "\u2764 쿠폰 있는 가게",
+                style = storeMeTypography.labelLarge,
+                color = HomeCouponTitleTextColor,
+                modifier = Modifier.padding(start = 20.dp)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            MyCouponIconText {
+                //TODO 마이 쿠폰 이동
+            }
+
+            Spacer(modifier = Modifier.width(20.dp))
+        }
 
         Text(
             text = "쿠폰으로 혜택받을 수 있는 가게",
@@ -451,7 +475,7 @@ fun CouponLayout(navController: NavController, couponData: MutableList<CouponDat
 
                         Text(
                             text = coupon.content,
-                            style = storeMeTypography.bodySmall,
+                            style = storeMeTypography.titleSmall,
                             fontSize = 14.sp,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
@@ -473,7 +497,7 @@ fun CouponLayout(navController: NavController, couponData: MutableList<CouponDat
                             shape = RoundedCornerShape(4.dp)
                         ) {
                             Text(
-                                text = "쿠폰 다운로드",
+                                text = "쿠폰 받기",
                                 fontFamily = appFontFamily,
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.ExtraBold
@@ -485,5 +509,37 @@ fun CouponLayout(navController: NavController, couponData: MutableList<CouponDat
                 }
             }
         }
+    }
+}
+
+@Composable
+fun MyCouponIconText(onClick: () -> Unit){
+    Row(
+        modifier = Modifier
+            .clickable(
+                onClick = onClick
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.coupon),
+            contentDescription = "쿠폰 아이콘",
+            modifier = Modifier.size(16.dp)
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Text(
+            text = "받은 쿠폰함",
+            style = storeMeTypography.titleSmall
+        )
+
+        Spacer(modifier = Modifier.width(2.dp))
+
+        Icon(
+            painter = painterResource(id = R.drawable.arrow_right),
+            contentDescription = "화살표 아이콘",
+            modifier = Modifier.size(8.dp)
+        )
     }
 }
