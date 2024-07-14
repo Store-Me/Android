@@ -1,9 +1,13 @@
-@file:OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class
-)
+@file:OptIn(ExperimentalPagerApi::class)
 
 package com.store_me.storeme.ui.home
 
-import androidx.compose.foundation.BorderStroke
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,12 +36,12 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,7 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -56,15 +60,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.store_me.storeme.R
-import com.store_me.storeme.data.CouponData
+import com.store_me.storeme.data.CouponWithStoreInfoData
 import com.store_me.storeme.data.StoreInfoData
+import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.ui.component.SearchField
+import com.store_me.storeme.ui.main.BOTTOM_ITEM_LIST
 import com.store_me.storeme.ui.main.MainActivity
+import com.store_me.storeme.ui.main.createScreenRoute
 import com.store_me.storeme.ui.theme.DownloadCouponColor
 import com.store_me.storeme.ui.theme.HomeCouponTitleTextColor
 import com.store_me.storeme.ui.theme.HomeSearchBoxColor
@@ -77,33 +89,50 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.lang.Thread.yield
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(
+    navController: NavController,
+    homeViewModel: HomeViewModel = hiltViewModel(),
+    locationViewModel: LocationViewModel
+) {
     val storeList = SampleDataUtils.sampleTodayStore()
     val couponData = SampleDataUtils.sampleCoupon()
 
+    var backPressedTime by remember { mutableStateOf(0L) }
+    val context = LocalContext.current
+
     Scaffold(
-        containerColor = Color.White,
+        containerColor = White,
         topBar = { TopLayout(navController) },
         content = { innerPadding -> // 컨텐츠 영역
             LazyColumn(
                 modifier = Modifier
                     .padding(innerPadding)
             ) {
-                item { LocationLayout()}
-                item { BannerLayout() }
-                item { BasicStoreListLayout(navController = navController, storeList, title = "\uD83D\uDD25 오늘의 가게", description = "오늘 사람들이 많이 찾은 가게")}
-                item {CouponLayout(navController = navController, couponData = couponData)}
-                item {BasicStoreListLayout(navController = navController, storeList, title = "\u2728 새로 생긴 가게", description = "우리동네 신상 가게")}
+                item { LocationLayout(navController, locationViewModel)}
+                item { BannerLayout(navController = navController) }
+                item { BasicStoreListLayout(navController = navController, storeList, title = "\uD83D\uDD25 오늘의 가게", description = "오늘 사람들이 많이 찾은 가게") }
+                item { CouponLayout(navController = navController, couponList = couponData) }
+                item { BasicStoreListLayout(navController = navController, storeList, title = "\u2728 새로 생긴 가게", description = "우리동네 신상 가게") }
             }
         }
     )
+
+
+
+    BackHandler {
+       val currentTime = System.currentTimeMillis()
+       if(currentTime - backPressedTime < 2000){
+           (context as? ComponentActivity)?.finishAffinity()
+       } else {
+           backPressedTime = currentTime
+           ToastMessageUtils.showToast(context, R.string.backpress_message)
+       }
+    }
 }
 
 @Composable
 fun TopLayout(navController: NavController) {
-    val interactionSource = remember { MutableInteractionSource() }
 
     Row(
         modifier = Modifier
@@ -120,9 +149,12 @@ fun TopLayout(navController: NavController) {
         )
         Spacer(modifier = Modifier.width(15.dp))
         SearchField(modifier = Modifier
-            .weight(1f)
-            .height(40.dp)
-        )
+            .weight(1f),
+            hint = "내 주변 가게를 찾아보세요."
+        ) {
+
+        }
+
         Spacer(modifier = Modifier.width(10.dp))
         Icon(
             imageVector = ImageVector.vectorResource(R.drawable.ic_notification_off),
@@ -132,9 +164,9 @@ fun TopLayout(navController: NavController) {
                 .padding(7.dp)
                 .clickable(
                     onClick = {
-                        navController.navigate(MainActivity.NormalNavItem.NOTIFICATION.name)
+                        navController.navigate(createScreenRoute(BOTTOM_ITEM_LIST[0], MainActivity.NormalNavItem.NOTIFICATION.name))
                     },
-                    interactionSource = interactionSource,
+                    interactionSource = remember { MutableInteractionSource() },
                     indication = rememberRipple(bounded = false)
 
                 )
@@ -143,118 +175,73 @@ fun TopLayout(navController: NavController) {
     }
 
 }
-@Composable
-fun SearchField(modifier: Modifier = Modifier) {
-    var text by remember { mutableStateOf("") }
 
-    Box(
-        modifier = modifier
-            .height(36.dp)
-            .background(HomeSearchBoxColor, shape = RoundedCornerShape(10.dp)),
-        contentAlignment = Alignment.CenterStart
-    ) {
-        BasicTextField(
-            value = text,
-            onValueChange = { text = it },
-            singleLine = true,
-            textStyle = storeMeTypography.bodySmall,
-            cursorBrush = SolidColor(Color.Black),
-            decorationBox = { innerTextField ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(modifier = Modifier.weight(1f)) {
-                        if (text.isEmpty()) {
-                            Text(
-                                text = "내 주변 가게를 찾아보세요.",
-                                color = Color.Gray,
-                                style = storeMeTypography.bodySmall
-                            )
-                        }
-                        innerTextField()
-                    }
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.search_icon),
-                        contentDescription = "검색",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun LocationLayout(navController: NavController, locationViewModel: LocationViewModel){
+    val lastLocation by locationViewModel.lastLocation.collectAsState()
+
+    val locationPermissionState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION
         )
-    }
-}
+    )
 
-@Composable
-fun LocationLayout(){
-    val context = LocalContext.current
-    val interactionSource = remember { MutableInteractionSource() }
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if (permissions[ACCESS_FINE_LOCATION] == true || permissions[ACCESS_COARSE_LOCATION] == true) {
+            locationViewModel.setLocation()
+        }
+    }
+
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(40.dp),
+            .height(50.dp)
+            .padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Row(
             modifier = Modifier
                 .wrapContentWidth()
-                .padding(start = 20.dp)
                 .clickable(
-                    interactionSource = interactionSource,
-                    indication = rememberRipple(bounded = false, radius = 25.dp),  // Ripple 색상
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(bounded = false, radius = 15.dp),
 
                     onClick = {
-                        ToastMessageUtils.showToast(context, "지역 설정")
+                        navController.navigate(createScreenRoute(BOTTOM_ITEM_LIST[0], MainActivity.NormalNavItem.LOCATION.name))
                     }
                 ),
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = "강남구",
+                text = lastLocation,
                 style = storeMeTypography.labelMedium
             )
             Spacer(modifier = Modifier.width(5.dp))
             Icon(
                 painter = painterResource(id = R.drawable.arrow_down),
                 contentDescription = "지역 설정 아이콘",
-                modifier = Modifier.size(12.dp)
+                modifier = Modifier
+                    .size(12.dp)
             )
         }
         Spacer(Modifier.weight(1f)) //중간 공백
 
-        SetLocationButton(
-            onClick = {
-            /*  */
+        DefaultButton(text = "동네 설정") {
+            if (locationPermissionState.permissions.any { it.status.isGranted }) {
+                locationViewModel.setLocation()
+            } else {
+                launcher.launch(arrayOf(ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION))
             }
-        )
+        }
     }
 }
 
 @Composable
-fun SetLocationButton(onClick: () -> Unit){
-    Button(
-        modifier = Modifier
-            .wrapContentWidth()
-            .height(30.dp)
-            .padding(end = 20.dp),
-        shape = RoundedCornerShape(6.dp),
-        border = BorderStroke(1.dp, Color.Black),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White,
-            contentColor = Color.Black
-        ),
-        contentPadding = PaddingValues(horizontal = 10.dp),
-        onClick = onClick
-    ) {
-        Text(text = "동네 설정", style = storeMeTypography.labelSmall)
-    }
-}
-
-@Composable
-fun BannerLayout() {
+fun BannerLayout(navController: NavController) {
     val bannerUrls = SampleDataUtils.sampleBannerImage()
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
@@ -279,23 +266,46 @@ fun BannerLayout() {
                     .fillMaxWidth()
                     .height(bannerHeight)
             ) { page ->
-                LoadBannerImages(bannerUrls[page], page)
+                LoadBannerImages(bannerUrls[page].imageUrl, page)
             }
 
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomEnd) // 내부 하단 우측에 위치
-                    .padding(8.dp)
+                    .padding(end = 8.dp, bottom = 8.dp, top = 15.dp, start = 15.dp)
                     .background(Color.Black.copy(alpha = 0.7f), shape = CircleShape)
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                    .clickable {
+                        navController.navigate(
+                            createScreenRoute(
+                                BOTTOM_ITEM_LIST[0],
+                                MainActivity.NormalNavItem.BANNER_LIST.name
+                            )
+                        )
+                    },
+
             ) {
-                Text(
-                    text = "${pagerState.currentPage + 1}/${bannerUrls.size}",
-                    fontFamily = appFontFamily,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 9.sp,
-                    color = Color.White
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${pagerState.currentPage + 1}/${bannerUrls.size}",
+                        fontFamily = appFontFamily,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 9.sp,
+                        color = White
+                    )
+
+                    Spacer(Modifier.width(2.dp))
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_plus),
+                        modifier = Modifier.size(9.sp.value.dp),
+                        contentDescription = "배너 확장 아이콘",
+                        tint = White
+                    )
+                }
+
             }
         }
 
@@ -355,7 +365,15 @@ fun BasicStoreListLayout(navController: NavController, storeList: MutableList<St
                     modifier = Modifier
                         .padding(end = 7.dp)
                         .width(120.dp)
-                        .clickable { navController.navigate("storeDetail/${store.storeName}") }
+                        .clickable {
+                            navController.navigate(
+                                createScreenRoute(
+                                    BOTTOM_ITEM_LIST[0],
+                                    MainActivity.NormalNavItem.STORE_DETAIL.name,
+                                    store.storeName
+                                )
+                            )
+                        }
                 ) {
                     AsyncImage(
                         model = store.storeImage,
@@ -371,14 +389,14 @@ fun BasicStoreListLayout(navController: NavController, storeList: MutableList<St
                             modifier = Modifier
                                 .background(UnselectedItemColor, shape = RoundedCornerShape(4.dp))
                                 .wrapContentSize()
-                                .padding(vertical = 4.dp, horizontal = 6.dp)
+                                .padding(vertical = 2.dp, horizontal = 6.dp)
                         ) {
                             Text(
-                                text = store.category,
+                                text = store.category.displayName,
                                 fontFamily = appFontFamily,
                                 fontSize = 9.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
+                                color = White
                             )
                         }
 
@@ -395,7 +413,7 @@ fun BasicStoreListLayout(navController: NavController, storeList: MutableList<St
 }
 
 @Composable
-fun CouponLayout(navController: NavController, couponData: MutableList<CouponData>) {
+fun CouponLayout(navController: NavController, couponList: MutableList<CouponWithStoreInfoData>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -417,7 +435,7 @@ fun CouponLayout(navController: NavController, couponData: MutableList<CouponDat
             Spacer(modifier = Modifier.weight(1f))
 
             MyCouponIconText {
-                //TODO 마이 쿠폰 이동
+                navController.navigate(createScreenRoute(BOTTOM_ITEM_LIST[0], MainActivity.NormalNavItem.MY_COUPON.name))
             }
 
             Spacer(modifier = Modifier.width(20.dp))
@@ -436,17 +454,25 @@ fun CouponLayout(navController: NavController, couponData: MutableList<CouponDat
         LazyRow(
             contentPadding = PaddingValues(start = 20.dp)
         ) {
-            items(couponData) { coupon ->
+            items(couponList) { coupon ->
                 Column(
                     modifier = Modifier
                         .padding(end = 7.dp)
                         .width(120.dp)
                         .height(240.dp)
-                        .clickable { navController.navigate("storeDetail/${coupon.storeName}") }
+                        .clickable {
+                            navController.navigate(
+                                createScreenRoute(
+                                    BOTTOM_ITEM_LIST[0],
+                                    MainActivity.NormalNavItem.STORE_DETAIL.name,
+                                    coupon.storeInfo.storeName
+                                )
+                            )
+                        }
                 ) {
                     AsyncImage(
-                        model = coupon.storeImage,
-                        contentDescription = "${coupon.storeName} 사진",
+                        model = coupon.storeInfo.storeImage,
+                        contentDescription = "${coupon.storeInfo.storeName} 사진",
                         modifier = Modifier
                             .size(120.dp)
                             .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
@@ -463,11 +489,12 @@ fun CouponLayout(navController: NavController, couponData: MutableList<CouponDat
                         Spacer(modifier = Modifier.height(10.dp))
 
                         Text(
-                            text = coupon.storeName,
+                            text = coupon.storeInfo.storeName,
                             fontFamily = appFontFamily,
                             fontWeight = FontWeight.Black,
                             fontSize = 11.sp,
                             maxLines = 2,
+                            letterSpacing = 0.7.sp,
                             overflow = TextOverflow.Ellipsis
                         )
 
@@ -475,7 +502,9 @@ fun CouponLayout(navController: NavController, couponData: MutableList<CouponDat
 
                         Text(
                             text = coupon.content,
-                            style = storeMeTypography.titleSmall,
+                            style = storeMeTypography.titleSmall.copy(
+                                lineHeight = 20.sp
+                            ),
                             fontSize = 14.sp,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
@@ -491,7 +520,7 @@ fun CouponLayout(navController: NavController, couponData: MutableList<CouponDat
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = DownloadCouponColor,
-                                contentColor = Color.White
+                                contentColor = White
                             ),
                             contentPadding = PaddingValues(horizontal = 10.dp),
                             shape = RoundedCornerShape(4.dp)
@@ -522,7 +551,7 @@ fun MyCouponIconText(onClick: () -> Unit){
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.coupon),
+            painter = painterResource(id = R.drawable.ic_coupon),
             contentDescription = "쿠폰 아이콘",
             modifier = Modifier.size(16.dp)
         )

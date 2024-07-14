@@ -9,7 +9,7 @@ object Auth {
     }
 
     //로그인 상태 관련
-    private val _isLoggedIn = mutableStateOf(false)
+    private val _isLoggedIn = mutableStateOf(true)
     val isLoggedIn: State<Boolean> = _isLoggedIn
 
     /**

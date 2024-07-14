@@ -21,62 +21,71 @@ val storeMeTypography = Typography(
         fontWeight = FontWeight.Normal,
         fontFamily = appFontFamily,
         fontSize = 18.sp,
-        letterSpacing = 0.7.sp
+        letterSpacing = 0.7.sp,
+        lineHeight = 18.sp
     ),
 
     bodySmall = TextStyle(
         fontWeight = FontWeight.Normal,
         fontFamily = appFontFamily,
         fontSize = 12.sp,
-        letterSpacing = 0.7.sp
+        letterSpacing = 0.7.sp,
+        lineHeight = 18.sp
     ),
 
     bodyMedium = TextStyle(
         fontWeight = FontWeight.Normal,
         fontFamily = appFontFamily,
         fontSize = 16.sp,
-        letterSpacing = 0.7.sp
+        letterSpacing = 0.7.sp,
+        lineHeight = 18.sp
     ),
 
     titleLarge = TextStyle(
         fontWeight = FontWeight.Bold,
         fontFamily = appFontFamily,
         fontSize = 18.sp,
-        letterSpacing = 0.7.sp
+        letterSpacing = 0.7.sp,
+        lineHeight = 18.sp
     ),
 
     titleSmall = TextStyle(
         fontWeight = FontWeight.Bold,
         fontFamily = appFontFamily,
         fontSize = 12.sp,
-        letterSpacing = 0.7.sp
+        letterSpacing = 0.7.sp,
+        lineHeight = 18.sp
     ),
 
     titleMedium = TextStyle(
         fontWeight = FontWeight.Bold,
         fontFamily = appFontFamily,
         fontSize = 16.sp,
-        letterSpacing = 0.7.sp
+        letterSpacing = 0.7.sp,
+        lineHeight = 18.sp
     ),
 
     labelLarge = TextStyle(
         fontWeight = FontWeight.ExtraBold,
         fontFamily = appFontFamily,
         fontSize = 18.sp,
-        letterSpacing = 0.7.sp
+        letterSpacing = 0.7.sp,
+        lineHeight = 18.sp
     ),
 
     labelSmall = TextStyle(
         fontWeight = FontWeight.ExtraBold,
         fontFamily = appFontFamily,
         fontSize = 12.sp,
-        letterSpacing = 0.7.sp
+        letterSpacing = 0.7.sp,
+        lineHeight = 18.sp
     ),
 
     labelMedium = TextStyle(
         fontWeight = FontWeight.ExtraBold,
         fontFamily = appFontFamily,
         fontSize = 16.sp,
-        letterSpacing = 0.7.sp
+        letterSpacing = 0.7.sp,
+        lineHeight = 18.sp
     ),
 )

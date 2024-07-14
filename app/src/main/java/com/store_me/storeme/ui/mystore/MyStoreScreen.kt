@@ -1,8 +1,9 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class,
+    ExperimentalMaterialApi::class
+)
 
 package com.store_me.storeme.ui.mystore
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,23 +24,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,8 +62,10 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.R
-import com.store_me.storeme.data.DefaultPostData
-import com.store_me.storeme.data.MyPickData
+import com.store_me.storeme.data.NormalPostWithStoreInfoData
+import com.store_me.storeme.data.MyPickWithStoreIdData
+import com.store_me.storeme.data.MyPickWithStoreInfoData
+import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.main.FAVORITE
 import com.store_me.storeme.ui.theme.MyPickStrokeColor
 import com.store_me.storeme.ui.theme.NewNoticeColor
@@ -71,11 +76,49 @@ import com.store_me.storeme.ui.theme.SelectedCategoryColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTypography
 import com.store_me.storeme.utils.SampleDataUtils
+import com.store_me.storeme.utils.StoreCategory
 
 @Preview
 @Composable
-fun MyStoreScreen(myStoreViewModel: MyStoreViewModel = viewModel()){
+fun MyStoreScreenWithBottomSheet(myStoreViewModel: MyStoreViewModel = viewModel()){
+    var isSheetShow by remember { mutableStateOf(false) }
 
+    if(isSheetShow) {
+        MyStoreBottomSheet(
+            onDismiss = { isSheetShow = false },
+        )
+    }
+
+    MyStoreScreen(viewModel = myStoreViewModel) {
+        isSheetShow = true
+    }
+}
+
+@Composable
+fun MyStoreBottomSheet(onDismiss: () -> Unit) {
+    val sheetState = rememberModalBottomSheetState()
+
+    ModalBottomSheet(
+        sheetState = sheetState,
+        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
+        containerColor = White,
+        onDismissRequest = { onDismiss() },
+        content = {
+            //TODO BOTTOM
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Text("Comment Bottom Sheet Layout")
+
+            }
+        }
+    )
+}
+
+@Composable
+fun MyStoreScreen(viewModel: MyStoreViewModel, onCommentClick: () -> Unit){
     Scaffold(
         containerColor = White,
         topBar = { MyStoreTitleSection() },
@@ -85,12 +128,26 @@ fun MyStoreScreen(myStoreViewModel: MyStoreViewModel = viewModel()){
                     .padding(innerPadding)
             ) {
                 item { MyPickSection() }
-                item { CategorySection(myStoreViewModel) }
+                item { CategorySection(viewModel) }
 
-                items(myStoreViewModel.postList) { post ->
-                    Box(modifier = Modifier
+                items(viewModel.postList) { post ->
+                    Column(modifier = Modifier
                         .padding(start = 10.dp, end = 10.dp, top = 5.dp, bottom = 10.dp)) {
-                        PostItem(post)
+                        PostItem(
+                            postData = post,
+                            onMenuClick = {
+
+                            },
+                            onLikeClick = {
+
+                            },
+                            onCommentClick = {
+                                onCommentClick()
+                            },
+                            onShareClick = {
+
+                            }
+                        )
                     }
                 }
             }
@@ -114,7 +171,6 @@ fun MyStoreTitleSection() {
                 .height(20.dp)
         )
     }
-
 }
 
 @Composable
@@ -124,7 +180,6 @@ fun MyPickSection() {
             .fillMaxWidth()
     ) {
         MyPickTitleWithButton()
-        Spacer(modifier = Modifier.height(10.dp))
         MyPickList()
     }
 }
@@ -134,7 +189,7 @@ fun MyPickTitleWithButton() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(40.dp)
+            .height(50.dp)
             .padding(horizontal = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -145,28 +200,9 @@ fun MyPickTitleWithButton() {
 
         Spacer(modifier = Modifier.weight(1f))
 
-        EditButton {
-            //TODO 편집
-        }
-    }
-}
+        DefaultButton(text = "편집하기") {
 
-@Composable
-fun EditButton(onClick: () -> Unit) {
-    Button(
-        modifier = Modifier
-            .wrapContentWidth()
-            .height(30.dp),
-        shape = RoundedCornerShape(6.dp),
-        border = BorderStroke(1.dp, Color.Black),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White,
-            contentColor = Color.Black
-        ),
-        contentPadding = PaddingValues(horizontal = 10.dp),
-        onClick = onClick
-    ) {
-        Text(text = "편집하기", style = storeMeTypography.labelSmall)
+        }
     }
 }
 
@@ -184,7 +220,7 @@ fun MyPickList() {
 }
 
 @Composable
-fun MyPickItems(myPickData: MyPickData) {
+fun MyPickItems(myPickWithStoreInfoData: MyPickWithStoreInfoData) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(end = 10.dp)
@@ -196,15 +232,15 @@ fun MyPickItems(myPickData: MyPickData) {
             contentAlignment = Alignment.BottomEnd
         ) {
             AsyncImage(
-                model = myPickData.storeImage,
-                contentDescription = "${myPickData.storeName} 사진",
+                model = myPickWithStoreInfoData.storeInfoData.storeImage,
+                contentDescription = "${myPickWithStoreInfoData.storeInfoData.storeName} 사진",
                 modifier = Modifier
                     .size(70.dp)
                     .clip(CircleShape)
                     .border(2.5.dp, MyPickStrokeColor, CircleShape)
             )
 
-            if(myPickData.isNewExist) {
+            if(myPickWithStoreInfoData.isNewExist) {
                 Box(
                     modifier = Modifier
                         .size(20.dp)
@@ -218,7 +254,7 @@ fun MyPickItems(myPickData: MyPickData) {
         Spacer(modifier = Modifier.height(6.dp))
 
         Text(
-            text = myPickData.storeName,
+            text = myPickWithStoreInfoData.storeInfoData.storeName,
             fontFamily = appFontFamily,
             fontSize = 10.sp,
             fontWeight = FontWeight.Bold,
@@ -231,7 +267,7 @@ fun MyPickItems(myPickData: MyPickData) {
 
 @Composable
 fun CategorySection(viewModel: MyStoreViewModel) {
-    val selectedCategory by viewModel.selectedCategory.observeAsState(initial = "전체")
+    val selectedCategory by viewModel.selectedCategory.observeAsState(initial = StoreCategory.ALL.displayName)
 
     Column {
         LazyRow(
@@ -249,7 +285,7 @@ fun CategorySection(viewModel: MyStoreViewModel) {
 }
 
 @Composable
-fun CategoryItem(category: String, isSelected: Boolean, onClick: () -> Unit) {
+fun CategoryItem(category: StoreCategory, isSelected: Boolean, onClick: () -> Unit) {
     val backgroundColor = if (isSelected) SelectedCategoryColor else NormalCategoryColor
     val textColor = if (isSelected) White else SelectedCategoryColor
 
@@ -261,7 +297,7 @@ fun CategoryItem(category: String, isSelected: Boolean, onClick: () -> Unit) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = category,
+            text = category.displayName,
             color = textColor,
             fontFamily = appFontFamily,
             fontSize = 14.sp,
@@ -272,7 +308,7 @@ fun CategoryItem(category: String, isSelected: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun PostItem(postData: DefaultPostData) {
+fun PostItem(postData: NormalPostWithStoreInfoData, onMenuClick: () -> Unit, onLikeClick: () -> Unit, onCommentClick: () -> Unit, onShareClick: () -> Unit) {
 
     Column(
         modifier = Modifier
@@ -288,8 +324,8 @@ fun PostItem(postData: DefaultPostData) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = postData.storeImage,
-                contentDescription = "${postData.storeName} 사진",
+                model = postData.storeInfoData.storeImage,
+                contentDescription = "${postData.storeInfoData.storeName} 사진",
                 modifier = Modifier
                     .size(50.dp)
                     .clip(RoundedCornerShape(10.dp))
@@ -303,16 +339,16 @@ fun PostItem(postData: DefaultPostData) {
                 Spacer(modifier = Modifier.weight(1f))
 
                 Text(
-                    text = postData.storeName,
+                    text = postData.storeInfoData.storeName,
                     style = storeMeTypography.titleSmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = postData.location + " · " + postData.datetime,
+                    text = postData.storeInfoData.location + " · " + postData.datetime,
                     fontFamily = appFontFamily,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Normal,
@@ -325,26 +361,26 @@ fun PostItem(postData: DefaultPostData) {
             Spacer(modifier = Modifier.weight(1f))
 
             Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.bottom_home),
+                imageVector = ImageVector.vectorResource(R.drawable.ic_menu),
+                tint = Color.Unspecified,
                 contentDescription = "메뉴",
                 modifier = Modifier
                     .size(24.dp)
                     .clickable(
-                        onClick = {
-
-                        },
-
+                        onClick = onMenuClick,
                         interactionSource = remember { MutableInteractionSource() },
                         indication = rememberRipple(bounded = false)
                     )
+                    .padding(2.dp)
             )
         }
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        PostImageSection(postData.imageList)
-
-        Spacer(modifier = Modifier.height(15.dp))
+        if(postData.imageList?.isNotEmpty() == true) {
+            PostImageSection(postData.imageList)
+            Spacer(modifier = Modifier.height(15.dp))
+        }
 
         Text(
             text = postData.title,
@@ -352,7 +388,8 @@ fun PostItem(postData: DefaultPostData) {
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp,
             maxLines = 2,
-            letterSpacing = 0.5.sp,
+            lineHeight = 18.sp,
+            letterSpacing = 0.7.sp,
             overflow = TextOverflow.Ellipsis
         )
 
@@ -367,16 +404,17 @@ fun PostItem(postData: DefaultPostData) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+        ) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_like_off),
                 contentDescription = "좋아요",
                 modifier = Modifier
                     .size(24.dp)
                     .clickable(
-                        onClick = {
-
-                        },
+                        onClick = onLikeClick,
                         interactionSource = remember { MutableInteractionSource() },
                         indication = rememberRipple(bounded = false)
                     )
@@ -390,9 +428,7 @@ fun PostItem(postData: DefaultPostData) {
                 modifier = Modifier
                     .size(24.dp)
                     .clickable(
-                        onClick = {
-
-                        },
+                        onClick = onCommentClick,
                         interactionSource = remember { MutableInteractionSource() },
                         indication = rememberRipple(bounded = false)
                     )
@@ -402,14 +438,11 @@ fun PostItem(postData: DefaultPostData) {
 
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_share),
-                contentDescription = "메뉴",
+                contentDescription = "공유",
                 modifier = Modifier
                     .size(24.dp)
                     .clickable(
-                        onClick = {
-
-                        },
-
+                        onClick = onShareClick,
                         interactionSource = remember { MutableInteractionSource() },
                         indication = rememberRipple(bounded = false)
                     )
@@ -456,7 +489,7 @@ fun PostImageSection(imageList: List<String>) {
                     .align(Alignment.BottomEnd) // 내부 하단 우측에 위치
                     .padding(8.dp)
                     .background(Color.Black.copy(alpha = 0.7f), shape = CircleShape)
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .padding(horizontal = 8.dp, vertical = 2.dp)
             ) {
                 Text(
                     text = "${pagerState.currentPage + 1}/${imageList.size}",

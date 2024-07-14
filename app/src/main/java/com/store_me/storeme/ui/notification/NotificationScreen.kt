@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class,
+@file:OptIn( ExperimentalPagerApi::class,
     ExperimentalPagerApi::class
 )
 
@@ -18,66 +18,82 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.store_me.storeme.data.NotificationData
-import com.store_me.storeme.ui.component.BackButtonWithTitle
+import com.store_me.storeme.data.NotificationType
+import com.store_me.storeme.data.NotificationWithStoreInfoData
+import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.theme.DateTimeTextColor
-import com.store_me.storeme.ui.theme.DividerLineColor
+import com.store_me.storeme.ui.theme.TabDividerLineColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTypography
+import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.SampleDataUtils
 import kotlinx.coroutines.launch
 
-@Composable
-fun NotificationScreen(navController: NavController){
-    val sampleNotification = SampleDataUtils.sampleNotification()
-
-    Scaffold(
-        topBar = { BackButtonWithTitle(navController = navController, title = "알림 목록") },
-        content = { innerPadding -> // 컨텐츠 영역
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-            ) {
-                NotificationTabLayout(sampleNotification)
-            }
-        }
-    )
+val LocalNotificationViewModel = staticCompositionLocalOf<NotificationViewModel> {
+    error("No NotificationViewModel provided")
 }
 
 @Composable
-fun NotificationTabLayout(notificationList: MutableList<NotificationData>) {
+fun NotificationScreen(navController: NavController, notificationViewModel: NotificationViewModel = hiltViewModel()){
+    val sampleNotification = SampleDataUtils.sampleNotification()
 
-    val tabTitles = listOf("전체", "예약", "구매")
+    CompositionLocalProvider(LocalNotificationViewModel provides notificationViewModel) {
+
+        Scaffold(
+            containerColor = White,
+            topBar = { TitleWithDeleteButton(navController = navController, title = "알림 목록") },
+            content = { innerPadding ->
+                Column(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                ) {
+                    NotificationTabLayout(sampleNotification)
+                }
+            }
+        )
+
+    }
+
+
+
+}
+
+@Composable
+fun NotificationTabLayout(notificationList: MutableList<NotificationWithStoreInfoData>) {
+
+    val tabTitles = listOf(NotificationType.ALL.displayName, NotificationType.NORMAL.displayName, NotificationType.RESERVATION.displayName)
 
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
@@ -85,20 +101,20 @@ fun NotificationTabLayout(notificationList: MutableList<NotificationData>) {
     Column {
         TabRow(
             selectedTabIndex = pagerState.currentPage,
-            containerColor = Color.Transparent,
-            contentColor = Color.Black,
+            containerColor = Transparent,
+            contentColor = Black,
             indicator = { tabPositions ->
-                TabRowDefaults.Indicator(
+                SecondaryIndicator(
                     modifier = Modifier
                         .tabIndicatorOffset(tabPositions[pagerState.currentPage])
                         .height(2.dp)
                         .fillMaxWidth(0.9f),
-                    color = Color.Black
+                    color = Black
                 )
             },
             divider = {
-                Divider(
-                    color = DividerLineColor,
+                HorizontalDivider(
+                    color = TabDividerLineColor,
                     thickness = 2.dp
                 )
             }
@@ -111,10 +127,13 @@ fun NotificationTabLayout(notificationList: MutableList<NotificationData>) {
                             pagerState.animateScrollToPage(index)
                         }
                     },
-                    text = { Text(
-                        text = title,
-                        style = storeMeTypography.titleSmall
-                    ) }
+                    text = {
+                        Text(
+                            text = title,
+                            style = storeMeTypography.titleSmall,
+                            color = if(index == pagerState.currentPage) Black else TabDividerLineColor
+                        )
+                    }
                 )
             }
         }
@@ -127,42 +146,38 @@ fun NotificationTabLayout(notificationList: MutableList<NotificationData>) {
             verticalAlignment = Alignment.Top
         ) { page ->
             val filteredNotifications = when(tabTitles[page]) {
-                "전체" -> notificationList
-                "예약" -> notificationList.filter { it.type == "예약" }
-                "구매" -> notificationList.filter { it.type == "구매" }
+                NotificationType.ALL.displayName -> notificationList
+                NotificationType.NORMAL.displayName -> notificationList.filter { it.notificationType == NotificationType.NORMAL }
+                NotificationType.RESERVATION.displayName -> notificationList.filter { it.notificationType == NotificationType.RESERVATION }
                 else -> emptyList()
             }
 
             NotificationsList(filteredNotifications)
         }
     }
-
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect { pageIndex ->
-            // 여기서 추가적인 동작을 수행할 수 있음
-        }
-    }
 }
 
 @Composable
-fun NotificationsList(notifications: List<NotificationData>){
+fun NotificationsList(notifications: List<NotificationWithStoreInfoData>){
     LazyColumn {
-        items(notifications) { notifications ->
-            NotificationItem(notifications)
+        items(notifications) { notification ->
+            NotificationItem(notification)
         }
     }
 }
 
 @Composable
-fun NotificationItem(notification: NotificationData) {
-    var backgroundColor by remember { mutableStateOf(if (notification.isRead) Color.Transparent else HighlightColor) }
+fun NotificationItem(notification: NotificationWithStoreInfoData) {
+    val notificationViewModel = LocalNotificationViewModel.current
+
+    var backgroundColor by remember { mutableStateOf(if (notification.isRead) Transparent else HighlightColor) }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = backgroundColor)
             .clickable {
-                backgroundColor = Color.Transparent
+                backgroundColor = Transparent
                 notification.isRead = true
             },
     ) {
@@ -174,8 +189,8 @@ fun NotificationItem(notification: NotificationData) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             AsyncImage(
-                model = notification.storeImage,
-                contentDescription = "${notification.content} 사진",
+                model = notification.storeInfoData.storeImage,
+                contentDescription = "${notification.storeInfoData.storeName} 사진",
                 modifier = Modifier
                     .size(55.dp)
                     .clip(RoundedCornerShape(10.dp))
@@ -183,26 +198,23 @@ fun NotificationItem(notification: NotificationData) {
 
             Spacer(modifier = Modifier.width(10.dp))
 
-            Column(
-
-            ) {
+            Column {
                 Spacer(modifier = Modifier.weight(1f))
 
                 Text(
-                    text = notification.content,
+                    text = notificationViewModel.getNotificationText(notification),
                     fontFamily = appFontFamily,
-                    color = Color.Black,
+                    color = Black,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
-                    letterSpacing = 0.5.sp,
+                    letterSpacing = 0.7.sp,
+                    lineHeight = 17.sp,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
-
                 Text(
-                    text = notification.datetime,
+                    text = DateTimeUtils().datetimeAgo(notification.datetime),
                     fontFamily = appFontFamily,
                     color = DateTimeTextColor,
                     fontSize = 10.sp,

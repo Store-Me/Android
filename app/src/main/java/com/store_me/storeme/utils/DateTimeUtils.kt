@@ -1,0 +1,69 @@
+package com.store_me.storeme.utils
+
+import com.store_me.storeme.data.UserCouponWithStoreInfoData
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+
+class DateTimeUtils {
+    private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+
+    /**
+     * 현재 시각 기준으로 이후인지 확인하는 함수
+     * @param datetime 확인할 DateTime
+     * @sample "YYYY-MM-DDTHH:MM:SS"
+     */
+    fun isAfterDatetime(datetime: String): Boolean{
+        val currentTime = LocalDateTime.now()
+
+        return LocalDateTime.parse(datetime, formatter).isAfter(currentTime)
+    }
+
+    /**
+     * "YYYY년 M월 D일 까지" 텍스트를 출력하는 함수
+     * @param datetime 시간 정보
+     */
+    fun convertExpiredDateToKorean(datetime: String): String {
+        val outputFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일까지")
+
+        val localDateTime = LocalDateTime.parse(datetime, formatter)
+        return localDateTime.format(outputFormatter)
+    }
+
+    /**
+     * 수령일 기준으로 정렬하는 함수
+     */
+    fun sortCouponsByReceivedDate(coupons: List<UserCouponWithStoreInfoData>): List<UserCouponWithStoreInfoData> {
+        return coupons.sortedBy { LocalDateTime.parse(it.receivedDatetime, formatter) }
+    }
+
+    /**
+     * 만료일 기준으로 정렬하는 함수
+     */
+    fun sortCouponsByExpiredDate(coupons: List<UserCouponWithStoreInfoData>): List<UserCouponWithStoreInfoData> {
+        return coupons.sortedBy { LocalDateTime.parse(it.expirationDatetime, formatter) }
+    }
+
+    /**
+     * 현재로부터 얼마 전인지 String으로 반환하는 함수
+     * @param datetime 시간 정보
+     */
+    fun datetimeAgo(datetime: String): String {
+        val targetTime = LocalDateTime.parse(datetime, formatter)
+        val nowTime = LocalDateTime.now()
+
+        val minutesAgo = ChronoUnit.MINUTES.between(targetTime, nowTime)
+        val hoursAgo = ChronoUnit.HOURS.between(targetTime, nowTime)
+        val daysAgo = ChronoUnit.DAYS.between(targetTime, nowTime)
+        val weeksAgo = ChronoUnit.WEEKS.between(targetTime, nowTime)
+        val monthsAgo = ChronoUnit.MONTHS.between(targetTime, nowTime)
+
+        return when {
+            minutesAgo < 60 -> "${minutesAgo}분 전"
+            hoursAgo < 24 -> "${hoursAgo}시간 전"
+            daysAgo < 7 -> "${daysAgo}일 전"
+            weeksAgo < 5 -> "${weeksAgo}주 전"
+            else -> "${monthsAgo}개월 전"
+        }
+    }
+}

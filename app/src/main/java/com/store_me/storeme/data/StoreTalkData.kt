@@ -1,5 +1,6 @@
 package com.store_me.storeme.data
 
+
 /**
  * 채팅방 Data Class
  * @param id 채팅방 아이디
@@ -7,16 +8,31 @@ package com.store_me.storeme.data
  * @param lastMessage 최근 메시지 내용
  * @param timeStamp 마지막 메시지 시간
  * @param unreadCount 읽지 않은 메시지 개수
- * @param messages 메시지 리스트
  */
-data class ChatRoomData(
-    val id: String?,
+data class ChatRoomWithStoreIdData(
+    val id: String,
     val name: String,
-    val userData: UserData,
+    val storeId: String,
     val lastMessage: String,
     val timeStamp: String,
     val unreadCount: Int,
-    val messages: Map<String, ChatMessageData>,
+)
+
+/**
+ * 채팅방 Data Class
+ * @param id 채팅방 아이디
+ * @param name 채팅방 이름
+ * @param lastMessage 최근 메시지 내용
+ * @param timeStamp 마지막 메시지 시간
+ * @param unreadCount 읽지 않은 메시지 개수
+ */
+data class ChatRoomWithStoreInfoData(
+    val id: String,
+    val name: String,
+    val storeInfoData: StoreInfoData,
+    val lastMessage: String,
+    val timeStamp: String,
+    val unreadCount: Int,
 )
 
 /**
@@ -31,4 +47,8 @@ data class ChatMessageData(
     val message: String,
     val timestamp: String,
     val isRead: Boolean,
+)
+
+data class ChatMessagesData(
+    val messages: Map<String, ChatMessageData>
 )

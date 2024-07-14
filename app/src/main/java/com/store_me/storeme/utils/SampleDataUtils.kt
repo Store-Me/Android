@@ -1,79 +1,109 @@
 package com.store_me.storeme.utils
 
-import com.store_me.storeme.data.CouponData
-import com.store_me.storeme.data.DefaultPostData
-import com.store_me.storeme.data.MyPickData
-import com.store_me.storeme.data.NotificationData
+import com.store_me.storeme.data.BannerData
+import com.store_me.storeme.data.ChatRoomWithStoreInfoData
+import com.store_me.storeme.data.ContentType
+import com.store_me.storeme.data.CouponWithStoreInfoData
+import com.store_me.storeme.data.NormalPostWithStoreInfoData
+import com.store_me.storeme.data.MyPickWithStoreInfoData
+import com.store_me.storeme.data.NotificationType
+import com.store_me.storeme.data.NotificationWithStoreInfoData
 import com.store_me.storeme.data.StoreInfoData
+import com.store_me.storeme.data.UserCouponWithStoreInfoData
 
 class SampleDataUtils {
+
+
     companion object {
-        fun sampleBannerImage(): MutableList<String> {
+        private val sampleStoreInfo = mutableListOf(
+            StoreInfoData("0","궁댕이마카롱", "https://via.placeholder.com/500x500", StoreCategory.CAFE, "강남구", 1138069000),
+            StoreInfoData("1","진국인집", "https://via.placeholder.com/500x500", StoreCategory.RESTAURANT, "강남구", 1138069000),
+            StoreInfoData("2","쿠키팡팡", "https://via.placeholder.com/500x500", StoreCategory.CAFE, "강남구", 1138069000),
+            StoreInfoData("3","쭉쭉피자", "https://via.placeholder.com/500x500", StoreCategory.RESTAURANT, "강남구", 1138069000),
+            StoreInfoData("4","초코나라머핀공주", "https://via.placeholder.com/500x500", StoreCategory.CAFE, "강남구", 1138069000),
+            StoreInfoData("5","피자나라치킨공주", "https://via.placeholder.com/500x500", StoreCategory.RESTAURANT, "강남구", 1138069000),
+            StoreInfoData("6","갓생살GTM", "https://via.placeholder.com/500x500", StoreCategory.EXERCISE, "강남구", 1138069000),
+        )
+
+        fun sampleBannerImage() : MutableList<BannerData>{
             return mutableListOf(
-                "https://via.placeholder.com/500x100",
-                "https://via.placeholder.com/750x150",
-                "https://via.placeholder.com/1000x200",
-                "https://via.placeholder.com/1250x250",
-                "https://via.placeholder.com/1500x300",
+                BannerData("0","스토어미와", "https://via.placeholder.com/500x100"),
+                BannerData("0","스토어미와 함께하는 ", "https://via.placeholder.com/750x150"),
+                BannerData("0","스토어미와 함께하는 리뷰", "https://via.placeholder.com/1000x200"),
+                BannerData("0","스토어미와 함께하는 리뷰 이벤트", "https://via.placeholder.com/1250x250"),
+                BannerData("0","스토어미와 함께하는 리뷰 이벤트스토어미와 함께하는 리뷰 이벤트스토어미와 함께하는 리뷰 이벤트", "https://via.placeholder.com/1500x300"),
             )
         }
 
         fun sampleTodayStore(): MutableList<StoreInfoData>{
+            return sampleStoreInfo
+        }
+
+        fun sampleCoupon(): MutableList<CouponWithStoreInfoData>{
             return mutableListOf(
-                StoreInfoData("궁댕이마카롱", "https://via.placeholder.com/500x500", "카페"),
-                StoreInfoData("진국인집", "https://via.placeholder.com/500x500", "음식점"),
-                StoreInfoData("쿠키팡팡", "https://via.placeholder.com/500x500", "카페"),
-                StoreInfoData("쭉쭉피자", "https://via.placeholder.com/500x500", "음식점"),
-                StoreInfoData("초코나라머핀공주", "https://via.placeholder.com/500x500", "카페"),
-                StoreInfoData("피자나라치킨공주", "https://via.placeholder.com/500x500", "음식점"),
-                StoreInfoData("갓생살GTM", "https://via.placeholder.com/500x500", "운동"),
+                CouponWithStoreInfoData("COUPON_ID", sampleStoreInfo[0], "고기/김치만두 2개 증정"),
+                CouponWithStoreInfoData("COUPON_ID", sampleStoreInfo[1], "2000원 할인 쿠폰"),
+                CouponWithStoreInfoData("COUPON_ID", sampleStoreInfo[2], "쿠키 3개 증정"),
+                CouponWithStoreInfoData("COUPON_ID", sampleStoreInfo[3], "치즈 크러스트 엣지 무료 교환권"),
+                CouponWithStoreInfoData("COUPON_ID", sampleStoreInfo[4], "초코머핀 1개 무료 교환권"),
+                CouponWithStoreInfoData("COUPON_ID", sampleStoreInfo[5], "치킨무 1개 무료 교환권"),
+                CouponWithStoreInfoData("COUPON_ID", sampleStoreInfo[6], "PT 1회 이용권 + 1개월 할인권"),
             )
         }
 
-        fun sampleCoupon(): MutableList<CouponData>{
+        fun sampleUserCoupon(): MutableList<UserCouponWithStoreInfoData>{
             return mutableListOf(
-                CouponData("바르다만두선생", "https://via.placeholder.com/500x500", "고기/김치만두 2개 증정"),
-                CouponData("진국인집", "https://via.placeholder.com/500x500", "2000원 할인 쿠폰"),
-                CouponData("쿠키팡팡", "https://via.placeholder.com/500x500", "쿠키 3개 증정"),
-                CouponData("쭉쭉피자", "https://via.placeholder.com/500x500", "치즈 크러스트 엣지 무료 교환권"),
-                CouponData("초코나라머핀공주", "https://via.placeholder.com/500x500", "초코머핀 1개 무료 교환권"),
-                CouponData("피자나라치킨공주", "https://via.placeholder.com/500x500", "치킨무 1개 무료 교환권"),
-                CouponData("갓생살GTM", "https://via.placeholder.com/500x500", "PT 1회 이용권\n+ 1개월 할인권"),
+                UserCouponWithStoreInfoData( "ASD", sampleStoreInfo[0], "고기/김치만두 2개 증정", "2024-07-01T13:06:39", "2024-07-14T13:06:39", false),
+                UserCouponWithStoreInfoData( "ASD", sampleStoreInfo[1], "2000원 할인 쿠폰", "2024-07-02T13:06:39", "2024-07-13T13:06:39", false),
+                UserCouponWithStoreInfoData( "ASD", sampleStoreInfo[2], "쿠키 3개 증정", "2024-07-03T13:06:39", "2024-07-12T13:06:39", false),
+                UserCouponWithStoreInfoData( "ASD", sampleStoreInfo[3], "치즈 크러스트 엣지 무료 교환권", "2024-07-04T13:06:39", "2024-07-11T13:06:39", false),
+                UserCouponWithStoreInfoData( "ASD", sampleStoreInfo[4], "초코머핀 1개 무료 교환권", "2024-07-05T13:06:39", "2024-07-10T13:06:39", false),
+                UserCouponWithStoreInfoData( "ASD", sampleStoreInfo[5], "치킨무 1개 무료 교환권", "2024-07-06T13:06:39", "2024-07-09T13:06:39", false),
+                UserCouponWithStoreInfoData( "ASD", sampleStoreInfo[6], "PT 1회 이용권 + 1개월 할인권", "2024-07-07T13:06:39", "2024-07-08T13:06:39", false),
             )
         }
 
-        fun sampleNotification(): MutableList<NotificationData>{
+        fun sampleNotification(): MutableList<NotificationWithStoreInfoData>{
             return mutableListOf(
-                NotificationData("구매", "3시간 전", "https://via.placeholder.com/100x100", "진국인집 [4000원 쿠폰]을 받았어요!", false),
-                NotificationData("예약", "1시간 전", "https://via.placeholder.com/100x100", "오늘은 초코나라 머핀공주에서 예약한 초코머핀 수령일이에요.", false),
-                NotificationData("구매", "6시간 전", "https://via.placeholder.com/100x100", "쿠키팡팡에서 찜한 레드벨벳치즈케잌맛 쿠키가 구매 가능해요.", false),
-                NotificationData("예약", "12시간 전", "https://via.placeholder.com/100x100", "갓생살GYM에서 새로운 공지사항을 게시했어요. 확인해보세요.", false)
+                NotificationWithStoreInfoData(NotificationType.NORMAL, "2024-07-10T13:06:39",sampleStoreInfo[0], ContentType.COUPON_RECEIVED, "마카롱 종류 300개 이용권",false),
+                NotificationWithStoreInfoData(NotificationType.RESERVATION, "2024-07-11T13:06:39",sampleStoreInfo[1], ContentType.RESERVATION_DATE, "다데기",false),
+                NotificationWithStoreInfoData(NotificationType.NORMAL, "2024-07-12T13:06:39",sampleStoreInfo[2], ContentType.COUPON_RECEIVED, null,false),
+                NotificationWithStoreInfoData(NotificationType.NORMAL, "2024-07-13T13:06:39",sampleStoreInfo[3], ContentType.STORE_UPDATE, "이벤트 알림",false)
             )
         }
 
-        fun sampleMyPick(): MutableList<MyPickData>{
+        fun sampleMyPick(): MutableList<MyPickWithStoreInfoData>{
             return mutableListOf(
-                MyPickData("https://via.placeholder.com/100x100", "바르다만두선생", true),
-                MyPickData("https://via.placeholder.com/100x100", "진국인집", false),
-                MyPickData("https://via.placeholder.com/100x100", "쭉쭉피자", false),
-                MyPickData("https://via.placeholder.com/100x100", "초코나라머핀공주", true),
-                MyPickData("https://via.placeholder.com/100x100", "갓생살GYM", false),
-                MyPickData("https://via.placeholder.com/100x100", "강동짬뽕", true),
-                MyPickData("https://via.placeholder.com/100x100", "김밥나라 구파발 1호점", false),
-                MyPickData("https://via.placeholder.com/100x100", "피자나라치킨공주", false),
-                MyPickData("https://via.placeholder.com/100x100", "이얼싼", false),
-                MyPickData("https://via.placeholder.com/100x100", "코끼리마트", true)
+                MyPickWithStoreInfoData(sampleStoreInfo[0], true),
+                MyPickWithStoreInfoData(sampleStoreInfo[1], false),
+                MyPickWithStoreInfoData(sampleStoreInfo[2], false),
+                MyPickWithStoreInfoData(sampleStoreInfo[3], true),
+                MyPickWithStoreInfoData(sampleStoreInfo[4], false),
+                MyPickWithStoreInfoData(sampleStoreInfo[5], true),
+                MyPickWithStoreInfoData(sampleStoreInfo[6], false),
             )
         }
 
-        fun samplePost(): MutableList<DefaultPostData>{
+        fun samplePost(): MutableList<NormalPostWithStoreInfoData>{
             return mutableListOf(
-                DefaultPostData("https://via.placeholder.com/100x100", "바르다만두선생", "강남구", "1분 전", listOf("https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100"), "1번 게시물 제목입니다.", "내용입니다. 내용이지롱~내용입니다. 내용이지롱~내용입니다. 내용이지롱~내용입니다. 내용이지롱~내용입니다. 내용이지롱~내용입니다. 내용이지롱~내용입니다. 내용이지롱~"),
-                DefaultPostData("https://via.placeholder.com/100x100", "진국인집", "은평구", "1시간 전", listOf("https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100"), "2번 게시물 제목입니다.", "2번 게시물 내용입니다"),
-                DefaultPostData("https://via.placeholder.com/100x100", "초코나라머핀공주", "광진구", "2시간 전", listOf("https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100"), "3번 게시물 제목입니다.", "3번 게시물 내용입니다"),
-                DefaultPostData("https://via.placeholder.com/100x100", "피자나라치킨공주", "서초구", "5시간 전", listOf("https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100"), "4번 게시물 제목입니다.", "4번 게시물 내용입니다"),
-                DefaultPostData("https://via.placeholder.com/100x100", "코끼리마트", "다산동", "1일 전", listOf("https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100"), "5번 게시물 제목입니다.", "4번 게시물 내용입니다"),
-                DefaultPostData("https://via.placeholder.com/100x100", "맘모스커피", "중구", "1년 전", listOf("https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100"), "6번 게시물 제목입니다.", "6번 게시물 내용입니다")
+                NormalPostWithStoreInfoData("https://via.placeholder.com/100x100", sampleStoreInfo[0], "2024-07-01T13:06:39", listOf("https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100"),"1번 게시물 제목입니다.", "1번 게시물 내용입니다"),
+                NormalPostWithStoreInfoData("https://via.placeholder.com/100x100", sampleStoreInfo[0], "2024-07-01T13:06:39", null,"2번 게시물 제목입니다.", "2번 게시물 내용입니다"),
+                NormalPostWithStoreInfoData("https://via.placeholder.com/100x100", sampleStoreInfo[0], "2024-07-01T13:06:39", listOf("https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100"),"3번 게시물 제목입니다.", "3번 게시물 내용입니다"),
+                NormalPostWithStoreInfoData("https://via.placeholder.com/100x100", sampleStoreInfo[0], "2024-07-01T13:06:39", null,"4번 게시물 제목입니다.", "4번 게시물 내용입니다"),
+                NormalPostWithStoreInfoData("https://via.placeholder.com/100x100", sampleStoreInfo[0], "2024-07-01T13:06:39", listOf("https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100", "https://via.placeholder.com/200x100"),"5번 게시물 제목입니다.", "4번 게시물 내용입니다"),
+                NormalPostWithStoreInfoData("https://via.placeholder.com/100x100", sampleStoreInfo[0], "2024-07-01T13:06:39", null,"6번 게시물 제목입니다.", "6번 게시물 내용입니다")
+            )
+        }
+
+        fun sampleChatRooms(): MutableList<ChatRoomWithStoreInfoData>{
+            return mutableListOf(
+                ChatRoomWithStoreInfoData("1", "궁뎅이마카롱", sampleStoreInfo[0], "안녕하세요", "17:30", 30),
+                ChatRoomWithStoreInfoData("1", "궁뎅이마카롱", sampleStoreInfo[1], "안녕하세요", "17:30", 30),
+                ChatRoomWithStoreInfoData("2", "쿠키팡팡", sampleStoreInfo[2], "저번에도 노쇼하셨잖아요 손님같으면 손님한테 예약 받겠어요?", "9:50", 1),
+                ChatRoomWithStoreInfoData("3", "진국인집", sampleStoreInfo[3], "저희 주방장들은 모두 머리가 없는데 머리카락이 어떻게 나와요 손님", "1일 전", 99),
+                ChatRoomWithStoreInfoData("4", "고기의신", sampleStoreInfo[4], "넵! 내일 20시 예약 완료했습니다!", "1주 전", 1),
+                ChatRoomWithStoreInfoData("5", "우리동네과일가게", sampleStoreInfo[5], "모두 직접 가져오는 과일입니다.", "1달 전", 500),
+                ChatRoomWithStoreInfoData("6", "바르다만두선생", sampleStoreInfo[6], "이번 만두는 바르지못해 폐기하였습니다.", "1년 전", 0),
             )
         }
     }

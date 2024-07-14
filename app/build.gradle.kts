@@ -5,11 +5,11 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
-}
 
-/*fun getApiKey(propertyKey: String): String {
-    return gradleLocalProperties(rootDir).getProperty(propertyKey)
-}*/
+    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
+    id("dagger.hilt.android.plugin")
+}
 
 fun getApiKey(propertyKey: String): String {
     val localProps = gradleLocalProperties(rootDir)
@@ -33,14 +33,26 @@ android {
             useSupportLibrary = true
         }
 
-        /*defaultConfig{
-            buildConfigField("String","NAVER_MAP_CLIENT_SECRET", getApiKey("naver_map_client_secret"))
-            buildConfigField("String","NAVER_MAP_CLIENT_ID", getApiKey("naver_map_client_id"))
-        }*/
+        defaultConfig{
+            buildConfigField("String","NAVER_CLIENT_SECRET", getApiKey("naver_client_secret"))
+            buildConfigField("String","NAVER_CLIENT_ID", getApiKey("naver_client_id"))
+        }
     }
 
     val properties = Properties()
     properties.load(project.rootProject.file("local.properties").inputStream())
+
+    android {
+        signingConfigs {
+            create("release") {
+                keyAlias = properties.getProperty("key_alias")
+                keyPassword = properties.getProperty("store_password")
+                storeFile = file(properties.getProperty("store_file"))
+                storePassword = properties.getProperty("store_password")
+            }
+        }
+    }
+
 
     buildTypes {
         debug {
@@ -56,18 +68,19 @@ android {
             manifestPlaceholders["NAVER_MAP_CLIENT_SECRET"] = getApiKey("naver_map_client_secret")
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
@@ -79,13 +92,13 @@ android {
 dependencies {
 
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.3")
     implementation("androidx.activity:activity-compose:1.9.0")
     implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3:1.2.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
     testImplementation("junit:junit:4.13.2")
@@ -97,6 +110,24 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.compose.material:material:1.6.8")
+    implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
+
+    //Hilt
+    implementation("com.google.dagger:hilt-android:2.48.1")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    kapt("com.google.dagger:hilt-compiler:2.48.1")
+    kapt("com.google.dagger:hilt-android-compiler:2.48.1")
+
+
+    //Location
+    implementation ("com.google.android.gms:play-services-location:21.3.0")
+
+
+    //Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-scalars:2.6.4")
 
     //Map
     implementation("io.github.fornewid:naver-map-compose:1.7.2")
