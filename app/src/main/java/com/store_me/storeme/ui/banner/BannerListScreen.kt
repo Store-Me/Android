@@ -2,6 +2,7 @@
 
 package com.store_me.storeme.ui.banner
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -42,28 +43,31 @@ fun BannerListScreen(navController: NavController) {
                 modifier = Modifier
                     .padding(innerPadding)
             ) {
-                BannerListLayout(bannerList)
+                BannerListLayout(bannerList, navController)
             }
         }
     )
 }
 
 @Composable
-fun BannerListLayout(banners: List<BannerData>) {
+fun BannerListLayout(banners: List<BannerData>, navController: NavController) {
     LazyColumn (
         contentPadding = PaddingValues(horizontal = 20.dp)
     ){
         items(banners) {  banner ->
-            BannerItem(banner)
+            BannerItem(banner){
+                
+            }
         }
     }
 }
 
 @Composable
-fun BannerItem(banner: BannerData) {
+fun BannerItem(banner: BannerData, onClick: () -> Unit) {
     Column (
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onClick()}
     ){
         Box(
             modifier = Modifier

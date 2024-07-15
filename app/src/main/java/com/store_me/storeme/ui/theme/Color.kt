@@ -76,3 +76,24 @@ val CouponDividerLineColor = Color(0xFFEFF0F5)
 
 //Selected Sort Type Color
 val SelectedSortTypeColor = Color(0xFFD449DA)
+
+/**
+ * Banner 관련 Color
+ */
+//Banner Ongoing Color
+val BannerOngoingBoxColor = Color(0xFFD44ADA)
+
+//Banner Ended Color
+val BannerEndedBoxColor = Color(0xFF898C93)
+
+//Banner Before Start Color
+val BannerBeforeStartBoxColor = Color(0xFF4CAF50)
+
+//Banner Subtitle Color
+val BannerSubtitleColor = Color(0xFF898C93)
+
+//Banner Add Comment Button
+val AddCommentButtonColor = Color(0xFFD449DA)
+
+//Banner Edit Comment Stroke Color
+val EditCommentStrokeColor = Color(0xFFEFF0F5)

@@ -40,12 +40,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
+import com.store_me.storeme.ui.banner.BannerDetailScreen
 import com.store_me.storeme.ui.banner.BannerListScreen
 import com.store_me.storeme.ui.home.HomeScreen
 import com.store_me.storeme.ui.location.LocationScreen
 import com.store_me.storeme.ui.login.LoginActivity
 import com.store_me.storeme.ui.mycoupon.MyCouponScreenWithBottomSheet
 import com.store_me.storeme.ui.mystore.MyStoreScreenWithBottomSheet
+import com.store_me.storeme.ui.near_place.NearPlaceScreen
 import com.store_me.storeme.ui.notification.NotificationScreen
 import com.store_me.storeme.ui.store_detail.StoreDetailScreen
 import com.store_me.storeme.ui.store_talk.StoreTalkScreen
@@ -115,14 +117,32 @@ class MainActivity : ComponentActivity() {
             popExitTransition = { fadeOut(animationSpec = tween(0)) }*/){
             composable(BottomNavItem.UserHome.screenRoute) { HomeScreen(navController, locationViewModel = hiltViewModel()) }
             composable(BottomNavItem.Favorite.screenRoute) { MyStoreScreenWithBottomSheet() }
-            composable(BottomNavItem.NearPlace.screenRoute) { NearPlaceScreen() }
+            composable(BottomNavItem.NearPlace.screenRoute) { NearPlaceScreen(navController, locationViewModel = hiltViewModel()) }
             composable(BottomNavItem.StoreTalk.screenRoute) { StoreTalkScreen() }
             composable(BottomNavItem.Profile.screenRoute) { ProfileScreen() }
 
+
+
             composable(NormalNavItem.NOTIFICATION.screenRoutes[0] + NormalNavItem.NOTIFICATION.name) { NotificationScreen(navController) }
+
             composable(NormalNavItem.LOCATION.screenRoutes[0] + NormalNavItem.LOCATION.name) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
+            composable(NormalNavItem.LOCATION.screenRoutes[2] + NormalNavItem.LOCATION.name) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
+
             composable(NormalNavItem.BANNER_LIST.screenRoutes[0] + NormalNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
+            composable(NormalNavItem.BANNER_LIST.screenRoutes[2] + NormalNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
+
+            composable(NormalNavItem.BANNER_DETAIL.screenRoutes[0] + NormalNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
+                val bannerId = backStackEntry.arguments?.getString("bannerId")
+                BannerDetailScreen(navController, bannerId = bannerId ?: "")
+            }
+            composable(NormalNavItem.BANNER_DETAIL.screenRoutes[2] + NormalNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
+                val bannerId = backStackEntry.arguments?.getString("bannerId")
+                BannerDetailScreen(navController, bannerId = bannerId ?: "")
+            }
+
+
             composable(NormalNavItem.MY_COUPON.screenRoutes[0] + NormalNavItem.MY_COUPON.name) { MyCouponScreenWithBottomSheet(navController) }
+
             composable(NormalNavItem.STORE_DETAIL.screenRoutes[0] + NormalNavItem.STORE_DETAIL.name + "/{storeName}") { backStackEntry ->
                 val storeName = backStackEntry.arguments?.getString("storeName")
                 StoreDetailScreen(navController, storeName = storeName ?: "")
@@ -213,15 +233,9 @@ class MainActivity : ComponentActivity() {
         NOTIFICATION(BOTTOM_ITEM_LIST),
         LOCATION(BOTTOM_ITEM_LIST),
         BANNER_LIST(BOTTOM_ITEM_LIST),
+        BANNER_DETAIL(BOTTOM_ITEM_LIST),
         STORE_DETAIL(BOTTOM_ITEM_LIST),
         MY_COUPON(BOTTOM_ITEM_LIST)
-    }
-
-    @Composable
-    fun NearPlaceScreen() {
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-            Text(text = "NearPlace Screen")
-        }
     }
 
     @Composable

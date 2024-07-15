@@ -65,6 +65,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.NormalPostWithStoreInfoData
 import com.store_me.storeme.data.MyPickWithStoreIdData
 import com.store_me.storeme.data.MyPickWithStoreInfoData
+import com.store_me.storeme.ui.component.CategorySection
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.main.FAVORITE
 import com.store_me.storeme.ui.theme.MyPickStrokeColor
@@ -80,7 +81,10 @@ import com.store_me.storeme.utils.StoreCategory
 
 @Preview
 @Composable
-fun MyStoreScreenWithBottomSheet(myStoreViewModel: MyStoreViewModel = viewModel()){
+fun MyStoreScreenWithBottomSheet(
+    myStoreViewModel: MyStoreViewModel = viewModel(),
+    categoryViewModel: CategoryViewModel = viewModel()
+) {
     var isSheetShow by remember { mutableStateOf(false) }
 
     if(isSheetShow) {
@@ -89,7 +93,7 @@ fun MyStoreScreenWithBottomSheet(myStoreViewModel: MyStoreViewModel = viewModel(
         )
     }
 
-    MyStoreScreen(viewModel = myStoreViewModel) {
+    MyStoreScreen(viewModel = myStoreViewModel, categoryViewModel) {
         isSheetShow = true
     }
 }
@@ -118,7 +122,7 @@ fun MyStoreBottomSheet(onDismiss: () -> Unit) {
 }
 
 @Composable
-fun MyStoreScreen(viewModel: MyStoreViewModel, onCommentClick: () -> Unit){
+fun MyStoreScreen(viewModel: MyStoreViewModel, categoryViewModel: CategoryViewModel, onCommentClick: () -> Unit){
     Scaffold(
         containerColor = White,
         topBar = { MyStoreTitleSection() },
@@ -128,7 +132,7 @@ fun MyStoreScreen(viewModel: MyStoreViewModel, onCommentClick: () -> Unit){
                     .padding(innerPadding)
             ) {
                 item { MyPickSection() }
-                item { CategorySection(viewModel) }
+                item { CategorySection(categoryViewModel) }
 
                 items(viewModel.postList) { post ->
                     Column(modifier = Modifier
@@ -261,48 +265,6 @@ fun MyPickItems(myPickWithStoreInfoData: MyPickWithStoreInfoData) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.widthIn(min = 0.dp, max = 60.dp)
-        )
-    }
-}
-
-@Composable
-fun CategorySection(viewModel: MyStoreViewModel) {
-    val selectedCategory by viewModel.selectedCategory.observeAsState(initial = StoreCategory.ALL.displayName)
-
-    Column {
-        LazyRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(20.dp)
-        ) {
-            items(viewModel.categoryList) { category ->
-                CategoryItem(category, selectedCategory == category) {
-                    viewModel.selectCategory(category)
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun CategoryItem(category: StoreCategory, isSelected: Boolean, onClick: () -> Unit) {
-    val backgroundColor = if (isSelected) SelectedCategoryColor else NormalCategoryColor
-    val textColor = if (isSelected) White else SelectedCategoryColor
-
-    Box(
-        modifier = Modifier
-            .height(30.dp)
-            .clickable(onClick = onClick)
-            .background(color = backgroundColor, shape = RoundedCornerShape(5.dp)),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = category.displayName,
-            color = textColor,
-            fontFamily = appFontFamily,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 10.dp)
         )
     }
 }

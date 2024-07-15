@@ -1,6 +1,7 @@
 package com.store_me.storeme.utils
 
 import com.store_me.storeme.data.UserCouponWithStoreInfoData
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -66,4 +67,32 @@ class DateTimeUtils {
             else -> "${monthsAgo}개월 전"
         }
     }
+
+    fun getPeriodStatus(startTime: String, endTime: String): PeriodStatus {
+        val currentTime = LocalDateTime.now()
+        val start = LocalDateTime.parse(startTime, formatter)
+        val end = LocalDateTime.parse(endTime, formatter)
+
+        return when {
+            currentTime.isBefore(start) -> PeriodStatus.BEFORE_START
+            currentTime.isAfter(end) -> PeriodStatus.ENDED
+            else -> PeriodStatus.ONGOING
+        }
+    }
+
+    fun getBannerPeriodText(startTime: String, endTime: String): String {
+        val outputFormatter = DateTimeFormatter.ofPattern("yy.MM.dd")
+        val start = LocalDate.parse(startTime, formatter)
+        val end = LocalDate.parse(endTime, formatter)
+
+        val formattedStart = start.format(outputFormatter)
+        val formattedEnd = end.format(outputFormatter)
+
+        return "$formattedStart ~ $formattedEnd"
+    }
+
+    enum class PeriodStatus(val displayName: String){
+        ONGOING("진행중"), ENDED("종료"), BEFORE_START("준비중")
+    }
 }
+

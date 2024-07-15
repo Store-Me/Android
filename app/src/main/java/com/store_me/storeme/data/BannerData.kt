@@ -55,6 +55,7 @@ data class BannerData(
 data class BannerDetailData(
     val bannerId: String,
     val title: String,
+    val subTitle: String?,
     val startDate: String,
     val endDate: String,
     val content: List<BannerContent>
@@ -62,5 +63,5 @@ data class BannerDetailData(
 
 sealed class BannerContent {
     data class TextContent(val text: String) : BannerContent()
-    data class ImageContent(val imageUrl: String, val description: String?) : BannerContent()
+    data class ImageContent(val imageUrl: String) : BannerContent()
 }

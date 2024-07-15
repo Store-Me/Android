@@ -24,7 +24,22 @@ data class StoreInfoData(
     val storeId: String,
     val storeName: String,
     val storeImage: String,
+    val storeDescription: String?,
     val category: StoreCategory,
     val location: String,
     val locationCode: Int,
+    val favoriteCount: Int,
 )
+
+/**
+ * 가게의 Promotion에 대한 정보
+ * @param storeId 가게 ID
+ * @param isCouponExist 쿠폰 존재 여부
+ * @param isEventExist 이벤트 존재 여부
+ */
+data class StorePromotionData(
+    val storeId: String,
+    val isCouponExist: Boolean,
+    val isEventExist: Boolean
+)
+
