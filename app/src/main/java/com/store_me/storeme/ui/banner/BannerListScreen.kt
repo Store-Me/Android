@@ -2,6 +2,7 @@
 
 package com.store_me.storeme.ui.banner
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +30,10 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import com.store_me.storeme.ui.main.BOTTOM_ITEM_LIST
+import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.theme.storeMeTypography
+import com.store_me.storeme.utils.NavigationUtils
 
 @Composable
 fun BannerListScreen(navController: NavController) {
@@ -56,18 +60,18 @@ fun BannerListLayout(banners: List<BannerData>, navController: NavController) {
     ){
         items(banners) {  banner ->
             BannerItem(banner){
-                
+                NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.BANNER_DETAIL, it)
             }
         }
     }
 }
 
 @Composable
-fun BannerItem(banner: BannerData, onClick: () -> Unit) {
+fun BannerItem(banner: BannerData, onClick: (String) -> Unit) {
     Column (
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick()}
+            .clickable { onClick(banner.bannerId)}
     ){
         Box(
             modifier = Modifier

@@ -67,13 +67,13 @@ import com.store_me.storeme.data.BannerData
 import com.store_me.storeme.ui.home.LocationViewModel
 import com.store_me.storeme.ui.main.BOTTOM_ITEM_LIST
 import com.store_me.storeme.ui.main.MainActivity
-import com.store_me.storeme.ui.main.createScreenRoute
 import com.store_me.storeme.ui.mystore.CategoryViewModel
 import com.store_me.storeme.ui.theme.HomeSearchBoxColor
 import com.store_me.storeme.ui.theme.NormalCategoryColor
 import com.store_me.storeme.ui.theme.SelectedCategoryColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTypography
+import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.SampleDataUtils
 import com.store_me.storeme.utils.StoreCategory
 import kotlinx.coroutines.delay
@@ -252,12 +252,7 @@ fun LocationLayout(navController: NavController, locationViewModel: LocationView
                     indication = rememberRipple(bounded = false, radius = 15.dp),
 
                     onClick = {
-                        navController.navigate(
-                            createScreenRoute(
-                                BOTTOM_ITEM_LIST[bottomItemIndex],
-                                MainActivity.NormalNavItem.LOCATION.name
-                            )
-                        )
+                        NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.LOCATION)
                     }
                 ),
             verticalAlignment = Alignment.CenterVertically
@@ -317,9 +312,7 @@ fun BannerLayout(navController: NavController, bottomItemIndex: Int) {
                     .height(bannerHeight)
             ) { page ->
                 LoadBannerImages(bannerUrls[page], page) {
-                    navController.navigate(
-                        createScreenRoute(BOTTOM_ITEM_LIST[bottomItemIndex], MainActivity.NormalNavItem.BANNER_DETAIL.name, it)
-                    )
+                    NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.BANNER_DETAIL, it)
                 }
             }
 
@@ -330,12 +323,7 @@ fun BannerLayout(navController: NavController, bottomItemIndex: Int) {
                     .background(Color.Black.copy(alpha = 0.7f), shape = CircleShape)
                     .padding(horizontal = 8.dp, vertical = 2.dp)
                     .clickable {
-                        navController.navigate(
-                            createScreenRoute(
-                                BOTTOM_ITEM_LIST[bottomItemIndex],
-                                MainActivity.NormalNavItem.BANNER_LIST.name
-                            )
-                        )
+                        NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.BANNER_LIST)
                     },
 
                 ) {

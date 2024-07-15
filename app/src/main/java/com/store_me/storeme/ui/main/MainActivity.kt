@@ -56,20 +56,6 @@ import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.storeMeTypography
 import dagger.hilt.android.AndroidEntryPoint
 
-/**
- * ScreenRoute 생성함수
- * @param bottomItem 활성화 할 Bottom Item
- * @param screenName 이동 할 화면 이름
- * @param additionalData 추가로 전송할 데이터
- */
-fun createScreenRoute(bottomItem: String, screenName: String, additionalData: String? = null): String{
-    return if(additionalData.isNullOrEmpty()){
-        "$bottomItem$screenName"
-    } else {
-        "$bottomItem$screenName/$additionalData"
-    }
-}
-
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,8 +65,6 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
-
-
 
         setContent {
             StoreMeTheme {
@@ -115,35 +99,39 @@ class MainActivity : ComponentActivity() {
             exitTransition = { fadeOut(animationSpec = tween(0)) },
             popEnterTransition = { fadeIn(animationSpec = tween(0)) },
             popExitTransition = { fadeOut(animationSpec = tween(0)) }*/){
+
+            //기본 Bottom Item
             composable(BottomNavItem.UserHome.screenRoute) { HomeScreen(navController, locationViewModel = hiltViewModel()) }
             composable(BottomNavItem.Favorite.screenRoute) { MyStoreScreenWithBottomSheet() }
             composable(BottomNavItem.NearPlace.screenRoute) { NearPlaceScreen(navController, locationViewModel = hiltViewModel()) }
             composable(BottomNavItem.StoreTalk.screenRoute) { StoreTalkScreen() }
             composable(BottomNavItem.Profile.screenRoute) { ProfileScreen() }
 
+            //HOME > NOTIFICATION
+            composable(USER_HOME + NormalNavItem.NOTIFICATION.name) { NotificationScreen(navController) }
 
+            //HOME > LOCATION
+            composable(USER_HOME + NormalNavItem.LOCATION.name) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
+            //NEAR PLACE > NOTIFICATION
+            composable(NEAR_PLACE + NormalNavItem.LOCATION.name) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
 
-            composable(NormalNavItem.NOTIFICATION.screenRoutes[0] + NormalNavItem.NOTIFICATION.name) { NotificationScreen(navController) }
+            //
+            composable(USER_HOME + NormalNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
+            composable(NEAR_PLACE + NormalNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
 
-            composable(NormalNavItem.LOCATION.screenRoutes[0] + NormalNavItem.LOCATION.name) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
-            composable(NormalNavItem.LOCATION.screenRoutes[2] + NormalNavItem.LOCATION.name) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
-
-            composable(NormalNavItem.BANNER_LIST.screenRoutes[0] + NormalNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
-            composable(NormalNavItem.BANNER_LIST.screenRoutes[2] + NormalNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
-
-            composable(NormalNavItem.BANNER_DETAIL.screenRoutes[0] + NormalNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
+            composable(USER_HOME + NormalNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
                 val bannerId = backStackEntry.arguments?.getString("bannerId")
                 BannerDetailScreen(navController, bannerId = bannerId ?: "")
             }
-            composable(NormalNavItem.BANNER_DETAIL.screenRoutes[2] + NormalNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
+            composable(NEAR_PLACE + NormalNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
                 val bannerId = backStackEntry.arguments?.getString("bannerId")
                 BannerDetailScreen(navController, bannerId = bannerId ?: "")
             }
 
 
-            composable(NormalNavItem.MY_COUPON.screenRoutes[0] + NormalNavItem.MY_COUPON.name) { MyCouponScreenWithBottomSheet(navController) }
+            composable(USER_HOME + NormalNavItem.MY_COUPON.name) { MyCouponScreenWithBottomSheet(navController) }
 
-            composable(NormalNavItem.STORE_DETAIL.screenRoutes[0] + NormalNavItem.STORE_DETAIL.name + "/{storeName}") { backStackEntry ->
+            composable(USER_HOME + NormalNavItem.STORE_DETAIL.name + "/{storeName}") { backStackEntry ->
                 val storeName = backStackEntry.arguments?.getString("storeName")
                 StoreDetailScreen(navController, storeName = storeName ?: "")
             }
@@ -229,13 +217,13 @@ class MainActivity : ComponentActivity() {
         data object Profile : BottomNavItem(R.string.profile, R.drawable.bottom_mymenu, R.drawable.bottom_mymenu_selected, PROFILE)
     }
 
-    enum class NormalNavItem(val screenRoutes: List<String>) {
-        NOTIFICATION(BOTTOM_ITEM_LIST),
-        LOCATION(BOTTOM_ITEM_LIST),
-        BANNER_LIST(BOTTOM_ITEM_LIST),
-        BANNER_DETAIL(BOTTOM_ITEM_LIST),
-        STORE_DETAIL(BOTTOM_ITEM_LIST),
-        MY_COUPON(BOTTOM_ITEM_LIST)
+    enum class NormalNavItem {
+        NOTIFICATION,
+        LOCATION,
+        BANNER_LIST,
+        BANNER_DETAIL,
+        STORE_DETAIL,
+        MY_COUPON
     }
 
     @Composable

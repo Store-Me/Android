@@ -57,13 +57,13 @@ import com.store_me.storeme.ui.component.LocationLayout
 import com.store_me.storeme.ui.component.SearchField
 import com.store_me.storeme.ui.main.BOTTOM_ITEM_LIST
 import com.store_me.storeme.ui.main.MainActivity
-import com.store_me.storeme.ui.main.createScreenRoute
 import com.store_me.storeme.ui.theme.DownloadCouponColor
 import com.store_me.storeme.ui.theme.HomeCouponTitleTextColor
 import com.store_me.storeme.ui.theme.HomeSearchBoxColor
 import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTypography
+import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.SampleDataUtils
 import com.store_me.storeme.utils.ToastMessageUtils
 @Composable
@@ -141,7 +141,7 @@ fun TopLayout(navController: NavController) {
                 .padding(7.dp)
                 .clickable(
                     onClick = {
-                        navController.navigate(createScreenRoute(BOTTOM_ITEM_LIST[0], MainActivity.NormalNavItem.NOTIFICATION.name))
+                        NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.NOTIFICATION)
                     },
                     interactionSource = remember { MutableInteractionSource() },
                     indication = rememberRipple(bounded = false)
@@ -185,13 +185,7 @@ fun BasicStoreListLayout(navController: NavController, storeList: MutableList<St
                         .padding(end = 7.dp)
                         .width(120.dp)
                         .clickable {
-                            navController.navigate(
-                                createScreenRoute(
-                                    BOTTOM_ITEM_LIST[0],
-                                    MainActivity.NormalNavItem.STORE_DETAIL.name,
-                                    store.storeName
-                                )
-                            )
+                            NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.STORE_DETAIL, store.storeName)
                         }
                 ) {
                     AsyncImage(
@@ -253,7 +247,7 @@ fun CouponLayout(navController: NavController, couponList: MutableList<CouponWit
             Spacer(modifier = Modifier.weight(1f))
 
             MyCouponIconText {
-                navController.navigate(createScreenRoute(BOTTOM_ITEM_LIST[0], MainActivity.NormalNavItem.MY_COUPON.name))
+                NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.MY_COUPON)
             }
 
             Spacer(modifier = Modifier.width(20.dp))
@@ -279,13 +273,7 @@ fun CouponLayout(navController: NavController, couponList: MutableList<CouponWit
                         .width(120.dp)
                         .height(240.dp)
                         .clickable {
-                            navController.navigate(
-                                createScreenRoute(
-                                    BOTTOM_ITEM_LIST[0],
-                                    MainActivity.NormalNavItem.STORE_DETAIL.name,
-                                    coupon.storeInfo.storeName
-                                )
-                            )
+                            NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.STORE_DETAIL, coupon.storeInfo.storeName)
                         }
                 ) {
                     AsyncImage(
