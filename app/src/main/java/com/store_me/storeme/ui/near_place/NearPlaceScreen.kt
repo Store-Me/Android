@@ -70,7 +70,7 @@ fun NearPlaceScreen(
 
     Scaffold(
         containerColor = White,
-        topBar = { LocationLayout(navController = navController, locationViewModel = locationViewModel, bottomItemIndex = 2) },
+        topBar = { LocationLayout(navController = navController, locationViewModel = locationViewModel) },
         content = { innerPadding ->
             LazyColumn(
                 modifier = Modifier
