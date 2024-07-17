@@ -55,13 +55,14 @@ fun LocationScreen(navController: NavController, locationViewModel: LocationView
     val reverseGeoCodeCompleted by locationViewModel.reverseGeoCodeCompleted.collectAsState()
 
     LaunchedEffect(reverseGeoCodeCompleted) {
-
         if (reverseGeoCodeCompleted) {
             if (navController.currentBackStackEntry?.destination?.id != navController.graph.startDestinationId) {
                 navController.popBackStack()
             }
         }
     }
+
+    val observeText by locationViewModel.locationText.collectAsState()
 
     Scaffold(
         containerColor = Color.White,
@@ -75,6 +76,7 @@ fun LocationScreen(navController: NavController, locationViewModel: LocationView
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp),
+                    observeText = observeText,
                     hint = "주변 가게를 볼 동네를 설정하세요."
                 ) { searchText ->
                     //2글자 미만일 경우 제외

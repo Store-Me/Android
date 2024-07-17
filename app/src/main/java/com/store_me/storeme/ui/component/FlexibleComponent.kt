@@ -45,9 +45,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -156,7 +158,9 @@ fun DefaultButton(text: String, onClick: () -> Unit){
  * 검색 완료 결과를 람다 함수로 반환 하는 검색 창
  */
 @Composable
-fun SearchField(modifier: Modifier = Modifier, hint: String, onSearch: (String) -> Unit) {
+fun SearchField(modifier: Modifier = Modifier, observeText: String? = null, hint: String, onSearch: (String) -> Unit) {
+    val focusManager = LocalFocusManager.current
+
     var text by remember { mutableStateOf("") }
 
     Box(
@@ -166,7 +170,7 @@ fun SearchField(modifier: Modifier = Modifier, hint: String, onSearch: (String) 
         contentAlignment = Alignment.CenterStart
     ) {
         BasicTextField(
-            value = text,
+            value = observeText ?: text,
             onValueChange = { text = it },
             singleLine = true,
             textStyle = storeMeTypography.bodySmall,
@@ -178,6 +182,7 @@ fun SearchField(modifier: Modifier = Modifier, hint: String, onSearch: (String) 
             keyboardActions = KeyboardActions(
                 onSearch = {
                     onSearch(text)
+                    focusManager.clearFocus()
                 }
             ),
             decorationBox = { innerTextField ->
@@ -188,7 +193,7 @@ fun SearchField(modifier: Modifier = Modifier, hint: String, onSearch: (String) 
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Box(modifier = Modifier.weight(1f)) {
-                        if (text.isEmpty()) {
+                        if (text.isEmpty() && observeText == null) {
                             Text(
                                 text = hint,
                                 color = Color.Gray,
@@ -207,6 +212,7 @@ fun SearchField(modifier: Modifier = Modifier, hint: String, onSearch: (String) 
                                 indication = rememberRipple(bounded = false, radius = 15.dp),
                                 onClick = {
                                     onSearch(text)
+                                    focusManager.clearFocus()
                                 }
                             )
                     )
@@ -251,7 +257,10 @@ fun LocationLayout(navController: NavController, locationViewModel: LocationView
                     indication = rememberRipple(bounded = false, radius = 15.dp),
 
                     onClick = {
-                        NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.LOCATION)
+                        NavigationUtils().navigateNormalNav(
+                            navController,
+                            MainActivity.NormalNavItem.LOCATION
+                        )
                     }
                 ),
             verticalAlignment = Alignment.CenterVertically
@@ -322,7 +331,10 @@ fun BannerLayout(navController: NavController) {
                     .background(Color.Black.copy(alpha = 0.7f), shape = CircleShape)
                     .padding(horizontal = 8.dp, vertical = 2.dp)
                     .clickable {
-                        NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.BANNER_LIST)
+                        NavigationUtils().navigateNormalNav(
+                            navController,
+                            MainActivity.NormalNavItem.BANNER_LIST
+                        )
                     },
 
                 ) {
@@ -430,7 +442,10 @@ fun NotificationIcon(navController: NavController) {
             .size(26.dp)
             .clickable(
                 onClick = {
-                    NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.NOTIFICATION)
+                    NavigationUtils().navigateNormalNav(
+                        navController,
+                        MainActivity.NormalNavItem.NOTIFICATION
+                    )
                 },
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = false)

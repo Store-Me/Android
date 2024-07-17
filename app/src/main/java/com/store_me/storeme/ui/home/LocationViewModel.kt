@@ -52,6 +52,9 @@ class LocationViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
+    private val _locationText = MutableStateFlow<String?>(null)
+    val locationText: StateFlow<String?> = _locationText
+
     init {
         viewModelScope.launch {
             getLocation(context).collect { location ->
@@ -90,6 +93,9 @@ class LocationViewModel @Inject constructor(
                 val third = response.results.firstOrNull()?.region?.area3?.name
 
                 if (first != null && second != null && third != null) {
+
+                    _locationText.value = "$first $second $third"
+
                     val code = withContext(Dispatchers.IO) {
                         dbHelper.getLocationCode(first, second, third)
                     }
