@@ -218,7 +218,7 @@ fun SearchField(modifier: Modifier = Modifier, hint: String, onSearch: (String) 
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun LocationLayout(navController: NavController, locationViewModel: LocationViewModel, bottomItemIndex: Int){
+fun LocationLayout(navController: NavController, locationViewModel: LocationViewModel){
     val lastLocation by locationViewModel.lastLocation.collectAsState()
 
     val locationPermissionState = rememberMultiplePermissionsState(
