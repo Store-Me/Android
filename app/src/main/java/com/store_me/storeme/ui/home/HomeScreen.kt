@@ -46,7 +46,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -94,7 +93,7 @@ fun HomeScreen(
                     .padding(innerPadding)
             ) {
                 LazyColumn {
-                    item { LocationLayout(navController, locationViewModel, 0)}
+                    item { LocationLayout(navController, locationViewModel)}
                     item { BannerLayout(navController = navController) }
                     item { BasicStoreListLayout(navController = navController, storeList, title = "\uD83D\uDD25 오늘의 가게", description = "오늘 사람들이 많이 찾은 가게") }
                     item { CouponLayout(navController = navController, couponList = couponData) }
