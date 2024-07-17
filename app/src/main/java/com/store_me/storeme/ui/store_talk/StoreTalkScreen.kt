@@ -105,7 +105,7 @@ fun ChatRoomItem(chatRoomWithStoreInfoData: ChatRoomWithStoreInfoData) {
             .fillMaxWidth()
             .padding(end = 20.dp)
             .padding(bottom = 20.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
         Box(
             modifier = Modifier
@@ -146,7 +146,7 @@ fun ChatRoomItem(chatRoomWithStoreInfoData: ChatRoomWithStoreInfoData) {
         Spacer(modifier = Modifier.width(10.dp))
 
         Column {
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(5.dp))
 
             Row (
                 verticalAlignment = Alignment.CenterVertically

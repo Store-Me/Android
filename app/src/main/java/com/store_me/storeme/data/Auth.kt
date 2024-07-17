@@ -2,6 +2,9 @@ package com.store_me.storeme.data
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
 object Auth {
     enum class AccountType{
@@ -9,8 +12,8 @@ object Auth {
     }
 
     //로그인 상태 관련
-    private val _isLoggedIn = mutableStateOf(true)
-    val isLoggedIn: State<Boolean> = _isLoggedIn
+    private val _isLoggedIn = MutableStateFlow(true)
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
     /**
      * 로그인 상태 설정 함수.
@@ -23,7 +26,7 @@ object Auth {
     }
 
     //계정 타입 관련
-    private var _accountType = AccountType.CUSTOMER.name
+    private var _accountType = AccountType.CUSTOMER
     val accountType = _accountType
 
     /**
@@ -32,7 +35,24 @@ object Auth {
      * 일반 계정시, CUSTOMER
      * @param type 해당 값에 따라 계정의 타입을 설정
      */
-    fun setAccountType(type: String) {
+    fun setAccountType(type: AccountType) {
         _accountType = type
+    }
+
+    //계정 정보 관련
+    private val _userData = MutableStateFlow(UserData("도구리", "도구리야", "https://i.namu.wiki/i/vJ_iVx2uAFkYUmfaxSwP0QSDbPjRz-OzilacQpDBLQmls9oOM0pV4qUk8mCbgL41v4_wGV-kdotau0LIpZu261XmIpWq0qLg3gKfSSBg78Px_EGRyNlmZk6d5N6KKx6zgsZArniJ3t2cwmB4IvS-0A.webp"))
+    val userData: StateFlow<UserData> = _userData
+
+    /**
+     * 사용자 계정 정보 설정
+     */
+    fun setUserData(userData: UserData) {
+        _userData.value = userData
+    }
+
+    fun updateProfileImage(newProfileImage: String) {
+        _userData.update {
+            it.copy(profileImage = newProfileImage)
+        }
     }
 }

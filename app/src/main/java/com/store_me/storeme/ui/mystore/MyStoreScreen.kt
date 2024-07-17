@@ -235,23 +235,10 @@ fun MyPickItems(myPickWithStoreInfoData: MyPickWithStoreInfoData) {
                 .fillMaxWidth(),
             contentAlignment = Alignment.BottomEnd
         ) {
-            AsyncImage(
-                model = myPickWithStoreInfoData.storeInfoData.storeImage,
-                contentDescription = "${myPickWithStoreInfoData.storeInfoData.storeName} 사진",
-                modifier = Modifier
-                    .size(70.dp)
-                    .clip(CircleShape)
-                    .border(2.5.dp, MyPickStrokeColor, CircleShape)
-            )
+            MyPickImageBox(myPickWithStoreInfoData = myPickWithStoreInfoData)
 
             if(myPickWithStoreInfoData.isNewExist) {
-                Box(
-                    modifier = Modifier
-                        .size(20.dp)
-                        .clip(CircleShape)
-                        .background(color = NewNoticeColor, shape = CircleShape)
-                        .border(2.dp, MyPickStrokeColor, CircleShape)
-                )
+                MyPickNewCircle()
             }
         }
 
@@ -265,6 +252,42 @@ fun MyPickItems(myPickWithStoreInfoData: MyPickWithStoreInfoData) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.widthIn(min = 0.dp, max = 60.dp)
+        )
+    }
+}
+
+@Composable
+fun MyPickImageBox(myPickWithStoreInfoData: MyPickWithStoreInfoData) {
+    Box(
+        modifier = Modifier
+            .size(70.dp)
+            .border(3.dp, MyPickStrokeColor, CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        AsyncImage(
+            model = myPickWithStoreInfoData.storeInfoData.storeImage,
+            contentDescription = "${myPickWithStoreInfoData.storeInfoData.storeName} 사진",
+            modifier = Modifier
+                .size(68.dp)
+                .clip(CircleShape)
+        )
+    }
+}
+
+@Composable
+fun MyPickNewCircle(){
+    Box(
+        modifier = Modifier
+            .size(20.dp)
+            .clip(CircleShape)
+            .border(2.dp, MyPickStrokeColor, CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(18.dp)
+                .clip(CircleShape)
+                .background(NewNoticeColor, CircleShape),
         )
     }
 }

@@ -65,7 +65,6 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.store_me.storeme.R
 import com.store_me.storeme.data.BannerData
 import com.store_me.storeme.ui.home.LocationViewModel
-import com.store_me.storeme.ui.main.BOTTOM_ITEM_LIST
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.mystore.CategoryViewModel
 import com.store_me.storeme.ui.theme.HomeSearchBoxColor
@@ -102,7 +101,7 @@ fun TitleWithDeleteButton(navController: NavController, title: String){
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .padding(start = 20.dp, end = 20.dp),
+            .padding(start = 16.dp, end = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.height(10.dp))
@@ -286,7 +285,7 @@ fun LocationLayout(navController: NavController, locationViewModel: LocationView
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun BannerLayout(navController: NavController, bottomItemIndex: Int) {
+fun BannerLayout(navController: NavController) {
     val bannerUrls = SampleDataUtils.sampleBannerImage()
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
@@ -420,4 +419,22 @@ fun CategoryItem(category: StoreCategory, isSelected: Boolean, onClick: () -> Un
             modifier = Modifier.padding(horizontal = 10.dp)
         )
     }
+}
+
+@Composable
+fun NotificationIcon(navController: NavController) {
+    Icon(
+        imageVector = ImageVector.vectorResource(R.drawable.ic_notification_off),
+        contentDescription = "알림",
+        modifier = Modifier
+            .size(26.dp)
+            .clickable(
+                onClick = {
+                    NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.NOTIFICATION)
+                },
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = false)
+
+            )
+    )
 }

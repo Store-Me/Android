@@ -22,7 +22,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
@@ -45,6 +44,7 @@ import com.store_me.storeme.ui.banner.BannerListScreen
 import com.store_me.storeme.ui.home.HomeScreen
 import com.store_me.storeme.ui.location.LocationScreen
 import com.store_me.storeme.ui.login.LoginActivity
+import com.store_me.storeme.ui.my_menu.MyMenuScreen
 import com.store_me.storeme.ui.mycoupon.MyCouponScreenWithBottomSheet
 import com.store_me.storeme.ui.mystore.MyStoreScreenWithBottomSheet
 import com.store_me.storeme.ui.near_place.NearPlaceScreen
@@ -105,19 +105,24 @@ class MainActivity : ComponentActivity() {
             composable(BottomNavItem.Favorite.screenRoute) { MyStoreScreenWithBottomSheet() }
             composable(BottomNavItem.NearPlace.screenRoute) { NearPlaceScreen(navController, locationViewModel = hiltViewModel()) }
             composable(BottomNavItem.StoreTalk.screenRoute) { StoreTalkScreen() }
-            composable(BottomNavItem.Profile.screenRoute) { ProfileScreen() }
+            composable(BottomNavItem.Profile.screenRoute) { MyMenuScreen(navController) }
 
             //HOME > NOTIFICATION
             composable(USER_HOME + NormalNavItem.NOTIFICATION.name) { NotificationScreen(navController) }
+            //MY_MENU > NOTIFICATION
+            composable(MY_MENU + NormalNavItem.NOTIFICATION.name) { NotificationScreen(navController) }
 
             //HOME > LOCATION
             composable(USER_HOME + NormalNavItem.LOCATION.name) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
             //NEAR PLACE > NOTIFICATION
             composable(NEAR_PLACE + NormalNavItem.LOCATION.name) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
 
-            //
+            /**
+             * Any To Banner (List / Detail)
+             */
             composable(USER_HOME + NormalNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
             composable(NEAR_PLACE + NormalNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
+            composable(MY_MENU + NormalNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
 
             composable(USER_HOME + NormalNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
                 val bannerId = backStackEntry.arguments?.getString("bannerId")
@@ -127,7 +132,10 @@ class MainActivity : ComponentActivity() {
                 val bannerId = backStackEntry.arguments?.getString("bannerId")
                 BannerDetailScreen(navController, bannerId = bannerId ?: "")
             }
-
+            composable(MY_MENU + NormalNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
+                val bannerId = backStackEntry.arguments?.getString("bannerId")
+                BannerDetailScreen(navController, bannerId = bannerId ?: "")
+            }
 
             composable(USER_HOME + NormalNavItem.MY_COUPON.name) { MyCouponScreenWithBottomSheet(navController) }
 
@@ -135,7 +143,6 @@ class MainActivity : ComponentActivity() {
                 val storeName = backStackEntry.arguments?.getString("storeName")
                 StoreDetailScreen(navController, storeName = storeName ?: "")
             }
-
         }
     }
 
@@ -168,7 +175,7 @@ class MainActivity : ComponentActivity() {
                         currentRoute?.startsWith(FAVORITE) == true && item.screenRoute == BottomNavItem.Favorite.screenRoute -> true
                         currentRoute?.startsWith(NEAR_PLACE) == true && item.screenRoute == BottomNavItem.NearPlace.screenRoute -> true
                         currentRoute?.startsWith(STORE_TALK) == true && item.screenRoute == BottomNavItem.StoreTalk.screenRoute -> true
-                        currentRoute?.startsWith(PROFILE) == true && item.screenRoute == BottomNavItem.Profile.screenRoute -> true
+                        currentRoute?.startsWith(MY_MENU) == true && item.screenRoute == BottomNavItem.Profile.screenRoute -> true
                         else -> false
                     }
 
@@ -214,7 +221,7 @@ class MainActivity : ComponentActivity() {
         data object Favorite : BottomNavItem(R.string.favorite, R.drawable.bottom_favorite, R.drawable.bottom_favorite_selected, FAVORITE)
         data object NearPlace : BottomNavItem(R.string.near_place, R.drawable.bottom_nearplace, R.drawable.bottom_nearplace_selected, NEAR_PLACE)
         data object StoreTalk : BottomNavItem(R.string.store_talk, R.drawable.bottom_storetalk, R.drawable.bottom_storetalk_selected, STORE_TALK)
-        data object Profile : BottomNavItem(R.string.profile, R.drawable.bottom_mymenu, R.drawable.bottom_mymenu_selected, PROFILE)
+        data object Profile : BottomNavItem(R.string.profile, R.drawable.bottom_mymenu, R.drawable.bottom_mymenu_selected, MY_MENU)
     }
 
     enum class NormalNavItem {
@@ -224,12 +231,5 @@ class MainActivity : ComponentActivity() {
         BANNER_DETAIL,
         STORE_DETAIL,
         MY_COUPON
-    }
-
-    @Composable
-    fun ProfileScreen() {
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-            Text(text = "Profile Screen")
-        }
     }
 }

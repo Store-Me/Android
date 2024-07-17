@@ -97,3 +97,14 @@ val AddCommentButtonColor = Color(0xFFD449DA)
 
 //Banner Edit Comment Stroke Color
 val EditCommentStrokeColor = Color(0xFFEFF0F5)
+
+/**
+ * My Menu 관련 Color
+ */
+//My Menu Icon Color
+val MyMenuIconColor = Color(0xFF00CC00)
+
+/**
+ * Default Color
+ */
+val DefaultDividerColor = Color(0xFFEFF0F5)

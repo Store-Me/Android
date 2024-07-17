@@ -71,13 +71,13 @@ fun BannerItem(banner: BannerData, onClick: (String) -> Unit) {
     Column (
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onClick(banner.bannerId)}
     ){
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(5 / 1f)
                 .clip(RoundedCornerShape(15.dp))
+                .clickable { onClick(banner.bannerId)}
         ) {
             AsyncImage(
                 model = banner.imageUrl,

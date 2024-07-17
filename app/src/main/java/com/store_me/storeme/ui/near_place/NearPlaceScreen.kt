@@ -2,7 +2,6 @@ package com.store_me.storeme.ui.near_place
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -25,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,7 +37,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.store_me.storeme.R
@@ -55,7 +51,6 @@ import com.store_me.storeme.ui.mystore.CategoryViewModel
 import com.store_me.storeme.ui.theme.CouponDividerLineColor
 import com.store_me.storeme.ui.theme.PostTimeTextColor
 import com.store_me.storeme.ui.theme.SelectedCategoryColor
-import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTypography
 import com.store_me.storeme.utils.LikeCountUtils
@@ -82,7 +77,7 @@ fun NearPlaceScreen(
                     .padding(innerPadding)
             ) {
                 item { CategorySection(categoryViewModel = categoryViewModel) }
-                item { BannerLayout(navController = navController, bottomItemIndex = 2) }
+                item { BannerLayout(navController = navController) }
                 items(currentStores) { store ->
                     NearPlaceStoreItem(store)
                 }
@@ -225,7 +220,7 @@ fun StoreItem(storeInfo: StoreInfoData, storePromotion: StorePromotionData) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_purple_like),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_fill_like),
                     tint = Color.Unspecified,
                     contentDescription = "좋아요",
                     modifier = Modifier.size(12.dp)

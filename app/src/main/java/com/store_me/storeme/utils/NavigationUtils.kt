@@ -5,7 +5,7 @@ import com.store_me.storeme.ui.main.BOTTOM_ITEM_LIST
 import com.store_me.storeme.ui.main.FAVORITE
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.main.NEAR_PLACE
-import com.store_me.storeme.ui.main.PROFILE
+import com.store_me.storeme.ui.main.MY_MENU
 import com.store_me.storeme.ui.main.STORE_TALK
 import com.store_me.storeme.ui.main.USER_HOME
 
@@ -47,7 +47,7 @@ class NavigationUtils {
             currentRoute.startsWith(FAVORITE) -> 1
             currentRoute.startsWith(NEAR_PLACE) -> 2
             currentRoute.startsWith(STORE_TALK) -> 3
-            currentRoute.startsWith(PROFILE) -> 4
+            currentRoute.startsWith(MY_MENU) -> 4
             else -> 0
         }
     }

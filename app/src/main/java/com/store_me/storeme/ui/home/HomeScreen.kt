@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.store_me.storeme.ui.home
 
 import androidx.activity.ComponentActivity
@@ -5,13 +7,11 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,12 +23,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,12 +41,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -54,8 +57,8 @@ import com.store_me.storeme.data.CouponWithStoreInfoData
 import com.store_me.storeme.data.StoreInfoData
 import com.store_me.storeme.ui.component.BannerLayout
 import com.store_me.storeme.ui.component.LocationLayout
+import com.store_me.storeme.ui.component.NotificationIcon
 import com.store_me.storeme.ui.component.SearchField
-import com.store_me.storeme.ui.main.BOTTOM_ITEM_LIST
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.theme.DownloadCouponColor
 import com.store_me.storeme.ui.theme.HomeCouponTitleTextColor
@@ -66,6 +69,7 @@ import com.store_me.storeme.ui.theme.storeMeTypography
 import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.SampleDataUtils
 import com.store_me.storeme.utils.ToastMessageUtils
+
 @Composable
 fun HomeScreen(
     navController: NavController,
@@ -78,20 +82,27 @@ fun HomeScreen(
     var backPressedTime by remember { mutableStateOf(0L) }
     val context = LocalContext.current
 
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
         containerColor = White,
-        topBar = { TopLayout(navController) },
+        topBar = { TopLayout(navController = navController, scrollBehavior = scrollBehavior) },
         content = { innerPadding -> // 컨텐츠 영역
-            LazyColumn(
+            Column(
                 modifier = Modifier
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
                     .padding(innerPadding)
             ) {
-                item { LocationLayout(navController, locationViewModel, 0)}
-                item { BannerLayout(navController = navController, 0) }
-                item { BasicStoreListLayout(navController = navController, storeList, title = "\uD83D\uDD25 오늘의 가게", description = "오늘 사람들이 많이 찾은 가게") }
-                item { CouponLayout(navController = navController, couponList = couponData) }
-                item { BasicStoreListLayout(navController = navController, storeList, title = "\u2728 새로 생긴 가게", description = "우리동네 신상 가게") }
+                LazyColumn {
+                    item { LocationLayout(navController, locationViewModel, 0)}
+                    item { BannerLayout(navController = navController) }
+                    item { BasicStoreListLayout(navController = navController, storeList, title = "\uD83D\uDD25 오늘의 가게", description = "오늘 사람들이 많이 찾은 가게") }
+                    item { CouponLayout(navController = navController, couponList = couponData) }
+                    item { BasicStoreListLayout(navController = navController, storeList, title = "\u2728 새로 생긴 가게", description = "우리동네 신상 가게") }
+                }
             }
+
+
         }
     )
 
@@ -109,47 +120,43 @@ fun HomeScreen(
 }
 
 @Composable
-fun TopLayout(navController: NavController) {
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .padding(start = 20.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.logo_home),
-            contentDescription = "로고",
-            modifier = Modifier
-                .height(20.dp)
-        )
-        Spacer(modifier = Modifier.width(15.dp))
-        SearchField(modifier = Modifier
-            .weight(1f),
-            hint = "내 주변 가게를 찾아보세요."
-        ) {
-
-        }
-
-        Spacer(modifier = Modifier.width(10.dp))
-        Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.ic_notification_off),
-            contentDescription = "알림",
-            modifier = Modifier
-                .size(40.dp)
-                .padding(7.dp)
-                .clickable(
-                    onClick = {
-                        NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.NOTIFICATION)
-                    },
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(bounded = false)
-
+fun TopLayout(navController: NavController, scrollBehavior: TopAppBarScrollBehavior) {
+    TopAppBar(
+        title = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .padding(start = 4.dp, end = 20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.logo_home),
+                    contentDescription = "로고",
+                    modifier = Modifier
+                        .height(20.dp)
                 )
-        )
-        Spacer(modifier = Modifier.width(13.dp))
-    }
+                Spacer(modifier = Modifier.width(15.dp))
+                SearchField(modifier = Modifier
+                    .weight(1f),
+                    hint = "내 주변 가게를 찾아보세요."
+                ) {
+
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                NotificationIcon(navController = navController)
+            }
+        },
+        scrollBehavior = scrollBehavior,
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = White,
+            scrolledContainerColor = White
+        ),
+    )
+
+
 
 }
 
@@ -185,7 +192,11 @@ fun BasicStoreListLayout(navController: NavController, storeList: MutableList<St
                         .padding(end = 7.dp)
                         .width(120.dp)
                         .clickable {
-                            NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.STORE_DETAIL, store.storeName)
+                            NavigationUtils().navigateNormalNav(
+                                navController,
+                                MainActivity.NormalNavItem.STORE_DETAIL,
+                                store.storeName
+                            )
                         }
                 ) {
                     AsyncImage(
@@ -273,7 +284,11 @@ fun CouponLayout(navController: NavController, couponList: MutableList<CouponWit
                         .width(120.dp)
                         .height(240.dp)
                         .clickable {
-                            NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.STORE_DETAIL, coupon.storeInfo.storeName)
+                            NavigationUtils().navigateNormalNav(
+                                navController,
+                                MainActivity.NormalNavItem.STORE_DETAIL,
+                                coupon.storeInfo.storeName
+                            )
                         }
                 ) {
                     AsyncImage(
