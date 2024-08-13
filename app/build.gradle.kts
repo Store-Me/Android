@@ -113,7 +113,6 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
-
     //Hilt
     implementation("com.google.dagger:hilt-android:2.48.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")

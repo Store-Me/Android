@@ -45,7 +45,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -80,17 +79,14 @@ import com.store_me.storeme.utils.StoreCategory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/*
-* 여러 곳에서 사용 되는 Composable 함수 모음
-* */
+/**
+ * 여러 곳에서 사용되는 Composable 함수 모음
+ */
 @Composable
 fun TitleWithDeleteButton(navController: NavController, title: String){
-    val interactionSource = remember { MutableInteractionSource() }
-    val clickable = remember { mutableStateOf(true) }
 
     fun returnBackScreen(){
         if (navController.currentBackStackEntry?.destination?.id != navController.graph.startDestinationId) {
-            clickable.value = false
             navController.popBackStack()
         }
     }
@@ -103,7 +99,7 @@ fun TitleWithDeleteButton(navController: NavController, title: String){
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
-            .padding(start = 16.dp, end = 20.dp),
+            .padding(start = 20.dp, end = 20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.height(10.dp))
@@ -115,21 +111,41 @@ fun TitleWithDeleteButton(navController: NavController, title: String){
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
-            contentDescription = "닫기",
-            modifier = Modifier
-                .size(20.dp)
-                .clickable(
-                    onClick = {
-                        returnBackScreen()
-                    },
-                    interactionSource = interactionSource,
-                    indication = rememberRipple(bounded = false)
-                )
-                .padding(2.dp)
-        )
+        DeleteButton {
+            returnBackScreen()
+        }
     }
+}
+
+@Composable
+fun DeleteButton(onClick: () -> Unit) {
+    Icon(
+        imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
+        contentDescription = "닫기",
+        modifier = Modifier
+            .size(20.dp)
+            .clickable(
+                onClick = { onClick() },
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = false)
+            )
+            .padding(2.dp)
+    )
+}
+
+@Composable
+fun SearchButton(onClick: () -> Unit) {
+    Icon(
+        imageVector = ImageVector.vectorResource(id = R.drawable.search_icon),
+        contentDescription = "검색",
+        modifier = Modifier
+            .size(24.dp)
+            .clickable(
+                onClick = { onClick() },
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = false)
+            )
+    )
 }
 
 /**
@@ -202,23 +218,28 @@ fun SearchField(modifier: Modifier = Modifier, observeText: String? = null, hint
                         }
                         innerTextField()
                     }
-                    Icon(
-                        imageVector = ImageVector.vectorResource(id = R.drawable.search_icon),
-                        contentDescription = "검색",
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = rememberRipple(bounded = false, radius = 15.dp),
-                                onClick = {
-                                    onSearch(text)
-                                    focusManager.clearFocus()
-                                }
-                            )
-                    )
                 }
             }
         )
+    }
+}
+
+@Composable
+fun TitleSearchSection(hint: String = "검색어를 입력하세요.", onSearch: (String) -> Unit, onClose: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp)
+            .padding(start = 4.dp, end = 20.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        SearchField(modifier = Modifier.weight(1f), hint = hint) { onSearch(it) }
+
+        Spacer(modifier = Modifier.width(10.dp))
+
+        DeleteButton {
+            onClose()
+        }
     }
 }
 

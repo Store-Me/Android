@@ -6,7 +6,7 @@
     <string name="favorite">마이스토어</string>
     <string name="near_place">동네가게</string>
     <string name="store_talk">스토어톡</string>
-    <string name="profile">내 정보</string>
+    <string name="profile">마이메뉴</string>
 
     <!--ToastMessage Text-->
     <string name="backpress_message">뒤로 가기를 한 번 더 누르면 종료됩니다.</string>

@@ -179,7 +179,7 @@ fun StoreItem(storeInfo: StoreInfoData, storePromotion: StorePromotionData) {
                     bottom.linkTo(parent.bottom)
                     width = Dimension.fillToConstraints
                 }
-                .padding(end = 10.dp) // 텍스트 오른쪽 패딩을 추가하여 이미지와의 간격을 유지
+                .padding(end = 10.dp)
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically

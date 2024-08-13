@@ -68,7 +68,6 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.R
-import com.store_me.storeme.data.UserCouponWithStoreIdData
 import com.store_me.storeme.data.UserCouponWithStoreInfoData
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.theme.CouponDividerLineColor
@@ -200,8 +199,8 @@ fun SortTypeItem(sortType: MyCouponViewModel.SortType, onOptionSelected: () -> U
 
 @Composable
 fun CouponTabLayout(myCouponViewModel: MyCouponViewModel, showSheet: () -> Unit) {
-    val validCouponList = myCouponViewModel.myValidCouponList.collectAsState().value
-    val expiredCouponList = myCouponViewModel.myExpiredCouponList.collectAsState().value
+    val validCouponList by myCouponViewModel.myValidCouponList.collectAsState()
+    val expiredCouponList by myCouponViewModel.myExpiredCouponList.collectAsState()
 
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
@@ -440,13 +439,13 @@ fun CouponContentSection(isValid: Boolean, coupon: UserCouponWithStoreInfoData) 
         
         Spacer(modifier = Modifier.weight(1f))
 
-        CouponCircleIcon(isValid)
+        CouponCircleIcon(isValid, coupon.isUsed)
 
     }
 }
 
 @Composable
-fun CouponCircleIcon(isValid: Boolean) {
+fun CouponCircleIcon(isValid: Boolean, isUsed: Boolean) {
     val boxColor = if(isValid) ValidIconColor else ExpiredIconColor
 
     Box(
@@ -465,8 +464,9 @@ fun CouponCircleIcon(isValid: Boolean) {
                     .size(24.dp)
             )
         } else {
+
             Text(
-                text = "기한\n만료",
+                text = if(isUsed) "사용\n만료" else "기한\n만료",
                 fontFamily = appFontFamily,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 12.sp,

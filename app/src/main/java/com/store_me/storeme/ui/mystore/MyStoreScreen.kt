@@ -76,6 +76,7 @@ import com.store_me.storeme.ui.theme.PostTimeTextColor
 import com.store_me.storeme.ui.theme.SelectedCategoryColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTypography
+import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.SampleDataUtils
 import com.store_me.storeme.utils.StoreCategory
 
@@ -333,9 +334,10 @@ fun PostItem(postData: NormalPostWithStoreInfoData, onMenuClick: () -> Unit, onL
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = postData.storeInfoData.location + " · " + postData.datetime,
+                    text = postData.storeInfoData.location + " · " + DateTimeUtils().datetimeAgo(postData.datetime),
                     fontFamily = appFontFamily,
                     fontSize = 10.sp,
+                    letterSpacing = 0.3.sp,
                     fontWeight = FontWeight.Normal,
                     color = PostTimeTextColor
                 )

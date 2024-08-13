@@ -12,7 +12,7 @@ object Auth {
     }
 
     //로그인 상태 관련
-    private val _isLoggedIn = MutableStateFlow(true)
+    private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
     /**
@@ -37,6 +37,14 @@ object Auth {
      */
     fun setAccountType(type: AccountType) {
         _accountType = type
+    }
+
+    fun changeAccountType() {
+        _accountType = if(accountType == AccountType.CUSTOMER) {
+            AccountType.OWNER
+        } else {
+            AccountType.CUSTOMER
+        }
     }
 
     //계정 정보 관련

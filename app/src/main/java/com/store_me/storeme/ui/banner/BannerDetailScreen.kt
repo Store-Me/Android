@@ -222,7 +222,8 @@ fun EditCommentSection() {
                 }
 
                 innerTextField()
-            }
+            },
+            textStyle = storeMeTypography.bodySmall
         )
 
         Spacer(modifier = Modifier.height(10.dp))

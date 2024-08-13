@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Surface
 import androidx.compose.material3.MaterialTheme
@@ -18,11 +20,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.store_me.storeme.R
+import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.ui.create_account.SmsAuthScreen
+import com.store_me.storeme.ui.post.AddNormalPostScreen
+import com.store_me.storeme.ui.post.AddPostScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.utils.ToastMessageUtils
 
 class LoginActivity : ComponentActivity() {
+    sealed class Screen(val route: LoginRoute){
+        data object Login : Screen(route = LoginRoute.LOGIN)
+        data object SmsAuth : Screen(route = LoginRoute.SMS_AUTH)
+    }
+
+    enum class LoginRoute{
+        LOGIN, SMS_AUTH,
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,15 +52,15 @@ class LoginActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoginScreen()
+                    val navController = rememberNavController()
+                    NavGraph(navController = navController)
                 }
             }
         }
     }
 
-    @Preview
     @Composable
-    private fun LoginScreen() {
+    private fun LoginScreen(navController: NavController) {
         /*var backPressedTime by remember { mutableStateOf(0L) }
         val context = LocalContext.current
 
@@ -55,8 +74,24 @@ class LoginActivity : ComponentActivity() {
             }
         }*/
 
-        Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-            Text(text = "Login Screen")
+        /*Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            DefaultButton(text = "회원가입") {
+                navController.navigate(Screen.SmsAuth.route.name)
+            }
+        }*/
+
+        AddNormalPostScreen()
+    }
+
+    @Composable
+    fun NavGraph(navController: NavHostController) {
+        NavHost(navController = navController, startDestination = Screen.Login.route.name) {
+            composable(Screen.Login.route.name) { LoginScreen(navController) }
+            composable(Screen.SmsAuth.route.name) { SmsAuthScreen(navController) }
         }
     }
+
 }

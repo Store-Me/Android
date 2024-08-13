@@ -41,8 +41,11 @@ class MyCouponViewModel : ViewModel(){
         _myExpiredCouponList.update { expiredCoupon }
     }
 
+    /**
+     * Check Coupon Validation
+     */
     private fun checkCouponValidation(coupon: UserCouponWithStoreInfoData): Boolean{
-        return DateTimeUtils().isAfterDatetime(coupon.expirationDatetime)
+        return DateTimeUtils().isAfterDatetime(coupon.expirationDatetime) && !coupon.isUsed
     }
 
 

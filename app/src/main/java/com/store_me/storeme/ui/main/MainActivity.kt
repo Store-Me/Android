@@ -94,23 +94,24 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     fun NavigationGraph(navController: NavHostController) {
-        NavHost(navController, startDestination = BottomNavItem.UserHome.screenRoute,
-            /*enterTransition = { fadeIn(animationSpec = tween(0)) },
-            exitTransition = { fadeOut(animationSpec = tween(0)) },
-            popEnterTransition = { fadeIn(animationSpec = tween(0)) },
-            popExitTransition = { fadeOut(animationSpec = tween(0)) }*/){
+        NavHost(navController, startDestination = BottomNavItem.UserHome.screenRoute){
 
             //기본 Bottom Item
             composable(BottomNavItem.UserHome.screenRoute) { HomeScreen(navController, locationViewModel = hiltViewModel()) }
             composable(BottomNavItem.Favorite.screenRoute) { MyStoreScreenWithBottomSheet() }
             composable(BottomNavItem.NearPlace.screenRoute) { NearPlaceScreen(navController, locationViewModel = hiltViewModel()) }
-            composable(BottomNavItem.StoreTalk.screenRoute) { StoreTalkScreen() }
+            composable(BottomNavItem.StoreTalk.screenRoute) { StoreTalkScreen(navController) }
             composable(BottomNavItem.Profile.screenRoute) { MyMenuScreen(navController) }
 
             //HOME > NOTIFICATION
             composable(USER_HOME + NormalNavItem.NOTIFICATION.name) { NotificationScreen(navController) }
             //MY_MENU > NOTIFICATION
             composable(MY_MENU + NormalNavItem.NOTIFICATION.name) { NotificationScreen(navController) }
+
+            //HOME > MY_COUPON
+            composable(USER_HOME + NormalNavItem.MY_COUPON.name) { MyCouponScreenWithBottomSheet(navController) }
+            //MY_MENU > MY_COUPON
+            composable(MY_MENU + NormalNavItem.MY_COUPON.name) { MyCouponScreenWithBottomSheet(navController) }
 
             //HOME > LOCATION
             composable(USER_HOME + NormalNavItem.LOCATION.name) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
@@ -137,11 +138,9 @@ class MainActivity : ComponentActivity() {
                 BannerDetailScreen(navController, bannerId = bannerId ?: "")
             }
 
-            composable(USER_HOME + NormalNavItem.MY_COUPON.name) { MyCouponScreenWithBottomSheet(navController) }
-
-            composable(USER_HOME + NormalNavItem.STORE_DETAIL.name + "/{storeName}") { backStackEntry ->
-                val storeName = backStackEntry.arguments?.getString("storeName")
-                StoreDetailScreen(navController, storeName = storeName ?: "")
+            composable(USER_HOME + NormalNavItem.STORE_DETAIL.name + "/{storeId}") { backStackEntry ->
+                val storeId = backStackEntry.arguments?.getString("storeId")
+                StoreDetailScreen(navController, storeId = storeId ?: "")
             }
         }
     }
@@ -180,7 +179,6 @@ class MainActivity : ComponentActivity() {
                     }
 
                     NavigationBarItem(
-
                         icon = {
                             Icon(
                                 painter = painterResource(id = if (isSelected) item.selectedIcon else item.icon),
