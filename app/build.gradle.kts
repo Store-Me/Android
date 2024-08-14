@@ -33,10 +33,8 @@ android {
             useSupportLibrary = true
         }
 
-        defaultConfig{
-            buildConfigField("String","NAVER_CLIENT_SECRET", getApiKey("naver_client_secret"))
-            buildConfigField("String","NAVER_CLIENT_ID", getApiKey("naver_client_id"))
-        }
+        buildConfigField("String", "NAVER_CLIENT_SECRET", getApiKey("naver_map_client_secret"))
+        buildConfigField("String", "NAVER_CLIENT_ID", getApiKey("naver_map_client_id"))
     }
 
     val properties = Properties()
@@ -132,7 +130,6 @@ dependencies {
 
     //Map
     implementation("io.github.fornewid:naver-map-compose:1.7.2")
-    implementation("com.google.android.gms:play-services-location:21.3.0")
 
     //FCM
     implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
@@ -154,4 +151,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime:1.6.8")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
     implementation("androidx.compose.runtime:runtime-rxjava2:1.6.8")
+
+    //markdown
+    implementation("com.github.jeziellago:compose-markdown:0.5.2")
 }
