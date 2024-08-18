@@ -1,12 +1,18 @@
 <resources>
     <string name="app_name">StoreMe</string>
 
-    <!--Bottom Navigation Item-->
+    <!--Customer Bottom Navigation Item-->
     <string name="home">홈</string>
     <string name="favorite">마이스토어</string>
     <string name="near_place">동네가게</string>
     <string name="store_talk">스토어톡</string>
     <string name="profile">마이메뉴</string>
+
+    <!--Owner Bottom Navigation Item-->
+    <string name="owner_home">내 가게</string>
+    <string name="customer_management">손님 관리</string>
+    <string name="owner_add">추가하기</string>
+    <string name="store_info">스토어 정보</string>
 
     <!--ToastMessage Text-->
     <string name="backpress_message">뒤로 가기를 한 번 더 누르면 종료됩니다.</string>
@@ -16,4 +22,8 @@
     <string name="fail_reverse_gc">주소값 반환에 실패하였습니다. 다시 시도해주세요</string>
 
     <string name="fail_seach_short">2글자 이상 검색이 가능합니다.</string>
+
+    <string name="fail_change_edit_state">현재 다른 블록을 생성 중입니다. 생성을 완료하거나 취소 후 다시 시도해 주세요.</string>
+
+    <string name="alert_copy">복사되었습니다.</string>
 </resources>

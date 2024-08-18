@@ -72,9 +72,9 @@ import com.store_me.storeme.utils.SampleDataUtils
 import com.store_me.storeme.utils.ToastMessageUtils
 
 @Composable
-fun HomeScreen(
+fun CustomerHomeScreen(
     navController: NavController,
-    homeViewModel: HomeViewModel = hiltViewModel(),
+    customerHomeViewModel: CustomerHomeViewModel = hiltViewModel(),
     locationViewModel: LocationViewModel
 ) {
     val storeList = SampleDataUtils.sampleTodayStore()
@@ -87,7 +87,7 @@ fun HomeScreen(
 
     Scaffold(
         containerColor = White,
-        topBar = { TopLayout(navController = navController, scrollBehavior = scrollBehavior, homeViewModel) },
+        topBar = { TopLayout(navController = navController, scrollBehavior = scrollBehavior, customerHomeViewModel) },
         content = { innerPadding -> // 컨텐츠 영역
             Column(
                 modifier = Modifier
@@ -121,8 +121,8 @@ fun HomeScreen(
 }
 
 @Composable
-fun TopLayout(navController: NavController, scrollBehavior: TopAppBarScrollBehavior, homeViewModel: HomeViewModel) {
-    val searchState by homeViewModel.searchState.collectAsState()
+fun TopLayout(navController: NavController, scrollBehavior: TopAppBarScrollBehavior, customerHomeViewModel: CustomerHomeViewModel) {
+    val searchState by customerHomeViewModel.searchState.collectAsState()
 
     TopAppBar(
         title = {
@@ -133,11 +133,11 @@ fun TopLayout(navController: NavController, scrollBehavior: TopAppBarScrollBehav
 
                     },
                     onClose = {
-                        homeViewModel.setSearchState(false)
+                        customerHomeViewModel.setSearchState(false)
                     })
             } else {
                 NormalHomeTitleSection(navController) {
-                    homeViewModel.setSearchState(true)
+                    customerHomeViewModel.setSearchState(true)
                 }
             }
         },
@@ -206,9 +206,9 @@ fun BasicStoreListLayout(navController: NavController, storeList: MutableList<St
                         .padding(end = 7.dp)
                         .width(120.dp)
                         .clickable {
-                            NavigationUtils().navigateNormalNav(
+                            NavigationUtils().navigateCustomerNav(
                                 navController,
-                                MainActivity.NormalNavItem.STORE_DETAIL,
+                                MainActivity.CustomerNavItem.STORE_DETAIL,
                                 store.storeId
                             )
                         }
@@ -272,7 +272,7 @@ fun CouponLayout(navController: NavController, couponList: MutableList<CouponWit
             Spacer(modifier = Modifier.weight(1f))
 
             MyCouponIconText {
-                NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.MY_COUPON)
+                NavigationUtils().navigateCustomerNav(navController, MainActivity.CustomerNavItem.MY_COUPON)
             }
 
             Spacer(modifier = Modifier.width(20.dp))
@@ -298,9 +298,9 @@ fun CouponLayout(navController: NavController, couponList: MutableList<CouponWit
                         .width(120.dp)
                         .height(240.dp)
                         .clickable {
-                            NavigationUtils().navigateNormalNav(
+                            NavigationUtils().navigateCustomerNav(
                                 navController,
-                                MainActivity.NormalNavItem.STORE_DETAIL,
+                                MainActivity.CustomerNavItem.STORE_DETAIL,
                                 coupon.storeInfo.storeId
                             )
                         }

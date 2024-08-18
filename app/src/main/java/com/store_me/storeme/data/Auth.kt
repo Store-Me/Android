@@ -26,7 +26,7 @@ object Auth {
     }
 
     //계정 타입 관련
-    private var _accountType = AccountType.CUSTOMER
+    private var _accountType = AccountType.OWNER
     val accountType = _accountType
 
     /**

@@ -45,7 +45,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -254,7 +253,7 @@ fun MyProfileMenu(navController: NavController) {
         }
 
         MyProfileMenuItem(MyMenuViewModel.MyProfileMenuItem.MY_COUPON) {
-            NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.MY_COUPON)
+            NavigationUtils().navigateCustomerNav(navController, MainActivity.CustomerNavItem.MY_COUPON)
         }
 
         MyProfileMenuItem(MyMenuViewModel.MyProfileMenuItem.LIKE_LIST) {

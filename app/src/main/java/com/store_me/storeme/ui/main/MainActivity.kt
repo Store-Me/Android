@@ -1,7 +1,6 @@
 
 package com.store_me.storeme.ui.main
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -28,7 +27,6 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -41,9 +39,9 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.ui.banner.BannerDetailScreen
 import com.store_me.storeme.ui.banner.BannerListScreen
-import com.store_me.storeme.ui.home.HomeScreen
+import com.store_me.storeme.ui.home.CustomerHomeScreen
+import com.store_me.storeme.ui.home.OwnerHomeScreen
 import com.store_me.storeme.ui.location.LocationScreen
-import com.store_me.storeme.ui.login.LoginActivity
 import com.store_me.storeme.ui.my_menu.MyMenuScreen
 import com.store_me.storeme.ui.mycoupon.MyCouponScreenWithBottomSheet
 import com.store_me.storeme.ui.mystore.MyStoreScreenWithBottomSheet
@@ -61,10 +59,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(!Auth.isLoggedIn.value){
+        /*if(!Auth.isLoggedIn.value){
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
-        }
+        }*/
 
         setContent {
             StoreMeTheme {
@@ -72,73 +70,88 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen()
+                    when(Auth.accountType){
+                        Auth.AccountType.CUSTOMER -> { CustomerScreen() }
+                        Auth.AccountType.OWNER -> { OwnerScreen() }
+                    }
                 }
             }
         }
     }
 
-    @Preview(showBackground = true)
     @Composable
-    private fun MainScreen() {
+    private fun CustomerScreen() {
         val navController = rememberNavController()
 
         Scaffold(
             bottomBar = { BottomNavigationBar(navController) }
         ) {
             Box(Modifier.padding(it)) {
-                NavigationGraph(navController)
+                CustomerNavigationGraph(navController)
             }
         }
     }
 
     @Composable
-    fun NavigationGraph(navController: NavHostController) {
-        NavHost(navController, startDestination = BottomNavItem.UserHome.screenRoute){
+    private fun OwnerScreen() {
+        val navController = rememberNavController()
+
+        Scaffold(
+            bottomBar = { BottomNavigationBar(navController) }
+        ) {
+            Box(Modifier.padding(it)) {
+                OwnerNavigationGraph(navController)
+            }
+        }
+    }
+
+    @Composable
+    fun CustomerNavigationGraph(navController: NavHostController) {
+        NavHost(navController, startDestination = CustomerBottomNavItem.CustomerHome.screenRoute){
 
             //기본 Bottom Item
-            composable(BottomNavItem.UserHome.screenRoute) { HomeScreen(navController, locationViewModel = hiltViewModel()) }
-            composable(BottomNavItem.Favorite.screenRoute) { MyStoreScreenWithBottomSheet() }
-            composable(BottomNavItem.NearPlace.screenRoute) { NearPlaceScreen(navController, locationViewModel = hiltViewModel()) }
-            composable(BottomNavItem.StoreTalk.screenRoute) { StoreTalkScreen(navController) }
-            composable(BottomNavItem.Profile.screenRoute) { MyMenuScreen(navController) }
+            composable(CustomerBottomNavItem.CustomerHome.screenRoute) { CustomerHomeScreen(navController, locationViewModel = hiltViewModel()) }
+            composable(CustomerBottomNavItem.Favorite.screenRoute) { MyStoreScreenWithBottomSheet() }
+            composable(CustomerBottomNavItem.NearPlace.screenRoute) { NearPlaceScreen(navController, locationViewModel = hiltViewModel()) }
+            composable(CustomerBottomNavItem.StoreTalk.screenRoute) { StoreTalkScreen(navController) }
+            composable(CustomerBottomNavItem.Profile.screenRoute) { MyMenuScreen(navController) }
 
             //HOME > NOTIFICATION
-            composable(USER_HOME + NormalNavItem.NOTIFICATION.name) { NotificationScreen(navController) }
+            composable(USER_HOME + CustomerNavItem.NOTIFICATION.name) { NotificationScreen(navController) }
             //MY_MENU > NOTIFICATION
-            composable(MY_MENU + NormalNavItem.NOTIFICATION.name) { NotificationScreen(navController) }
+            composable(MY_MENU + CustomerNavItem.NOTIFICATION.name) { NotificationScreen(navController) }
 
             //HOME > MY_COUPON
-            composable(USER_HOME + NormalNavItem.MY_COUPON.name) { MyCouponScreenWithBottomSheet(navController) }
+            composable(USER_HOME + CustomerNavItem.MY_COUPON.name) { MyCouponScreenWithBottomSheet(navController) }
             //MY_MENU > MY_COUPON
-            composable(MY_MENU + NormalNavItem.MY_COUPON.name) { MyCouponScreenWithBottomSheet(navController) }
+            composable(MY_MENU + CustomerNavItem.MY_COUPON.name) { MyCouponScreenWithBottomSheet(navController) }
 
             //HOME > LOCATION
-            composable(USER_HOME + NormalNavItem.LOCATION.name) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
+            composable(USER_HOME + CustomerNavItem.LOCATION.name) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
             //NEAR PLACE > NOTIFICATION
-            composable(NEAR_PLACE + NormalNavItem.LOCATION.name) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
+            composable(NEAR_PLACE + CustomerNavItem.LOCATION.name) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
 
             /**
              * Any To Banner (List / Detail)
              */
-            composable(USER_HOME + NormalNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
-            composable(NEAR_PLACE + NormalNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
-            composable(MY_MENU + NormalNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
+            composable(USER_HOME + CustomerNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
+            composable(NEAR_PLACE + CustomerNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
+            composable(MY_MENU + CustomerNavItem.BANNER_LIST.name) { BannerListScreen(navController) }
 
-            composable(USER_HOME + NormalNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
+            composable(USER_HOME + CustomerNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
                 val bannerId = backStackEntry.arguments?.getString("bannerId")
                 BannerDetailScreen(navController, bannerId = bannerId ?: "")
             }
-            composable(NEAR_PLACE + NormalNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
+            composable(NEAR_PLACE + CustomerNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
                 val bannerId = backStackEntry.arguments?.getString("bannerId")
                 BannerDetailScreen(navController, bannerId = bannerId ?: "")
             }
-            composable(MY_MENU + NormalNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
+            composable(MY_MENU + CustomerNavItem.BANNER_DETAIL.name + "/{bannerId}") { backStackEntry ->
                 val bannerId = backStackEntry.arguments?.getString("bannerId")
                 BannerDetailScreen(navController, bannerId = bannerId ?: "")
             }
 
-            composable(USER_HOME + NormalNavItem.STORE_DETAIL.name + "/{storeId}") { backStackEntry ->
+            composable(USER_HOME + CustomerNavItem.STORE_DETAIL.name + "/{storeId}") { backStackEntry ->
                 val storeId = backStackEntry.arguments?.getString("storeId")
                 StoreDetailScreen(navController, storeId = storeId ?: "")
             }
@@ -146,14 +159,39 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
+    fun OwnerNavigationGraph(navController: NavHostController) {
+        NavHost(navController, startDestination = OwnerBottomNavItem.OwnerHome.screenRoute){
+            //기본 Bottom Item
+            composable(OwnerBottomNavItem.OwnerHome.screenRoute) { OwnerHomeScreen(navController) }
+            composable(OwnerBottomNavItem.CustomerManagement.screenRoute) {  }
+            composable(OwnerBottomNavItem.OwnerAdd.screenRoute) {  }
+            composable(OwnerBottomNavItem.StoreTalk.screenRoute) {  }
+            composable(OwnerBottomNavItem.StoreInfo.screenRoute) {  }
+        }
+    }
+
+    @Composable
     private fun BottomNavigationBar(navController: NavHostController) {
-        val items = listOf(
-            BottomNavItem.UserHome,
-            BottomNavItem.Favorite,
-            BottomNavItem.NearPlace,
-            BottomNavItem.StoreTalk,
-            BottomNavItem.Profile
+        val customerItems = listOf(
+            CustomerBottomNavItem.CustomerHome,
+            CustomerBottomNavItem.Favorite,
+            CustomerBottomNavItem.NearPlace,
+            CustomerBottomNavItem.StoreTalk,
+            CustomerBottomNavItem.Profile
         )
+
+        val ownerItems = listOf(
+            OwnerBottomNavItem.OwnerHome,
+            OwnerBottomNavItem.CustomerManagement,
+            OwnerBottomNavItem.OwnerAdd,
+            OwnerBottomNavItem.StoreTalk,
+            OwnerBottomNavItem.StoreInfo
+        )
+
+        val items = when(Auth.accountType){
+            Auth.AccountType.CUSTOMER -> customerItems
+            Auth.AccountType.OWNER -> ownerItems
+        }
 
         Column {
             HorizontalDivider(color = UnselectedItemColor, thickness = 0.2.dp)
@@ -167,16 +205,33 @@ class MainActivity : ComponentActivity() {
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
                 val currentRoute = navBackStackEntry?.destination?.route
 
-                items.forEach{ item ->
-                    val isSelected = when {
-                        currentRoute == item.screenRoute -> true
-                        currentRoute?.startsWith(USER_HOME) == true && item.screenRoute == BottomNavItem.UserHome.screenRoute -> true
-                        currentRoute?.startsWith(FAVORITE) == true && item.screenRoute == BottomNavItem.Favorite.screenRoute -> true
-                        currentRoute?.startsWith(NEAR_PLACE) == true && item.screenRoute == BottomNavItem.NearPlace.screenRoute -> true
-                        currentRoute?.startsWith(STORE_TALK) == true && item.screenRoute == BottomNavItem.StoreTalk.screenRoute -> true
-                        currentRoute?.startsWith(MY_MENU) == true && item.screenRoute == BottomNavItem.Profile.screenRoute -> true
-                        else -> false
-                    }
+                items.forEach { item ->
+                    val isSelected =
+                        when(Auth.accountType){
+                            Auth.AccountType.CUSTOMER -> {
+                                when {
+                                    currentRoute == item.screenRoute -> true
+                                    currentRoute?.startsWith(USER_HOME) == true && item.screenRoute == CustomerBottomNavItem.CustomerHome.screenRoute -> true
+                                    currentRoute?.startsWith(FAVORITE) == true && item.screenRoute == CustomerBottomNavItem.Favorite.screenRoute -> true
+                                    currentRoute?.startsWith(NEAR_PLACE) == true && item.screenRoute == CustomerBottomNavItem.NearPlace.screenRoute -> true
+                                    currentRoute?.startsWith(STORE_TALK) == true && item.screenRoute == CustomerBottomNavItem.StoreTalk.screenRoute -> true
+                                    currentRoute?.startsWith(MY_MENU) == true && item.screenRoute == CustomerBottomNavItem.Profile.screenRoute -> true
+                                    else -> false
+                                }
+                            }
+                            Auth.AccountType.OWNER -> {
+                                when {
+                                    currentRoute == item.screenRoute -> true
+                                    currentRoute?.startsWith(OWNER_HOME) == true && item.screenRoute == OwnerBottomNavItem.OwnerHome.screenRoute -> true
+                                    currentRoute?.startsWith(CUSTOMER_MANAGEMENT) == true && item.screenRoute == OwnerBottomNavItem.CustomerManagement.screenRoute -> true
+                                    currentRoute?.startsWith(OWNER_ADD) == true && item.screenRoute == OwnerBottomNavItem.OwnerAdd.screenRoute -> true
+                                    currentRoute?.startsWith(STORE_TALK) == true && item.screenRoute == OwnerBottomNavItem.StoreTalk.screenRoute -> true
+                                    currentRoute?.startsWith(STORE_INFO) == true && item.screenRoute == OwnerBottomNavItem.StoreInfo.screenRoute -> true
+                                    else -> false
+                                }
+                            }
+                        }
+
 
                     NavigationBarItem(
                         icon = {
@@ -205,7 +260,6 @@ class MainActivity : ComponentActivity() {
                         },
                         colors = NavigationBarItemDefaults.colors(
                             indicatorColor = Color.Transparent,
-
                         ),
                     )
                 }
@@ -214,20 +268,34 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    sealed class BottomNavItem(val title: Int, val icon: Int, val selectedIcon: Int, val screenRoute: String) {
-        data object UserHome : BottomNavItem(R.string.home, R.drawable.bottom_home, R.drawable.bottom_home_selected, USER_HOME)
-        data object Favorite : BottomNavItem(R.string.favorite, R.drawable.bottom_favorite, R.drawable.bottom_favorite_selected, FAVORITE)
-        data object NearPlace : BottomNavItem(R.string.near_place, R.drawable.bottom_nearplace, R.drawable.bottom_nearplace_selected, NEAR_PLACE)
-        data object StoreTalk : BottomNavItem(R.string.store_talk, R.drawable.bottom_storetalk, R.drawable.bottom_storetalk_selected, STORE_TALK)
-        data object Profile : BottomNavItem(R.string.profile, R.drawable.bottom_mymenu, R.drawable.bottom_mymenu_selected, MY_MENU)
+    sealed class BottomNavItem(val title: Int, val icon: Int, val selectedIcon: Int, val screenRoute: String)
+
+    sealed class CustomerBottomNavItem(title: Int, icon: Int, selectedIcon: Int, screenRoute: String): BottomNavItem(title, icon, selectedIcon, screenRoute) {
+        data object CustomerHome : CustomerBottomNavItem(R.string.home, R.drawable.bottom_home, R.drawable.bottom_home_selected, USER_HOME)
+        data object Favorite : CustomerBottomNavItem(R.string.favorite, R.drawable.bottom_favorite, R.drawable.bottom_favorite_selected, FAVORITE)
+        data object NearPlace : CustomerBottomNavItem(R.string.near_place, R.drawable.bottom_nearplace, R.drawable.bottom_nearplace_selected, NEAR_PLACE)
+        data object StoreTalk : CustomerBottomNavItem(R.string.store_talk, R.drawable.bottom_storetalk, R.drawable.bottom_storetalk_selected, STORE_TALK)
+        data object Profile : CustomerBottomNavItem(R.string.profile, R.drawable.bottom_mymenu, R.drawable.bottom_mymenu_selected, MY_MENU)
     }
 
-    enum class NormalNavItem {
+    sealed class OwnerBottomNavItem(title: Int, icon: Int, selectedIcon: Int, screenRoute: String): BottomNavItem(title, icon, selectedIcon, screenRoute) {
+        data object OwnerHome : OwnerBottomNavItem(R.string.owner_home, R.drawable.bottom_owner_home, R.drawable.bottom_owner_home_selected, OWNER_HOME)
+        data object CustomerManagement : OwnerBottomNavItem(R.string.customer_management, R.drawable.bottom_customer_management, R.drawable.bottom_customer_management_selected, CUSTOMER_MANAGEMENT)
+        data object OwnerAdd : OwnerBottomNavItem(R.string.owner_add, R.drawable.bottom_owner_add, R.drawable.bottom_owner_add_selected, OWNER_ADD)
+        data object StoreTalk : OwnerBottomNavItem(R.string.store_talk, R.drawable.bottom_storetalk, R.drawable.bottom_storetalk_selected, STORE_TALK)
+        data object StoreInfo : OwnerBottomNavItem(R.string.store_info, R.drawable.bottom_store_info, R.drawable.bottom_store_info_selected, STORE_INFO)
+    }
+
+    enum class CustomerNavItem {
         NOTIFICATION,
         LOCATION,
         BANNER_LIST,
         BANNER_DETAIL,
         STORE_DETAIL,
         MY_COUPON
+    }
+
+    enum class OwnerNavItem {
+
     }
 }

@@ -10,11 +10,30 @@ import com.store_me.storeme.R
 
 // Set of Material typography styles to start with
 val appFontFamily = FontFamily(
-    Font(R.font.nanum_square_neo_rg),
+    Font(R.font.nanum_square_neo_rg, weight = FontWeight.Normal),
     Font(R.font.nanum_square_neo_bd, weight = FontWeight.Bold),
     Font(R.font.nanum_square_neo_ebd, weight = FontWeight.ExtraBold),
     Font(R.font.nanum_square_neo_hv, weight = FontWeight.Black)
 )
+
+//기본 글자 크기
+const val defaultFontSize = 12
+
+/**
+ * FontStyle을 반환 하는 함수
+ * @param fontWeight FontWeight
+ * @param changeSizeValue fontSize 변화량
+ */
+fun storeMeTextStyle(fontWeight: FontWeight, changeSizeValue: Int): TextStyle {
+    val fontSize = defaultFontSize + changeSizeValue
+    return TextStyle(
+        fontWeight = fontWeight,
+        fontFamily = appFontFamily,
+        fontSize = fontSize.sp,
+        letterSpacing = 0.7.sp,
+        lineHeight = (fontSize * 1.4f).sp
+    )
+}
 
 val storeMeTypography = Typography(
     bodyLarge = TextStyle(

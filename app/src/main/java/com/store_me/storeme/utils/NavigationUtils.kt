@@ -1,11 +1,12 @@
 package com.store_me.storeme.utils
 
 import androidx.navigation.NavController
-import com.store_me.storeme.ui.main.BOTTOM_ITEM_LIST
+import com.store_me.storeme.ui.main.CUSTOMER_BOTTOM_ITEM_LIST
 import com.store_me.storeme.ui.main.FAVORITE
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.main.NEAR_PLACE
 import com.store_me.storeme.ui.main.MY_MENU
+import com.store_me.storeme.ui.main.OWNER_BOTTOM_ITEM_LIST
 import com.store_me.storeme.ui.main.STORE_TALK
 import com.store_me.storeme.ui.main.USER_HOME
 
@@ -25,15 +26,27 @@ class NavigationUtils {
     }
 
     /**
-     * Bottom Nav의 Item 선택을 유지한 채로 이동하는 함수
+     * Bottom Nav의 Item 선택을 유지한 채로 이동하는 함수 (손님)
      * @param navController Bottom Navigation Controller
      * @param screenName 현재 화면 이름
      * @param additionalData 추가 데이터
      */
-    fun navigateNormalNav(navController: NavController, screenName: MainActivity.NormalNavItem, additionalData: String? = null) {
+    fun navigateCustomerNav(navController: NavController, screenName: MainActivity.CustomerNavItem, additionalData: String? = null) {
         val index = getCurrentBottomNavIndex(navController)
 
-        navController.navigate(NavigationUtils().createScreenRoute(BOTTOM_ITEM_LIST[index], screenName.name, additionalData))
+        navController.navigate(NavigationUtils().createScreenRoute(CUSTOMER_BOTTOM_ITEM_LIST[index], screenName.name, additionalData))
+    }
+
+    /**
+     * Bottom Nav의 Item 선택을 유지한 채로 이동하는 함수 (사장님)
+     * @param navController Bottom Navigation Controller
+     * @param screenName 현재 화면 이름
+     * @param additionalData 추가 데이터
+     */
+    fun navigateOwnerNav(navController: NavController, screenName: MainActivity.OwnerNavItem, additionalData: String? = null) {
+        val index = getCurrentBottomNavIndex(navController)
+
+        navController.navigate(NavigationUtils().createScreenRoute(OWNER_BOTTOM_ITEM_LIST[index], screenName.name, additionalData))
     }
 
     /**

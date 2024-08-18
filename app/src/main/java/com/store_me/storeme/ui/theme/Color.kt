@@ -54,8 +54,24 @@ val PostStrokeColor = Color(0xFFEFF0F5)
 //Post Time Color
 val PostTimeTextColor = Color(0xFF66727E)
 
+/**
+ * Button 관련 Color
+ */
+//Toggle Button
+val ToggleButtonBorderColor = Color(0xFFD9D9D9)
 
-/*   Coupon Color   */
+//Edit Button
+val EditButtonColor = Color(0xFFEBF3FE)
+
+//Management Button
+val ManagementButtonColor = Color(0xFFD449DA)
+
+//Copy Button
+val CopyButtonColor = Color(0xFFD449DA)
+
+/**
+ * Coupon 관련 Color
+ */
 //Valid Box Color
 val ValidBoxColor = Color(0xFFEBF3FE)
 
@@ -105,6 +121,20 @@ val EditCommentStrokeColor = Color(0xFFEFF0F5)
 val MyMenuIconColor = Color(0xFF00CC00)
 
 /**
+ * Owner Home Color
+ */
+val OwnerHomeLikeCountColor = Color(0xFF545A68)
+
+/**
+ * Store Detail Color
+ */
+val StoreDetailIconColor = Color(0xFF898C93)
+
+/**
  * Default Color
  */
 val DefaultDividerColor = Color(0xFFEFF0F5)
+
+val DefaultIconColor = Color(0xFFEBF3FE)
+
+val UndefinedTextColor = Color(0xFF898C93)

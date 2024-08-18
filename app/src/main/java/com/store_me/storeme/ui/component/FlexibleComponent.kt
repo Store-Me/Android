@@ -1,10 +1,15 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.store_me.storeme.ui.component
 
 import android.Manifest
+import android.content.Intent
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -32,7 +37,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -46,8 +53,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -64,14 +74,20 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.store_me.storeme.R
+import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.BannerData
+import com.store_me.storeme.data.SocialMediaAccountData
 import com.store_me.storeme.ui.home.LocationViewModel
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.mystore.CategoryViewModel
+import com.store_me.storeme.ui.theme.DefaultIconColor
+import com.store_me.storeme.ui.theme.EditButtonColor
 import com.store_me.storeme.ui.theme.HomeSearchBoxColor
 import com.store_me.storeme.ui.theme.NormalCategoryColor
 import com.store_me.storeme.ui.theme.SelectedCategoryColor
+import com.store_me.storeme.ui.theme.ToggleButtonBorderColor
 import com.store_me.storeme.ui.theme.appFontFamily
+import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.storeMeTypography
 import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.SampleDataUtils
@@ -158,15 +174,85 @@ fun DefaultButton(text: String, onClick: () -> Unit){
             .wrapContentWidth()
             .height(26.dp),
         shape = RoundedCornerShape(6.dp),
-        border = BorderStroke(1.dp, Color.Black),
+        border = BorderStroke(1.dp, Black),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White,
-            contentColor = Color.Black
+            containerColor = White,
+            contentColor = Black
         ),
         contentPadding = PaddingValues(horizontal = 10.dp),
         onClick = onClick
     ) {
         Text(text = text, style = storeMeTypography.labelSmall)
+    }
+}
+
+/**
+ * 기본 Toggle 버튼
+ * @param text 버튼 내 텍스트
+ * @param isSelected 선택 여뷰
+ */
+@Composable
+fun DefaultToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
+    val borderStroke = if(!isSelected) BorderStroke(1.dp, ToggleButtonBorderColor) else null
+    val contentColor = if(!isSelected) Black else White
+    val containerColor = if(!isSelected) White else Black
+
+    Button(
+        modifier = Modifier
+            .wrapContentWidth()
+            .height(26.dp),
+        shape = RoundedCornerShape(6.dp),
+        border = borderStroke,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
+        contentPadding = PaddingValues(horizontal = 10.dp),
+        onClick = onClick
+    ) {
+        Text(text = text, style = storeMeTypography.bodySmall)
+    }
+}
+
+/**
+ * 기본 Edit Button
+ * @param text 버튼 내 텍스트
+ * @param modifier Modifier
+ * @param containerColor 박스 색
+ */
+@Composable
+fun DefaultEditButton(text: String, modifier: Modifier = Modifier, containerColor: Color = EditButtonColor, contentColor: Color = Black, onClick: () -> Unit) {
+    Button(
+        modifier = modifier
+            .height(40.dp),
+        shape = RoundedCornerShape(6.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
+        onClick = onClick,
+    ) {
+        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 0))
+    }
+}
+
+/**
+ * 기본 완료 Button
+ */
+@Composable
+fun DefaultFinishButton(text: String = "저장", onClick: () -> Unit) {
+    Button(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp),
+        shape = RoundedCornerShape(10.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Black,
+            contentColor = White
+        ),
+        onClick = onClick,
+    ) {
+        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 4))
     }
 }
 
@@ -224,6 +310,19 @@ fun SearchField(modifier: Modifier = Modifier, observeText: String? = null, hint
     }
 }
 
+/**
+ * 기본 TextField
+ * @param text text 값
+ */
+@Composable
+fun DefaultTextField(text: String, onTextChange: (String) -> Unit){
+    OutlinedTextField(
+        value = text,
+        onValueChange = onTextChange,
+        label = {  },
+    )
+}
+
 @Composable
 fun TitleSearchSection(hint: String = "검색어를 입력하세요.", onSearch: (String) -> Unit, onClose: () -> Unit) {
     Row(
@@ -278,9 +377,9 @@ fun LocationLayout(navController: NavController, locationViewModel: LocationView
                     indication = rememberRipple(bounded = false, radius = 15.dp),
 
                     onClick = {
-                        NavigationUtils().navigateNormalNav(
+                        NavigationUtils().navigateCustomerNav(
                             navController,
-                            MainActivity.NormalNavItem.LOCATION
+                            MainActivity.CustomerNavItem.LOCATION
                         )
                     }
                 ),
@@ -341,7 +440,7 @@ fun BannerLayout(navController: NavController) {
                     .height(bannerHeight)
             ) { page ->
                 LoadBannerImages(bannerUrls[page], page) {
-                    NavigationUtils().navigateNormalNav(navController, MainActivity.NormalNavItem.BANNER_DETAIL, it)
+                    NavigationUtils().navigateCustomerNav(navController, MainActivity.CustomerNavItem.BANNER_DETAIL, it)
                 }
             }
 
@@ -349,12 +448,12 @@ fun BannerLayout(navController: NavController) {
                 modifier = Modifier
                     .align(Alignment.BottomEnd) // 내부 하단 우측에 위치
                     .padding(end = 8.dp, bottom = 8.dp, top = 15.dp, start = 15.dp)
-                    .background(Color.Black.copy(alpha = 0.7f), shape = CircleShape)
+                    .background(Black.copy(alpha = 0.7f), shape = CircleShape)
                     .padding(horizontal = 8.dp, vertical = 2.dp)
                     .clickable {
-                        NavigationUtils().navigateNormalNav(
+                        NavigationUtils().navigateCustomerNav(
                             navController,
-                            MainActivity.NormalNavItem.BANNER_LIST
+                            MainActivity.CustomerNavItem.BANNER_LIST
                         )
                     },
 
@@ -367,7 +466,7 @@ fun BannerLayout(navController: NavController) {
                         fontFamily = appFontFamily,
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 9.sp,
-                        color = Color.White
+                        color = White
                     )
 
                     Spacer(Modifier.width(2.dp))
@@ -376,7 +475,7 @@ fun BannerLayout(navController: NavController) {
                         painter = painterResource(id = R.drawable.ic_plus),
                         modifier = Modifier.size(9.sp.value.dp),
                         contentDescription = "배너 확장 아이콘",
-                        tint = Color.White
+                        tint = White
                     )
                 }
 
@@ -434,7 +533,7 @@ fun CategorySection(categoryViewModel: CategoryViewModel) {
 @Composable
 fun CategoryItem(category: StoreCategory, isSelected: Boolean, onClick: () -> Unit) {
     val backgroundColor = if (isSelected) SelectedCategoryColor else NormalCategoryColor
-    val textColor = if (isSelected) Color.White else SelectedCategoryColor
+    val textColor = if (isSelected) White else SelectedCategoryColor
 
     Box(
         modifier = Modifier
@@ -463,14 +562,114 @@ fun NotificationIcon(navController: NavController) {
             .size(26.dp)
             .clickable(
                 onClick = {
-                    NavigationUtils().navigateNormalNav(
+                    NavigationUtils().navigateCustomerNav(
                         navController,
-                        MainActivity.NormalNavItem.NOTIFICATION
+                        MainActivity.CustomerNavItem.NOTIFICATION
                     )
                 },
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(bounded = false)
-
             )
     )
+}
+
+/**
+ * Store Profile의 Link 정보
+ */
+@Composable
+fun LinkSection(socialMediaAccountData: SocialMediaAccountData, modifier: Modifier = Modifier) {
+
+    @Composable
+    fun ShareIcon() {
+        Box(
+            modifier = modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(DefaultIconColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_share),
+                contentDescription = "공유하기",
+                modifier = Modifier
+                    .size(20.dp)
+            )
+        }
+    }
+
+    @Composable
+    fun SocialMediaIcon(url: String) {
+        val context = LocalContext.current
+
+        val (imageResource, packageName) = when {
+            url.startsWith("https://www.instagram.com") -> {
+                R.drawable.ic_instagram to "com.instagram.android"
+            }
+            url.startsWith("https://naver.me") -> {
+                R.drawable.ic_naver to "com.nhn.android.band"
+            }
+            else -> {
+                R.drawable.ic_band to null
+            }
+        }
+
+        Image(
+            painter = painterResource(id = imageResource),
+            contentDescription = "프로필 링크",
+            modifier = Modifier
+                .size(40.dp)
+                .clickable(
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                            packageName?.let { setPackage(it) }
+                        }
+                        if (intent.resolveActivity(context.packageManager) != null) {
+                            context.startActivity(intent)
+                        } else {
+                            val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                            context.startActivity(webIntent)
+                        }
+                    },
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(bounded = false)
+                )
+                .clip(CircleShape)
+        )
+    }
+
+    @Composable
+    fun EditLinkIcon() {
+        Box(
+            modifier = modifier
+                .size(40.dp)
+                .clip(CircleShape)
+                .background(DefaultIconColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_my_menu_setting),
+                contentDescription = "편집하기",
+                modifier = Modifier
+                    .size(20.dp)
+            )
+        }
+    }
+
+    LazyRow(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        item { ShareIcon() }
+
+        if(!socialMediaAccountData.urlList.isNullOrEmpty()) {
+            items(socialMediaAccountData.urlList) {
+                SocialMediaIcon(it)
+            }
+        }
+
+        if(Auth.accountType == Auth.AccountType.OWNER)
+            item { EditLinkIcon() }
+    }
+
+
 }

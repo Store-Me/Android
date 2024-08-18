@@ -94,5 +94,26 @@ class DateTimeUtils {
     enum class PeriodStatus(val displayName: String){
         ONGOING("진행중"), ENDED("종료"), BEFORE_START("준비중")
     }
+
+    enum class DayOfWeek(val displayName: String) {
+        SUNDAY("일"),
+        MONDAY("월"),
+        TUESDAY("화"),
+        WEDNESDAY("수"),
+        THURSDAY("목"),
+        FRIDAY("금"),
+        SATURDAY("토"),
+    }
+
+    fun getClosedDayText(closedDay: List<Int>): String {
+        val days = closedDay.map { DayOfWeek.values()[it].displayName }
+
+        return when(closedDay.size) {
+            1 -> "${days[0]}요일 휴무"
+            else -> {
+                "${days.joinToString(", ")}요일 휴무"
+            }
+        }
+    }
 }
 
