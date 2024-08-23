@@ -1,7 +1,5 @@
 package com.store_me.storeme.data
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -62,5 +60,15 @@ object Auth {
         _userData.update {
             it.copy(profileImage = newProfileImage)
         }
+    }
+
+    /**
+     * 사장님 계정 정보 설정
+     */
+    private val _linkListData = MutableStateFlow<SocialMediaAccountData?>(null)
+    val linkListData: StateFlow<SocialMediaAccountData?> = _linkListData
+
+    fun setLinkListData(socialMediaAccountData: SocialMediaAccountData?) {
+        _linkListData.value = socialMediaAccountData
     }
 }

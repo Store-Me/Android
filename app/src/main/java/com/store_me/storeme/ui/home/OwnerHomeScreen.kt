@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -36,6 +35,7 @@ import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,6 +70,7 @@ import com.store_me.storeme.data.StoreHomeItem
 import com.store_me.storeme.data.StoreHomeItemData
 import com.store_me.storeme.ui.component.DefaultEditButton
 import com.store_me.storeme.ui.component.LinkSection
+import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.theme.CopyButtonColor
 import com.store_me.storeme.ui.theme.DefaultDividerColor
 import com.store_me.storeme.ui.theme.ManagementButtonColor
@@ -80,6 +81,7 @@ import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.LikeCountUtils
+import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.ToastMessageUtils
 import kotlinx.coroutines.launch
 
@@ -100,6 +102,10 @@ fun OwnerHomeScreen(
     val pagerState = rememberPagerState()
 
     CompositionLocalProvider(LocalOwnerHomeViewModel provides ownerHomeViewModel) {
+        LaunchedEffect(Unit) {
+            ownerHomeViewModel.getStoreData()
+        }
+
         Scaffold(
             containerColor = White,
             content = { innerPadding -> // 컨텐츠 영역
@@ -159,7 +165,17 @@ fun ProfileSection(navController: NavController) {
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        LinkSection(ownerHomeViewModel.storeData.socialMediaAccountData, modifier= Modifier.weight(1f))
+        LinkSection(
+            ownerHomeViewModel.storeData.socialMediaAccountData,
+            modifier= Modifier.weight(1f),
+            onShareClick = {  },
+            onEditClick = {
+                NavigationUtils().navigateOwnerNav(
+                    navController,
+                    MainActivity.OwnerNavItem.LINK_SETTING
+                )
+            }
+        )
 
         Spacer(modifier = Modifier.height(15.dp))
     }
@@ -399,11 +415,11 @@ fun OwnerStoreHomeScreen(navController: NavController) {
                 if(index == 0) {
                     Spacer(modifier = Modifier.width(20.dp))
 
-                    StoreHomeIcon(id = R.drawable.ic_clock)
+                    StoreHomeIcon(id = R.drawable.ic_clock) //size = 18.dp
 
                     Spacer(modifier = Modifier.width(10.dp))
                 } else {
-                    Spacer(modifier = Modifier.width(50.dp))
+                    Spacer(modifier = Modifier.width(48.dp))
                 }
 
 

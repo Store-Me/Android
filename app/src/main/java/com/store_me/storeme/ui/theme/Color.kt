@@ -66,8 +66,15 @@ val EditButtonColor = Color(0xFFEBF3FE)
 //Management Button
 val ManagementButtonColor = Color(0xFFD449DA)
 
+val SaveButtonColor = Color(0xFFD449DA)
+
 //Copy Button
 val CopyButtonColor = Color(0xFFD449DA)
+
+/**
+ * Icon 관련 Color
+ */
+val WebIconColor = Color(0xFFD449DA)
 
 /**
  * Coupon 관련 Color
@@ -138,3 +145,5 @@ val DefaultDividerColor = Color(0xFFEFF0F5)
 val DefaultIconColor = Color(0xFFEBF3FE)
 
 val UndefinedTextColor = Color(0xFF898C93)
+
+val UndefinedLinkColor = Color(0xFFD449DA)

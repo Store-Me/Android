@@ -50,8 +50,12 @@ data class StorePromotionData(
  * 다른 Social Media 계정 정보
  */
 data class SocialMediaAccountData(
-    val urlList: List<String>?
+    val urlList: List<String>
 )
+
+enum class SocialMediaAccountType{
+    INSTAGRAM, NAVER, BAND, YOUTUBE, WEB
+}
 
 /**
  * 가게 영업시간 정보
@@ -139,7 +143,7 @@ data class LabelWithPostData(
 data class StoreDetailData(
     val storeInfo: StoreInfoData,
     val bannerImageUrl: String?,
-    val socialMediaAccountData: SocialMediaAccountData,
+    val socialMediaAccountData: SocialMediaAccountData? = null,
     val storeHours: StoreHoursData,
     val storePhoneNumber: String,
     val locationInfo: LocationInfo? = null,

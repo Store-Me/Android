@@ -41,6 +41,7 @@ import com.store_me.storeme.ui.banner.BannerDetailScreen
 import com.store_me.storeme.ui.banner.BannerListScreen
 import com.store_me.storeme.ui.home.CustomerHomeScreen
 import com.store_me.storeme.ui.home.OwnerHomeScreen
+import com.store_me.storeme.ui.link.LinkSettingScreen
 import com.store_me.storeme.ui.location.LocationScreen
 import com.store_me.storeme.ui.my_menu.MyMenuScreen
 import com.store_me.storeme.ui.mycoupon.MyCouponScreenWithBottomSheet
@@ -167,6 +168,9 @@ class MainActivity : ComponentActivity() {
             composable(OwnerBottomNavItem.OwnerAdd.screenRoute) {  }
             composable(OwnerBottomNavItem.StoreTalk.screenRoute) {  }
             composable(OwnerBottomNavItem.StoreInfo.screenRoute) {  }
+
+            //HOME > LINK_SETTING
+            composable(OWNER_HOME + OwnerNavItem.LINK_SETTING.name) { LinkSettingScreen(navController) }
         }
     }
 
@@ -296,6 +300,6 @@ class MainActivity : ComponentActivity() {
     }
 
     enum class OwnerNavItem {
-
+        LINK_SETTING,
     }
 }

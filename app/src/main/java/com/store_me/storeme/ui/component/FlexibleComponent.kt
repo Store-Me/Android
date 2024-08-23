@@ -54,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -77,6 +78,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.BannerData
 import com.store_me.storeme.data.SocialMediaAccountData
+import com.store_me.storeme.data.SocialMediaAccountType
 import com.store_me.storeme.ui.home.LocationViewModel
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.mystore.CategoryViewModel
@@ -86,11 +88,13 @@ import com.store_me.storeme.ui.theme.HomeSearchBoxColor
 import com.store_me.storeme.ui.theme.NormalCategoryColor
 import com.store_me.storeme.ui.theme.SelectedCategoryColor
 import com.store_me.storeme.ui.theme.ToggleButtonBorderColor
+import com.store_me.storeme.ui.theme.WebIconColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.storeMeTypography
 import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.SampleDataUtils
+import com.store_me.storeme.utils.SocialMediaAccountUtils
 import com.store_me.storeme.utils.StoreCategory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -577,80 +581,57 @@ fun NotificationIcon(navController: NavController) {
  * Store Profile의 Link 정보
  */
 @Composable
-fun LinkSection(socialMediaAccountData: SocialMediaAccountData, modifier: Modifier = Modifier) {
+fun LinkSection(
+    socialMediaAccountData: SocialMediaAccountData?,
+    modifier: Modifier = Modifier,
+    onShareClick: () -> Unit,
+    onEditClick: () -> Unit
+) {
 
     @Composable
-    fun ShareIcon() {
+    fun ShareIcon(onClick: () -> Unit) {
         Box(
             modifier = modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(DefaultIconColor),
+                .background(DefaultIconColor)
+                .clickable(
+                    onClick = onClick,
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(bounded = false)
+                ),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_share),
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_share),
                 contentDescription = "공유하기",
                 modifier = Modifier
-                    .size(20.dp)
+                    .size(20.dp),
+                tint = Black
             )
         }
     }
 
     @Composable
-    fun SocialMediaIcon(url: String) {
-        val context = LocalContext.current
-
-        val (imageResource, packageName) = when {
-            url.startsWith("https://www.instagram.com") -> {
-                R.drawable.ic_instagram to "com.instagram.android"
-            }
-            url.startsWith("https://naver.me") -> {
-                R.drawable.ic_naver to "com.nhn.android.band"
-            }
-            else -> {
-                R.drawable.ic_band to null
-            }
-        }
-
-        Image(
-            painter = painterResource(id = imageResource),
-            contentDescription = "프로필 링크",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable(
-                    onClick = {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
-                            packageName?.let { setPackage(it) }
-                        }
-                        if (intent.resolveActivity(context.packageManager) != null) {
-                            context.startActivity(intent)
-                        } else {
-                            val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                            context.startActivity(webIntent)
-                        }
-                    },
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(bounded = false)
-                )
-                .clip(CircleShape)
-        )
-    }
-
-    @Composable
-    fun EditLinkIcon() {
+    fun EditLinkIcon(onClick: () -> Unit) {
         Box(
             modifier = modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(DefaultIconColor),
+                .background(Black)
+                .clickable(
+                    onClick = onClick,
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(bounded = false)
+                ),
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_my_menu_setting),
-                contentDescription = "편집하기",
+            Icon(
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_link),
+                contentDescription = "링크 편집",
                 modifier = Modifier
-                    .size(20.dp)
+                    .size(20.dp),
+                tint = White
             )
         }
     }
@@ -659,17 +640,45 @@ fun LinkSection(socialMediaAccountData: SocialMediaAccountData, modifier: Modifi
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        item { ShareIcon() }
+        item { ShareIcon { onShareClick() } }
 
-        if(!socialMediaAccountData.urlList.isNullOrEmpty()) {
+        if(socialMediaAccountData != null && socialMediaAccountData.urlList.isNotEmpty()) {
             items(socialMediaAccountData.urlList) {
                 SocialMediaIcon(it)
             }
         }
 
         if(Auth.accountType == Auth.AccountType.OWNER)
-            item { EditLinkIcon() }
+            item { EditLinkIcon { onEditClick() } }
     }
+}
 
+@Composable
+fun SocialMediaIcon(url: String, size: Int = 40) {
+    val context = LocalContext.current
 
+    val type = SocialMediaAccountUtils().getType(url)
+
+    Icon(
+        imageVector = ImageVector.vectorResource(id = SocialMediaAccountUtils().getIcon(type)),
+        contentDescription = "프로필 링크",
+        modifier = Modifier
+            .size(size.dp)
+            .clickable(
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                    }
+                    if (intent.resolveActivity(context.packageManager) != null) {
+                        context.startActivity(intent)
+                    } else {
+                        val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        context.startActivity(webIntent)
+                    }
+                },
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = false)
+            )
+            .clip(CircleShape),
+        tint = Unspecified
+    )
 }

@@ -4,6 +4,7 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.StoreHomeItem
 import com.store_me.storeme.data.StoreHomeItemData
 import com.store_me.storeme.utils.SampleDataUtils
@@ -27,6 +28,8 @@ class OwnerHomeViewModel @Inject constructor(
         //TODO 값 가져오기
 
         _storeHomeItems.value = sampleStoreHomeItemData()
+
+        Auth.setLinkListData(storeData.socialMediaAccountData)
     }
 
     enum class OwnerHomeTabMenu(val displayName: String) {
