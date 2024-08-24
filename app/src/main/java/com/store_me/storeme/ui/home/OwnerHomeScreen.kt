@@ -6,6 +6,7 @@ package com.store_me.storeme.ui.home
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -33,6 +34,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -151,10 +153,7 @@ fun BackgroundSection(imageUrl: String) {
 fun ProfileSection(navController: NavController) {
     val ownerHomeViewModel = LocalOwnerHomeViewModel.current
 
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 20.dp)
-    ) {
+    Column {
         Spacer(modifier = Modifier.height(15.dp))
 
         ProfileInfoSection()
@@ -194,6 +193,7 @@ fun ProfileInfoSection() {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 20.dp)
     ) {
         val (like, row) = createRefs()
 
@@ -255,7 +255,7 @@ fun LikeIconWithCount(count: Int, modifier: Modifier = Modifier) {
                 .clickable(
                     onClick = { },
                     interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(bounded = false)
+                    indication = ripple(bounded = false)
                 )
         )
 
@@ -272,7 +272,9 @@ fun LikeIconWithCount(count: Int, modifier: Modifier = Modifier) {
 
 @Composable
 fun EditProfileSection() {
-    Row {
+    Row(
+        modifier = Modifier.padding(horizontal = 20.dp)
+    ) {
         DefaultEditButton(text = "프로필 수정", modifier = Modifier.weight(1f)) {
 
         }
@@ -376,7 +378,7 @@ fun OwnerStoreHomeScreen(navController: NavController) {
                 .clickable(
                     onClick = onClick,
                     interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(bounded = false, color = CopyButtonColor)
+                    indication = ripple(bounded = false, color = CopyButtonColor)
                 ),
             verticalAlignment = Alignment.CenterVertically
         ) {

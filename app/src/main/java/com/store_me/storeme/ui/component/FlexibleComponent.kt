@@ -41,6 +41,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -147,7 +148,7 @@ fun DeleteButton(onClick: () -> Unit) {
             .clickable(
                 onClick = { onClick() },
                 interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(bounded = false)
+                indication = ripple(bounded = false)
             )
             .padding(2.dp)
     )
@@ -163,7 +164,7 @@ fun SearchButton(onClick: () -> Unit) {
             .clickable(
                 onClick = { onClick() },
                 interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(bounded = false)
+                indication = ripple(bounded = false)
             )
     )
 }
@@ -244,9 +245,9 @@ fun DefaultEditButton(text: String, modifier: Modifier = Modifier, containerColo
  * 기본 완료 Button
  */
 @Composable
-fun DefaultFinishButton(text: String = "저장", onClick: () -> Unit) {
+fun DefaultFinishButton(text: String = "저장", modifier: Modifier = Modifier, onClick: () -> Unit) {
     Button(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(50.dp),
         shape = RoundedCornerShape(10.dp),
@@ -280,7 +281,7 @@ fun SearchField(modifier: Modifier = Modifier, observeText: String? = null, hint
             onValueChange = { text = it },
             singleLine = true,
             textStyle = storeMeTypography.bodySmall,
-            cursorBrush = SolidColor(Color.Black),
+            cursorBrush = SolidColor(Black),
             keyboardOptions = KeyboardOptions.Default.copy(
                 imeAction = ImeAction.Search,
                 autoCorrectEnabled = false
@@ -378,7 +379,7 @@ fun LocationLayout(navController: NavController, locationViewModel: LocationView
                 .wrapContentWidth()
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(bounded = false, radius = 15.dp),
+                    indication = ripple(bounded = false, radius = 15.dp),
 
                     onClick = {
                         NavigationUtils().navigateCustomerNav(
@@ -572,7 +573,7 @@ fun NotificationIcon(navController: NavController) {
                     )
                 },
                 interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(bounded = false)
+                indication = ripple(bounded = false)
             )
     )
 }
@@ -598,7 +599,7 @@ fun LinkSection(
                 .clickable(
                     onClick = onClick,
                     interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(bounded = false)
+                    indication = ripple(bounded = false)
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -622,7 +623,7 @@ fun LinkSection(
                 .clickable(
                     onClick = onClick,
                     interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(bounded = false)
+                    indication = ripple(bounded = false)
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -638,7 +639,8 @@ fun LinkSection(
 
     LazyRow(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(horizontal = 20.dp)
     ) {
         item { ShareIcon { onShareClick() } }
 
@@ -676,7 +678,7 @@ fun SocialMediaIcon(url: String, size: Int = 40) {
                     }
                 },
                 interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(bounded = false)
+                indication = ripple(bounded = false)
             )
             .clip(CircleShape),
         tint = Unspecified

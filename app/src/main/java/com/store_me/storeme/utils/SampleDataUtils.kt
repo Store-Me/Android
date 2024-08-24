@@ -130,7 +130,7 @@ class SampleDataUtils {
                 "https://www.instagram.com/ymcoffeeproject?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
                 "https://band.us/@byeonbanjangfruit",
                 "https://youtube.com/@ytnnews24?si=kwF4N9T8q9VOK4JL",
-                "https://www.google.com/"
+                "https://www.google.com/",
             )),
             StoreHoursData(listOf(
                 DailyHoursData("09:00", "21:00"),

@@ -1,5 +1,6 @@
 package com.store_me.storeme.ui.theme
 
+import android.text.Highlights
 import androidx.compose.ui.graphics.Color
 
 val Purple80 = Color(0xFFD0BCFF)
@@ -128,6 +129,11 @@ val EditCommentStrokeColor = Color(0xFFEFF0F5)
 val MyMenuIconColor = Color(0xFF00CC00)
 
 /**
+ * Text Field Color
+ */
+val HighlightTextFieldColor = Color(0xFFD449DA)
+
+/**
  * Owner Home Color
  */
 val OwnerHomeLikeCountColor = Color(0xFF545A68)
@@ -147,3 +153,5 @@ val DefaultIconColor = Color(0xFFEBF3FE)
 val UndefinedTextColor = Color(0xFF898C93)
 
 val UndefinedLinkColor = Color(0xFFD449DA)
+
+val DeleteTextColor = Color(0xFFAAADB4)

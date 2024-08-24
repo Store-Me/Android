@@ -28,4 +28,5 @@
     <string name="alert_copy">복사되었습니다.</string>
 
     <string name="alert_edit_already">순서 편집/삭제 작업을 모두 완료 후 진행해 주세요.</string>
+    <string name="alert_max_link">최대 7개의 링크 설정이 가능합니다.</string>
 </resources>

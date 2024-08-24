@@ -37,6 +37,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -356,7 +357,7 @@ fun PostItem(postData: NormalPostWithStoreInfoData, onMenuClick: () -> Unit, onL
                     .clickable(
                         onClick = onMenuClick,
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = rememberRipple(bounded = false)
+                        indication = ripple(bounded = false)
                     )
                     .padding(2.dp)
             )
@@ -403,7 +404,7 @@ fun PostItem(postData: NormalPostWithStoreInfoData, onMenuClick: () -> Unit, onL
                     .clickable(
                         onClick = onLikeClick,
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = rememberRipple(bounded = false)
+                        indication = ripple(bounded = false)
                     )
             )
 
@@ -417,7 +418,7 @@ fun PostItem(postData: NormalPostWithStoreInfoData, onMenuClick: () -> Unit, onL
                     .clickable(
                         onClick = onCommentClick,
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = rememberRipple(bounded = false)
+                        indication = ripple(bounded = false)
                     )
             )
 
@@ -431,7 +432,7 @@ fun PostItem(postData: NormalPostWithStoreInfoData, onMenuClick: () -> Unit, onL
                     .clickable(
                         onClick = onShareClick,
                         interactionSource = remember { MutableInteractionSource() },
-                        indication = rememberRipple(bounded = false)
+                        indication = ripple(bounded = false)
                     )
             )
         }
