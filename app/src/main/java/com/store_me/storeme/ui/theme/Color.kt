@@ -23,6 +23,8 @@ val HomeCouponTitleTextColor = Color(0xFFD44ADA)
 //Set Location Button Color
 val SetLocationButtonColor = Color(0xFF545A68)
 
+val CancelButtonColor = Color(0xFFD9D9D9)
+
 //Download Coupon Icon Color
 val DownloadCouponColor = Color(0xFFF393F6)
 
@@ -132,6 +134,7 @@ val MyMenuIconColor = Color(0xFF00CC00)
  * Text Field Color
  */
 val HighlightTextFieldColor = Color(0xFFD449DA)
+val ErrorTextFieldColor = Color(0xFFFE4343)
 
 /**
  * Owner Home Color

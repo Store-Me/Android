@@ -245,7 +245,12 @@ fun DefaultEditButton(text: String, modifier: Modifier = Modifier, containerColo
  * 기본 완료 Button
  */
 @Composable
-fun DefaultFinishButton(text: String = "저장", modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun DefaultFinishButton(
+    text: String = "저장",
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onClick: () -> Unit
+) {
     Button(
         modifier = modifier
             .fillMaxWidth()
@@ -255,9 +260,26 @@ fun DefaultFinishButton(text: String = "저장", modifier: Modifier = Modifier, 
             containerColor = Black,
             contentColor = White
         ),
+        enabled = enabled,
         onClick = onClick,
     ) {
         Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 4))
+    }
+}
+
+@Composable
+fun DefaultDialogButton(text: String, modifier: Modifier = Modifier, containerColor: Color, contentColor: Color, onClick: () -> Unit) {
+    Button(
+        modifier = modifier
+            .height(50.dp),
+        shape = RoundedCornerShape(10.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
+        onClick = onClick,
+    ) {
+        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 0))
     }
 }
 

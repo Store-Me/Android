@@ -71,4 +71,10 @@ object Auth {
     fun setLinkListData(socialMediaAccountData: SocialMediaAccountData?) {
         _linkListData.value = socialMediaAccountData
     }
+
+    fun addLinkListData(url: String) {
+        val currentList = _linkListData.value?.urlList?.toMutableList() ?: mutableListOf()
+        currentList.add(url)
+        _linkListData.value = SocialMediaAccountData(currentList)
+    }
 }

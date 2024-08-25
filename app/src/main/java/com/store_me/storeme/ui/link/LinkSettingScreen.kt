@@ -6,8 +6,8 @@ import android.view.HapticFeedbackConstants
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +23,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +32,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -46,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
@@ -55,6 +59,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -62,14 +68,19 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.SocialMediaAccountData
 import com.store_me.storeme.ui.component.DefaultBottomSheet
+import com.store_me.storeme.ui.component.DefaultDialogButton
+import com.store_me.storeme.ui.component.DefaultEditButton
 import com.store_me.storeme.ui.component.DefaultFinishButton
 import com.store_me.storeme.ui.component.DefaultOutlineTextField
 import com.store_me.storeme.ui.component.SocialMediaIcon
+import com.store_me.storeme.ui.component.TextFieldErrorType
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
+import com.store_me.storeme.ui.theme.CancelButtonColor
 import com.store_me.storeme.ui.theme.DefaultDividerColor
 import com.store_me.storeme.ui.theme.DeleteTextColor
 import com.store_me.storeme.ui.theme.EditButtonColor
 import com.store_me.storeme.ui.theme.SaveButtonColor
+import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.ToastMessageUtils
 import sh.calvin.reorderable.ReorderableItem
@@ -85,10 +96,14 @@ fun LinkSettingScreen(
     linkSettingViewModel: LinkSettingViewModel = viewModel()
 ) {
     val linkListData by Auth.linkListData.collectAsState()
+    val list = linkListData?.urlList ?: emptyList()
+
     val editState by linkSettingViewModel.editState.collectAsState()
 
     val sheetState = rememberModalBottomSheetState()
     var showBottomSheet by remember { mutableStateOf(false) }
+
+    var isError by remember { mutableStateOf(false) }
 
     CompositionLocalProvider(LocalLinkSettingViewModel provides linkSettingViewModel) {
 
@@ -124,6 +139,8 @@ fun LinkSettingScreen(
                                 text = text,
                                 placeholderText = "링크를 입력해주세요.",
                                 focusManager = focusManager,
+                                errorType = TextFieldErrorType.LINK,
+                                onErrorChange = { isError = it },
                                 onValueChange = { text = it },
                             )
                         }
@@ -132,8 +149,14 @@ fun LinkSettingScreen(
 
                         Spacer(modifier = Modifier.height(100.dp))
 
-                        DefaultFinishButton(text = "추가", modifier = Modifier.padding(horizontal = 20.dp)) {
-                            //TODO ADD
+                        DefaultFinishButton(
+                            text = "추가",
+                            modifier = Modifier.padding(horizontal = 20.dp),
+                            enabled = !isError && text.isNotEmpty()
+                        ) {
+                            Auth.addLinkListData(text)
+
+                            showBottomSheet = false
                         }
 
                         Spacer(modifier = Modifier.height(50.dp))
@@ -155,9 +178,9 @@ fun LinkSettingScreen(
                             }
                             false -> {
                                 LazyColumn {
-                                    itemsIndexed(Auth.linkListData.value!!.urlList) { index, url ->
+                                    itemsIndexed(list) { index, url ->
 
-                                        LinkItem(url) {  }
+                                        LinkItem(url)
                                     }
                                 }
                             }
@@ -182,6 +205,7 @@ fun LinkReorderList() {
         list = list.toMutableList().apply {
             add(to.index, removeAt(from.index))
         }
+
         Auth.setLinkListData(SocialMediaAccountData(list))
         view.performHapticFeedback(HapticFeedbackConstants.SEGMENT_FREQUENT_TICK)
     }
@@ -221,52 +245,6 @@ fun LinkReorderList() {
             }
         }
     }
-
-    /*var items by remember { mutableStateOf(Auth.linkListData.value?.urlList ?: listOf()) }
-
-    val state = rememberReorderableLazyListState(onMove = { from, to ->
-        items = items.toMutableList().apply {
-            add(to.index, removeAt(from.index))
-        }
-
-        Auth.setLinkListData(socialMediaAccountData = SocialMediaAccountData(items))
-    })
-
-    LazyColumn(
-        state = state.listState,
-        modifier = Modifier
-            .reorderable(state)
-            .detectReorderAfterLongPress(state)
-    ) {
-        itemsIndexed(items) { index, item ->
-            ReorderableItem(reorderableState = state, key = item) { isDragging ->
-                val elevation = animateDpAsState(if (isDragging) 16.dp else 0.dp, label = "")
-                val color = if(isDragging) Black.copy(0.3f) else White
-
-                Column(
-                    Modifier
-                        .shadow(elevation.value)
-                        .background(color)
-                ) {
-                    if (index == 0) {
-                        HorizontalDivider(
-                            color = DefaultDividerColor,
-                            thickness = 1.dp,
-                            modifier = Modifier.padding(vertical = 20.dp)
-                        )
-                    }
-
-                    LinkItem(url = item, editable = true) {  }
-
-                    HorizontalDivider(
-                        color = DefaultDividerColor,
-                        thickness = 1.dp,
-                        modifier = Modifier.padding(vertical = 20.dp)
-                    )
-                }
-            }
-        }
-    }*/
 }
 
 @Composable
@@ -392,7 +370,9 @@ fun LinkEditButtonSection(linkListData: SocialMediaAccountData?, onAddLink:() ->
 
 
 @Composable
-fun LinkItem(url: String, editable: Boolean = false, modifier: Modifier = Modifier, isDragging: Boolean = false, onDelete: (Int) -> Unit) {
+fun LinkItem(url: String, editable: Boolean = false, modifier: Modifier = Modifier, isDragging: Boolean = false, onDelete: () -> Unit = {}) {
+    var showDialog by remember { mutableStateOf(false) }
+
     val lineColor = if(isDragging) Transparent else DefaultDividerColor
 
     Column(
@@ -426,7 +406,7 @@ fun LinkItem(url: String, editable: Boolean = false, modifier: Modifier = Modifi
                         Modifier
                             .background(Transparent)
                             .clickable(
-                                onClick = { },
+                                onClick = { showDialog = true },
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = ripple(bounded = false)
                             ),
@@ -441,8 +421,7 @@ fun LinkItem(url: String, editable: Boolean = false, modifier: Modifier = Modifi
                         painter = painterResource(id = R.drawable.ic_drag),
                         contentDescription = "드래그 아이콘",
                         modifier = Modifier
-                            .size(24.dp)
-                            .draggableHandle(),
+                            .size(24.dp),
                         tint = DeleteTextColor
                     )
                 }
@@ -455,15 +434,73 @@ fun LinkItem(url: String, editable: Boolean = false, modifier: Modifier = Modifi
             modifier = Modifier.padding(top = 20.dp)
         )
     }
+
+    if (showDialog) {
+        BasicAlertDialog(
+            onDismissRequest = { showDialog = false },
+            modifier = Modifier
+                .background(shape = RoundedCornerShape(20.dp), color = White)
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
+                    .padding(15.dp)
+            ) {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Icon(
+                    painterResource(id = R.drawable.ic_warning),
+                    contentDescription = "경고 아이콘",
+                    tint = Unspecified,
+                    modifier = Modifier.size(42.dp)
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(text = "링크를 삭제할까요?", style = storeMeTextStyle(FontWeight.ExtraBold, 6))
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text= url,
+                    style = storeMeTextStyle(FontWeight.Bold, 2),
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Visible
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text= "위의 링크가 삭제되며, 삭제 이후 복구되지않아요.",
+                    style = storeMeTextStyle(FontWeight.Bold, 2),
+                    color = UnselectedItemColor,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    DefaultDialogButton(text = "취소", containerColor = CancelButtonColor, contentColor = Black, modifier = Modifier.weight(1f)) {
+                        showDialog = false
+                    }
+
+                    DefaultDialogButton(text = "삭제", containerColor = Black, contentColor = White, modifier = Modifier.weight(1f)) {
+                        onDelete()
+                        showDialog = false
+                    }
+                }
+            }
+        }
+    }
 }
 
+/*
 @Composable
-fun Modifier.draggableHandle(
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    onDragStarted: (() -> Unit)? = null,
-    onDragStopped: (() -> Unit)? = null
-): Modifier = this.then(
+fun Modifier.draggableHandle(): Modifier = this.then(
     Modifier.semantics {
         clearAndSetSemantics { }
     }
-)
+)*/

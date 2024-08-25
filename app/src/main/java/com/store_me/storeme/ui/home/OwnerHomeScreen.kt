@@ -66,6 +66,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.R
+import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.DailyHoursData
 import com.store_me.storeme.data.StoreDetailData
 import com.store_me.storeme.data.StoreHomeItem
@@ -96,17 +97,13 @@ fun OwnerHomeScreen(
     navController: NavController,
     ownerHomeViewModel: OwnerHomeViewModel = hiltViewModel()
 ) {
-    ownerHomeViewModel.getStoreData()
-    
     var backPressedTime by remember { mutableStateOf(0L) }
     val context = LocalContext.current
 
     val pagerState = rememberPagerState()
 
     CompositionLocalProvider(LocalOwnerHomeViewModel provides ownerHomeViewModel) {
-        LaunchedEffect(Unit) {
-            ownerHomeViewModel.getStoreData()
-        }
+
 
         Scaffold(
             containerColor = White,
@@ -151,7 +148,7 @@ fun BackgroundSection(imageUrl: String) {
 
 @Composable
 fun ProfileSection(navController: NavController) {
-    val ownerHomeViewModel = LocalOwnerHomeViewModel.current
+    val linkListData by Auth.linkListData.collectAsState()
 
     Column {
         Spacer(modifier = Modifier.height(15.dp))
@@ -165,7 +162,7 @@ fun ProfileSection(navController: NavController) {
         Spacer(modifier = Modifier.height(15.dp))
 
         LinkSection(
-            ownerHomeViewModel.storeData.socialMediaAccountData,
+            linkListData,
             modifier= Modifier.weight(1f),
             onShareClick = {  },
             onEditClick = {

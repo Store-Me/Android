@@ -24,6 +24,10 @@ class OwnerHomeViewModel @Inject constructor(
     private val _storeHomeItems = MutableStateFlow(emptyList<StoreHomeItemData>())
     val storeHomeItems: StateFlow<List<StoreHomeItemData>> = _storeHomeItems
 
+    init {
+        getStoreData()
+    }
+
     fun getStoreData() {
         //TODO 값 가져오기
 
