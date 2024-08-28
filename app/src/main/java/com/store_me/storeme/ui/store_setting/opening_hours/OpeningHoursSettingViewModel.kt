@@ -27,8 +27,8 @@ class OpeningHoursSettingViewModel: ViewModel() {
     val isAlwaysOpen: StateFlow<Boolean> = _isAlwaysOpen
 
     //24시간 영업 설정 변경
-    fun changeIsAlwaysOpenValue() {
-        _isAlwaysOpen.value = !_isAlwaysOpen.value
+    fun changeIsAlwaysOpenValue(isAlwaysOpen: Boolean = !_isAlwaysOpen.value) {
+        _isAlwaysOpen.value = isAlwaysOpen
     }
 
     //Break Time 존재 여부
@@ -36,8 +36,8 @@ class OpeningHoursSettingViewModel: ViewModel() {
     val hasBreakTime: StateFlow<Boolean> = _hasBreakTime
 
     //Break Time 존재 여부 변경
-    fun changeHasBreakTimeValue() {
-        _hasBreakTime.value = !_hasBreakTime.value
+    fun changeHasBreakTimeValue(hasBreakTime: Boolean = !_hasBreakTime.value) {
+        _hasBreakTime.value = hasBreakTime
     }
 
     //시작 시간 설정 상태

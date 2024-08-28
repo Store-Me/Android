@@ -189,11 +189,31 @@ fun BottomSheetContent(selectedWeek: DateTimeUtils.DayOfWeek, onFinishButtonClic
 
     val selectedWeeks by remember { openingHoursSettingViewModel.selectedWeeks }.collectAsState()
 
-    if(openingHoursSettingViewModel.isFinished(selectedWeek)) { //이미 완성된 요일인 경우
-        openingHoursSettingViewModel.findSameDailyHoursData(selectedWeek)
-    } else {
-        openingHoursSettingViewModel.clearSelectedWeeks(selectedWeek)
+    var isInitialized by remember { mutableStateOf(false) }
+
+
+
+    LaunchedEffect(selectedWeek) {
+        isInitialized = false
     }
+
+    if(!isInitialized){
+        if(openingHoursSettingViewModel.isFinished(selectedWeek)) { //이미 완성된 요일인 경우
+            openingHoursSettingViewModel.findSameDailyHoursData(selectedWeek)
+
+            openingHoursSettingViewModel.changeIsAlwaysOpenValue(openingHoursSettingViewModel.dailyHoursMap.value[selectedWeek]?.isAlwaysOpen ?: false)
+            openingHoursSettingViewModel.changeHasBreakTimeValue(openingHoursSettingViewModel.dailyHoursMap.value[selectedWeek]?.hasBreakTime ?: false)
+        } else {
+            openingHoursSettingViewModel.clearSelectedWeeks(selectedWeek)
+
+            openingHoursSettingViewModel.changeIsAlwaysOpenValue(false)
+            openingHoursSettingViewModel.changeHasBreakTimeValue(false)
+        }
+
+        isInitialized = true
+    }
+
+
 
     Column(
         modifier = Modifier
@@ -361,6 +381,10 @@ fun SelectTimeSection(thisType: EditTimeType, selectedWeek: DateTimeUtils.DayOfW
     val typeSelected = thisType ==  nowEditTimeType
 
     var isInitialized by remember { mutableStateOf(false) }
+    //초기화 변수를 사용하는게 아닌, 초기화 값을 파라미터로 받아서 사용하면 좋을듯..
+    //fun SelectTimeSection(thisType: EditTimeType, selectedWeek: DateTimeUtils.DayOfWeek? = null, initHour: Int = 9, ... , ) {
+    //위와 같은 방법으로 받으면 더 나은 해결
+
 
     if(selectedWeek != null && openingHoursSettingViewModel.isFinished(selectedWeek)) {
 
