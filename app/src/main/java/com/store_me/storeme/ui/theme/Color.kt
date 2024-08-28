@@ -147,6 +147,11 @@ val OwnerHomeLikeCountColor = Color(0xFF545A68)
 val StoreDetailIconColor = Color(0xFF898C93)
 
 /**
+ * Time Picker Color
+ */
+val TimePickerSelectLineColor = Color(0xFFFEEBFE)
+
+/**
  * Default Color
  */
 val DefaultDividerColor = Color(0xFFEFF0F5)

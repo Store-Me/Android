@@ -115,5 +115,15 @@ class DateTimeUtils {
             }
         }
     }
+
+    fun getSelectTimeText(hours: Int, minutes: Int): String {
+        return "${hours}:${minutes.toString().padStart(2, '0')}"
+    }
+
+    fun splitTimeTextToInt(time: String): Pair<Int, Int> {
+        val (hours, minutes) = time.split(":")
+
+        return hours.toInt() to minutes.toInt()
+    }
 }
 

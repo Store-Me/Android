@@ -21,19 +21,15 @@ class OwnerHomeViewModel @Inject constructor(
 ): ViewModel() {
     val storeData = SampleDataUtils.sampleDetailData
 
-    private val _storeHomeItems = MutableStateFlow(emptyList<StoreHomeItemData>())
-    val storeHomeItems: StateFlow<List<StoreHomeItemData>> = _storeHomeItems
-
     init {
         getStoreData()
     }
 
-    fun getStoreData() {
+    private fun getStoreData() {
         //TODO 값 가져오기
 
-        _storeHomeItems.value = sampleStoreHomeItemData()
-
         Auth.setLinkListData(storeData.socialMediaAccountData)
+        Auth.setStoreHomeItemData(sampleStoreHomeItemData())
     }
 
     enum class OwnerHomeTabMenu(val displayName: String) {

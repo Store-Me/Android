@@ -157,7 +157,7 @@ fun ProfileSection(navController: NavController) {
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        EditProfileSection()
+        EditProfileSection(navController)
 
         Spacer(modifier = Modifier.height(15.dp))
 
@@ -182,7 +182,7 @@ fun ProfileInfoSection() {
     val ownerHomeViewModel = LocalOwnerHomeViewModel.current
 
     val subText =
-        if(ownerHomeViewModel.storeData.storeInfo.customCategory.isNullOrEmpty())
+        if(ownerHomeViewModel.storeData.storeInfo.customCategory.isEmpty())
             ownerHomeViewModel.storeData.storeInfo.location
         else
             ownerHomeViewModel.storeData.storeInfo.location + " · " + ownerHomeViewModel.storeData.storeInfo.customCategory
@@ -268,18 +268,32 @@ fun LikeIconWithCount(count: Int, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun EditProfileSection() {
+fun EditProfileSection(navController: NavController) {
     Row(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
-        DefaultEditButton(text = "프로필 수정", modifier = Modifier.weight(1f)) {
+        DefaultEditButton(
+            text = "프로필 수정",
+            modifier = Modifier
+                .weight(1f)
+                .height(40.dp)
+        ) {
 
         }
 
         Spacer(modifier = Modifier.width(10.dp))
 
-        DefaultEditButton(text = "가게정보 관리", modifier = Modifier.weight(1f), containerColor = ManagementButtonColor, contentColor = White) {
-
+        DefaultEditButton(
+            text = "가게정보 관리",
+            modifier = Modifier
+                .weight(1f)
+                .height(40.dp),
+            containerColor = ManagementButtonColor,
+            contentColor = White) {
+            NavigationUtils().navigateOwnerNav(
+                navController,
+                MainActivity.OwnerNavItem.STORE_SETTING
+            )
         }
     }
 }
@@ -354,8 +368,7 @@ fun OwnerStoreHomeScreen(navController: NavController) {
     val ownerHomeViewModel = LocalOwnerHomeViewModel.current
 
     val storeData = ownerHomeViewModel.storeData
-    val storeHomeItems by ownerHomeViewModel.storeHomeItems.collectAsState()
-
+    val storeHomeItems by Auth.storeHomeItemList.collectAsState()
 
     @Composable
     fun StoreHomeIcon(id: Int) {
@@ -406,7 +419,13 @@ fun OwnerStoreHomeScreen(navController: NavController) {
         fun OpeningHoursForDay(index: Int, hoursData: DailyHoursData, isClosed: Boolean, modifier: Modifier = Modifier) {
             val dayOfWeek = DateTimeUtils.DayOfWeek.entries[index].displayName
 
-            val timeText = if(isClosed) "정기 휴무" else hoursData.openTime + " - " + hoursData.closeTime
+            val timeText = if(isClosed) "정기 휴무" else DateTimeUtils().getSelectTimeText(
+                hours = hoursData.openHours,
+                minutes = hoursData.openMinutes
+            ) + " - " + DateTimeUtils().getSelectTimeText(
+                hours = hoursData.closeHours,
+                minutes = hoursData.closeMinutes
+            )
 
             Row(
                 verticalAlignment = Alignment.CenterVertically
@@ -554,9 +573,9 @@ fun OwnerStoreHomeScreen(navController: NavController) {
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Text(
-                    text = locationInfo?.locationDetail ?: "위치 정보를 입력해주세요.",
+                    text = locationInfo.locationDetail.ifEmpty { "위치 정보를 입력해주세요." },
                     style = storeMeTextStyle(FontWeight.Bold, 1),
-                    color = if(locationInfo == null) UndefinedTextColor else Black
+                    color = if(locationInfo.locationDetail.isEmpty()) UndefinedTextColor else Black
                 )
             }
 
@@ -639,6 +658,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
                             text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item, true),
                             modifier = Modifier
                                 .padding(vertical = 20.dp)
+                                .height(40.dp)
                                 .fillMaxWidth()
                         ) {
 
@@ -651,6 +671,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
                             text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item, false),
                             modifier = Modifier
                                 .padding(vertical = 20.dp)
+                                .height(40.dp)
                                 .fillMaxWidth()
                         ) {
 
@@ -660,7 +681,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
             }
             StoreHomeItem.INTRO -> {
                 when {
-                    storeData.storeInfo.storeDescription.isNullOrEmpty() -> {
+                    storeData.storeInfo.storeDescription.isEmpty() -> {
                         Text(
                             text = ownerHomeViewModel.getEmptySectionText(storeHomeItem.item),
                             style = storeMeTextStyle(FontWeight.Normal, 0),
@@ -671,6 +692,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
                             text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item, true),
                             modifier = Modifier
                                 .padding(vertical = 20.dp)
+                                .height(40.dp)
                                 .fillMaxWidth()
                         ) {
 
@@ -683,6 +705,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
                             text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item, false),
                             modifier = Modifier
                                 .padding(vertical = 20.dp)
+                                .height(40.dp)
                                 .fillMaxWidth()
                         ) {
 
@@ -693,7 +716,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
             }
             StoreHomeItem.PHOTO -> {
                 when {
-                    storeData.representPhoto.isNullOrEmpty() -> {
+                    storeData.representPhoto.isEmpty() -> {
                         Text(
                             text = ownerHomeViewModel.getEmptySectionText(storeHomeItem.item),
                             style = storeMeTextStyle(FontWeight.Normal, 0),
@@ -709,6 +732,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
                     text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item),
                     modifier = Modifier
                         .padding(vertical = 20.dp)
+                        .height(40.dp)
                         .fillMaxWidth()
                 ) {
 
@@ -716,7 +740,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
             }
             StoreHomeItem.COUPON -> {
                 when {
-                    storeData.couponList.isNullOrEmpty() -> {
+                    storeData.couponList.isEmpty() -> {
                         Text(
                             text = ownerHomeViewModel.getEmptySectionText(storeHomeItem.item),
                             style = storeMeTextStyle(FontWeight.Normal, 0),
@@ -732,14 +756,15 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
                     text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item),
                     modifier = Modifier
                         .padding(vertical = 20.dp)
+                        .height(40.dp)
                         .fillMaxWidth()
                 ) {
 
                 }
             }
             StoreHomeItem.MENU -> {
-                when (storeData.storeMenu) {
-                    null -> {
+                when {
+                    storeData.storeMenu.menus.isEmpty() -> {
                         Text(
                             text = ownerHomeViewModel.getEmptySectionText(storeHomeItem.item),
                             style = storeMeTextStyle(FontWeight.Normal, 0),
@@ -755,6 +780,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
                     text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item),
                     modifier = Modifier
                         .padding(vertical = 20.dp)
+                        .height(40.dp)
                         .fillMaxWidth()
                 ) {
 
@@ -778,6 +804,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
                     text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item),
                     modifier = Modifier
                         .padding(vertical = 20.dp)
+                        .height(40.dp)
                         .fillMaxWidth()
                 ) {
 
@@ -801,14 +828,15 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
                     text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item),
                     modifier = Modifier
                         .padding(vertical = 20.dp)
+                        .height(40.dp)
                         .fillMaxWidth()
                 ) {
 
                 }
             }
             StoreHomeItem.NEWS -> {
-                when (storeData.customLabel) {
-                    null -> {
+                when {
+                    storeData.customLabel.labelList.isEmpty() -> {
                         //커스텀 라벨이 없는 경우
                         Text(
                             text = ownerHomeViewModel.getEmptySectionText(storeHomeItem.item),
@@ -817,8 +845,8 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
                         )
                     }
                     else -> {
-                        when (storeData.labelWithPostData) {
-                            null -> {
+                        when {
+                            storeData.labelWithPostData.isEmpty() -> {
                                 //커스텀 라벨은 있지만, 게시글이 없는 경우
                                 Text(
                                     text = ownerHomeViewModel.getEmptySectionText(storeHomeItem.item),
@@ -838,6 +866,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
                     text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item),
                     modifier = Modifier
                         .padding(vertical = 20.dp)
+                        .height(40.dp)
                         .fillMaxWidth()
                 ) {
 
@@ -854,7 +883,7 @@ fun NoticeSection() {
 
 @Composable
 fun IntroSection(storeData: StoreDetailData) {
-    Text(text = storeData.storeInfo.storeDescription.toString(), style = storeMeTextStyle(FontWeight.Normal, 0))
+    Text(text = storeData.storeInfo.storeDescription, style = storeMeTextStyle(FontWeight.Normal, 0))
 }
 
 @Composable
@@ -886,7 +915,7 @@ fun ReviewSection() {
 
 @Composable
 fun NewsSection(storeData: StoreDetailData) {
-    storeData.customLabel!!.labelList!!.forEach {
+    storeData.customLabel.labelList.forEach {
 
     }
 }

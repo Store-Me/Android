@@ -37,6 +37,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
+import com.store_me.storeme.data.StoreHomeItem
+import com.store_me.storeme.data.StoreNormalItem
 import com.store_me.storeme.ui.banner.BannerDetailScreen
 import com.store_me.storeme.ui.banner.BannerListScreen
 import com.store_me.storeme.ui.home.CustomerHomeScreen
@@ -50,6 +52,18 @@ import com.store_me.storeme.ui.near_place.NearPlaceScreen
 import com.store_me.storeme.ui.notification.NotificationScreen
 import com.store_me.storeme.ui.post.AddNormalPostScreen
 import com.store_me.storeme.ui.store_detail.StoreDetailScreen
+import com.store_me.storeme.ui.store_setting.ClosedDaySettingScreen
+import com.store_me.storeme.ui.store_setting.CouponSettingScreen
+import com.store_me.storeme.ui.store_setting.IntroSettingScreen
+import com.store_me.storeme.ui.store_setting.LocationSettingScreen
+import com.store_me.storeme.ui.store_setting.MenuSettingScreen
+import com.store_me.storeme.ui.store_setting.NewsSettingScreen
+import com.store_me.storeme.ui.store_setting.NoticeSettingScreen
+import com.store_me.storeme.ui.store_setting.opening_hours.OpeningHoursSettingScreen
+import com.store_me.storeme.ui.store_setting.PhotoSettingScreen
+import com.store_me.storeme.ui.store_setting.ReviewSettingScreen
+import com.store_me.storeme.ui.store_setting.StoreSettingScreen
+import com.store_me.storeme.ui.store_setting.StorySettingScreen
 import com.store_me.storeme.ui.store_talk.StoreTalkScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.ui.theme.UnselectedItemColor
@@ -170,8 +184,28 @@ class MainActivity : ComponentActivity() {
             composable(OwnerBottomNavItem.StoreTalk.screenRoute) {  }
             composable(OwnerBottomNavItem.StoreInfo.screenRoute) {  }
 
+            /*
+             * Start Screen 이 OWNER_HOME
+             */
             //HOME > LINK_SETTING
             composable(OWNER_HOME + OwnerNavItem.LINK_SETTING.name) { LinkSettingScreen(navController) }
+            //HOME > STORE_SETTING
+            composable(OWNER_HOME + OwnerNavItem.STORE_SETTING.name) { StoreSettingScreen(navController) }
+
+            //HOME > STORE_SETTINGS
+            //HOME > NORMAL
+            composable(OWNER_HOME + StoreNormalItem.OPENING_HOURS) { OpeningHoursSettingScreen(navController) }
+            composable(OWNER_HOME + StoreNormalItem.CLOSED_DAY) { ClosedDaySettingScreen(navController) }
+            composable(OWNER_HOME + StoreNormalItem.LOCATION) { LocationSettingScreen(navController) }
+            //HOME > HOME ITEM
+            composable(OWNER_HOME + StoreHomeItem.NOTICE) { NoticeSettingScreen(navController) }
+            composable(OWNER_HOME + StoreHomeItem.INTRO) { IntroSettingScreen(navController) }
+            composable(OWNER_HOME + StoreHomeItem.PHOTO) { PhotoSettingScreen(navController) }
+            composable(OWNER_HOME + StoreHomeItem.COUPON) { CouponSettingScreen(navController) }
+            composable(OWNER_HOME + StoreHomeItem.MENU) { MenuSettingScreen(navController) }
+            composable(OWNER_HOME + StoreHomeItem.STORY) { StorySettingScreen(navController) }
+            composable(OWNER_HOME + StoreHomeItem.REVIEW) { ReviewSettingScreen(navController) }
+            composable(OWNER_HOME + StoreHomeItem.NEWS) { NewsSettingScreen(navController) }
         }
     }
 
@@ -301,6 +335,6 @@ class MainActivity : ComponentActivity() {
     }
 
     enum class OwnerNavItem {
-        LINK_SETTING,
+        LINK_SETTING, STORE_SETTING,
     }
 }

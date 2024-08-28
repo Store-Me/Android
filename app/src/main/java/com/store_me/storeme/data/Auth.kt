@@ -77,4 +77,11 @@ object Auth {
         currentList.add(url)
         _linkListData.value = SocialMediaAccountData(currentList)
     }
+
+    private val _storeHomeItemList = MutableStateFlow<List<StoreHomeItemData>>(emptyList())
+    val storeHomeItemList: StateFlow<List<StoreHomeItemData>> = _storeHomeItemList
+
+    fun setStoreHomeItemData(storeHomeItemList: List<StoreHomeItemData>) {
+        _storeHomeItemList.value = storeHomeItemList
+    }
 }

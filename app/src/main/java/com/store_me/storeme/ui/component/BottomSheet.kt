@@ -19,15 +19,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun DefaultBottomSheet(onDismiss: () -> Unit, sheetState: SheetState, content: @Composable ColumnScope.() -> Unit) {
+fun DefaultBottomSheet(onDismiss: () -> Unit, containerColor: Color = Color.White, sheetState: SheetState, content: @Composable ColumnScope.() -> Unit) {
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
         sheetState = sheetState,
         dragHandle = null,
         properties = ModalBottomSheetProperties(
-            shouldDismissOnBackPress = false
+            shouldDismissOnBackPress = false,
+
         ),
-        scrimColor = Color.Black.copy(0.5f)
+        scrimColor = Color.Black.copy(0.5f),
+        containerColor = containerColor,
     ) {
         Spacer(modifier = Modifier.height(20.dp))
 

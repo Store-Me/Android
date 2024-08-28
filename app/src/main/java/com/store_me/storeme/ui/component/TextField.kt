@@ -1,5 +1,6 @@
 package com.store_me.storeme.ui.component
 
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -10,14 +11,13 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -37,10 +37,10 @@ fun DefaultOutlineTextField(
     text: String,
     modifier: Modifier = Modifier,
     placeholderText: String = "",
-    focusManager: FocusManager,
     errorType: TextFieldErrorType? = null,
     onValueChange: (String) -> Unit,
-    onErrorChange: (Boolean) -> Unit = {}
+    onErrorChange: (Boolean) -> Unit = {},
+    singleLine: Boolean = true
 ) {
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
@@ -51,10 +51,17 @@ fun DefaultOutlineTextField(
             if (urlList.contains(text))
                 "이미 존재하는 링크입니다."
             else if (text.isNotEmpty() && !text.startsWith("http://") && !text.startsWith("https://"))
-                "링크는 https:// 혹은 http:// 로 시작해야합니다."
+                "링크는 https:// 혹은 http:// 로 시작해야 합니다."
             else
                 null
         }
+        TextFieldErrorType.OPENING_HOURS_DESCRIPTION -> {
+            if(text.length > 100) {
+                "100자 이내로 작성해야 합니다."
+            } else
+                null
+        }
+
         else -> null
     }
 
@@ -63,7 +70,7 @@ fun DefaultOutlineTextField(
     }
 
 
-    DisposableEffect(lifecycleOwner) {
+    /*DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_STOP) {
                 focusManager.clearFocus()
@@ -74,15 +81,15 @@ fun DefaultOutlineTextField(
         onDispose {
             lifecycleOwner.lifecycle.removeObserver(observer)
         }
-    }
+    }*/
 
     OutlinedTextField(
         value = text,
         onValueChange = { onValueChange(it) },
-        singleLine = true,
-        keyboardOptions = KeyboardOptions.Default.copy(
+        singleLine = singleLine,
+        keyboardOptions = if(singleLine) KeyboardOptions.Default.copy(
             imeAction = ImeAction.Done
-        ),
+        ) else KeyboardOptions.Default,
         placeholder = { Text(
             text = placeholderText,
             style = storeMeTextStyle(FontWeight.Normal, 0)) },
@@ -117,5 +124,16 @@ fun DefaultOutlineTextField(
 }
 
 enum class TextFieldErrorType {
-    LINK
+    LINK, OPENING_HOURS_DESCRIPTION
+}
+
+fun Modifier.addFocusCleaner(
+    focusManager: FocusManager,
+    doOnClear: () -> Unit = {}): Modifier {
+    return this.pointerInput(Unit) {
+        detectTapGestures(onTap = {
+            doOnClear()
+            focusManager.clearFocus()
+        })
+    }
 }

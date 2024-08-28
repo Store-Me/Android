@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
@@ -69,9 +70,9 @@ import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.SocialMediaAccountData
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultDialogButton
-import com.store_me.storeme.ui.component.DefaultEditButton
 import com.store_me.storeme.ui.component.DefaultFinishButton
 import com.store_me.storeme.ui.component.DefaultOutlineTextField
+import com.store_me.storeme.ui.component.LargeButton
 import com.store_me.storeme.ui.component.SocialMediaIcon
 import com.store_me.storeme.ui.component.TextFieldErrorType
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
@@ -121,7 +122,7 @@ fun LinkSettingScreen(
                     val focusManager = LocalFocusManager.current
 
                     DefaultBottomSheet(sheetState = sheetState, onDismiss = { showBottomSheet = false }) {
-                        Text(text = "링크", style = storeMeTextStyle(FontWeight.ExtraBold, 2), modifier = Modifier.padding(horizontal = 20.dp))
+                        Text(text = "링크", style = storeMeTextStyle(FontWeight.ExtraBold, 4), modifier = Modifier.padding(horizontal = 20.dp))
 
                         Spacer(modifier = Modifier.height(10.dp))
 
@@ -138,14 +139,11 @@ fun LinkSettingScreen(
                             DefaultOutlineTextField(
                                 text = text,
                                 placeholderText = "링크를 입력해주세요.",
-                                focusManager = focusManager,
                                 errorType = TextFieldErrorType.LINK,
                                 onErrorChange = { isError = it },
                                 onValueChange = { text = it },
                             )
                         }
-
-
 
                         Spacer(modifier = Modifier.height(100.dp))
 
@@ -178,15 +176,14 @@ fun LinkSettingScreen(
                             }
                             false -> {
                                 LazyColumn {
-                                    itemsIndexed(list) { index, url ->
-
+                                    items(list) { url ->
                                         LinkItem(url)
                                     }
                                 }
+
+
                             }
                         }
-
-
                     }
                 }
             }
@@ -229,9 +226,10 @@ fun LinkReorderList() {
                         }
                         Auth.setLinkListData(SocialMediaAccountData(newList))
                     },
-                    modifier = Modifier
+                    columnModifier = Modifier
                         .background(if (isDragging) Black.copy(0.2f) else White)
-                        .fillMaxWidth()
+                        .fillMaxWidth(),
+                    handelModifier = Modifier
                         .draggableHandle(
                             interactionSource = interactionSource,
                             onDragStarted = {
@@ -254,37 +252,17 @@ fun LinkEditButtonSection(linkListData: SocialMediaAccountData?, onAddLink:() ->
 
     val context = LocalContext.current
 
-    @Composable
-    fun SaveButton(modifier: Modifier = Modifier,onClick: () -> Unit) {
-        Button(
-            modifier = modifier
-                .height(50.dp),
-            shape = RoundedCornerShape(6.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = SaveButtonColor,
-                contentColor = White
-            ),
-            onClick = onClick,
-        ) {
-            Text(text = "저장", style = storeMeTextStyle(FontWeight.ExtraBold, 2))
-        }
+    val icon: @Composable () -> Unit = {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_circle_plus),
+            contentDescription = "링크 추가 아이콘",
+            modifier = Modifier
+                .size(22.dp)
+                .clip(CircleShape),
+            tint = White
+        )
     }
 
-    @Composable
-    fun EditLinkButton(modifier: Modifier = Modifier,onClick: () -> Unit) {
-        Button(
-            modifier = modifier
-                .height(50.dp),
-            shape = RoundedCornerShape(6.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = EditButtonColor,
-                contentColor = Black
-            ),
-            onClick = onClick,
-        ) {
-            Text(text = "순서 편집/삭제", style = storeMeTextStyle(FontWeight.ExtraBold, 2))
-        }
-    }
 
     fun addButtonClick() {
         if(editState) {
@@ -300,33 +278,6 @@ fun LinkEditButtonSection(linkListData: SocialMediaAccountData?, onAddLink:() ->
         onAddLink()
     }
 
-    @Composable
-    fun AddLinkButton(modifier: Modifier = Modifier) {
-        Button(
-            modifier = modifier
-                .height(50.dp),
-            shape = RoundedCornerShape(6.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Black,
-                contentColor = White
-            ),
-            onClick = { addButtonClick() },
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_circle_plus),
-                contentDescription = "링크 추가 아이콘",
-                modifier = Modifier
-                    .size(22.dp)
-                    .clip(CircleShape),
-                tint = White
-            )
-
-            Spacer(modifier = Modifier.width(5.dp))
-
-            Text(text = "링크 추가", style = storeMeTextStyle(FontWeight.ExtraBold, 2))
-        }
-    }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -336,22 +287,38 @@ fun LinkEditButtonSection(linkListData: SocialMediaAccountData?, onAddLink:() ->
 
         when(linkListData) {
             null -> {
-                AddLinkButton(modifier = Modifier.weight(1f))
+                LargeButton(
+                    text = "링크 추가",
+                    containerColor = Black,
+                    contentColor = White,
+                    modifier = Modifier.weight(1f),
+                    icon = { icon() }
+                ) {
+                    addButtonClick()
+                }
             }
             else -> {
                 when(linkListData.urlList.size) {
                     0 -> {
-                        AddLinkButton(modifier = Modifier.weight(1f))
+                        LargeButton(
+                            text = "링크 추가",
+                            containerColor = Black,
+                            contentColor = White,
+                            modifier = Modifier.weight(1f),
+                            icon = { icon() }
+                        ) {
+                            addButtonClick()
+                        }
                     }
                     else -> {
                         when(editState) {
                             true -> {
-                                SaveButton(modifier = Modifier.weight(1f)) {
+                                LargeButton(text = "저장", modifier = Modifier.weight(1f), containerColor = SaveButtonColor, contentColor = White) {
                                     linkSettingViewModel.setEditState(false)
                                 }
                             }
                             false -> {
-                                EditLinkButton(modifier = Modifier.weight(1f)) {
+                                LargeButton(text = "순서 편집/삭제", modifier = Modifier.weight(1f), containerColor = EditButtonColor, contentColor = Black) {
                                     linkSettingViewModel.setEditState(true)
                                 }
                             }
@@ -360,7 +327,15 @@ fun LinkEditButtonSection(linkListData: SocialMediaAccountData?, onAddLink:() ->
 
                         Spacer(modifier = Modifier.width(10.dp))
 
-                        AddLinkButton(modifier = Modifier.weight(1f))
+                        LargeButton(
+                            text = "링크 추가",
+                            containerColor = Black,
+                            contentColor = White,
+                            modifier = Modifier.weight(1f),
+                            icon = { icon() }
+                        ) {
+                            addButtonClick()
+                        }
                     }
                 }
             }
@@ -370,13 +345,13 @@ fun LinkEditButtonSection(linkListData: SocialMediaAccountData?, onAddLink:() ->
 
 
 @Composable
-fun LinkItem(url: String, editable: Boolean = false, modifier: Modifier = Modifier, isDragging: Boolean = false, onDelete: () -> Unit = {}) {
+fun LinkItem(url: String, editable: Boolean = false, columnModifier: Modifier = Modifier, handelModifier: Modifier = Modifier, isDragging: Boolean = false, onDelete: () -> Unit = {}) {
     var showDialog by remember { mutableStateOf(false) }
 
     val lineColor = if(isDragging) Transparent else DefaultDividerColor
 
     Column(
-        modifier = modifier
+        modifier = columnModifier
             .fillMaxWidth()
     ) {
         Spacer(modifier= Modifier.height(20.dp))
@@ -420,7 +395,7 @@ fun LinkItem(url: String, editable: Boolean = false, modifier: Modifier = Modifi
                     Icon(
                         painter = painterResource(id = R.drawable.ic_drag),
                         contentDescription = "드래그 아이콘",
-                        modifier = Modifier
+                        modifier = handelModifier
                             .size(24.dp),
                         tint = DeleteTextColor
                     )
@@ -443,7 +418,8 @@ fun LinkItem(url: String, editable: Boolean = false, modifier: Modifier = Modifi
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(15.dp)
             ) {
                 Spacer(modifier = Modifier.height(10.dp))

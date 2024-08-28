@@ -4,6 +4,7 @@ package com.store_me.storeme.ui.component
 
 import android.Manifest
 import android.content.Intent
+import android.graphics.drawable.Icon
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +28,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -55,11 +58,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
@@ -87,14 +92,17 @@ import com.store_me.storeme.ui.theme.DefaultIconColor
 import com.store_me.storeme.ui.theme.EditButtonColor
 import com.store_me.storeme.ui.theme.HomeSearchBoxColor
 import com.store_me.storeme.ui.theme.NormalCategoryColor
+import com.store_me.storeme.ui.theme.SaveButtonColor
 import com.store_me.storeme.ui.theme.SelectedCategoryColor
 import com.store_me.storeme.ui.theme.ToggleButtonBorderColor
+import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.WebIconColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.storeMeTypography
 import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.SampleDataUtils
+import com.store_me.storeme.utils.SizeUtils
 import com.store_me.storeme.utils.SocialMediaAccountUtils
 import com.store_me.storeme.utils.StoreCategory
 import kotlinx.coroutines.delay
@@ -104,7 +112,12 @@ import kotlinx.coroutines.launch
  * 여러 곳에서 사용되는 Composable 함수 모음
  */
 @Composable
-fun TitleWithDeleteButton(navController: NavController, title: String){
+fun TitleWithDeleteButton(navController: NavController, title: String, isInTopAppBar: Boolean = false){
+    val modifier =
+        if(isInTopAppBar)
+            Modifier.padding(start = 4.dp, end = 20.dp)
+        else
+            Modifier.padding(start = 20.dp, end = 20.dp)
 
     fun returnBackScreen(){
         if (navController.currentBackStackEntry?.destination?.id != navController.graph.startDestinationId) {
@@ -117,17 +130,16 @@ fun TitleWithDeleteButton(navController: NavController, title: String){
     }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(60.dp)
-            .padding(start = 20.dp, end = 20.dp),
+            .height(60.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.height(10.dp))
 
         Text(
             text = title,
-            style = storeMeTypography.labelLarge
+            style = storeMeTextStyle(FontWeight.ExtraBold, 6)
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -215,7 +227,66 @@ fun DefaultToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) 
         contentPadding = PaddingValues(horizontal = 10.dp),
         onClick = onClick
     ) {
-        Text(text = text, style = storeMeTypography.bodySmall)
+        Text(text = text, style = storeMeTextStyle(FontWeight.Normal, 2), modifier = Modifier.padding(horizontal = 3.dp))
+    }
+}
+
+@Composable
+fun CircleToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
+    val borderStroke = if(!isSelected) BorderStroke(1.dp, ToggleButtonBorderColor) else null
+    val contentColor = if(!isSelected) Black else White
+    val containerColor = if(!isSelected) White else Black
+
+    Button(
+        modifier = Modifier
+            .size(40.dp),
+        shape = CircleShape,
+        border = borderStroke,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
+        onClick = onClick,
+        contentPadding = PaddingValues(0.dp)
+    ) {
+        Text(text = text, style = storeMeTextStyle(FontWeight.Bold, 2), modifier = Modifier.padding(horizontal = 3.dp))
+    }
+}
+
+/**
+ * Default Check Button
+ */
+@Composable
+fun DefaultCheckButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
+    val contentColor = if(!isSelected) UndefinedTextColor else Black
+    val iconId = if(!isSelected) R.drawable.ic_check_off else R.drawable.ic_check_on
+
+    Row(
+        modifier = Modifier
+            .wrapContentSize()
+            .clickable(
+                onClick = { onClick() },
+                indication = null,
+                interactionSource = null
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = text,
+            style = storeMeTextStyle(FontWeight.Bold, 0),
+            color = contentColor,
+            modifier = Modifier
+                .padding(vertical = 4.dp)
+        )
+        
+        Spacer(modifier = Modifier.width(5.dp))
+
+        Icon(
+            painter = painterResource(id = iconId),
+            contentDescription = "체크 아이콘",
+            modifier = Modifier
+                .size(SizeUtils().textSizeToDp(LocalDensity.current, 0, 4)),
+            tint = contentColor
+        )
     }
 }
 
@@ -226,10 +297,41 @@ fun DefaultToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) 
  * @param containerColor 박스 색
  */
 @Composable
-fun DefaultEditButton(text: String, modifier: Modifier = Modifier, containerColor: Color = EditButtonColor, contentColor: Color = Black, onClick: () -> Unit) {
+fun DefaultEditButton(
+    text: String,
+    modifier: Modifier = Modifier
+        .height(40.dp)
+        .fillMaxWidth(),
+    containerColor: Color = EditButtonColor,
+    contentColor: Color = Black,
+    onClick: () -> Unit
+) {
+    Button(
+        modifier = modifier,
+        shape = RoundedCornerShape(6.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
+        onClick = onClick,
+        contentPadding = PaddingValues(0.dp)
+    ) {
+        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 0))
+    }
+}
+
+@Composable
+fun LargeButton(
+    text: String,
+    icon: @Composable (() -> Unit)? = null,
+    modifier: Modifier = Modifier,
+    containerColor: Color,
+    contentColor: Color,
+    onClick: () -> Unit)
+{
     Button(
         modifier = modifier
-            .height(40.dp),
+            .height(50.dp),
         shape = RoundedCornerShape(6.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
@@ -237,7 +339,13 @@ fun DefaultEditButton(text: String, modifier: Modifier = Modifier, containerColo
         ),
         onClick = onClick,
     ) {
-        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 0))
+        icon?.let {
+            it()
+
+            Spacer(modifier = Modifier.width(5.dp))
+        }
+
+        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 2))
     }
 }
 
@@ -279,7 +387,7 @@ fun DefaultDialogButton(text: String, modifier: Modifier = Modifier, containerCo
         ),
         onClick = onClick,
     ) {
-        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 0))
+        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 2))
     }
 }
 

@@ -26,9 +26,9 @@ data class StoreInfoData(
     val storeId: String,
     val storeName: String,
     val storeImage: String,
-    val storeDescription: String?,
+    val storeDescription: String,
     val category: StoreCategory,
-    val customCategory: String?,
+    val customCategory: String,
     val location: String,
     val locationCode: Int,
     val favoriteCount: Int,
@@ -73,19 +73,31 @@ enum class SocialMediaAccountType{
  * ))
  */
 data class StoreHoursData(
-    val openingHours: List<DailyHoursData>? = null,
+    val openingHours: List<DailyHoursData>,
     val closedDay: List<Int>?,
-    val description: String? = null,
+    val description: String = "",
 )
 
 /**
  * 영업 시간 상세 정보
  * @param openTime 오픈 시간
  * @param closeTime 마감 시간
+ * @param hasBreakTime 브레이크 타임 존재 여부
+ * @param startBreakTime 브레이크 타임 시작
+ * @param endBreakTime 브레이크 타임 종료
+ * @param isAlwaysOpen 24시간 여부
  */
 data class DailyHoursData(
-    val openTime: String,
-    val closeTime: String
+    val openHours: Int,
+    val openMinutes: Int,
+    val closeHours: Int,
+    val closeMinutes: Int,
+    val startBreakHours: Int,
+    val startBreakMinutes: Int,
+    val endBreakHours: Int,
+    val endBreakMinutes: Int,
+    val hasBreakTime: Boolean,
+    val isAlwaysOpen: Boolean,
 )
 
 /**
@@ -126,7 +138,7 @@ data class LocationInfo(
  * @param labelList 라벨 목록
  */
 data class CustomLabelData(
-    val labelList: List<String>?
+    val labelList: List<String>
 )
 
 data class PreviewPostData(
@@ -143,22 +155,31 @@ data class LabelWithPostData(
 data class StoreDetailData(
     val storeInfo: StoreInfoData,
     val bannerImageUrl: String?,
-    val socialMediaAccountData: SocialMediaAccountData? = null,
+    val socialMediaAccountData: SocialMediaAccountData,
     val storeHours: StoreHoursData,
     val storePhoneNumber: String,
-    val locationInfo: LocationInfo? = null,
-    val storeMenu: StoreMenuData? = null,
-    val customLabel: CustomLabelData? = null,
+    val locationInfo: LocationInfo,
+    val storeMenu: StoreMenuData,
+    val customLabel: CustomLabelData,
     val notice: String?,
-    val labelWithPostData: List<LabelWithPostData>? = null,
-    val representPhoto: List<String>? = null,
-    val couponList: List<DetailCouponData>? = null,
+    val labelWithPostData: List<LabelWithPostData>,
+    val representPhoto: List<String>,
+    val couponList: List<DetailCouponData>,
     val isStoryExist: Boolean,
     val isReviewExist: Boolean,
 )
 
 /**
- * Store Home 아이템
+ * 기본으로 제공되며 숨김 및 순서 변경이 불가능 한 Store Item
+ */
+enum class StoreNormalItem(val displayName: String) {
+    OPENING_HOURS("영업시간"),
+    CLOSED_DAY("휴무일"),
+    LOCATION("위치 정보"),
+}
+
+/**
+ * 숨김 및 순서 변경이 가능 한 Store Item
  */
 enum class StoreHomeItem(val displayName: String) {
     NOTICE("공지사항"),
@@ -171,6 +192,12 @@ enum class StoreHomeItem(val displayName: String) {
     NEWS("소식")
 }
 
+/**
+ * Store Home Item 의 순서 및 숨김 여부
+ * @param item StoreHomeItem
+ * @param isHidden 숨김 여부
+ * @param order 순서
+ */
 data class StoreHomeItemData(
     val item: StoreHomeItem,
     val isHidden: Boolean = false,
