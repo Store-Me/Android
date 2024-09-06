@@ -41,8 +41,8 @@ import com.store_me.storeme.data.StoreHomeItem
 import com.store_me.storeme.data.StoreNormalItem
 import com.store_me.storeme.ui.banner.BannerDetailScreen
 import com.store_me.storeme.ui.banner.BannerListScreen
-import com.store_me.storeme.ui.home.CustomerHomeScreen
-import com.store_me.storeme.ui.home.OwnerHomeScreen
+import com.store_me.storeme.ui.home.customer.CustomerHomeScreen
+import com.store_me.storeme.ui.home.owner.OwnerHomeScreen
 import com.store_me.storeme.ui.link.LinkSettingScreen
 import com.store_me.storeme.ui.location.LocationScreen
 import com.store_me.storeme.ui.my_menu.MyMenuScreen
@@ -52,8 +52,8 @@ import com.store_me.storeme.ui.near_place.NearPlaceScreen
 import com.store_me.storeme.ui.notification.NotificationScreen
 import com.store_me.storeme.ui.post.AddNormalPostScreen
 import com.store_me.storeme.ui.store_detail.StoreDetailScreen
-import com.store_me.storeme.ui.store_setting.ClosedDaySettingScreen
-import com.store_me.storeme.ui.store_setting.CouponSettingScreen
+import com.store_me.storeme.ui.store_setting.closed_day.ClosedDaySettingScreen
+import com.store_me.storeme.ui.store_setting.coupon.setting.CouponSettingScreen
 import com.store_me.storeme.ui.store_setting.IntroSettingScreen
 import com.store_me.storeme.ui.store_setting.LocationSettingScreen
 import com.store_me.storeme.ui.store_setting.MenuSettingScreen
@@ -64,6 +64,8 @@ import com.store_me.storeme.ui.store_setting.PhotoSettingScreen
 import com.store_me.storeme.ui.store_setting.ReviewSettingScreen
 import com.store_me.storeme.ui.store_setting.StoreSettingScreen
 import com.store_me.storeme.ui.store_setting.StorySettingScreen
+import com.store_me.storeme.ui.store_setting.coupon.create.CreateCouponScreen
+import com.store_me.storeme.ui.store_setting.coupon.edit.EditCouponScreen
 import com.store_me.storeme.ui.store_talk.StoreTalkScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.ui.theme.UnselectedItemColor
@@ -192,7 +194,6 @@ class MainActivity : ComponentActivity() {
             //HOME > STORE_SETTING
             composable(OWNER_HOME + OwnerNavItem.STORE_SETTING.name) { StoreSettingScreen(navController) }
 
-            //HOME > STORE_SETTINGS
             //HOME > NORMAL
             composable(OWNER_HOME + StoreNormalItem.OPENING_HOURS) { OpeningHoursSettingScreen(navController) }
             composable(OWNER_HOME + StoreNormalItem.CLOSED_DAY) { ClosedDaySettingScreen(navController) }
@@ -206,6 +207,16 @@ class MainActivity : ComponentActivity() {
             composable(OWNER_HOME + StoreHomeItem.STORY) { StorySettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.REVIEW) { ReviewSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.NEWS) { NewsSettingScreen(navController) }
+
+            composable(OWNER_HOME + OwnerNavItem.CREATE_COUPON.name + "/{selectedCouponType}") {backStackEntry ->
+                val selectedCouponType = backStackEntry.arguments?.getString("selectedCouponType")
+                CreateCouponScreen(navController, selectedCouponType = selectedCouponType ?: "")
+            }
+
+            composable(OWNER_HOME + OwnerNavItem.EDIT_COUPON.name + "/{selectedCouponId}") {backStackEntry ->
+                val selectedCouponId = backStackEntry.arguments?.getString("selectedCouponId")
+                EditCouponScreen(navController, selectedCouponId = selectedCouponId ?: "")
+            }
         }
     }
 
@@ -335,6 +346,6 @@ class MainActivity : ComponentActivity() {
     }
 
     enum class OwnerNavItem {
-        LINK_SETTING, STORE_SETTING,
+        LINK_SETTING, STORE_SETTING, CREATE_COUPON, EDIT_COUPON,
     }
 }

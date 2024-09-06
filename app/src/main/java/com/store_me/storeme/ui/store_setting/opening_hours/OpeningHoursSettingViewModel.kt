@@ -1,7 +1,7 @@
 package com.store_me.storeme.ui.store_setting.opening_hours
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
+import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.DailyHoursData
 import com.store_me.storeme.utils.DateTimeUtils
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -80,12 +80,59 @@ class OpeningHoursSettingViewModel: ViewModel() {
 
     val dailyHoursMap: StateFlow<Map<DateTimeUtils.DayOfWeek, DailyHoursData>> = _dailyHoursMap
 
-    fun setDailyHours(dayOfWeek: DateTimeUtils.DayOfWeek, newHoursData: DailyHoursData) {
+    //영업 시간 관련 기타 정보
+    private val _extraDescription: MutableStateFlow<String> = MutableStateFlow("")
+    val extraDescription: StateFlow<String> = _extraDescription
+
+    fun updateExtraDescription(text: String) {
+        _extraDescription.value = text
+    }
+
+    /*
+     * 입력 된 정보 불러오기
+     */
+    init {
+
+        if(Auth.storeHoursData.value.openingHours.isNotEmpty()) {
+            Auth.storeHoursData.value.openingHours.forEachIndexed { index, dailyHoursData ->
+                setDailyHours(dayOfWeek = DateTimeUtils.DayOfWeek.entries[index], newHoursData = dailyHoursData)
+            }
+        }
+
+        if(Auth.storeHoursData.value.description.isNotEmpty()) {
+             updateExtraDescription(Auth.storeHoursData.value.description)
+        }
+    }
+
+    fun updateOpeningHoursData() {
+        val sortedOpeningHours = DateTimeUtils.DayOfWeek.entries.map { dayOfWeek ->
+            _dailyHoursMap.value[dayOfWeek] ?: DailyHoursData(
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                -1,
+                hasBreakTime = false,
+                isAlwaysOpen = false)
+        }
+
+        Auth.setStoreHoursData(Auth.storeHoursData.value.copy(
+            openingHours = sortedOpeningHours,
+            description = _extraDescription.value
+        ))
+    }
+
+    //단일 항목 설정
+    private fun setDailyHours(dayOfWeek: DateTimeUtils.DayOfWeek, newHoursData: DailyHoursData) {
         _dailyHoursMap.value = _dailyHoursMap.value.toMutableMap().apply {
             this[dayOfWeek] = newHoursData
         }
     }
 
+    //여러 요일 동시 설정
     fun setDailyHours(dayOfWeeks: Set<DateTimeUtils.DayOfWeek>, newHoursData: DailyHoursData) {
         _dailyHoursMap.value = _dailyHoursMap.value.toMutableMap().apply {
             dayOfWeeks.forEach {
@@ -99,7 +146,7 @@ class OpeningHoursSettingViewModel: ViewModel() {
         NONE, OPENING_HOURS, BREAK_TIME, BOTH
     }
 
-    fun getNeedTimeValue(dayOfWeek: DateTimeUtils.DayOfWeek): NeedTimeValue {
+    private fun getNeedTimeValue(dayOfWeek: DateTimeUtils.DayOfWeek): NeedTimeValue {
         return when {
             dailyHoursMap.value[dayOfWeek]?.isAlwaysOpen == true && dailyHoursMap.value[dayOfWeek]?.hasBreakTime == true -> {
                 //24시 영업 O Break Time O
@@ -252,6 +299,4 @@ class OpeningHoursSettingViewModel: ViewModel() {
             }
         }
     }
-
-    //영업 시간 관련 기타 정보
 }

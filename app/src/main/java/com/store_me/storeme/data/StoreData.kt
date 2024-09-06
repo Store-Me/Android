@@ -75,6 +75,7 @@ enum class SocialMediaAccountType{
 data class StoreHoursData(
     val openingHours: List<DailyHoursData>,
     val closedDay: List<Int>?,
+    val temporaryOpeningHours: List<TemporaryOpeningHours>,
     val description: String = "",
 )
 
@@ -99,6 +100,28 @@ data class DailyHoursData(
     val hasBreakTime: Boolean,
     val isAlwaysOpen: Boolean,
 )
+
+sealed class TemporaryOpeningHours {
+    data class Closed(
+        val startYear: Int,
+        val startMonth: Int,
+        val startDay: Int,
+        val endYear: Int,
+        val endMonth: Int,
+        val endDay: Int,
+    ) : TemporaryOpeningHours()
+
+    data class Adjusted(
+        val startYear: Int,
+        val startMonth: Int,
+        val startDay: Int,
+        val endYear: Int,
+        val endMonth: Int,
+        val endDay: Int,
+        val dailyHoursData: DailyHoursData
+    ) : TemporaryOpeningHours()
+}
+
 
 /**
  * 가게의 메뉴 목록 데이터

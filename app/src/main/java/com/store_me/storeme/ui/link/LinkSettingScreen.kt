@@ -76,6 +76,7 @@ import com.store_me.storeme.ui.component.LargeButton
 import com.store_me.storeme.ui.component.SocialMediaIcon
 import com.store_me.storeme.ui.component.TextFieldErrorType
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
+import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.theme.CancelButtonColor
 import com.store_me.storeme.ui.theme.DefaultDividerColor
 import com.store_me.storeme.ui.theme.DeleteTextColor
@@ -119,7 +120,6 @@ fun LinkSettingScreen(
             content = { innerPadding ->
                 if(showBottomSheet) {
                     var text by remember { mutableStateOf("") }
-                    val focusManager = LocalFocusManager.current
 
                     DefaultBottomSheet(sheetState = sheetState, onDismiss = { showBottomSheet = false }) {
                         Text(text = "링크", style = storeMeTextStyle(FontWeight.ExtraBold, 4), modifier = Modifier.padding(horizontal = 20.dp))
@@ -411,72 +411,18 @@ fun LinkItem(url: String, editable: Boolean = false, columnModifier: Modifier = 
     }
 
     if (showDialog) {
-        BasicAlertDialog(
-            onDismissRequest = { showDialog = false },
-            modifier = Modifier
-                .background(shape = RoundedCornerShape(20.dp), color = White)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(15.dp)
-            ) {
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Icon(
-                    painterResource(id = R.drawable.ic_warning),
-                    contentDescription = "경고 아이콘",
-                    tint = Unspecified,
-                    modifier = Modifier.size(42.dp)
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Text(text = "링크를 삭제할까요?", style = storeMeTextStyle(FontWeight.ExtraBold, 6))
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Text(
-                    text= url,
-                    style = storeMeTextStyle(FontWeight.Bold, 2),
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Visible
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Text(
-                    text= "위의 링크가 삭제되며, 삭제 이후 복구되지않아요.",
-                    style = storeMeTextStyle(FontWeight.Bold, 2),
-                    color = UnselectedItemColor,
-                    textAlign = TextAlign.Center
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    DefaultDialogButton(text = "취소", containerColor = CancelButtonColor, contentColor = Black, modifier = Modifier.weight(1f)) {
-                        showDialog = false
-                    }
-
-                    DefaultDialogButton(text = "삭제", containerColor = Black, contentColor = White, modifier = Modifier.weight(1f)) {
-                        onDelete()
-                        showDialog = false
-                    }
-                }
+        WarningDialog(
+            title = "링크를 삭제할까요?",
+            warningContent = url,
+            content = "위의 링크가 삭제되며, 삭제 이후 복구되지않아요.",
+            actionText = "삭제",
+            onDismiss = {
+                showDialog = false
+            },
+            onAction = {
+                onDelete()
+                showDialog = false
             }
-        }
+        )
     }
 }
-
-/*
-@Composable
-fun Modifier.draggableHandle(): Modifier = this.then(
-    Modifier.semantics {
-        clearAndSetSemantics { }
-    }
-)*/

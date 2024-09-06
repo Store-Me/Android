@@ -1,5 +1,6 @@
 package com.store_me.storeme.utils
 
+import com.store_me.storeme.data.DateData
 import com.store_me.storeme.data.UserCouponWithStoreInfoData
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -29,6 +30,24 @@ class DateTimeUtils {
 
         val localDateTime = LocalDateTime.parse(datetime, formatter)
         return localDateTime.format(outputFormatter)
+    }
+
+    /**
+     * 현재 날짜를 "2024년 9월 1일" 형식으로 반환하는 함수
+     */
+    fun dateTimeToDateText(datetime: String): String {
+        val dateFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
+
+        return LocalDateTime.parse(datetime, formatter).format(dateFormatter)
+    }
+
+    /**
+     * 현재 날짜와 시간을 "2024년 9월 1일 17:09" 형식으로 반환하는 함수
+     */
+    fun dateTimeToDateTimeText(datetime: String): String {
+        val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH:mm")
+
+        return LocalDateTime.parse(datetime, formatter).format(dateTimeFormatter)
     }
 
     /**
@@ -116,14 +135,25 @@ class DateTimeUtils {
         }
     }
 
-    fun getSelectTimeText(hours: Int, minutes: Int): String {
-        return "${hours}:${minutes.toString().padStart(2, '0')}"
+    fun localDateToDateData(date: LocalDate): DateData {
+        return DateData(
+            year = date.year,
+            month = date.month.value,
+            day = date.dayOfMonth
+        )
     }
 
-    fun splitTimeTextToInt(time: String): Pair<Int, Int> {
-        val (hours, minutes) = time.split(":")
+    fun dateDataToLocalDate(date: DateData): LocalDate {
+        return LocalDate.of(date.year, date.month, date.day)
+    }
 
-        return hours.toInt() to minutes.toInt()
+    fun getSelectTimeText(hours: Int, minutes: Int): String {
+        return "${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}"
+    }
+
+    fun getDayOfWeek(year: Int, month: Int, day: Int): String {
+        val date = LocalDate.of(year, month, day)
+
+        return DayOfWeek.entries[date.dayOfWeek.value % 7].displayName
     }
 }
-

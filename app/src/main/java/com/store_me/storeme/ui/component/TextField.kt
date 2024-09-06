@@ -1,6 +1,9 @@
 package com.store_me.storeme.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -13,24 +16,36 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
+import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
+import com.store_me.storeme.utils.DateTimeUtils
+import java.time.LocalDate
+
+enum class TextFieldErrorType {
+    LINK, DESCRIPTION, DATE, COUPON_NAME, COUPON_CONTENT,
+    COUPON_QUANTITY, COUPON_RATE, COUPON_PRICE
+}
 
 @Composable
 fun DefaultOutlineTextField(
@@ -40,7 +55,8 @@ fun DefaultOutlineTextField(
     errorType: TextFieldErrorType? = null,
     onValueChange: (String) -> Unit,
     onErrorChange: (Boolean) -> Unit = {},
-    singleLine: Boolean = true
+    singleLine: Boolean = true,
+    enabled: Boolean = true,
 ) {
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
 
@@ -55,9 +71,21 @@ fun DefaultOutlineTextField(
             else
                 null
         }
-        TextFieldErrorType.OPENING_HOURS_DESCRIPTION -> {
+        TextFieldErrorType.DESCRIPTION -> {
             if(text.length > 100) {
                 "100자 이내로 작성해야 합니다."
+            } else
+                null
+        }
+        TextFieldErrorType.COUPON_NAME -> {
+            if(text.length > 15) {
+                "15자 이내로 작성해야 합니다."
+            } else
+                null
+        }
+        TextFieldErrorType.COUPON_CONTENT -> {
+            if(text.length > 15) {
+                "15자 이내로 작성해야 합니다."
             } else
                 null
         }
@@ -97,7 +125,7 @@ fun DefaultOutlineTextField(
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = HighlightTextFieldColor,
             errorBorderColor = ErrorTextFieldColor,
-            errorLabelColor = ErrorTextFieldColor
+            errorLabelColor = ErrorTextFieldColor,
         ),
         label = { when(errorMessage) {
             null -> {  }
@@ -119,12 +147,30 @@ fun DefaultOutlineTextField(
         },
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight()
+            .wrapContentHeight(),
+        enabled = enabled,
     )
 }
 
-enum class TextFieldErrorType {
-    LINK, OPENING_HOURS_DESCRIPTION
+@Composable
+fun TextLengthRow(text: String, limitSize: Int){
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.End
+    ){
+        Text(
+            text = text.length.toString(),
+            style = storeMeTextStyle(FontWeight.Bold, 0),
+            color = if(text.length > limitSize) ErrorTextFieldColor else Black
+        )
+
+        Text(
+            text = "/${limitSize}",
+            style = storeMeTextStyle(FontWeight.Bold, 0),
+            color = UndefinedTextColor
+        )
+    }
 }
 
 fun Modifier.addFocusCleaner(
@@ -136,4 +182,200 @@ fun Modifier.addFocusCleaner(
             focusManager.clearFocus()
         })
     }
+}
+
+@Composable
+fun DateOutLineTextField(
+    selectedDate: LocalDate?,
+    modifier: Modifier = Modifier,
+    placeholderText: String = "",
+    errorType: TextFieldErrorType? = TextFieldErrorType.DATE,
+    onErrorChange: (Boolean) -> Unit = {},
+    onClick: () -> Unit
+) {
+    val dateText =
+        if(selectedDate == null)
+            ""
+        else {
+            val date = DateTimeUtils().localDateToDateData(selectedDate)
+
+            "${date.year}년 ${date.month}월 ${date.day}일 까지"
+        }
+
+    val errorMessage = when (errorType) {
+        TextFieldErrorType.DATE -> {
+            if(selectedDate != null && selectedDate.isBefore(LocalDate.now()))
+                "오늘 이전 날짜는 선택이 불가능합니다."
+            else
+                null
+        }
+
+        else -> null
+    }
+
+    LaunchedEffect(errorMessage) {
+        onErrorChange(errorMessage != null)
+    }
+
+    OutlinedTextField(
+        value = dateText,
+        onValueChange = {  },
+        placeholder = { Text(
+            text = placeholderText,
+            style = storeMeTextStyle(FontWeight.Normal, 0)) },
+        textStyle = storeMeTextStyle(FontWeight.Normal, 0),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = HighlightTextFieldColor,
+            disabledBorderColor = if(errorMessage == null) Black else ErrorTextFieldColor,
+            disabledTextColor = Black,
+        ),
+        label = { when(errorMessage) {
+            null -> {  }
+            else -> {
+                Text(
+                    text = errorMessage,
+                    style = storeMeTextStyle(FontWeight.Normal, 0),
+                    color = ErrorTextFieldColor
+                )
+            }
+        } },
+        trailingIcon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_calendar),
+                contentDescription = "달력 아이콘",
+                modifier = Modifier
+                    .size(18.dp),
+                tint = Black
+            )
+        },
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .clickable (
+                onClick = { onClick() },
+                indication = null,
+                interactionSource = null
+            ),
+        enabled = false,
+    )
+}
+
+@Composable
+fun NumberOutLineTextField(
+    modifier: Modifier = Modifier,
+    placeholderText: String = "",
+    onValueChange: (Int?) -> Unit,
+    suffixText: String = "",
+    errorType: TextFieldErrorType? = null,
+    onErrorChange: (Boolean) -> Unit,
+    enabled: Boolean = true,
+) {
+    var text by remember { mutableStateOf("") }
+
+    val errorMessage = when (errorType) {
+        TextFieldErrorType.COUPON_QUANTITY -> {
+            if(text.toIntOrNull() == null && text.isNotEmpty()) {
+                "숫자만 입력이 가능합니다."
+            } else if (text.length > 4) {
+                "최대 9999장의 쿠폰 생성이 가능합니다."
+            } else
+                null
+        }
+        TextFieldErrorType.COUPON_PRICE -> {
+            if (text.toIntOrNull() == null && text.isNotEmpty()) {
+                "숫자만 입력이 가능합니다."
+            } else if (text.length > 9) {
+                "최대 999,999,999 까지만 입력이 가능합니다."
+            } else
+                null
+        }
+        TextFieldErrorType.COUPON_RATE -> {
+            if(text.toIntOrNull() == null && text.isNotEmpty()) {
+                "숫자만 입력이 가능합니다."
+            } else if ((text.toIntOrNull() ?: 0) !in 0..100) {
+                "유효한 범위 (0 ~ 100)의 숫자를 입력해 주세요."
+            } else
+                null
+        }
+
+        else -> null
+    }
+
+    LaunchedEffect(errorMessage) {
+        onErrorChange(errorMessage != null)
+    }
+
+    //쉼표 포함 시키는 함수
+    fun formatNumberWithCommas(input: String): String {
+        return input.replace(",", "").toIntOrNull()?.let {
+            "%,d".format(it)
+        } ?: ""
+    }
+
+    OutlinedTextField(
+        value = text,
+        onValueChange = {
+            when(errorType) {
+                TextFieldErrorType.COUPON_QUANTITY -> {
+                    if (it.length <= 4){
+                        text = it
+                        onValueChange(it.toIntOrNull())
+                    }
+                }
+                TextFieldErrorType.COUPON_PRICE -> {
+                    if (text.length < 10) {
+                        text = it
+                        onValueChange(it.toIntOrNull())
+                    }
+                }
+                TextFieldErrorType.COUPON_RATE -> {
+                    if (it.length <= 3){
+                        text = it
+                        onValueChange(it.toIntOrNull())
+                    }
+                }
+
+                else -> {
+                    text = it
+                    onValueChange(it.toIntOrNull())
+                }
+            }
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+        placeholder = { Text(
+            text = placeholderText,
+            style = storeMeTextStyle(FontWeight.Normal, 0)) },
+        textStyle = storeMeTextStyle(FontWeight.Normal, 0),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = HighlightTextFieldColor,
+            errorBorderColor = ErrorTextFieldColor,
+            errorLabelColor = ErrorTextFieldColor,
+        ),
+        suffix = { Text(text = suffixText, style = storeMeTextStyle(FontWeight.Normal, 0)) },
+        label = { when(errorMessage) {
+            null -> {  }
+            else -> { Text(text = errorMessage, style = storeMeTextStyle(FontWeight.Normal, 0)) }
+        } },
+        isError = errorMessage != null,
+        trailingIcon = {
+            if(text.isNotEmpty())
+                IconButton(onClick = {
+                    text = ""
+                    onValueChange(null)
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_text_clear),
+                        contentDescription = "모두 지우기 아이콘",
+                        modifier = Modifier
+                            .size(18.dp)
+                            .clip(CircleShape),
+                        tint = Color.Unspecified
+                    )
+                }
+        },
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        enabled = enabled
+    )
 }

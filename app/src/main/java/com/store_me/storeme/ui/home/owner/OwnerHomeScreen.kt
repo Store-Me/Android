@@ -1,12 +1,13 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class,
+@file:OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalPagerApi::class,
     ExperimentalFoundationApi::class
 )
 
-package com.store_me.storeme.ui.home
+package com.store_me.storeme.ui.home.owner
 
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -24,7 +25,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -37,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -71,8 +70,10 @@ import com.store_me.storeme.data.DailyHoursData
 import com.store_me.storeme.data.StoreDetailData
 import com.store_me.storeme.data.StoreHomeItem
 import com.store_me.storeme.data.StoreHomeItemData
+import com.store_me.storeme.data.StoreNormalItem
 import com.store_me.storeme.ui.component.DefaultEditButton
 import com.store_me.storeme.ui.component.LinkSection
+import com.store_me.storeme.ui.component.StoreMeTabRow
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.theme.CopyButtonColor
 import com.store_me.storeme.ui.theme.DefaultDividerColor
@@ -102,6 +103,8 @@ fun OwnerHomeScreen(
 
     val pagerState = rememberPagerState()
 
+    val tabTitles = enumValues<OwnerHomeViewModel.OwnerHomeTabMenu>().map { it.displayName }
+
     CompositionLocalProvider(LocalOwnerHomeViewModel provides ownerHomeViewModel) {
 
 
@@ -114,8 +117,8 @@ fun OwnerHomeScreen(
                 ) {
                     LazyColumn {
                         item { if(!ownerHomeViewModel.storeData.bannerImageUrl.isNullOrEmpty()) BackgroundSection(ownerHomeViewModel.storeData.bannerImageUrl) }
-                        item { ProfileSection(navController = navController)}
-                        stickyHeader { TabMenuSection(navController = navController, pagerState) }
+                        item { ProfileSection(navController = navController) }
+                        stickyHeader { StoreMeTabRow(pagerState = pagerState, tabTitles = tabTitles) }
                         item { OwnerHomeContentSection(navController = navController, pagerState) }
                     }
                 }
@@ -327,7 +330,7 @@ fun TabMenuSection(navController: NavController, pagerState: PagerState) {
                 selected = pagerState.currentPage == index,
                 onClick = {
                     coroutineScope.launch {
-                        pagerState.animateScrollToPage(index)
+                        pagerState.scrollToPage(index)
                     }
                 },
                 text = {
@@ -394,7 +397,7 @@ fun OwnerStoreHomeScreen(navController: NavController) {
         ) {
             Icon(
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_copy),
-                contentDescription = "스토어 홈 아이콘",
+                contentDescription = "복사 아이콘",
                 modifier = Modifier
                     .size(12.dp),
                 tint = CopyButtonColor
@@ -452,11 +455,12 @@ fun OwnerStoreHomeScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onClick() },
+                .clickable { onClick() }
+                .padding(top = 20.dp),
         ) {
             
             when {
-                openingHours.isNullOrEmpty() -> {
+                openingHours.isEmpty() -> {
                     Text(text = "영업 시간을 입력해주세요.", style = storeMeTextStyle(FontWeight.Bold, 1), color = UndefinedTextColor, modifier = Modifier.padding(vertical = 10.dp))
                 }
 
@@ -588,14 +592,13 @@ fun OwnerStoreHomeScreen(navController: NavController) {
         val context = LocalContext.current
 
         Column {
-            Spacer(modifier = Modifier.height(20.dp))
 
             OpeningHoursSection {
-
+                NavigationUtils().navigateOwnerNav(navController = navController, screenName = StoreNormalItem.OPENING_HOURS)
             }
 
             ClosedDaySection {
-
+                NavigationUtils().navigateOwnerNav(navController = navController, screenName = StoreNormalItem.CLOSED_DAY)
             }
 
             PhoneNumberSection {
@@ -622,7 +625,7 @@ fun OwnerStoreHomeScreen(navController: NavController) {
             .sortedBy { it.order }
             .forEach { item ->
                 if(!item.isHidden) {
-                    StoreHomeItemSection(item)
+                    StoreHomeItemSection(item, navController)
 
                     HorizontalDivider(color = DefaultDividerColor, thickness = 1.dp, modifier = Modifier.padding(vertical = 20.dp))
                 }
@@ -633,7 +636,7 @@ fun OwnerStoreHomeScreen(navController: NavController) {
 }
 
 @Composable
-fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
+fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavController) {
     val ownerHomeViewModel = LocalOwnerHomeViewModel.current
     val storeData = ownerHomeViewModel.storeData
 
@@ -759,7 +762,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData) {
                         .height(40.dp)
                         .fillMaxWidth()
                 ) {
-
+                    NavigationUtils().navigateOwnerNav(navController = navController, StoreHomeItem.COUPON)
                 }
             }
             StoreHomeItem.MENU -> {

@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -94,6 +95,7 @@ import com.store_me.storeme.ui.theme.HomeSearchBoxColor
 import com.store_me.storeme.ui.theme.NormalCategoryColor
 import com.store_me.storeme.ui.theme.SaveButtonColor
 import com.store_me.storeme.ui.theme.SelectedCategoryColor
+import com.store_me.storeme.ui.theme.SelectedCheckBoxColor
 import com.store_me.storeme.ui.theme.ToggleButtonBorderColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.WebIconColor
@@ -125,10 +127,6 @@ fun TitleWithDeleteButton(navController: NavController, title: String, isInTopAp
         }
     }
 
-    BackHandler {
-        returnBackScreen()
-    }
-
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -151,6 +149,35 @@ fun TitleWithDeleteButton(navController: NavController, title: String, isInTopAp
 }
 
 @Composable
+fun TitleWithDeleteButtonAtDetail(title: String, isInTopAppBar: Boolean = false, onBack: () -> Unit){
+    val modifier =
+        if(isInTopAppBar)
+            Modifier.padding(start = 4.dp, end = 20.dp)
+        else
+            Modifier.padding(start = 20.dp, end = 20.dp)
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(60.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Text(
+            text = title,
+            style = storeMeTextStyle(FontWeight.ExtraBold, 6)
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        DeleteButton {
+            onBack()
+        }
+    }
+}
+
+@Composable
 fun DeleteButton(onClick: () -> Unit) {
     Icon(
         imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
@@ -163,6 +190,15 @@ fun DeleteButton(onClick: () -> Unit) {
                 indication = ripple(bounded = false)
             )
             .padding(2.dp)
+    )
+}
+
+@Composable
+fun SubTitleSection(text: String, modifier:Modifier = Modifier) {
+    Text(
+        text = text,
+        style = storeMeTextStyle(FontWeight.ExtraBold, 6),
+        modifier = modifier
     )
 }
 
@@ -217,7 +253,11 @@ fun DefaultToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) 
     Button(
         modifier = Modifier
             .wrapContentWidth()
-            .height(26.dp),
+            .height(26.dp)
+            .defaultMinSize(
+                minWidth = 20.dp,
+                minHeight = ButtonDefaults.MinHeight
+            ),
         shape = RoundedCornerShape(6.dp),
         border = borderStroke,
         colors = ButtonDefaults.buttonColors(
@@ -257,8 +297,15 @@ fun CircleToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
  * Default Check Button
  */
 @Composable
-fun DefaultCheckButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    val contentColor = if(!isSelected) UndefinedTextColor else Black
+fun DefaultCheckButton(
+    text: String,
+    fontWeight: FontWeight = FontWeight.Bold,
+    diffValue: Int = 0,
+    isSelected: Boolean,
+    description: String = "",
+    onClick: () -> Unit
+) {
+    val contentColor = if(!isSelected) UndefinedTextColor else SelectedCheckBoxColor
     val iconId = if(!isSelected) R.drawable.ic_check_off else R.drawable.ic_check_on
 
     Row(
@@ -272,7 +319,7 @@ fun DefaultCheckButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = text,
-            style = storeMeTextStyle(FontWeight.Bold, 0),
+            style = storeMeTextStyle(fontWeight, diffValue),
             color = contentColor,
             modifier = Modifier
                 .padding(vertical = 4.dp)
@@ -284,9 +331,77 @@ fun DefaultCheckButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
             painter = painterResource(id = iconId),
             contentDescription = "체크 아이콘",
             modifier = Modifier
-                .size(SizeUtils().textSizeToDp(LocalDensity.current, 0, 4)),
+                .size(SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4)),
             tint = contentColor
         )
+    }
+
+    if(description.isNotEmpty()){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4), top = 10.dp)
+        ) {
+            Text(text = description,
+                style = storeMeTextStyle(FontWeight.Normal, diffValue - 2),
+                color = contentColor,
+            )
+        }
+    }
+}
+
+@Composable
+fun LeftCheckButton(
+    text: String,
+    fontWeight: FontWeight = FontWeight.Bold,
+    diffValue: Int = 0,
+    isSelected: Boolean,
+    description: String = "",
+    onClick: () -> Unit
+) {
+    val contentColor = if(!isSelected) UndefinedTextColor else SelectedCheckBoxColor
+    val iconId = if(!isSelected) R.drawable.ic_check_off else R.drawable.ic_check_on
+
+    Row(
+        modifier = Modifier
+            .wrapContentSize()
+            .clickable(
+                onClick = { onClick() },
+                indication = null,
+                interactionSource = null
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        Icon(
+        painter = painterResource(id = iconId),
+        contentDescription = "체크 아이콘",
+        modifier = Modifier
+            .size(SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4)),
+        tint = contentColor
+        )
+
+        Spacer(modifier = Modifier.width(5.dp))
+
+        Text(text = text,
+            style = storeMeTextStyle(fontWeight, diffValue),
+            color = contentColor,
+            modifier = Modifier
+                .padding(vertical = 4.dp)
+        )
+    }
+
+    if(description.isNotEmpty()){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4) + 5.dp, top = 10.dp)
+        ) {
+            Text(text = description,
+                style = storeMeTextStyle(FontWeight.Normal, diffValue - 2),
+                color = contentColor,
+            )
+        }
     }
 }
 
@@ -376,7 +491,14 @@ fun DefaultFinishButton(
 }
 
 @Composable
-fun DefaultDialogButton(text: String, modifier: Modifier = Modifier, containerColor: Color, contentColor: Color, onClick: () -> Unit) {
+fun DefaultDialogButton(
+    text: String,
+    modifier: Modifier = Modifier,
+    containerColor: Color,
+    contentColor: Color,
+    enabled: Boolean = true,
+    onClick: () -> Unit,
+) {
     Button(
         modifier = modifier
             .height(50.dp),
@@ -386,6 +508,7 @@ fun DefaultDialogButton(text: String, modifier: Modifier = Modifier, containerCo
             contentColor = contentColor
         ),
         onClick = onClick,
+        enabled = enabled
     ) {
         Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 2))
     }
@@ -495,7 +618,6 @@ fun LocationLayout(navController: NavController, locationViewModel: LocationView
             locationViewModel.setLocation()
         }
     }
-
 
     Row(
         modifier = Modifier

@@ -1,4 +1,4 @@
-package com.store_me.storeme.ui.home
+package com.store_me.storeme.ui.home.owner
 
 import android.content.ClipData
 import android.content.ClipboardManager

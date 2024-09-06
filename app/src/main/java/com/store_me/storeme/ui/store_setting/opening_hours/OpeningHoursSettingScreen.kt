@@ -2,7 +2,6 @@
 
 package com.store_me.storeme.ui.store_setting.opening_hours
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +22,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -42,7 +40,6 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -58,7 +55,9 @@ import com.store_me.storeme.ui.component.DefaultFinishButton
 import com.store_me.storeme.ui.component.DefaultOutlineTextField
 import com.store_me.storeme.ui.component.DefaultToggleButton
 import com.store_me.storeme.ui.component.StoreMeTimePicker
+import com.store_me.storeme.ui.component.SubTitleSection
 import com.store_me.storeme.ui.component.TextFieldErrorType
+import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.store_setting.opening_hours.OpeningHoursSettingViewModel.*
@@ -66,7 +65,6 @@ import com.store_me.storeme.ui.theme.DefaultDividerColor
 import com.store_me.storeme.ui.theme.EditButtonColor
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextColor
-import com.store_me.storeme.ui.theme.StoreDetailIconColor
 import com.store_me.storeme.ui.theme.TimePickerSelectLineColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
@@ -116,12 +114,15 @@ fun OpeningHoursSettingScreen(
                     modifier = Modifier
                         .padding(innerPadding)
                 ) {
-                    LazyColumn {
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(top = 20.dp),
+                        verticalArrangement = Arrangement.spacedBy(20.dp)
+                    ) {
 
-                        item { SubTitleSection() }
+                        item { SubTitleSection("영업 시간을 설정해주세요.", modifier = Modifier.padding(horizontal = 20.dp)) }
+
                         item { SetTypeSection() }
-
-                        item { Spacer(modifier = Modifier.height(20.dp)) }
 
                         item {
                             AnimatedVisibility(visible = selectType == OpeningHoursType.SAME) {
@@ -150,25 +151,27 @@ fun OpeningHoursSettingScreen(
                                 BreakTimeSection(
                                     modifier = Modifier
                                         .padding(horizontal = 20.dp)
-                                        .padding(top = 20.dp)
                                 )
                             }
                         }
 
                         item {
-                            ExtraTextSection {
-                                isError = it
+                            AnimatedVisibility(visible = selectType != null) {
+                                ExtraTextSection {
+                                    isError = it
+                                }
                             }
                         }
 
                         item {
-                            DefaultFinishButton(
-                                modifier = Modifier.padding(vertical = 100.dp, horizontal = 20.dp),
-                                enabled = !isError && (selectType != null) && (openingHoursSettingViewModel.isAllFinished()  && selectType == OpeningHoursType.DIFFERENT)
-                            ) {
-                                //TODO 저장
-                                //StoreHourData 의 openingHours 와 description 을 저장
-
+                            AnimatedVisibility(visible = selectType != null) {
+                                DefaultFinishButton(
+                                    modifier = Modifier.padding(vertical = 100.dp, horizontal = 20.dp),
+                                    enabled = !isError && (selectType != null)
+                                            && ((openingHoursSettingViewModel.isAllFinished() && selectType == OpeningHoursType.DIFFERENT) || selectType == OpeningHoursType.SAME)
+                                ) {
+                                    openingHoursSettingViewModel.updateOpeningHoursData()
+                                }
                             }
                         }
                     }
@@ -213,15 +216,14 @@ fun BottomSheetContent(selectedWeek: DateTimeUtils.DayOfWeek, onFinishButtonClic
         isInitialized = true
     }
 
-
-
     Column(
         modifier = Modifier
             .padding(horizontal = 20.dp)
             .padding(bottom = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         Text(text = "영업시간 동일하게 설정", style = storeMeTextStyle(FontWeight.ExtraBold, 2))
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(5.dp)
@@ -233,14 +235,28 @@ fun BottomSheetContent(selectedWeek: DateTimeUtils.DayOfWeek, onFinishButtonClic
             }
         }
 
+        Spacer(modifier = Modifier.height(20.dp))
+
         CheckAlwaysSection()
 
+        Spacer(modifier = Modifier.height(20.dp))
+
         AnimatedVisibility(visible = !isAlwaysOpen) {
-            SelectTimeSection(EditTimeType.OPENING_HOURS, selectedWeek)
+            Column {
+                SelectTimeSection(EditTimeType.OPENING_HOURS, selectedWeek)
+
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
         }
 
         AnimatedVisibility(visible = selectType == OpeningHoursType.DIFFERENT) {
-            BreakTimeSection()
+            Column {
+                BreakTimeSection()
+
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
         }
 
         DefaultFinishButton {
@@ -357,15 +373,6 @@ fun WeekListSection(onClickWeek: (DateTimeUtils.DayOfWeek) -> Unit) {
 }
 
 @Composable
-fun SubTitleSection() {
-    Text(
-        text = "영업 시간을 설정해주세요.",
-        style = storeMeTextStyle(FontWeight.ExtraBold, 6),
-        modifier = Modifier.padding(horizontal = 20.dp, vertical = 20.dp)
-    )
-}
-
-@Composable
 fun SelectTimeSection(thisType: EditTimeType, selectedWeek: DateTimeUtils.DayOfWeek? = null) {
     val openingHoursSettingViewModel = LocalOpeningHoursSettingViewModel.current
 
@@ -431,7 +438,7 @@ fun SelectTimeSection(thisType: EditTimeType, selectedWeek: DateTimeUtils.DayOfW
     }
 
     Column(
-        modifier = Modifier.padding(top = 20.dp)
+        modifier = Modifier.padding(top = 10.dp)
     ) {
         Row(
             modifier = Modifier
@@ -526,13 +533,12 @@ fun SetTypeSection() {
     val selectType by remember { openingHoursSettingViewModel.selectedType }.collectAsState()
 
     Row(
-        modifier = Modifier.padding(horizontal = 20.dp)
+        modifier = Modifier.padding(horizontal = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         DefaultToggleButton(text = "매일 같음", isSelected = selectType == OpeningHoursType.SAME) {
             openingHoursSettingViewModel.setSelectedType(OpeningHoursType.SAME)
         }
-
-        Spacer(modifier = Modifier.width(10.dp))
 
         DefaultToggleButton(text = "요일마다 설정", isSelected = selectType == OpeningHoursType.DIFFERENT) {
             openingHoursSettingViewModel.setSelectedType(OpeningHoursType.DIFFERENT)
@@ -596,12 +602,12 @@ fun BreakTimeSection(modifier: Modifier = Modifier) {
 
 @Composable
 fun ExtraTextSection(onErrorChange: (Boolean) -> Unit) {
-    var text by remember { mutableStateOf("") }
+    val openingHoursSettingViewModel = LocalOpeningHoursSettingViewModel.current
+    val extraDescription by remember { openingHoursSettingViewModel.extraDescription }.collectAsState()
 
     Column(
         modifier = Modifier
             .padding(horizontal = 20.dp)
-            .padding(top = 30.dp)
     ) {
         Text(
             text = "영업 시간 관련 기타 정보",
@@ -611,31 +617,16 @@ fun ExtraTextSection(onErrorChange: (Boolean) -> Unit) {
         Spacer(modifier = Modifier.height(10.dp))
 
         DefaultOutlineTextField(
-            text = text,
+            text = extraDescription,
             placeholderText = "예) 부재시 매장 앞 번호로 연락주세요.",
-            errorType = TextFieldErrorType.OPENING_HOURS_DESCRIPTION,
+            errorType = TextFieldErrorType.DESCRIPTION,
             onErrorChange = { onErrorChange(it) },
-            onValueChange = { text = it },
+            onValueChange = { openingHoursSettingViewModel.updateExtraDescription(it) },
             singleLine = false
         )
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 5.dp),
-            horizontalArrangement = Arrangement.End
-        ){
-            Text(
-                text = text.length.toString(),
-                style = storeMeTextStyle(FontWeight.Bold, 0),
-                color = if(text.length > 100) ErrorTextFieldColor else Black
-            )
+        Spacer(modifier = Modifier.height(5.dp))
 
-            Text(
-                text = "/100",
-                style = storeMeTextStyle(FontWeight.Bold, 0),
-                color = UndefinedTextColor
-            )
-        }
+        TextLengthRow(text = extraDescription, limitSize = 100)
     }
 }

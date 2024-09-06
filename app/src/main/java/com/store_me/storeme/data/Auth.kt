@@ -65,6 +65,8 @@ object Auth {
     /**
      * 사장님 계정 정보 설정
      */
+
+    /*   Link 관리   */
     private val _linkListData = MutableStateFlow<SocialMediaAccountData?>(null)
     val linkListData: StateFlow<SocialMediaAccountData?> = _linkListData
 
@@ -78,10 +80,62 @@ object Auth {
         _linkListData.value = SocialMediaAccountData(currentList)
     }
 
+    /*   메인 화면 순서 및 숨기기 설정   */
+
     private val _storeHomeItemList = MutableStateFlow<List<StoreHomeItemData>>(emptyList())
     val storeHomeItemList: StateFlow<List<StoreHomeItemData>> = _storeHomeItemList
 
     fun setStoreHomeItemData(storeHomeItemList: List<StoreHomeItemData>) {
         _storeHomeItemList.value = storeHomeItemList
     }
+
+    /*   영업 시간 정보 및 휴무일 설정   */
+    private val _storeHoursData = MutableStateFlow(StoreHoursData(emptyList(), emptyList(), emptyList(),""))
+    val storeHoursData: StateFlow<StoreHoursData> = _storeHoursData
+
+    fun setStoreHoursData(storeHoursData: StoreHoursData) {
+        _storeHoursData.value = storeHoursData
+    }
+
+    /*   쿠폰 관리   */
+    private val _couponDetailList = MutableStateFlow(listOf(
+        OwnerCouponDetailData(
+            couponInfoData = CouponInfoData.Other(
+                couponId = "DefaultCouponId",
+                content = "혜택이다",
+                name = "초코쿠키 25개 무료 체험권",
+                available = CouponAvailable.REPEAT,
+                quantity = CouponQuantity.Infinite,
+                dueDate = DateData(2024, 9, 3),
+                image = "",
+                description = "",
+                createdAt = "2024-09-01T10:00:00"
+            ),
+            usedCouponData = UsedCouponData(0, 0)
+        ))
+    )
+    val couponDetailList: StateFlow<List<OwnerCouponDetailData>> = _couponDetailList
+
+    fun addCouponDetailData(ownerCouponDetailData: OwnerCouponDetailData){
+        _couponDetailList.value = _couponDetailList.value.toMutableList().apply {
+            add(ownerCouponDetailData)
+        }
+    }
+
+    fun deleteCouponDetailData(ownerCouponDetailData: OwnerCouponDetailData){
+        _couponDetailList.value = _couponDetailList.value.toMutableList().apply {
+            remove(ownerCouponDetailData)
+        }
+    }
+
+    fun updateCouponDetailData(updatedCouponDetailData: OwnerCouponDetailData) {
+        _couponDetailList.value = _couponDetailList.value.map { coupon ->
+            if (coupon.couponInfoData.couponId == updatedCouponDetailData.couponInfoData.couponId) {
+                updatedCouponDetailData
+            } else {
+                coupon
+            }
+        }
+    }
+
 }

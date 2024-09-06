@@ -140,7 +140,7 @@ class SampleDataUtils {
                 DailyHoursData(9, 0, 21, 0, 13, 0, 15, 0, false, false),
                 DailyHoursData(9, 0, 21, 0, 13, 0, 15, 0, false, false),
                 DailyHoursData(9, 0, 21, 0, 13, 0, 15, 0, false, false),
-            ), closedDay = listOf()),
+            ), temporaryOpeningHours = emptyList() ,closedDay = listOf()),
             storePhoneNumber = "070-7767-0829",
             locationInfo = LocationInfo("서울특별시 은평구 통일로 1030 은평헤스티아 101호", null),
             StoreMenuData(

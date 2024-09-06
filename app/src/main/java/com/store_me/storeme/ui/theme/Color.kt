@@ -2,6 +2,7 @@ package com.store_me.storeme.ui.theme
 
 import android.text.Highlights
 import androidx.compose.ui.graphics.Color
+import com.store_me.storeme.data.CouponAvailable
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
@@ -74,6 +75,9 @@ val SaveButtonColor = Color(0xFFD449DA)
 //Copy Button
 val CopyButtonColor = Color(0xFFD449DA)
 
+//Next Button Color
+val NextButtonColor = Color(0xFFD44ADA)
+
 /**
  * Icon 관련 Color
  */
@@ -102,6 +106,21 @@ val CouponDividerLineColor = Color(0xFFEFF0F5)
 
 //Selected Sort Type Color
 val SelectedSortTypeColor = Color(0xFFD449DA)
+
+//Create Coupon Arrow Color
+val CreateCouponArrowColor = Color(0xFFAAADB4)
+
+//Coupon Card Color
+val CouponCardColor = Color(0xFFEFF0F5)
+
+//Coupon Available Text Color
+val CouponAvailableTextColor = Color(0xFF545A68)
+
+//Expired Coupon Color
+val CouponExpiredTextColor = Color(0xFFAAADB4)
+
+//Expired Coupon Available BoxColor
+val CouponExpiredAvailableBoxColor = Color(0xFFD9D9D9)
 
 /**
  * Banner 관련 Color
@@ -152,6 +171,21 @@ val StoreDetailIconColor = Color(0xFF898C93)
 val TimePickerSelectLineColor = Color(0xFFFEEBFE)
 
 /**
+ * Calendar Color
+ */
+val DayOfWeekTextColor = Color(0xFF898C93)
+
+val BeforeMonthDateColor = Color(0xFFBDBDBD)
+
+val BlockBeforeIconColor = Color(0xFFD9D9D9)
+
+/**
+ * Select Check Box Color
+ */
+val SelectedCheckBoxColor = Color(0xFF220000)
+
+
+/**
  * Default Color
  */
 val DefaultDividerColor = Color(0xFFEFF0F5)
@@ -163,3 +197,5 @@ val UndefinedTextColor = Color(0xFF898C93)
 val UndefinedLinkColor = Color(0xFFD449DA)
 
 val DeleteTextColor = Color(0xFFAAADB4)
+
+val UndefinedBorderColor = Color(0xFF898C93)

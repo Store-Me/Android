@@ -1,4 +1,4 @@
-package com.store_me.storeme.ui.home
+package com.store_me.storeme.ui.home.customer
 
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
