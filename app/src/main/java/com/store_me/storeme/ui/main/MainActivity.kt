@@ -56,7 +56,7 @@ import com.store_me.storeme.ui.store_setting.closed_day.ClosedDaySettingScreen
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponSettingScreen
 import com.store_me.storeme.ui.store_setting.IntroSettingScreen
 import com.store_me.storeme.ui.store_setting.LocationSettingScreen
-import com.store_me.storeme.ui.store_setting.MenuSettingScreen
+import com.store_me.storeme.ui.store_setting.menu.MenuSettingScreen
 import com.store_me.storeme.ui.store_setting.NewsSettingScreen
 import com.store_me.storeme.ui.store_setting.NoticeSettingScreen
 import com.store_me.storeme.ui.store_setting.opening_hours.OpeningHoursSettingScreen

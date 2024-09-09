@@ -340,7 +340,10 @@ fun DefaultCheckButton(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4), top = 10.dp)
+                .padding(
+                    start = SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4),
+                    top = 10.dp
+                )
         ) {
             Text(text = description,
                 style = storeMeTextStyle(FontWeight.Normal, diffValue - 2),
@@ -395,7 +398,13 @@ fun LeftCheckButton(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4) + 5.dp, top = 10.dp)
+                .padding(
+                    start = SizeUtils().textSizeToDp(
+                        LocalDensity.current,
+                        diffValue,
+                        4
+                    ) + 5.dp, top = 10.dp
+                )
         ) {
             Text(text = description,
                 style = storeMeTextStyle(FontWeight.Normal, diffValue - 2),
@@ -442,8 +451,8 @@ fun LargeButton(
     modifier: Modifier = Modifier,
     containerColor: Color,
     contentColor: Color,
-    onClick: () -> Unit)
-{
+    onClick: () -> Unit
+) {
     Button(
         modifier = modifier
             .height(50.dp),
@@ -461,6 +470,93 @@ fun LargeButton(
         }
 
         Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 2))
+    }
+}
+
+@Composable
+fun AddButton(
+    text: String,
+    icon: @Composable (() -> Unit)? = { Icon(
+        painter = painterResource(id = R.drawable.ic_circle_plus),
+        contentDescription = "링크 추가 아이콘",
+        modifier = Modifier
+            .size(22.dp)
+            .clip(CircleShape),
+        tint = White) },
+    modifier: Modifier = Modifier,
+    containerColor: Color,
+    contentColor: Color,
+    onClick: () -> Unit
+) {
+    Button(
+        modifier = modifier
+            .height(50.dp),
+        shape = RoundedCornerShape(6.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
+        onClick = onClick,
+    ) {
+        icon?.let {
+            it()
+
+            Spacer(modifier = Modifier.width(5.dp))
+        }
+
+        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 2))
+    }
+}
+
+@Composable
+fun EditAddSection(
+    modifier: Modifier = Modifier,
+    dataListSize: Int,
+    editState: Boolean,
+    onChangeEditState: (Boolean) -> Unit,
+    onAdd: () -> Unit
+) {
+    Row(
+        modifier = modifier,
+    ) {
+        when(dataListSize){
+            0 -> {
+                onChangeEditState(false)
+
+                AddButton(
+                    text = "링크 추가",
+                    containerColor = Black,
+                    contentColor = White,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    onAdd()
+                }
+            }
+            else -> {
+                when(editState) {
+                    true -> {
+                        LargeButton(text = "저장", modifier = Modifier.weight(1f), containerColor = SaveButtonColor, contentColor = White) {
+                            onChangeEditState(false)
+                        }
+                    }
+                    false -> {
+                        LargeButton(text = "순서 편집/삭제", modifier = Modifier.weight(1f), containerColor = EditButtonColor, contentColor = Black) {
+                            onChangeEditState(true)
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
+                AddButton(
+                    text = "링크 추가",
+                    containerColor = Black,
+                    contentColor = White,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    onAdd()
+                }
+            }
+        }
     }
 }
 

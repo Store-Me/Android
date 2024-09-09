@@ -129,7 +129,7 @@ sealed class TemporaryOpeningHours {
  */
 
 data class StoreMenuData(
-    val menus: List<MenuData>,
+    val menus: List<MenuDatas>,
 )
 
 /**
@@ -139,7 +139,7 @@ data class StoreMenuData(
  * @param menuDescription 메뉴 설명
  * @param price 가격
  */
-data class MenuData(
+data class MenuDatas(
     val menu: String,
     val isSignature: Boolean,
     val menuDescription: String?,

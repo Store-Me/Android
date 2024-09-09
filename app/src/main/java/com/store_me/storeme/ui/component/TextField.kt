@@ -262,6 +262,7 @@ fun DateOutLineTextField(
 
 @Composable
 fun NumberOutLineTextField(
+    text: String,
     modifier: Modifier = Modifier,
     placeholderText: String = "",
     onValueChange: (Int?) -> Unit,
@@ -270,7 +271,6 @@ fun NumberOutLineTextField(
     onErrorChange: (Boolean) -> Unit,
     enabled: Boolean = true,
 ) {
-    var text by remember { mutableStateOf("") }
 
     val errorMessage = when (errorType) {
         TextFieldErrorType.COUPON_QUANTITY -> {
@@ -284,8 +284,8 @@ fun NumberOutLineTextField(
         TextFieldErrorType.COUPON_PRICE -> {
             if (text.toIntOrNull() == null && text.isNotEmpty()) {
                 "숫자만 입력이 가능합니다."
-            } else if (text.length > 9) {
-                "최대 999,999,999 까지만 입력이 가능합니다."
+            } else if (text.length > 8) {
+                "최대 99,999,999 까지만 입력이 가능합니다."
             } else
                 null
         }
@@ -318,25 +318,21 @@ fun NumberOutLineTextField(
             when(errorType) {
                 TextFieldErrorType.COUPON_QUANTITY -> {
                     if (it.length <= 4){
-                        text = it
                         onValueChange(it.toIntOrNull())
                     }
                 }
                 TextFieldErrorType.COUPON_PRICE -> {
-                    if (text.length < 10) {
-                        text = it
+                    if (it.length <= 8) {
                         onValueChange(it.toIntOrNull())
                     }
                 }
                 TextFieldErrorType.COUPON_RATE -> {
                     if (it.length <= 3){
-                        text = it
                         onValueChange(it.toIntOrNull())
                     }
                 }
 
                 else -> {
-                    text = it
                     onValueChange(it.toIntOrNull())
                 }
             }
@@ -360,7 +356,6 @@ fun NumberOutLineTextField(
         trailingIcon = {
             if(text.isNotEmpty())
                 IconButton(onClick = {
-                    text = ""
                     onValueChange(null)
                 }) {
                     Icon(

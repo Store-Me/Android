@@ -200,6 +200,7 @@ fun SetValueSection(couponType: CouponType, isEdit: Boolean = false, onDelete: (
                 }
 
                 NumberOutLineTextField(
+                    text = if(discountPrice == null) "" else discountPrice.toString(),
                     placeholderText = "할인을 제공할 금액을 입력해 주세요.",
                     onValueChange = {
                         createCouponViewModel.updateDiscountPrice(it)
@@ -213,7 +214,7 @@ fun SetValueSection(couponType: CouponType, isEdit: Boolean = false, onDelete: (
                 Spacer(modifier = Modifier.height(5.dp))
 
                 TextLengthRow(
-                    text = (discountPrice ?: "").toString(), limitSize = 9
+                    text = (discountPrice ?: "").toString(), limitSize = 8
                 )
 
                 LeftCheckButton(
@@ -226,6 +227,7 @@ fun SetValueSection(couponType: CouponType, isEdit: Boolean = false, onDelete: (
                 }
 
                 NumberOutLineTextField(
+                    text = if(discountRate == null) "" else discountRate.toString(),
                     placeholderText = "할인율을 입력해 주세요.",
                     onValueChange = {
                         createCouponViewModel.updateDiscountRate(it)
@@ -429,6 +431,7 @@ fun SetQuantitySection() {
         AnimatedVisibility(visible = quantityType is CouponQuantity.Limit) {
             Column {
                 NumberOutLineTextField(
+                    text = quantity,
                     placeholderText = "발급할 쿠폰 개수를 입력해 주세요",
                     onValueChange = {
                         createCouponViewModel.updateQuantity(false, quantity = it)

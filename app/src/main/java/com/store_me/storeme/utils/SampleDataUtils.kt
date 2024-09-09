@@ -11,7 +11,7 @@ import com.store_me.storeme.data.DailyHoursData
 import com.store_me.storeme.data.DetailCouponData
 import com.store_me.storeme.data.LabelWithPostData
 import com.store_me.storeme.data.LocationInfo
-import com.store_me.storeme.data.MenuData
+import com.store_me.storeme.data.MenuDatas
 import com.store_me.storeme.data.NormalPostWithStoreInfoData
 import com.store_me.storeme.data.MyPickWithStoreInfoData
 import com.store_me.storeme.data.NearPlaceStoreWithStoreInfoData
@@ -145,13 +145,13 @@ class SampleDataUtils {
             locationInfo = LocationInfo("서울특별시 은평구 통일로 1030 은평헤스티아 101호", null),
             StoreMenuData(
                 listOf(
-                    MenuData("에스프레소", true, "원두 선택 : 시그니처 홈 블렌드 / 에티오피아 내추럴 / 디카페인 / 게이샤 워시드", 5800),
-                    MenuData("아메리카노", true, "원두 선택 : 시그니처 홈 블렌드 / 에티오피아 내추럴 / 디카페인 / 게이샤 워시드", 5800),
-                    MenuData("카페 라떼", false, "원두 선택 : 시그니처 홈 블렌드 / 에티오피아 내추럴 / 디카페인 / 게이샤 워시드", 6300),
-                    MenuData("플랫 화이트", false, "원두 선택 : 시그니처 홈 블렌드 / 에티오피아 내추럴 / 디카페인 / 게이샤 워시드", 6300),
-                    MenuData("카푸치노", false, "에스프레소와 폭신한 스팀밀크. 시나몬 파우더와 코코아 파우더. YM’s pick!", 6300),
-                    MenuData("", false, "", 5000),
-                    MenuData("", false, "", 5000),
+                    MenuDatas("에스프레소", true, "원두 선택 : 시그니처 홈 블렌드 / 에티오피아 내추럴 / 디카페인 / 게이샤 워시드", 5800),
+                    MenuDatas("아메리카노", true, "원두 선택 : 시그니처 홈 블렌드 / 에티오피아 내추럴 / 디카페인 / 게이샤 워시드", 5800),
+                    MenuDatas("카페 라떼", false, "원두 선택 : 시그니처 홈 블렌드 / 에티오피아 내추럴 / 디카페인 / 게이샤 워시드", 6300),
+                    MenuDatas("플랫 화이트", false, "원두 선택 : 시그니처 홈 블렌드 / 에티오피아 내추럴 / 디카페인 / 게이샤 워시드", 6300),
+                    MenuDatas("카푸치노", false, "에스프레소와 폭신한 스팀밀크. 시나몬 파우더와 코코아 파우더. YM’s pick!", 6300),
+                    MenuDatas("", false, "", 5000),
+                    MenuDatas("", false, "", 5000),
                 )
             ),
             CustomLabelData( listOf("로스팅 꿀팁", "일일 보고서")),

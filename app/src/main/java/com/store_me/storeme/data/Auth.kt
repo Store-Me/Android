@@ -67,15 +67,15 @@ object Auth {
      */
 
     /*   Link 관리   */
-    private val _linkListData = MutableStateFlow<SocialMediaAccountData?>(null)
-    val linkListData: StateFlow<SocialMediaAccountData?> = _linkListData
+    private val _linkListData = MutableStateFlow(SocialMediaAccountData(emptyList()))
+    val linkListData: StateFlow<SocialMediaAccountData> = _linkListData
 
-    fun setLinkListData(socialMediaAccountData: SocialMediaAccountData?) {
+    fun setLinkListData(socialMediaAccountData: SocialMediaAccountData) {
         _linkListData.value = socialMediaAccountData
     }
 
     fun addLinkListData(url: String) {
-        val currentList = _linkListData.value?.urlList?.toMutableList() ?: mutableListOf()
+        val currentList = _linkListData.value.urlList.toMutableList()
         currentList.add(url)
         _linkListData.value = SocialMediaAccountData(currentList)
     }
@@ -112,7 +112,22 @@ object Auth {
                 createdAt = "2024-09-01T10:00:00"
             ),
             usedCouponData = UsedCouponData(0, 0)
-        ))
+        ),OwnerCouponDetailData(
+            couponInfoData = CouponInfoData.Discount(
+                couponId = "DefaultCouponId2",
+                discountType = CouponDiscountType.PRICE,
+                discountValue = 4000,
+                name = "초코쿠키 25개 무료 체험권2",
+                available = CouponAvailable.REPEAT,
+                quantity = CouponQuantity.Infinite,
+                dueDate = DateData(2024, 9, 23),
+                image = "",
+                description = "",
+                createdAt = "2024-09-01T10:00:00"
+            ),
+            usedCouponData = UsedCouponData(0, 0)
+        )
+        )
     )
     val couponDetailList: StateFlow<List<OwnerCouponDetailData>> = _couponDetailList
 
@@ -137,5 +152,8 @@ object Auth {
             }
         }
     }
+
+    private val _menuCategoryList = MutableStateFlow<List<MenuCategory>>(emptyList())
+    val menuCategoryList: StateFlow<List<MenuCategory>> = _menuCategoryList
 
 }

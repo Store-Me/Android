@@ -68,10 +68,12 @@ import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.SocialMediaAccountData
+import com.store_me.storeme.ui.component.AddButton
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultDialogButton
 import com.store_me.storeme.ui.component.DefaultFinishButton
 import com.store_me.storeme.ui.component.DefaultOutlineTextField
+import com.store_me.storeme.ui.component.EditAddSection
 import com.store_me.storeme.ui.component.LargeButton
 import com.store_me.storeme.ui.component.SocialMediaIcon
 import com.store_me.storeme.ui.component.TextFieldErrorType
@@ -98,7 +100,7 @@ fun LinkSettingScreen(
     linkSettingViewModel: LinkSettingViewModel = viewModel()
 ) {
     val linkListData by Auth.linkListData.collectAsState()
-    val list = linkListData?.urlList ?: emptyList()
+    val list = linkListData.urlList
 
     val editState by linkSettingViewModel.editState.collectAsState()
 
@@ -169,19 +171,15 @@ fun LinkSettingScreen(
                         showBottomSheet = true
                     }
 
-                    if (linkListData != null) {
-                        when(editState) {
-                            true -> {
-                                LinkReorderList()
-                            }
-                            false -> {
-                                LazyColumn {
-                                    items(list) { url ->
-                                        LinkItem(url)
-                                    }
+                    when(editState) {
+                        true -> {
+                            LinkReorderList()
+                        }
+                        false -> {
+                            LazyColumn {
+                                items(list) { url ->
+                                    LinkItem(url)
                                 }
-
-
                             }
                         }
                     }
@@ -195,7 +193,7 @@ fun LinkSettingScreen(
 fun LinkReorderList() {
     val view = LocalView.current
     val linkListData by Auth.linkListData.collectAsState()
-    var list = linkListData?.urlList ?: emptyList()
+    var list = linkListData.urlList
 
     val lazyListState = rememberLazyListState()
     val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
@@ -246,23 +244,11 @@ fun LinkReorderList() {
 }
 
 @Composable
-fun LinkEditButtonSection(linkListData: SocialMediaAccountData?, onAddLink:() -> Unit) {
+fun LinkEditButtonSection(linkListData: SocialMediaAccountData, onAddLink:() -> Unit) {
     val linkSettingViewModel = LocalLinkSettingViewModel.current
     val editState by linkSettingViewModel.editState.collectAsState()
 
     val context = LocalContext.current
-
-    val icon: @Composable () -> Unit = {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_circle_plus),
-            contentDescription = "링크 추가 아이콘",
-            modifier = Modifier
-                .size(22.dp)
-                .clip(CircleShape),
-            tint = White
-        )
-    }
-
 
     fun addButtonClick() {
         if(editState) {
@@ -270,7 +256,7 @@ fun LinkEditButtonSection(linkListData: SocialMediaAccountData?, onAddLink:() ->
             return
         }
 
-        if((linkListData?.urlList?.size ?: 0) > 6) {
+        if(linkListData.urlList.size > 6) {
             ToastMessageUtils.showToast(context, R.string.alert_max_link)
             return
         }
@@ -278,69 +264,16 @@ fun LinkEditButtonSection(linkListData: SocialMediaAccountData?, onAddLink:() ->
         onAddLink()
     }
 
-    Row(
+    EditAddSection(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
-            .padding(bottom = 20.dp)
-    ) {
-
-        when(linkListData) {
-            null -> {
-                LargeButton(
-                    text = "링크 추가",
-                    containerColor = Black,
-                    contentColor = White,
-                    modifier = Modifier.weight(1f),
-                    icon = { icon() }
-                ) {
-                    addButtonClick()
-                }
-            }
-            else -> {
-                when(linkListData.urlList.size) {
-                    0 -> {
-                        LargeButton(
-                            text = "링크 추가",
-                            containerColor = Black,
-                            contentColor = White,
-                            modifier = Modifier.weight(1f),
-                            icon = { icon() }
-                        ) {
-                            addButtonClick()
-                        }
-                    }
-                    else -> {
-                        when(editState) {
-                            true -> {
-                                LargeButton(text = "저장", modifier = Modifier.weight(1f), containerColor = SaveButtonColor, contentColor = White) {
-                                    linkSettingViewModel.setEditState(false)
-                                }
-                            }
-                            false -> {
-                                LargeButton(text = "순서 편집/삭제", modifier = Modifier.weight(1f), containerColor = EditButtonColor, contentColor = Black) {
-                                    linkSettingViewModel.setEditState(true)
-                                }
-                            }
-                        }
-
-
-                        Spacer(modifier = Modifier.width(10.dp))
-
-                        LargeButton(
-                            text = "링크 추가",
-                            containerColor = Black,
-                            contentColor = White,
-                            modifier = Modifier.weight(1f),
-                            icon = { icon() }
-                        ) {
-                            addButtonClick()
-                        }
-                    }
-                }
-            }
-        }
-    }
+            .padding(bottom = 20.dp),
+        dataListSize = linkListData.urlList.size,
+        editState = editState,
+        onAdd = { addButtonClick() },
+        onChangeEditState = { linkSettingViewModel.setEditState(it) }
+    )
 }
 
 

@@ -199,8 +199,14 @@ class CreateCouponViewModel: ViewModel() {
         when(couponInfoData){
             is CouponInfoData.Discount -> {
                 when(couponInfoData.discountType) {
-                    CouponDiscountType.PRICE -> { updateDiscountPrice(couponInfoData.discountValue) }
-                    CouponDiscountType.RATE -> { updateDiscountRate(couponInfoData.discountValue) }
+                    CouponDiscountType.PRICE -> {
+                        updateDiscountType(CouponDiscountType.PRICE)
+                        updateDiscountPrice(couponInfoData.discountValue)
+                    }
+                    CouponDiscountType.RATE -> {
+                        updateDiscountType(CouponDiscountType.RATE)
+                        updateDiscountRate(couponInfoData.discountValue)
+                    }
                 }
             }
             is CouponInfoData.Giveaway -> {
