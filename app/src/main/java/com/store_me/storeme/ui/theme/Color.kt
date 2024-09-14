@@ -84,6 +84,12 @@ val NextButtonColor = Color(0xFFD44ADA)
 val WebIconColor = Color(0xFFD449DA)
 
 /**
+ * SwipeItemColor
+ */
+val SwipeDeleteColor = Color(0xFFFE4343)
+val SwipeEditColor = Color(0xFF508EFA)
+
+/**
  * Coupon 관련 Color
  */
 //Valid Box Color
@@ -183,8 +189,26 @@ val BlockBeforeIconColor = Color(0xFFD9D9D9)
  * Select Check Box Color
  */
 val SelectedCheckBoxColor = Color(0xFF220000)
+val SelectedCheckBoxColorPink = Color(0xFFD449DA)
 
 
+/**
+ * Add Menu Color
+ */
+val SelectedMenuCategoryColor = Color(0xFF898C93)
+
+val SignatureBoxColor = Color(0xFFFEEBFE)
+val SignatureTextColor = Color(0xFFD449DA)
+
+val PopularBoxColor = Color(0xFFDCE8FF)
+val PopularTextColor = Color(0xFF508EFA)
+
+val RecommendBoxColor = Color(0xFFFFEECC)
+val RecommendTextColor = Color(0xFFE59F11)
+
+val UnselectedHighLightMenuColor = Color(0xFFAAADB4)
+
+val MenuPriceDescriptionColor = Color(0xFF898C93)
 /**
  * Default Color
  */
@@ -193,8 +217,6 @@ val DefaultDividerColor = Color(0xFFEFF0F5)
 val DefaultIconColor = Color(0xFFEBF3FE)
 
 val UndefinedTextColor = Color(0xFF898C93)
-
-val UndefinedLinkColor = Color(0xFFD449DA)
 
 val DeleteTextColor = Color(0xFFAAADB4)
 

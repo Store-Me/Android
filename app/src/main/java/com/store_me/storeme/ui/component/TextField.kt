@@ -16,10 +16,6 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusManager
@@ -31,8 +27,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
@@ -43,8 +37,8 @@ import com.store_me.storeme.utils.DateTimeUtils
 import java.time.LocalDate
 
 enum class TextFieldErrorType {
-    LINK, DESCRIPTION, DATE, COUPON_NAME, COUPON_CONTENT,
-    COUPON_QUANTITY, COUPON_RATE, COUPON_PRICE
+    LINK, DESCRIPTION, DATE, NAME, COUPON_CONTENT, MENU_DESCRIPTION, MENU_NAME, MENU_CATEGORY_NAME,
+    COUPON_QUANTITY, COUPON_RATE, PRICE
 }
 
 @Composable
@@ -57,10 +51,9 @@ fun DefaultOutlineTextField(
     onErrorChange: (Boolean) -> Unit = {},
     singleLine: Boolean = true,
     enabled: Boolean = true,
+    exceptText: String = ""
 ) {
-    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
-
-    val urlList = Auth.linkListData.value?.urlList.orEmpty()
+    val urlList = Auth.linkListData.value.urlList
 
     val errorMessage = when (errorType) {
         TextFieldErrorType.LINK -> {
@@ -77,11 +70,49 @@ fun DefaultOutlineTextField(
             } else
                 null
         }
-        TextFieldErrorType.COUPON_NAME -> {
+        TextFieldErrorType.MENU_DESCRIPTION -> {
+            if(text.length > 50) {
+                "50자 이내로 작성해야 합니다."
+            } else
+                null
+        }
+        TextFieldErrorType.NAME -> {
             if(text.length > 15) {
                 "15자 이내로 작성해야 합니다."
             } else
                 null
+        }
+        TextFieldErrorType.MENU_NAME -> {
+            when {
+                text.length > 15 -> {
+                    "15자 이내로 작성해야 합니다."
+                }
+                Auth.menuCategoryList.value.any { category ->
+                    category.menuList.any { menu ->
+                        menu.name == text && exceptText != menu.name
+                    }
+                } -> {
+                    "같은 이름의 메뉴가 존재합니다."
+                }
+                else -> {
+                    null
+                }
+            }
+        }
+        TextFieldErrorType.MENU_CATEGORY_NAME -> {
+            when {
+                text.length > 20 -> {
+                    "20자 이내로 작성해야 합니다."
+                }
+                Auth.menuCategoryList.value.any { category ->
+                    category.categoryName == text && exceptText != category.categoryName
+                } -> {
+                    "같은 이름의 카테고리가 존재합니다."
+                }
+                else -> {
+                    null
+                }
+            }
         }
         TextFieldErrorType.COUPON_CONTENT -> {
             if(text.length > 15) {
@@ -118,9 +149,12 @@ fun DefaultOutlineTextField(
         keyboardOptions = if(singleLine) KeyboardOptions.Default.copy(
             imeAction = ImeAction.Done
         ) else KeyboardOptions.Default,
-        placeholder = { Text(
-            text = placeholderText,
-            style = storeMeTextStyle(FontWeight.Normal, 0)) },
+        placeholder = {
+            Text(
+                text = placeholderText,
+                style = storeMeTextStyle(FontWeight.Normal, 0)
+            )
+        },
         textStyle = storeMeTextStyle(FontWeight.Normal, 0),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = HighlightTextFieldColor,
@@ -281,7 +315,7 @@ fun NumberOutLineTextField(
             } else
                 null
         }
-        TextFieldErrorType.COUPON_PRICE -> {
+        TextFieldErrorType.PRICE -> {
             if (text.toIntOrNull() == null && text.isNotEmpty()) {
                 "숫자만 입력이 가능합니다."
             } else if (text.length > 8) {
@@ -321,7 +355,7 @@ fun NumberOutLineTextField(
                         onValueChange(it.toIntOrNull())
                     }
                 }
-                TextFieldErrorType.COUPON_PRICE -> {
+                TextFieldErrorType.PRICE -> {
                     if (it.length <= 8) {
                         onValueChange(it.toIntOrNull())
                     }

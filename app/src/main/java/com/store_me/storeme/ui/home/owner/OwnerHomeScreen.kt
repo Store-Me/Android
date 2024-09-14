@@ -786,7 +786,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                         .height(40.dp)
                         .fillMaxWidth()
                 ) {
-
+                    NavigationUtils().navigateOwnerNav(navController, StoreHomeItem.MENU)
                 }
             }
             StoreHomeItem.STORY -> {

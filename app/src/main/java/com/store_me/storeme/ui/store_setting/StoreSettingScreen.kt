@@ -223,12 +223,8 @@ fun StoreItemReorder(visibleItems: List<StoreHomeItemData>, hiddenItems: List<St
 
     var visibleList = visibleItems.map { it }.toMutableList()
 
-    Log.d("items", visibleList.toString())
-
     val lazyListState = rememberLazyListState()
     val reorderableLazyListState = rememberReorderableLazyListState(lazyListState = lazyListState) { from, to ->
-        Log.d("from to", "${from.index} , ${to.index}")
-
 
         //Lazy Column의 각 item 별 index 조정
         val actualFromIndex = from.index - 2 - StoreNormalItem.entries.size // "기본 가게 정보"와 "보이는 가게 정보" 헤더를 고려

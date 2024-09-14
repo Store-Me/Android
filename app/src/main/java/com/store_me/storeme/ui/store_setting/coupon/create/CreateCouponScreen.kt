@@ -33,7 +33,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -206,7 +205,7 @@ fun SetValueSection(couponType: CouponType, isEdit: Boolean = false, onDelete: (
                         createCouponViewModel.updateDiscountPrice(it)
                     },
                     suffixText = "원",
-                    errorType = TextFieldErrorType.COUPON_PRICE,
+                    errorType = TextFieldErrorType.PRICE,
                     onErrorChange = { isPriceError = it },
                     enabled = discountType == CouponDiscountType.PRICE
                 )
@@ -328,7 +327,7 @@ fun SetNameSection() {
             onValueChange = {
                 createCouponViewModel.updateName(it)
             },
-            errorType = TextFieldErrorType.COUPON_NAME,
+            errorType = TextFieldErrorType.NAME,
             placeholderText = "쿠폰 이름을 입력해 주세요.",
             onErrorChange = { isError = it }
         )

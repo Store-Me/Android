@@ -42,9 +42,13 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -89,6 +93,7 @@ import com.store_me.storeme.data.SocialMediaAccountType
 import com.store_me.storeme.ui.home.LocationViewModel
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.mystore.CategoryViewModel
+import com.store_me.storeme.ui.theme.DefaultDividerColor
 import com.store_me.storeme.ui.theme.DefaultIconColor
 import com.store_me.storeme.ui.theme.EditButtonColor
 import com.store_me.storeme.ui.theme.HomeSearchBoxColor
@@ -173,6 +178,37 @@ fun TitleWithDeleteButtonAtDetail(title: String, isInTopAppBar: Boolean = false,
 
         DeleteButton {
             onBack()
+        }
+    }
+}
+
+@Composable
+fun TitleWithSaveButton(
+    navController: NavController,
+    title: String,
+    scrollBehavior: TopAppBarScrollBehavior,
+    finishButtonEnable: Boolean = true,
+    onFinish: () -> Unit
+){
+    Column {
+        TopAppBar(
+            title = {
+                TitleWithDeleteButton(navController = navController, title = title, isInTopAppBar = true)
+            },
+            scrollBehavior = scrollBehavior,
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = White,
+                scrolledContainerColor = White
+            )
+        )
+
+        DefaultFinishButton(
+            enabled = finishButtonEnable,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 10.dp)
+        ) {
+            onFinish()
         }
     }
 }
@@ -301,11 +337,12 @@ fun DefaultCheckButton(
     text: String,
     fontWeight: FontWeight = FontWeight.Bold,
     diffValue: Int = 0,
+    selectedColor: Color = SelectedCheckBoxColor,
     isSelected: Boolean,
     description: String = "",
     onClick: () -> Unit
 ) {
-    val contentColor = if(!isSelected) UndefinedTextColor else SelectedCheckBoxColor
+    val contentColor = if(!isSelected) UndefinedTextColor else selectedColor
     val iconId = if(!isSelected) R.drawable.ic_check_off else R.drawable.ic_check_on
 
     Row(
@@ -358,17 +395,20 @@ fun LeftCheckButton(
     text: String,
     fontWeight: FontWeight = FontWeight.Bold,
     diffValue: Int = 0,
+    selectedColor: Color = SelectedCheckBoxColor,
+    enabled: Boolean = true,
     isSelected: Boolean,
     description: String = "",
+    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    val contentColor = if(!isSelected) UndefinedTextColor else SelectedCheckBoxColor
+    val contentColor = if(!isSelected) UndefinedTextColor else selectedColor
     val iconId = if(!isSelected) R.drawable.ic_check_off else R.drawable.ic_check_on
 
     Row(
-        modifier = Modifier
-            .wrapContentSize()
+        modifier = modifier
             .clickable(
+                enabled = enabled,
                 onClick = { onClick() },
                 indication = null,
                 interactionSource = null
@@ -376,12 +416,12 @@ fun LeftCheckButton(
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        Icon(
-        painter = painterResource(id = iconId),
-        contentDescription = "체크 아이콘",
-        modifier = Modifier
-            .size(SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4)),
-        tint = contentColor
+        Icon (
+            painter = painterResource(id = iconId),
+            contentDescription = "체크 아이콘",
+            modifier = Modifier
+                .size(SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4)),
+            tint = contentColor
         )
 
         Spacer(modifier = Modifier.width(5.dp))
@@ -406,9 +446,10 @@ fun LeftCheckButton(
                     ) + 5.dp, top = 10.dp
                 )
         ) {
-            Text(text = description,
+            Text (
+                text = description,
                 style = storeMeTextStyle(FontWeight.Normal, diffValue - 2),
-                color = contentColor,
+                color = contentColor
             )
         }
     }
@@ -451,6 +492,7 @@ fun LargeButton(
     modifier: Modifier = Modifier,
     containerColor: Color,
     contentColor: Color,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     Button(
@@ -461,6 +503,7 @@ fun LargeButton(
             containerColor = containerColor,
             contentColor = contentColor
         ),
+        enabled = enabled,
         onClick = onClick,
     ) {
         icon?.let {
@@ -513,6 +556,8 @@ fun EditAddSection(
     modifier: Modifier = Modifier,
     dataListSize: Int,
     editState: Boolean,
+    addText: String,
+    editText: String,
     onChangeEditState: (Boolean) -> Unit,
     onAdd: () -> Unit
 ) {
@@ -524,7 +569,7 @@ fun EditAddSection(
                 onChangeEditState(false)
 
                 AddButton(
-                    text = "링크 추가",
+                    text = addText,
                     containerColor = Black,
                     contentColor = White,
                     modifier = Modifier.weight(1f)
@@ -540,7 +585,7 @@ fun EditAddSection(
                         }
                     }
                     false -> {
-                        LargeButton(text = "순서 편집/삭제", modifier = Modifier.weight(1f), containerColor = EditButtonColor, contentColor = Black) {
+                        LargeButton(text = editText, modifier = Modifier.weight(1f), containerColor = EditButtonColor, contentColor = Black) {
                             onChangeEditState(true)
                         }
                     }
@@ -548,7 +593,7 @@ fun EditAddSection(
 
                 Spacer(modifier = Modifier.width(10.dp))
                 AddButton(
-                    text = "링크 추가",
+                    text = addText,
                     containerColor = Black,
                     contentColor = White,
                     modifier = Modifier.weight(1f)
@@ -611,6 +656,58 @@ fun DefaultDialogButton(
 }
 
 /**
+ * Swipe 시 보이는 Row Content
+ */
+@Composable
+fun EditAndDeleteRow(
+    diffValue: Int,
+    editModifier: Modifier,
+    editAlpha: Float,
+    deleteModifier: Modifier,
+    deleteAlpha: Float,
+) {
+    val density = LocalDensity.current
+
+    Row(
+        modifier = editModifier
+            .padding(start = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_edit),
+            contentDescription = "수정 아이콘",
+            tint = White.copy(alpha = editAlpha),
+            modifier = Modifier.size(SizeUtils().textSizeToDp(density, diffValue))
+        )
+
+        Text(
+            text = "수정",
+            style = storeMeTextStyle(FontWeight.ExtraBold, diffValue),
+            color = White.copy(alpha = editAlpha)
+        )
+    }
+
+    Row(
+        modifier = deleteModifier
+            .padding(end = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Text(
+            text = "삭제",
+            style = storeMeTextStyle(FontWeight.ExtraBold, diffValue),
+            color = White.copy(alpha = deleteAlpha)
+        )
+
+        Icon(
+            painter = painterResource(id = R.drawable.ic_delete_trashcan),
+            contentDescription = "삭제 아이콘",
+            tint = White.copy(alpha = deleteAlpha),
+            modifier = Modifier.size(SizeUtils().textSizeToDp(density, diffValue))
+        )
+    }
+}
+
+/**
  * 검색 완료 결과를 람다 함수로 반환 하는 검색 창
  */
 @Composable
@@ -662,19 +759,6 @@ fun SearchField(modifier: Modifier = Modifier, observeText: String? = null, hint
             }
         )
     }
-}
-
-/**
- * 기본 TextField
- * @param text text 값
- */
-@Composable
-fun DefaultTextField(text: String, onTextChange: (String) -> Unit){
-    OutlinedTextField(
-        value = text,
-        onValueChange = onTextChange,
-        label = {  },
-    )
 }
 
 @Composable
@@ -1031,4 +1115,9 @@ fun SocialMediaIcon(url: String, size: Int = 40) {
             .clip(CircleShape),
         tint = Unspecified
     )
+}
+
+@Composable
+fun DefaultHorizontalDivider(){
+    HorizontalDivider(color = DefaultDividerColor, thickness = 1.dp)
 }

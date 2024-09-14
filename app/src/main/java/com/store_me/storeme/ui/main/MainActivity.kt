@@ -66,6 +66,10 @@ import com.store_me.storeme.ui.store_setting.StoreSettingScreen
 import com.store_me.storeme.ui.store_setting.StorySettingScreen
 import com.store_me.storeme.ui.store_setting.coupon.create.CreateCouponScreen
 import com.store_me.storeme.ui.store_setting.coupon.edit.EditCouponScreen
+import com.store_me.storeme.ui.store_setting.menu.add.AddMenuScreen
+import com.store_me.storeme.ui.store_setting.menu.category.EditMenuCategoryScreen
+import com.store_me.storeme.ui.store_setting.menu.category.MenuCategorySettingScreen
+import com.store_me.storeme.ui.store_setting.menu.edit.EditMenuScreen
 import com.store_me.storeme.ui.store_talk.StoreTalkScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.ui.theme.UnselectedItemColor
@@ -190,9 +194,9 @@ class MainActivity : ComponentActivity() {
              * Start Screen 이 OWNER_HOME
              */
             //HOME > LINK_SETTING
-            composable(OWNER_HOME + OwnerNavItem.LINK_SETTING.name) { LinkSettingScreen(navController) }
+            composable(OWNER_HOME + OwnerNavItem.LINK_SETTING) { LinkSettingScreen(navController) }
             //HOME > STORE_SETTING
-            composable(OWNER_HOME + OwnerNavItem.STORE_SETTING.name) { StoreSettingScreen(navController) }
+            composable(OWNER_HOME + OwnerNavItem.STORE_SETTING) { StoreSettingScreen(navController) }
 
             //HOME > NORMAL
             composable(OWNER_HOME + StoreNormalItem.OPENING_HOURS) { OpeningHoursSettingScreen(navController) }
@@ -208,14 +212,27 @@ class MainActivity : ComponentActivity() {
             composable(OWNER_HOME + StoreHomeItem.REVIEW) { ReviewSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.NEWS) { NewsSettingScreen(navController) }
 
-            composable(OWNER_HOME + OwnerNavItem.CREATE_COUPON.name + "/{selectedCouponType}") {backStackEntry ->
+            composable(OWNER_HOME + OwnerNavItem.CREATE_COUPON + "/{selectedCouponType}") {backStackEntry ->
                 val selectedCouponType = backStackEntry.arguments?.getString("selectedCouponType")
                 CreateCouponScreen(navController, selectedCouponType = selectedCouponType ?: "")
             }
 
-            composable(OWNER_HOME + OwnerNavItem.EDIT_COUPON.name + "/{selectedCouponId}") {backStackEntry ->
+            composable(OWNER_HOME + OwnerNavItem.EDIT_COUPON + "/{selectedCouponId}") {backStackEntry ->
                 val selectedCouponId = backStackEntry.arguments?.getString("selectedCouponId")
                 EditCouponScreen(navController, selectedCouponId = selectedCouponId ?: "")
+            }
+
+            //HOME > MENU
+            composable(OWNER_HOME + OwnerNavItem.ADD_MENU) { AddMenuScreen(navController) }
+            composable(OWNER_HOME + OwnerNavItem.EDIT_MENU + "/{selectedMenuName}") { backStackEntry ->
+                val selectedMenuName = backStackEntry.arguments?.getString("selectedMenuName")
+                EditMenuScreen(navController, selectedMenuName = selectedMenuName ?: "")
+            }
+            composable(OWNER_HOME + OwnerNavItem.MENU_CATEGORY_SETTING) { MenuCategorySettingScreen(navController) }
+
+            composable(OWNER_HOME + OwnerNavItem.EDIT_MENU_CATEGORY + "/{selectedCategoryName}") { backStackEntry ->
+                val selectedCategoryName = backStackEntry.arguments?.getString("selectedCategoryName")
+                EditMenuCategoryScreen(navController, selectedCategoryName = selectedCategoryName ?: "")
             }
         }
     }
@@ -346,6 +363,6 @@ class MainActivity : ComponentActivity() {
     }
 
     enum class OwnerNavItem {
-        LINK_SETTING, STORE_SETTING, CREATE_COUPON, EDIT_COUPON,
+        LINK_SETTING, STORE_SETTING, CREATE_COUPON, EDIT_COUPON, ADD_MENU, EDIT_MENU, MENU_CATEGORY_SETTING, EDIT_MENU_CATEGORY
     }
 }

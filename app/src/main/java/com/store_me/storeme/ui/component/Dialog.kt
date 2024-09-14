@@ -67,7 +67,7 @@ fun WarningDialog(
 
             Text(
                 text= warningContent,
-                style = storeMeTextStyle(FontWeight.Bold, 2),
+                style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Visible
@@ -92,6 +92,61 @@ fun WarningDialog(
                 }
 
                 DefaultDialogButton(text = actionText, containerColor = Color.Black, contentColor = Color.White, modifier = Modifier.weight(1f)) {
+                    onAction()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun BackWarningDialog(
+    onDismiss: () -> Unit,
+    onAction: () -> Unit,
+) {
+    BasicAlertDialog(
+        onDismissRequest = { onDismiss() },
+        modifier = Modifier
+            .background(shape = RoundedCornerShape(20.dp), color = Color.White)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp)
+        ) {
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Icon(
+                painterResource(id = R.drawable.ic_warning),
+                contentDescription = "경고 아이콘",
+                tint = Color.Unspecified,
+                modifier = Modifier.size(42.dp)
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(text = "이전 페이지로 이동할까요?", style = storeMeTextStyle(FontWeight.ExtraBold, 6))
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text= "이전 페이지로 이동하면 현재 작성된 내용은 사라지고, 진행중이었던 작업은 처음부터 진행해야해요.",
+                style = storeMeTextStyle(FontWeight.Bold, 2),
+                color = UnselectedItemColor,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                DefaultDialogButton(text = "취소", containerColor = CancelButtonColor, contentColor = Color.Black, modifier = Modifier.weight(1f)) {
+                    onDismiss()
+                }
+
+                DefaultDialogButton(text = "확인", containerColor = Color.Black, contentColor = Color.White, modifier = Modifier.weight(1f)) {
                     onAction()
                 }
             }
