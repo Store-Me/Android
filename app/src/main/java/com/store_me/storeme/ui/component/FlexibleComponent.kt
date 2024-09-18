@@ -1118,6 +1118,18 @@ fun SocialMediaIcon(url: String, size: Int = 40) {
 }
 
 @Composable
+fun UserProfileImage(url: String?, size: Int) {
+    AsyncImage(
+        model = url,
+        contentDescription = "프로필 이미지",
+        error = painterResource(id = R.drawable.store_null_image),
+        modifier = Modifier
+            .size(size.dp)
+            .clip(CircleShape)
+    )
+}
+
+@Composable
 fun DefaultHorizontalDivider(){
     HorizontalDivider(color = DefaultDividerColor, thickness = 1.dp)
 }

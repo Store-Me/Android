@@ -8,6 +8,11 @@ data class MenuCategory(
     val menuList: List<MenuData>
 )
 
+//메뉴 카테고리에 특정 메뉴가 있는지 확인하는 확장함수
+fun MenuCategory.hasMenu(menuName: String): Int {
+    return menuList.indexOfFirst { it.name == menuName }
+}
+
 const val DEFAULT_MENU_CATEGORY = "기본 카테고리"
 
 /**

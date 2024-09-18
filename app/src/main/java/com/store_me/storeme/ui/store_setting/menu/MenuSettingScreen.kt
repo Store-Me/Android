@@ -84,6 +84,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.MenuData
 import com.store_me.storeme.data.MenuPrice
+import com.store_me.storeme.data.hasMenu
 import com.store_me.storeme.ui.component.AddButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.LargeButton
@@ -107,7 +108,6 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.PriceUtils
 import com.store_me.storeme.utils.SizeUtils
-import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import kotlin.math.roundToInt
@@ -125,6 +125,7 @@ enum class DragValue {
 @Composable
 fun MenuSettingScreen(
     navController: NavController,
+    selectedMenuName: String = "",
     menuSettingViewModel: MenuSettingViewModel = viewModel()
 ) {
     val focusManager = LocalFocusManager.current
@@ -255,6 +256,27 @@ fun MenuSettingScreen(
 
         view.performHapticFeedback(HapticFeedbackConstants.SEGMENT_FREQUENT_TICK)
 
+    }
+
+    LaunchedEffect(selectedMenuName) {
+        if(selectedMenuName.isEmpty())
+            return@LaunchedEffect
+
+        var index: Int = 0
+
+        Auth.menuCategoryList.value.forEach {
+            if(it.hasMenu(selectedMenuName) == -1){
+                index = it.menuList.size + 1
+
+                if(it.menuList.isEmpty())
+                    index++
+            } else {
+                index = it.hasMenu(selectedMenuName) + 1
+                return@forEach
+            }
+        }
+
+        lazyListState.scrollToItem(index)
     }
 
     CompositionLocalProvider(LocalMenuSettingViewModel provides menuSettingViewModel) {
@@ -584,7 +606,7 @@ fun MenuItemSection(navController: NavController, menuData: MenuData, modifier: 
                                         color = SignatureBoxColor.copy(
                                             alpha = rowContentAlpha
                                         ),
-                                        shape = RoundedCornerShape(5.dp)
+                                        shape = RoundedCornerShape(6.dp)
                                     )
                                     .padding(5.dp),
                                 color = SignatureTextColor.copy(
@@ -602,7 +624,7 @@ fun MenuItemSection(navController: NavController, menuData: MenuData, modifier: 
                                         color = PopularBoxColor.copy(
                                             alpha = rowContentAlpha
                                         ),
-                                        shape = RoundedCornerShape(5.dp)
+                                        shape = RoundedCornerShape(6.dp)
                                     )
                                     .padding(5.dp),
                                 color = PopularTextColor.copy(
@@ -620,7 +642,7 @@ fun MenuItemSection(navController: NavController, menuData: MenuData, modifier: 
                                         color = RecommendBoxColor.copy(
                                             alpha = rowContentAlpha
                                         ),
-                                        shape = RoundedCornerShape(5.dp)
+                                        shape = RoundedCornerShape(6.dp)
                                     )
                                     .padding(5.dp),
                                 color = RecommendTextColor.copy(

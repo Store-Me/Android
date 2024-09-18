@@ -61,7 +61,7 @@ import com.store_me.storeme.ui.store_setting.NewsSettingScreen
 import com.store_me.storeme.ui.store_setting.NoticeSettingScreen
 import com.store_me.storeme.ui.store_setting.opening_hours.OpeningHoursSettingScreen
 import com.store_me.storeme.ui.store_setting.PhotoSettingScreen
-import com.store_me.storeme.ui.store_setting.ReviewSettingScreen
+import com.store_me.storeme.ui.store_setting.review.ReviewSettingScreen
 import com.store_me.storeme.ui.store_setting.StoreSettingScreen
 import com.store_me.storeme.ui.store_setting.StorySettingScreen
 import com.store_me.storeme.ui.store_setting.coupon.create.CreateCouponScreen
@@ -208,6 +208,10 @@ class MainActivity : ComponentActivity() {
             composable(OWNER_HOME + StoreHomeItem.PHOTO) { PhotoSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.COUPON) { CouponSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.MENU) { MenuSettingScreen(navController) }
+            composable(OWNER_HOME + StoreHomeItem.MENU + "/{selectedMenuName}") { backStackEntry ->
+                val selectedMenuName = backStackEntry.arguments?.getString("selectedMenuName")
+                MenuSettingScreen(navController, selectedMenuName = selectedMenuName ?: "")
+            }
             composable(OWNER_HOME + StoreHomeItem.STORY) { StorySettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.REVIEW) { ReviewSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.NEWS) { NewsSettingScreen(navController) }

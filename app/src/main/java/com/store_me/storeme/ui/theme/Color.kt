@@ -209,6 +209,18 @@ val RecommendTextColor = Color(0xFFE59F11)
 val UnselectedHighLightMenuColor = Color(0xFFAAADB4)
 
 val MenuPriceDescriptionColor = Color(0xFF898C93)
+
+/**
+ * Review Color
+ */
+val ReviewCountTextColor = Color(0xFF898C93)
+
+val ReviewMenuBorderColor = Color(0xFFD9D9D9)
+val ReviewMenuTitleColor = Color(0xFF545A68)
+val ReviewMenuContentColor = Color(0xFF898C93)
+
+val OwnerReplyBoxColor = Color(0xFFFEF7FF)
+
 /**
  * Default Color
  */

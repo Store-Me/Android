@@ -1,27 +1,47 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.store_me.storeme.ui.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -285,7 +305,7 @@ fun DateOutLineTextField(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .clickable (
+            .clickable(
                 onClick = { onClick() },
                 indication = null,
                 interactionSource = null
@@ -407,4 +427,82 @@ fun NumberOutLineTextField(
             .wrapContentHeight(),
         enabled = enabled
     )
+}
+
+@Composable
+fun KeyBoardInputField(
+    text: String,
+    placeholderText: String,
+    onValueChange: (String) -> Unit,
+    onDismiss: () -> Unit,
+    onSend: (String) -> Unit
+) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusRequester = remember { FocusRequester() }
+
+    var hasFocus by remember { mutableStateOf(false) }
+
+
+    // 키보드가 올라왔을 때 입력 창이 키보드 위에 위치하도록 `imePadding` 사용
+    Box(
+        modifier = Modifier
+            .background(
+                color = Black.copy(alpha = 0.3f)
+            )
+            .clickable(
+                onClick = { onDismiss() },
+                indication = null,
+                interactionSource = null
+            )
+            .fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .background(White)
+                .imePadding(), // 키보드 높이만큼 패딩 추가
+            verticalArrangement = Arrangement.Bottom
+        ) {
+            TextField(
+                value = text,
+                onValueChange = { onValueChange(it) },
+                textStyle = storeMeTextStyle(FontWeight.Normal, 2),
+                placeholder = { Text(
+                    text = placeholderText,
+                    style = storeMeTextStyle(FontWeight.Bold, 2)
+                ) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester)
+                    .onFocusChanged {
+                        if (!it.hasFocus && hasFocus) {
+                            onDismiss()
+                        }
+                        hasFocus = it.hasFocus
+                    },
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                TextButton(onClick = onDismiss) {
+                    Text("취소")
+                }
+                TextButton(onClick = {
+                    onSend(text)
+                    keyboardController?.hide() // 키보드 숨기기
+                }) {
+                    Text("전송")
+                }
+            }
+        }
+    }
+
+
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 }

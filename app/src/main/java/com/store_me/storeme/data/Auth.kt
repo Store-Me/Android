@@ -177,7 +177,7 @@ object Auth {
         )),
         MenuCategory(DEFAULT_MENU_CATEGORY, menuList = listOf(
             MenuData(
-                name = "이름",
+                name = "이름1",
                 price = MenuPrice.Variable,
                 imageUrl = "",
                 description = "",
