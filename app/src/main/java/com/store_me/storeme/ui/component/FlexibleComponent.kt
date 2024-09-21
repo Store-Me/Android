@@ -1122,7 +1122,7 @@ fun UserProfileImage(url: String?, size: Int) {
     AsyncImage(
         model = url,
         contentDescription = "프로필 이미지",
-        error = painterResource(id = R.drawable.store_null_image),
+        error = painterResource(id = R.drawable.profile_null_image),
         modifier = Modifier
             .size(size.dp)
             .clip(CircleShape)

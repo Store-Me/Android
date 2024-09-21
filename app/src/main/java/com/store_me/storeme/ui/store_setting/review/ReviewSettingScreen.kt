@@ -125,7 +125,7 @@ fun ReviewSettingScreen(
         }
     }
 
-    CompositionLocalProvider(LocalReviewSettingViewModel provides  reviewSettingViewModel) {
+    CompositionLocalProvider(LocalReviewSettingViewModel provides reviewSettingViewModel) {
         Scaffold (
             modifier = Modifier
                 .fillMaxSize()

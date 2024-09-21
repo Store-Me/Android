@@ -81,7 +81,8 @@ data class StoreHoursData(
 
 /**
  * 영업 시간 상세 정보
- * @param openTime 오픈 시간
+ * @param openHours 오픈 Hours 정보
+ * @param openMinutes 오픈 Minutes 정보
  * @param closeTime 마감 시간
  * @param hasBreakTime 브레이크 타임 존재 여부
  * @param startBreakTime 브레이크 타임 시작

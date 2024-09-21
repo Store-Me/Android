@@ -442,8 +442,6 @@ fun KeyBoardInputField(
 
     var hasFocus by remember { mutableStateOf(false) }
 
-
-    // 키보드가 올라왔을 때 입력 창이 키보드 위에 위치하도록 `imePadding` 사용
     Box(
         modifier = Modifier
             .background(
@@ -461,7 +459,7 @@ fun KeyBoardInputField(
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .background(White)
-                .imePadding(), // 키보드 높이만큼 패딩 추가
+                .imePadding(),
             verticalArrangement = Arrangement.Bottom
         ) {
             TextField(

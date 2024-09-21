@@ -63,7 +63,7 @@ import com.store_me.storeme.ui.store_setting.opening_hours.OpeningHoursSettingSc
 import com.store_me.storeme.ui.store_setting.PhotoSettingScreen
 import com.store_me.storeme.ui.store_setting.review.ReviewSettingScreen
 import com.store_me.storeme.ui.store_setting.StoreSettingScreen
-import com.store_me.storeme.ui.store_setting.StorySettingScreen
+import com.store_me.storeme.ui.store_setting.story.StorySettingScreen
 import com.store_me.storeme.ui.store_setting.coupon.create.CreateCouponScreen
 import com.store_me.storeme.ui.store_setting.coupon.edit.EditCouponScreen
 import com.store_me.storeme.ui.store_setting.menu.add.AddMenuScreen

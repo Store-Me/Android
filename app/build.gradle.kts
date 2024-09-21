@@ -158,4 +158,10 @@ dependencies {
 
     //recorderable
     implementation("sh.calvin.reorderable:reorderable:2.3.1")
+
+    //ExoPlayer
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation("androidx.media3:media3-exoplayer:1.4.1")
+    implementation("androidx.media3:media3-ui:1.4.1")
+
 }
