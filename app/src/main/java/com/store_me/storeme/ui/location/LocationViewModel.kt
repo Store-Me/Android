@@ -1,4 +1,4 @@
-package com.store_me.storeme.ui.home
+package com.store_me.storeme.ui.location
 
 import android.annotation.SuppressLint
 import android.content.Context

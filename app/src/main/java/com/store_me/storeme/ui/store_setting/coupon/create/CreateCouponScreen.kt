@@ -58,10 +58,9 @@ import com.store_me.storeme.data.CouponQuantity
 import com.store_me.storeme.data.CouponType
 import com.store_me.storeme.ui.component.DateOutLineTextField
 import com.store_me.storeme.ui.component.DefaultBottomSheet
-import com.store_me.storeme.ui.component.DefaultDialogButton
-import com.store_me.storeme.ui.component.DefaultFinishButton
+import com.store_me.storeme.ui.component.DefaultCheckButton
 import com.store_me.storeme.ui.component.DefaultOutlineTextField
-import com.store_me.storeme.ui.component.LeftCheckButton
+import com.store_me.storeme.ui.component.LargeButton
 import com.store_me.storeme.ui.component.NumberOutLineTextField
 import com.store_me.storeme.ui.component.StoreMeSelectDateCalendar
 import com.store_me.storeme.ui.component.SubTitleSection
@@ -189,11 +188,12 @@ fun SetValueSection(couponType: CouponType, isEdit: Boolean = false, onDelete: (
 
         when(couponType){
             CouponType.DISCOUNT -> {
-                LeftCheckButton(
+                DefaultCheckButton(
                     text = "금액 할인 쿠폰을 만들고 싶어요.",
                     fontWeight = FontWeight.ExtraBold,
                     isSelected = discountType == CouponDiscountType.PRICE,
-                    diffValue = 2
+                    diffValue = 2,
+                    isCheckIconOnLeft = true
                 ) {
                     createCouponViewModel.updateDiscountType(CouponDiscountType.PRICE)
                 }
@@ -216,11 +216,12 @@ fun SetValueSection(couponType: CouponType, isEdit: Boolean = false, onDelete: (
                     text = (discountPrice ?: "").toString(), limitSize = 8
                 )
 
-                LeftCheckButton(
+                DefaultCheckButton(
                     text = "할인율을 제공하고 싶어요.",
                     fontWeight = FontWeight.ExtraBold,
                     isSelected = discountType == CouponDiscountType.RATE,
-                    diffValue = 2
+                    diffValue = 2,
+                    isCheckIconOnLeft = true
                 ) {
                     createCouponViewModel.updateDiscountType(CouponDiscountType.RATE)
                 }
@@ -287,17 +288,19 @@ fun SetValueSection(couponType: CouponType, isEdit: Boolean = false, onDelete: (
 
         Row {
             if(isEdit){
-                DefaultDialogButton(text = "쿠폰 삭제", containerColor = EditButtonColor, contentColor = Black, modifier = Modifier.weight(1f)) {
+                LargeButton(text = "쿠폰 삭제", containerColor = EditButtonColor, contentColor = Black, modifier = Modifier.weight(1f)) {
                     onDelete()
                 }
             }
             
             Spacer(modifier = Modifier.width(10.dp))
-            
-            DefaultFinishButton(
+
+            LargeButton(
                 text = "다음",
                 enabled = isEnabled(),
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                containerColor = Black,
+                contentColor = White
             ) {
                 createCouponViewModel.nextProgress()
             }
@@ -340,7 +343,12 @@ fun SetNameSection() {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        DefaultFinishButton(text = "다음", enabled = !isError && name.isNotEmpty()) {
+        LargeButton(
+            text = "다음",
+            enabled = !isError && name.isNotEmpty(),
+            containerColor = Black,
+            contentColor = White
+        ) {
             createCouponViewModel.nextProgress()
         }
     }
@@ -360,7 +368,8 @@ fun SetAvailableSection() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        LeftCheckButton(
+        DefaultCheckButton(
+            isCheckIconOnLeft = true,
             text = "모든 손님에게 제공하고 싶어요",
             fontWeight = FontWeight.ExtraBold,
             isSelected = availableType == CouponAvailable.ALL,
@@ -372,7 +381,8 @@ fun SetAvailableSection() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        LeftCheckButton(
+        DefaultCheckButton(
+            isCheckIconOnLeft = true,
             text = "재방문 손님에게만 제공하고 싶어요",
             fontWeight = FontWeight.ExtraBold,
             isSelected = availableType == CouponAvailable.REPEAT,
@@ -384,7 +394,13 @@ fun SetAvailableSection() {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        DefaultFinishButton(text = "다음", enabled = availableType != null) {
+        LargeButton(
+            text = "다음",
+            enabled = availableType != null,
+            modifier = Modifier.weight(1f),
+            containerColor = Black,
+            contentColor = White
+        ) {
             createCouponViewModel.nextProgress()
         }
     }
@@ -407,7 +423,8 @@ fun SetQuantitySection() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        LeftCheckButton(
+        DefaultCheckButton(
+            isCheckIconOnLeft = true,
             text = "제한 없이 제공",
             fontWeight = FontWeight.ExtraBold,
             isSelected = quantityType is CouponQuantity.Infinite,
@@ -418,7 +435,8 @@ fun SetQuantitySection() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        LeftCheckButton(
+        DefaultCheckButton(
+            isCheckIconOnLeft = true,
             text = "갯수 제한",
             fontWeight = FontWeight.ExtraBold,
             isSelected = quantityType is CouponQuantity.Limit,
@@ -451,10 +469,12 @@ fun SetQuantitySection() {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        DefaultFinishButton(
+        LargeButton(
             text = "다음",
             enabled = quantityType != null && !isError &&
-                    ((quantityType is CouponQuantity.Limit && (quantity.toIntOrNull() ?: 0) > 0) || (quantityType is CouponQuantity.Infinite))
+                    ((quantityType is CouponQuantity.Limit && (quantity.toIntOrNull() ?: 0) > 0) || (quantityType is CouponQuantity.Infinite)),
+            containerColor = Black,
+            contentColor = White
         ) {
             createCouponViewModel.nextProgress()
         }
@@ -492,7 +512,12 @@ fun SetDueDateSection() {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        DefaultFinishButton(text = "다음", enabled = !isError && (selectedDate != null)) {
+        LargeButton(
+            text = "다음",
+            enabled = !isError && (selectedDate != null),
+            containerColor = Black,
+            contentColor = White
+        ) {
             createCouponViewModel.nextProgress()
         }
     }
@@ -554,7 +579,11 @@ fun SetImageSection() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        DefaultFinishButton(text = "다음") {
+        LargeButton(
+            text = "다음",
+            containerColor = Black,
+            contentColor = White
+        ) {
             createCouponViewModel.nextProgress()
         }
     }
@@ -590,7 +619,11 @@ fun SetDescriptionSection(isEdit: Boolean = false, onCreateCoupon: () -> Unit) {
 
         Spacer(modifier = Modifier.height(40.dp))
 
-        DefaultFinishButton(text = if(isEdit) "수정 완료" else "쿠폰 만들기") {
+        LargeButton(
+            text = if(isEdit) "수정 완료" else "쿠폰 만들기",
+            containerColor = Black,
+            contentColor = White
+        ) {
             onCreateCoupon()
         }
     }

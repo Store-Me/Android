@@ -45,6 +45,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -62,14 +63,13 @@ import com.store_me.storeme.data.MenuPriceType.RANGE
 import com.store_me.storeme.data.MenuPriceType.VARIABLE
 import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultBottomSheet
-import com.store_me.storeme.ui.component.DefaultFinishButton
+import com.store_me.storeme.ui.component.DefaultCheckButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.DefaultOutlineTextField
-import com.store_me.storeme.ui.component.LeftCheckButton
+import com.store_me.storeme.ui.component.LargeButton
 import com.store_me.storeme.ui.component.NumberOutLineTextField
 import com.store_me.storeme.ui.component.TextFieldErrorType
 import com.store_me.storeme.ui.component.TextLengthRow
-import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.component.TitleWithSaveButton
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.store_setting.menu.add.AddMenuViewModel.MenuHighLightType
@@ -217,7 +217,8 @@ fun MenuPriceSection() {
                 .fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            LeftCheckButton(
+            DefaultCheckButton(
+                isCheckIconOnLeft = true,
                 text = "정가",
                 fontWeight = FontWeight.ExtraBold,
                 selectedColor = SignatureTextColor,
@@ -226,7 +227,8 @@ fun MenuPriceSection() {
                 addMenuViewModel.updateMenuPriceType(FIXED)
             }
 
-            LeftCheckButton(
+            DefaultCheckButton(
+                isCheckIconOnLeft = true,
                 text = "범위 설정",
                 fontWeight = FontWeight.ExtraBold,
                 selectedColor = SignatureTextColor,
@@ -235,7 +237,8 @@ fun MenuPriceSection() {
                 addMenuViewModel.updateMenuPriceType(RANGE)
             }
 
-            LeftCheckButton(
+            DefaultCheckButton(
+                isCheckIconOnLeft = true,
                 text = "변동",
                 fontWeight = FontWeight.ExtraBold,
                 selectedColor = SignatureTextColor,
@@ -579,9 +582,12 @@ fun MenuCategoryListSection(onFinish: () -> Unit) {
         }
 
         item {
-            DefaultFinishButton(
+            LargeButton(
+                text = "저장",
                 modifier = Modifier
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 20.dp),
+                containerColor = Color.Black,
+                contentColor = White
             ) {
                 addMenuViewModel.updateSelectedCategory(selectedCategory)
                 onFinish()

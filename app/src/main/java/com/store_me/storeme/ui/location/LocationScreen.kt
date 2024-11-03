@@ -37,8 +37,8 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.component.SearchField
+import com.store_me.storeme.ui.component.SmallButton
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
-import com.store_me.storeme.ui.home.LocationViewModel
 import com.store_me.storeme.ui.theme.HighlightTextColor
 import com.store_me.storeme.ui.theme.SetLocationButtonColor
 import com.store_me.storeme.ui.theme.appFontFamily
@@ -117,29 +117,23 @@ fun SetLocationButton(locationViewModel: LocationViewModel){
         }
     }
 
-    Button(
+    SmallButton(
+        text = "내 위치로 동네 설정",
         modifier = Modifier
             .fillMaxWidth()
             .height(40.dp)
             .padding(horizontal = 20.dp),
-        shape = RoundedCornerShape(6.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = SetLocationButtonColor,
-            contentColor = Color.White
-        ),
-        contentPadding = PaddingValues(horizontal = 10.dp),
-        onClick = {
-            if (locationPermissionState.permissions.any { it.status.isGranted }) {
-                locationViewModel.setLocation()
-            } else {
-                launcher.launch(arrayOf(
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ))
-            }
-        }
+        containerColor = SetLocationButtonColor,
+        contentColor = Color.White
     ) {
-        Text(text = "내 위치로 동네 설정", style = storeMeTypography.labelSmall)
+        if (locationPermissionState.permissions.any { it.status.isGranted }) {
+            locationViewModel.setLocation()
+        } else {
+            launcher.launch(arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ))
+        }
     }
 }
 

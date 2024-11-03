@@ -33,7 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.MenuCategory
-import com.store_me.storeme.ui.component.LeftCheckButton
+import com.store_me.storeme.ui.component.DefaultCheckButton
 import com.store_me.storeme.ui.component.TitleWithSaveButton
 import com.store_me.storeme.ui.theme.SelectedCheckBoxColor
 import com.store_me.storeme.ui.theme.SelectedCheckBoxColorPink
@@ -124,7 +124,8 @@ fun CategoryWithMenuItem(menuCategory: MenuCategory, currentIndex: Int, selected
         )
 
         menuCategory.menuList.forEachIndexed { index, it ->
-            LeftCheckButton(
+            DefaultCheckButton(
+                isCheckIconOnLeft = true,
                 text = it.name,
                 fontWeight = FontWeight.ExtraBold,
                 isSelected = isSelected,

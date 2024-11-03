@@ -70,7 +70,7 @@ import com.store_me.storeme.ui.component.KeyBoardInputField
 import com.store_me.storeme.ui.component.StoreMeSnackbar
 import com.store_me.storeme.ui.component.SubTitleSection
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
-import com.store_me.storeme.ui.component.UserProfileImage
+import com.store_me.storeme.ui.component.CircleProfileImage
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.theme.EditButtonColor
@@ -271,7 +271,7 @@ fun ReviewItem(reviewComment: ReviewComment, onClickMenu: (String) -> Unit, onWr
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            UserProfileImage(reviewComment.userData.profileImage, 40)
+            CircleProfileImage(reviewComment.userData.profileImage, 40, isUser = true)
 
             Spacer(modifier = Modifier.width(10.dp))
 

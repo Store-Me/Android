@@ -57,6 +57,7 @@ import com.store_me.storeme.utils.DateTimeUtils
 import java.time.LocalDate
 
 enum class TextFieldErrorType {
+    STORE_NAME,
     LINK, DESCRIPTION, DATE, NAME, COUPON_CONTENT, MENU_DESCRIPTION, MENU_NAME, MENU_CATEGORY_NAME,
     COUPON_QUANTITY, COUPON_RATE, PRICE
 }
@@ -137,6 +138,12 @@ fun DefaultOutlineTextField(
         TextFieldErrorType.COUPON_CONTENT -> {
             if(text.length > 15) {
                 "15자 이내로 작성해야 합니다."
+            } else
+                null
+        }
+        TextFieldErrorType.STORE_NAME -> {
+            if(text.length > 30) {
+                "30자 이내로 작성해야 합니다."
             } else
                 null
         }

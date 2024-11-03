@@ -43,7 +43,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.store_me.storeme.R
 import com.store_me.storeme.data.PostType
-import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.ui.component.StrokeButton
 import com.store_me.storeme.ui.post.AddPostViewModel.*
 import com.store_me.storeme.ui.theme.storeMeTypography
 import com.store_me.storeme.utils.ToastMessageUtils
@@ -114,7 +114,7 @@ fun PreviewButtonSection() {
     ) {
         Spacer(modifier = Modifier.weight(1f))
 
-        DefaultButton(text = "미리보기") {
+        StrokeButton(text = "미리보기") {
             addPostViewModel.togglePreview()
         }
     }
@@ -221,7 +221,7 @@ fun TextStyleSection() {
                 item.displayName
             }
 
-            DefaultButton(text = text) {
+            StrokeButton(text = text) {
                 addPostViewModel.setTextStyle(item)
             }
         }
@@ -280,13 +280,13 @@ fun EditTextSection() {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                DefaultButton(text = "추가") {
+                StrokeButton(text = "추가") {
                     addPostViewModel.addContent(text)
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                DefaultButton(text = "삭제") {
+                StrokeButton(text = "삭제") {
 
                 }
             }
@@ -306,7 +306,7 @@ fun ItemListSection() {
         modifier = Modifier.padding(top = 20.dp)
     ) {
         items(LayoutItem.entries) { item ->
-            DefaultButton(text = item.displayName) {
+            StrokeButton(text = item.displayName) {
                 layoutButtonHandler(item, addPostViewModel, context)
             }
         }

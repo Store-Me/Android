@@ -87,11 +87,11 @@ fun WarningDialog(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                DefaultDialogButton(text = "취소", containerColor = CancelButtonColor, contentColor = Color.Black, modifier = Modifier.weight(1f)) {
+                LargeButton(text = "취소", containerColor = CancelButtonColor, contentColor = Color.Black, modifier = Modifier.weight(1f)) {
                     onDismiss()
                 }
 
-                DefaultDialogButton(text = actionText, containerColor = Color.Black, contentColor = Color.White, modifier = Modifier.weight(1f)) {
+                LargeButton(text = actionText, containerColor = Color.Black, contentColor = Color.White, modifier = Modifier.weight(1f)) {
                     onAction()
                 }
             }
@@ -142,11 +142,11 @@ fun BackWarningDialog(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                DefaultDialogButton(text = "취소", containerColor = CancelButtonColor, contentColor = Color.Black, modifier = Modifier.weight(1f)) {
+                LargeButton(text = "취소", containerColor = CancelButtonColor, contentColor = Color.Black, modifier = Modifier.weight(1f)) {
                     onDismiss()
                 }
 
-                DefaultDialogButton(text = "확인", containerColor = Color.Black, contentColor = Color.White, modifier = Modifier.weight(1f)) {
+                LargeButton(text = "확인", containerColor = Color.Black, contentColor = Color.White, modifier = Modifier.weight(1f)) {
                     onAction()
                 }
             }

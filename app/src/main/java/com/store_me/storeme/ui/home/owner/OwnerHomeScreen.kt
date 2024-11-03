@@ -1,7 +1,7 @@
 @file:OptIn(
     ExperimentalMaterial3Api::class,
     ExperimentalPagerApi::class,
-    ExperimentalFoundationApi::class
+    ExperimentalFoundationApi::class, ExperimentalNaverMapApi::class
 )
 
 package com.store_me.storeme.ui.home.owner
@@ -16,6 +16,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -64,6 +65,16 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.compose.CameraPositionState
+import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.MapProperties
+import com.naver.maps.map.compose.MapUiSettings
+import com.naver.maps.map.compose.Marker
+import com.naver.maps.map.compose.MarkerState
+import com.naver.maps.map.compose.NaverMap
+import com.naver.maps.map.compose.rememberCameraPositionState
 import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.DailyHoursData
@@ -71,7 +82,8 @@ import com.store_me.storeme.data.StoreDetailData
 import com.store_me.storeme.data.StoreHomeItem
 import com.store_me.storeme.data.StoreHomeItemData
 import com.store_me.storeme.data.StoreNormalItem
-import com.store_me.storeme.ui.component.DefaultEditButton
+import com.store_me.storeme.ui.component.BackgroundSection
+import com.store_me.storeme.ui.component.SmallButton
 import com.store_me.storeme.ui.component.LinkSection
 import com.store_me.storeme.ui.component.StoreMeTabRow
 import com.store_me.storeme.ui.main.MainActivity
@@ -116,7 +128,7 @@ fun OwnerHomeScreen(
                         .padding(innerPadding)
                 ) {
                     LazyColumn {
-                        item { if(!ownerHomeViewModel.storeData.bannerImageUrl.isNullOrEmpty()) BackgroundSection(ownerHomeViewModel.storeData.bannerImageUrl) }
+                        item { BackgroundSection(ownerHomeViewModel.storeData.bannerImageUrl) }
                         item { ProfileSection(navController = navController) }
                         stickyHeader { StoreMeTabRow(pagerState = pagerState, tabTitles = tabTitles) }
                         item { OwnerHomeContentSection(navController = navController, pagerState) }
@@ -136,17 +148,6 @@ fun OwnerHomeScreen(
             ToastMessageUtils.showToast(context, R.string.backpress_message)
         }
     }
-}
-
-@Composable
-fun BackgroundSection(imageUrl: String) {
-    AsyncImage(
-        model = imageUrl,
-        contentDescription = "배경 이미지",
-        contentScale = ContentScale.FillWidth,
-        modifier = Modifier
-            .fillMaxWidth()
-    )
 }
 
 @Composable
@@ -275,18 +276,18 @@ fun EditProfileSection(navController: NavController) {
     Row(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
-        DefaultEditButton(
+        SmallButton(
             text = "프로필 수정",
             modifier = Modifier
                 .weight(1f)
                 .height(40.dp)
         ) {
-
+            NavigationUtils().navigateOwnerNav(navController, MainActivity.OwnerNavItem.EDIT_PROFILE)
         }
 
         Spacer(modifier = Modifier.width(10.dp))
 
-        DefaultEditButton(
+        SmallButton(
             text = "가게정보 관리",
             modifier = Modifier
                 .weight(1f)
@@ -556,6 +557,38 @@ fun OwnerStoreHomeScreen(navController: NavController) {
     }
 
     @Composable
+    fun OwnerHomeNaverMapSection() {
+        var mapProperties by remember {
+            mutableStateOf(
+                MapProperties()
+            )
+        }
+
+        var mapUiSettings by remember {
+            mutableStateOf(
+                MapUiSettings(
+                    isCompassEnabled = false,
+                    isScaleBarEnabled = false,
+                    isZoomControlEnabled = false,
+                )
+            )
+        }
+
+        val cameraPosition = CameraPosition(storeData.locationInfo.latLng!!, 10.0)
+
+        NaverMap(
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(4f / 1f),
+            cameraPositionState = CameraPositionState(position = cameraPosition)
+        ) {
+            Marker(
+                state = MarkerState(position = storeData.locationInfo.latLng)
+            )
+        }
+    }
+
+    @Composable
     fun LocationSection(onClick: () -> Unit) {
         val locationInfo = storeData.locationInfo
 
@@ -585,6 +618,9 @@ fun OwnerStoreHomeScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(10.dp))
         }
+
+        storeData.locationInfo.latLng.let { OwnerHomeNaverMapSection() }
+
     }
 
     @Composable
@@ -657,7 +693,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                             color = UndefinedTextColor
                         )
                         
-                        DefaultEditButton(
+                        SmallButton(
                             text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item, true),
                             modifier = Modifier
                                 .padding(vertical = 20.dp)
@@ -670,7 +706,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                     else -> {
                         NoticeSection()
 
-                        DefaultEditButton(
+                        SmallButton(
                             text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item, false),
                             modifier = Modifier
                                 .padding(vertical = 20.dp)
@@ -691,7 +727,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                             color = UndefinedTextColor
                         )
 
-                        DefaultEditButton(
+                        SmallButton(
                             text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item, true),
                             modifier = Modifier
                                 .padding(vertical = 20.dp)
@@ -704,7 +740,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                     else -> {
                         IntroSection(storeData)
 
-                        DefaultEditButton(
+                        SmallButton(
                             text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item, false),
                             modifier = Modifier
                                 .padding(vertical = 20.dp)
@@ -731,7 +767,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                     }
                 }
 
-                DefaultEditButton(
+                SmallButton(
                     text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item),
                     modifier = Modifier
                         .padding(vertical = 20.dp)
@@ -755,7 +791,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                     }
                 }
 
-                DefaultEditButton(
+                SmallButton(
                     text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item),
                     modifier = Modifier
                         .padding(vertical = 20.dp)
@@ -779,7 +815,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                     }
                 }
 
-                DefaultEditButton(
+                SmallButton(
                     text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item),
                     modifier = Modifier
                         .padding(vertical = 20.dp)
@@ -803,7 +839,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                     }
                 }
 
-                DefaultEditButton(
+                SmallButton(
                     text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item),
                     modifier = Modifier
                         .padding(vertical = 20.dp)
@@ -827,7 +863,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                     }
                 }
 
-                DefaultEditButton(
+                SmallButton(
                     text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item),
                     modifier = Modifier
                         .padding(vertical = 20.dp)
@@ -865,7 +901,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                     }
                 }
 
-                DefaultEditButton(
+                SmallButton(
                     text = ownerHomeViewModel.getEditButtonText(storeHomeItem.item),
                     modifier = Modifier
                         .padding(vertical = 20.dp)

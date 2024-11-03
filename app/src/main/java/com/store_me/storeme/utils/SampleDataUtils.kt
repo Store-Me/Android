@@ -1,5 +1,6 @@
 package com.store_me.storeme.utils
 
+import com.naver.maps.geometry.LatLng
 import com.store_me.storeme.data.BannerContent
 import com.store_me.storeme.data.BannerData
 import com.store_me.storeme.data.BannerDetailData
@@ -142,7 +143,7 @@ class SampleDataUtils {
                 DailyHoursData(9, 0, 21, 0, 13, 0, 15, 0, false, false),
             ), temporaryOpeningHours = emptyList() ,closedDay = listOf()),
             storePhoneNumber = "070-7767-0829",
-            locationInfo = LocationInfo("서울특별시 은평구 통일로 1030 은평헤스티아 101호", null),
+            locationInfo = LocationInfo("서울특별시 은평구 진관3로 43-9 래미안 909동 1층 101호", latLng = LatLng(37.6406673263033, 126.920399781789)),
             StoreMenuData(
                 listOf(
                     MenuDatas("에스프레소", true, "원두 선택 : 시그니처 홈 블렌드 / 에티오피아 내추럴 / 디카페인 / 게이샤 워시드", 5800),

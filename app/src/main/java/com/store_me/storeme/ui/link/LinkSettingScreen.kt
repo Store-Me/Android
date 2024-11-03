@@ -52,9 +52,9 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.SocialMediaAccountData
 import com.store_me.storeme.ui.component.DefaultBottomSheet
-import com.store_me.storeme.ui.component.DefaultFinishButton
 import com.store_me.storeme.ui.component.DefaultOutlineTextField
 import com.store_me.storeme.ui.component.EditAddSection
+import com.store_me.storeme.ui.component.LargeButton
 import com.store_me.storeme.ui.component.SocialMediaIcon
 import com.store_me.storeme.ui.component.TextFieldErrorType
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
@@ -125,10 +125,12 @@ fun LinkSettingScreen(
 
                         Spacer(modifier = Modifier.height(100.dp))
 
-                        DefaultFinishButton(
+                        LargeButton(
                             text = "추가",
+                            enabled = !isError && text.isNotEmpty(),
                             modifier = Modifier.padding(horizontal = 20.dp),
-                            enabled = !isError && text.isNotEmpty()
+                            containerColor = Black,
+                            contentColor = White
                         ) {
                             Auth.addLinkListData(text)
 

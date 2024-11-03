@@ -1,6 +1,5 @@
 package com.store_me.storeme.ui.create_account
 
-import android.app.Activity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -8,8 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.store_me.storeme.ui.component.DefaultButton
-import com.store_me.storeme.ui.login.LoginActivity
+import com.store_me.storeme.ui.component.StrokeButton
 
 @Composable
 fun SmsAuthScreen(navController: NavController, smsAuthViewModel: SmsAuthViewModel = viewModel()) {
@@ -19,7 +17,7 @@ fun SmsAuthScreen(navController: NavController, smsAuthViewModel: SmsAuthViewMod
         modifier = Modifier
             .fillMaxSize()
     ) {
-        DefaultButton(text = "SMS 보내기") {
+        StrokeButton(text = "SMS 보내기") {
 
         }
     }

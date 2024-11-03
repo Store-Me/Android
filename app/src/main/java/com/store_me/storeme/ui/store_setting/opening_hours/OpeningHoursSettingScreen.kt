@@ -50,10 +50,10 @@ import com.store_me.storeme.data.DailyHoursData
 import com.store_me.storeme.ui.component.CircleToggleButton
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultCheckButton
-import com.store_me.storeme.ui.component.DefaultEditButton
-import com.store_me.storeme.ui.component.DefaultFinishButton
+import com.store_me.storeme.ui.component.SmallButton
 import com.store_me.storeme.ui.component.DefaultOutlineTextField
 import com.store_me.storeme.ui.component.DefaultToggleButton
+import com.store_me.storeme.ui.component.LargeButton
 import com.store_me.storeme.ui.component.StoreMeTimePicker
 import com.store_me.storeme.ui.component.SubTitleSection
 import com.store_me.storeme.ui.component.TextFieldErrorType
@@ -63,7 +63,6 @@ import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.store_setting.opening_hours.OpeningHoursSettingViewModel.*
 import com.store_me.storeme.ui.theme.DefaultDividerColor
 import com.store_me.storeme.ui.theme.EditButtonColor
-import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextColor
 import com.store_me.storeme.ui.theme.TimePickerSelectLineColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
@@ -165,10 +164,13 @@ fun OpeningHoursSettingScreen(
 
                         item {
                             AnimatedVisibility(visible = selectType != null) {
-                                DefaultFinishButton(
-                                    modifier = Modifier.padding(vertical = 100.dp, horizontal = 20.dp),
+                                LargeButton(
+                                    text = "저장",
                                     enabled = !isError && (selectType != null)
-                                            && ((openingHoursSettingViewModel.isAllFinished() && selectType == OpeningHoursType.DIFFERENT) || selectType == OpeningHoursType.SAME)
+                                            && ((openingHoursSettingViewModel.isAllFinished() && selectType == OpeningHoursType.DIFFERENT) || selectType == OpeningHoursType.SAME),
+                                    modifier = Modifier.padding(vertical = 100.dp, horizontal = 20.dp),
+                                    containerColor = Black,
+                                    contentColor = White
                                 ) {
                                     openingHoursSettingViewModel.updateOpeningHoursData()
                                 }
@@ -259,7 +261,7 @@ fun BottomSheetContent(selectedWeek: DateTimeUtils.DayOfWeek, onFinishButtonClic
 
         }
 
-        DefaultFinishButton {
+        LargeButton(text = "저장", containerColor = Black, contentColor = White) {
             openingHoursSettingViewModel.setDailyHours(
                 dayOfWeeks = selectedWeeks,
                 newHoursData = DailyHoursData(
@@ -453,7 +455,7 @@ fun SelectTimeSection(thisType: EditTimeType, selectedWeek: DateTimeUtils.DayOfW
             ) {
                 val selected = isStartTime && typeSelected
 
-                DefaultEditButton(
+                SmallButton(
                     text = DateTimeUtils().getSelectTimeText(
                         hours = selectedStartHour.value,
                         minutes = selectedStartMinute.value
@@ -480,7 +482,7 @@ fun SelectTimeSection(thisType: EditTimeType, selectedWeek: DateTimeUtils.DayOfW
             ) {
                 val selected = !isStartTime && typeSelected
 
-                DefaultEditButton(
+                SmallButton(
                     text = DateTimeUtils().getSelectTimeText(
                         hours = selectedEndHour.value,
                         minutes = selectedEndMinute.value
@@ -578,7 +580,7 @@ fun BreakTimeSection(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
     ) {
-        DefaultEditButton(text = if(hasBreakTime) "브레이크타임 제거" else "브레이크타임 추가") {
+        SmallButton(text = if(hasBreakTime) "브레이크타임 제거" else "브레이크타임 추가") {
             openingHoursSettingViewModel.changeHasBreakTimeValue()
         }
 

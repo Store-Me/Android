@@ -9,7 +9,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -30,7 +29,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -40,7 +38,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -64,22 +61,18 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.R
 import com.store_me.storeme.data.NormalPostWithStoreInfoData
-import com.store_me.storeme.data.MyPickWithStoreIdData
 import com.store_me.storeme.data.MyPickWithStoreInfoData
 import com.store_me.storeme.ui.component.CategorySection
-import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.ui.component.StrokeButton
 import com.store_me.storeme.ui.main.FAVORITE
 import com.store_me.storeme.ui.theme.MyPickStrokeColor
 import com.store_me.storeme.ui.theme.NewNoticeColor
-import com.store_me.storeme.ui.theme.NormalCategoryColor
 import com.store_me.storeme.ui.theme.PostStrokeColor
 import com.store_me.storeme.ui.theme.PostTimeTextColor
-import com.store_me.storeme.ui.theme.SelectedCategoryColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTypography
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.SampleDataUtils
-import com.store_me.storeme.utils.StoreCategory
 
 @Preview
 @Composable
@@ -206,7 +199,7 @@ fun MyPickTitleWithButton() {
 
         Spacer(modifier = Modifier.weight(1f))
 
-        DefaultButton(text = "편집하기") {
+        StrokeButton(text = "편집하기") {
 
         }
     }

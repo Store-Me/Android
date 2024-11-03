@@ -33,8 +33,8 @@ android {
             useSupportLibrary = true
         }
 
-        buildConfigField("String", "NAVER_CLIENT_SECRET", getApiKey("naver_map_client_secret"))
-        buildConfigField("String", "NAVER_CLIENT_ID", getApiKey("naver_map_client_id"))
+        buildConfigField("String", "NAVER_CLIENT_SECRET", getApiKey("naver_client_secret"))
+        buildConfigField("String", "NAVER_CLIENT_ID", getApiKey("naver_client_id"))
     }
 
     val properties = Properties()

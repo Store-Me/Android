@@ -52,10 +52,9 @@ import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.TemporaryOpeningHours
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultCheckButton
-import com.store_me.storeme.ui.component.DefaultDialogButton
-import com.store_me.storeme.ui.component.DefaultEditButton
-import com.store_me.storeme.ui.component.DefaultFinishButton
+import com.store_me.storeme.ui.component.SmallButton
 import com.store_me.storeme.ui.component.DefaultToggleButton
+import com.store_me.storeme.ui.component.LargeButton
 import com.store_me.storeme.ui.component.StoreMeSelectRangeCalendar
 import com.store_me.storeme.ui.component.StoreMeTimePicker
 import com.store_me.storeme.ui.component.SubTitleSection
@@ -153,7 +152,12 @@ fun ClosedDaySettingScreen(
                             AnimatedVisibility(visible = (selectedType == ClosedDayType.NONE) ||
                                     (selectedType == ClosedDayType.EXIST && selectedWeeks.isNotEmpty())) {
                                 Column {
-                                    DefaultFinishButton(modifier = Modifier.padding(horizontal = 20.dp)) {
+                                    LargeButton(
+                                        text = "저장",
+                                        modifier = Modifier.padding(horizontal = 20.dp),
+                                        containerColor = Black,
+                                        contentColor = White
+                                    ) {
 
                                     }
 
@@ -303,7 +307,7 @@ fun TemporaryOpeningSection(onSetTemporaryOpen: () -> Unit) {
             modifier = Modifier.padding(horizontal = 20.dp)
         )
 
-        DefaultEditButton(
+        SmallButton(
             text = "임시 영업 설정하기",
             modifier = Modifier
                 .padding(horizontal = 20.dp)
@@ -454,7 +458,7 @@ fun SelectRangeDateSection() {
             onEndDateChange = { closedDaySettingViewModel.updateSelectedEndDate(it) }
         )
 
-        DefaultDialogButton(
+        LargeButton(
             text = "다음",
             containerColor = NextButtonColor,
             contentColor = White,
@@ -509,7 +513,7 @@ fun SelectTemporalTimeSection(onFinished: () -> Unit) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            DefaultDialogButton(
+            LargeButton(
                 text = "이전",
                 modifier = Modifier.weight(1f),
                 containerColor = EditButtonColor,
@@ -518,7 +522,7 @@ fun SelectTemporalTimeSection(onFinished: () -> Unit) {
                 closedDaySettingViewModel.updateCurrentBottomProgress(BottomProgress.DATE)
             }
 
-            DefaultDialogButton(text = "다음",
+            LargeButton(text = "다음",
                 modifier = Modifier.weight(1f),
                 containerColor = SaveButtonColor,
                 contentColor = White,
@@ -642,7 +646,7 @@ fun SelectTimeSection(thisType: EditTimeType) {
             ) {
                 val selected = isStartTime && typeSelected
 
-                DefaultEditButton(
+                SmallButton(
                     text = DateTimeUtils().getSelectTimeText(
                         hours = selectedStartHour.value,
                         minutes = selectedStartMinute.value
@@ -669,7 +673,7 @@ fun SelectTimeSection(thisType: EditTimeType) {
             ) {
                 val selected = !isStartTime && typeSelected
 
-                DefaultEditButton(
+                SmallButton(
                     text = DateTimeUtils().getSelectTimeText(
                         hours = selectedEndHour.value,
                         minutes = selectedEndMinute.value
@@ -722,7 +726,7 @@ fun BreakTimeSection(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
     ) {
-        DefaultEditButton(text = if(hasBreakTime) "브레이크타임 제거" else "브레이크타임 추가") {
+        SmallButton(text = if(hasBreakTime) "브레이크타임 제거" else "브레이크타임 추가") {
             closedDaySettingViewModel.changeHasBreakTimeValue()
         }
 

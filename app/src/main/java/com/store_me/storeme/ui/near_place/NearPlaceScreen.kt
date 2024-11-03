@@ -46,7 +46,7 @@ import com.store_me.storeme.data.StorePromotionData
 import com.store_me.storeme.ui.component.BannerLayout
 import com.store_me.storeme.ui.component.CategorySection
 import com.store_me.storeme.ui.component.LocationLayout
-import com.store_me.storeme.ui.home.LocationViewModel
+import com.store_me.storeme.ui.location.LocationViewModel
 import com.store_me.storeme.ui.mystore.CategoryViewModel
 import com.store_me.storeme.ui.theme.CouponDividerLineColor
 import com.store_me.storeme.ui.theme.PostTimeTextColor

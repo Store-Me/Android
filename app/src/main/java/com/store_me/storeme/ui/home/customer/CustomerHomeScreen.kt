@@ -60,7 +60,7 @@ import com.store_me.storeme.ui.component.LocationLayout
 import com.store_me.storeme.ui.component.NotificationIcon
 import com.store_me.storeme.ui.component.SearchButton
 import com.store_me.storeme.ui.component.TitleSearchSection
-import com.store_me.storeme.ui.home.LocationViewModel
+import com.store_me.storeme.ui.location.LocationViewModel
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.theme.DownloadCouponColor
 import com.store_me.storeme.ui.theme.HomeCouponTitleTextColor

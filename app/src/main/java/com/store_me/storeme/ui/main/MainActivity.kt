@@ -70,6 +70,7 @@ import com.store_me.storeme.ui.store_setting.menu.add.AddMenuScreen
 import com.store_me.storeme.ui.store_setting.menu.category.EditMenuCategoryScreen
 import com.store_me.storeme.ui.store_setting.menu.category.MenuCategorySettingScreen
 import com.store_me.storeme.ui.store_setting.menu.edit.EditMenuScreen
+import com.store_me.storeme.ui.store_setting.profile.ProfileSettingScreen
 import com.store_me.storeme.ui.store_talk.StoreTalkScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.ui.theme.UnselectedItemColor
@@ -238,6 +239,8 @@ class MainActivity : ComponentActivity() {
                 val selectedCategoryName = backStackEntry.arguments?.getString("selectedCategoryName")
                 EditMenuCategoryScreen(navController, selectedCategoryName = selectedCategoryName ?: "")
             }
+
+            composable(OWNER_HOME + OwnerNavItem.EDIT_PROFILE) { ProfileSettingScreen(navController) }
         }
     }
 
@@ -367,6 +370,6 @@ class MainActivity : ComponentActivity() {
     }
 
     enum class OwnerNavItem {
-        LINK_SETTING, STORE_SETTING, CREATE_COUPON, EDIT_COUPON, ADD_MENU, EDIT_MENU, MENU_CATEGORY_SETTING, EDIT_MENU_CATEGORY
+        LINK_SETTING, STORE_SETTING, CREATE_COUPON, EDIT_COUPON, ADD_MENU, EDIT_MENU, MENU_CATEGORY_SETTING, EDIT_MENU_CATEGORY, EDIT_PROFILE
     }
 }

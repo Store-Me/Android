@@ -4,14 +4,12 @@ package com.store_me.storeme.ui.component
 
 import android.Manifest
 import android.content.Intent
-import android.graphics.drawable.Icon
 import android.net.Uri
-import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -20,16 +18,14 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -38,13 +34,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -63,11 +55,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -89,8 +81,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.BannerData
 import com.store_me.storeme.data.SocialMediaAccountData
-import com.store_me.storeme.data.SocialMediaAccountType
-import com.store_me.storeme.ui.home.LocationViewModel
+import com.store_me.storeme.ui.location.LocationViewModel
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.mystore.CategoryViewModel
 import com.store_me.storeme.ui.theme.DefaultDividerColor
@@ -100,10 +91,6 @@ import com.store_me.storeme.ui.theme.HomeSearchBoxColor
 import com.store_me.storeme.ui.theme.NormalCategoryColor
 import com.store_me.storeme.ui.theme.SaveButtonColor
 import com.store_me.storeme.ui.theme.SelectedCategoryColor
-import com.store_me.storeme.ui.theme.SelectedCheckBoxColor
-import com.store_me.storeme.ui.theme.ToggleButtonBorderColor
-import com.store_me.storeme.ui.theme.UndefinedTextColor
-import com.store_me.storeme.ui.theme.WebIconColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.storeMeTypography
@@ -115,7 +102,7 @@ import com.store_me.storeme.utils.StoreCategory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/**
+/*
  * 여러 곳에서 사용되는 Composable 함수 모음
  */
 @Composable
@@ -202,32 +189,20 @@ fun TitleWithSaveButton(
             )
         )
 
-        DefaultFinishButton(
+        LargeButton(
+            text = "저장",
             enabled = finishButtonEnable,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 10.dp)
+                .padding(horizontal = 20.dp, vertical = 10.dp),
+            containerColor = Black,
+            contentColor = White
         ) {
             onFinish()
         }
     }
 }
 
-@Composable
-fun DeleteButton(onClick: () -> Unit) {
-    Icon(
-        imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
-        contentDescription = "닫기",
-        modifier = Modifier
-            .size(20.dp)
-            .clickable(
-                onClick = { onClick() },
-                interactionSource = remember { MutableInteractionSource() },
-                indication = ripple(bounded = false)
-            )
-            .padding(2.dp)
-    )
-}
 
 @Composable
 fun SubTitleSection(text: String, modifier:Modifier = Modifier) {
@@ -236,319 +211,6 @@ fun SubTitleSection(text: String, modifier:Modifier = Modifier) {
         style = storeMeTextStyle(FontWeight.ExtraBold, 6),
         modifier = modifier
     )
-}
-
-@Composable
-fun SearchButton(onClick: () -> Unit) {
-    Icon(
-        imageVector = ImageVector.vectorResource(id = R.drawable.search_icon),
-        contentDescription = "검색",
-        modifier = Modifier
-            .size(24.dp)
-            .clickable(
-                onClick = { onClick() },
-                interactionSource = remember { MutableInteractionSource() },
-                indication = ripple(bounded = false)
-            )
-    )
-}
-
-/**
- * 기본 버튼
- */
-@Composable
-fun DefaultButton(text: String, onClick: () -> Unit){
-    Button(
-        modifier = Modifier
-            .wrapContentWidth()
-            .height(26.dp),
-        shape = RoundedCornerShape(6.dp),
-        border = BorderStroke(1.dp, Black),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = White,
-            contentColor = Black
-        ),
-        contentPadding = PaddingValues(horizontal = 10.dp),
-        onClick = onClick
-    ) {
-        Text(text = text, style = storeMeTypography.labelSmall)
-    }
-}
-
-/**
- * 기본 Toggle 버튼
- * @param text 버튼 내 텍스트
- * @param isSelected 선택 여뷰
- */
-@Composable
-fun DefaultToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    val borderStroke = if(!isSelected) BorderStroke(1.dp, ToggleButtonBorderColor) else null
-    val contentColor = if(!isSelected) Black else White
-    val containerColor = if(!isSelected) White else Black
-
-    Button(
-        modifier = Modifier
-            .wrapContentWidth()
-            .height(26.dp)
-            .defaultMinSize(
-                minWidth = 20.dp,
-                minHeight = ButtonDefaults.MinHeight
-            ),
-        shape = RoundedCornerShape(6.dp),
-        border = borderStroke,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
-        contentPadding = PaddingValues(horizontal = 10.dp),
-        onClick = onClick
-    ) {
-        Text(text = text, style = storeMeTextStyle(FontWeight.Normal, 2), modifier = Modifier.padding(horizontal = 3.dp))
-    }
-}
-
-@Composable
-fun CircleToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    val borderStroke = if(!isSelected) BorderStroke(1.dp, ToggleButtonBorderColor) else null
-    val contentColor = if(!isSelected) Black else White
-    val containerColor = if(!isSelected) White else Black
-
-    Button(
-        modifier = Modifier
-            .size(40.dp),
-        shape = CircleShape,
-        border = borderStroke,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
-        onClick = onClick,
-        contentPadding = PaddingValues(0.dp)
-    ) {
-        Text(text = text, style = storeMeTextStyle(FontWeight.Bold, 2), modifier = Modifier.padding(horizontal = 3.dp))
-    }
-}
-
-/**
- * Default Check Button
- */
-@Composable
-fun DefaultCheckButton(
-    text: String,
-    fontWeight: FontWeight = FontWeight.Bold,
-    diffValue: Int = 0,
-    selectedColor: Color = SelectedCheckBoxColor,
-    isSelected: Boolean,
-    description: String = "",
-    onClick: () -> Unit
-) {
-    val contentColor = if(!isSelected) UndefinedTextColor else selectedColor
-    val iconId = if(!isSelected) R.drawable.ic_check_off else R.drawable.ic_check_on
-
-    Row(
-        modifier = Modifier
-            .wrapContentSize()
-            .clickable(
-                onClick = { onClick() },
-                indication = null,
-                interactionSource = null
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = text,
-            style = storeMeTextStyle(fontWeight, diffValue),
-            color = contentColor,
-            modifier = Modifier
-                .padding(vertical = 4.dp)
-        )
-        
-        Spacer(modifier = Modifier.width(5.dp))
-
-        Icon(
-            painter = painterResource(id = iconId),
-            contentDescription = "체크 아이콘",
-            modifier = Modifier
-                .size(SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4)),
-            tint = contentColor
-        )
-    }
-
-    if(description.isNotEmpty()){
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4),
-                    top = 10.dp
-                )
-        ) {
-            Text(text = description,
-                style = storeMeTextStyle(FontWeight.Normal, diffValue - 2),
-                color = contentColor,
-            )
-        }
-    }
-}
-
-@Composable
-fun LeftCheckButton(
-    text: String,
-    fontWeight: FontWeight = FontWeight.Bold,
-    diffValue: Int = 0,
-    selectedColor: Color = SelectedCheckBoxColor,
-    enabled: Boolean = true,
-    isSelected: Boolean,
-    description: String = "",
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    val contentColor = if(!isSelected) UndefinedTextColor else selectedColor
-    val iconId = if(!isSelected) R.drawable.ic_check_off else R.drawable.ic_check_on
-
-    Row(
-        modifier = modifier
-            .clickable(
-                enabled = enabled,
-                onClick = { onClick() },
-                indication = null,
-                interactionSource = null
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-        Icon (
-            painter = painterResource(id = iconId),
-            contentDescription = "체크 아이콘",
-            modifier = Modifier
-                .size(SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4)),
-            tint = contentColor
-        )
-
-        Spacer(modifier = Modifier.width(5.dp))
-
-        Text(text = text,
-            style = storeMeTextStyle(fontWeight, diffValue),
-            color = contentColor,
-            modifier = Modifier
-                .padding(vertical = 4.dp)
-        )
-    }
-
-    if(description.isNotEmpty()){
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = SizeUtils().textSizeToDp(
-                        LocalDensity.current,
-                        diffValue,
-                        4
-                    ) + 5.dp, top = 10.dp
-                )
-        ) {
-            Text (
-                text = description,
-                style = storeMeTextStyle(FontWeight.Normal, diffValue - 2),
-                color = contentColor
-            )
-        }
-    }
-}
-
-/**
- * 기본 Edit Button
- * @param text 버튼 내 텍스트
- * @param modifier Modifier
- * @param containerColor 박스 색
- */
-@Composable
-fun DefaultEditButton(
-    text: String,
-    modifier: Modifier = Modifier
-        .height(40.dp)
-        .fillMaxWidth(),
-    containerColor: Color = EditButtonColor,
-    contentColor: Color = Black,
-    onClick: () -> Unit
-) {
-    Button(
-        modifier = modifier,
-        shape = RoundedCornerShape(6.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
-        onClick = onClick,
-        contentPadding = PaddingValues(0.dp)
-    ) {
-        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 0))
-    }
-}
-
-@Composable
-fun LargeButton(
-    text: String,
-    icon: @Composable (() -> Unit)? = null,
-    modifier: Modifier = Modifier,
-    containerColor: Color,
-    contentColor: Color,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    Button(
-        modifier = modifier
-            .height(50.dp),
-        shape = RoundedCornerShape(6.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
-        enabled = enabled,
-        onClick = onClick,
-    ) {
-        icon?.let {
-            it()
-
-            Spacer(modifier = Modifier.width(5.dp))
-        }
-
-        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 2))
-    }
-}
-
-@Composable
-fun AddButton(
-    text: String,
-    icon: @Composable (() -> Unit)? = { Icon(
-        painter = painterResource(id = R.drawable.ic_circle_plus),
-        contentDescription = "링크 추가 아이콘",
-        modifier = Modifier
-            .size(22.dp)
-            .clip(CircleShape),
-        tint = White) },
-    modifier: Modifier = Modifier,
-    containerColor: Color,
-    contentColor: Color,
-    onClick: () -> Unit
-) {
-    Button(
-        modifier = modifier
-            .height(50.dp),
-        shape = RoundedCornerShape(6.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
-        onClick = onClick,
-    ) {
-        icon?.let {
-            it()
-
-            Spacer(modifier = Modifier.width(5.dp))
-        }
-
-        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 2))
-    }
 }
 
 @Composable
@@ -568,8 +230,9 @@ fun EditAddSection(
             0 -> {
                 onChangeEditState(false)
 
-                AddButton(
+                LargeButton(
                     text = addText,
+                    iconResource = R.drawable.ic_circle_plus,
                     containerColor = Black,
                     contentColor = White,
                     modifier = Modifier.weight(1f)
@@ -592,8 +255,9 @@ fun EditAddSection(
                 }
 
                 Spacer(modifier = Modifier.width(10.dp))
-                AddButton(
+                LargeButton(
                     text = addText,
+                    iconResource = R.drawable.ic_circle_plus,
                     containerColor = Black,
                     contentColor = White,
                     modifier = Modifier.weight(1f)
@@ -602,56 +266,6 @@ fun EditAddSection(
                 }
             }
         }
-    }
-}
-
-/**
- * 기본 완료 Button
- */
-@Composable
-fun DefaultFinishButton(
-    text: String = "저장",
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    onClick: () -> Unit
-) {
-    Button(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(50.dp),
-        shape = RoundedCornerShape(10.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Black,
-            contentColor = White
-        ),
-        enabled = enabled,
-        onClick = onClick,
-    ) {
-        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 4))
-    }
-}
-
-@Composable
-fun DefaultDialogButton(
-    text: String,
-    modifier: Modifier = Modifier,
-    containerColor: Color,
-    contentColor: Color,
-    enabled: Boolean = true,
-    onClick: () -> Unit,
-) {
-    Button(
-        modifier = modifier
-            .height(50.dp),
-        shape = RoundedCornerShape(10.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
-        onClick = onClick,
-        enabled = enabled
-    ) {
-        Text(text = text, style = storeMeTextStyle(FontWeight.ExtraBold, 2))
     }
 }
 
@@ -836,7 +450,7 @@ fun LocationLayout(navController: NavController, locationViewModel: LocationView
         }
         Spacer(Modifier.weight(1f)) //중간 공백
 
-        DefaultButton(text = "동네 설정") {
+        StrokeButton(text = "동네 설정") {
             if (locationPermissionState.permissions.any { it.status.isGranted }) {
                 locationViewModel.setLocation()
             } else {
@@ -990,26 +604,6 @@ fun CategoryItem(category: StoreCategory, isSelected: Boolean, onClick: () -> Un
     }
 }
 
-@Composable
-fun NotificationIcon(navController: NavController) {
-    Icon(
-        imageVector = ImageVector.vectorResource(R.drawable.ic_notification_off),
-        contentDescription = "알림",
-        modifier = Modifier
-            .size(26.dp)
-            .clickable(
-                onClick = {
-                    NavigationUtils().navigateCustomerNav(
-                        navController,
-                        MainActivity.CustomerNavItem.NOTIFICATION
-                    )
-                },
-                interactionSource = remember { MutableInteractionSource() },
-                indication = ripple(bounded = false)
-            )
-    )
-}
-
 /**
  * Store Profile의 Link 정보
  */
@@ -1087,6 +681,11 @@ fun LinkSection(
     }
 }
 
+/**
+ * 링크 아이콘 Composable
+ * @param url 링크 주소
+ * @param size 크기
+ */
 @Composable
 fun SocialMediaIcon(url: String, size: Int = 40) {
     val context = LocalContext.current
@@ -1117,18 +716,137 @@ fun SocialMediaIcon(url: String, size: Int = 40) {
     )
 }
 
+/**
+ * 원형 프로필 이미지 Composable
+ * @param url 이미지 URL
+ * @param size 크기
+ */
 @Composable
-fun UserProfileImage(url: String?, size: Int) {
+fun CircleProfileImage(url: String?, size: Int, modifier: Modifier = Modifier, isUser: Boolean) {
+    val errorImage = if(isUser) R.drawable.profile_null_image else R.drawable.store_null_image
+
     AsyncImage(
         model = url,
         contentDescription = "프로필 이미지",
-        error = painterResource(id = R.drawable.profile_null_image),
-        modifier = Modifier
+        error = painterResource(id = errorImage),
+        modifier = modifier
             .size(size.dp)
             .clip(CircleShape)
     )
 }
 
+/**
+ * 가게 배경 이미지 Composable
+ * @param imageUrl 배경 이미지 url
+ */
+@Composable
+fun BackgroundSection(imageUrl: String?) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(2f / 1f)
+    ) {
+        imageUrl?.let {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = "배경 이미지",
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+        }
+
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            drawRect(color = Black.copy(alpha = 0.3f))
+        }
+    }
+}
+
+/**
+ * 원형 테두리를 가진 아이콘 Composable
+ * @param borderColor Border Color
+ * @param circleColor Inner Circle Color
+ * @param iconResource Icon Resource Id
+ * @param size Circle Size
+ */
+@Composable
+fun CircleBorderWithIcon(modifier: Modifier, borderColor: Color, circleColor: Color, iconResource: Int?, iconColor: Color, size: Int) {
+    Box(
+        modifier = modifier
+            .size(size.dp)
+            .border(width = 2.dp, shape = CircleShape, color = borderColor),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size((size - 1).dp)
+                .background(
+                    color = circleColor,
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            iconResource?.let {
+                Icon(
+                    painter = painterResource(id = it),
+                    contentDescription = "아이콘",
+                    tint = iconColor,
+                    modifier = Modifier
+                        .size((size / 2).dp)
+                )
+            }
+        }
+    }
+
+}
+
+/**
+ *
+ */
+@Composable
+fun AlphaBackgroundText(text: String, diffValue: Int, modifier: Modifier = Modifier,iconResource: Int? = null) {
+    val density = LocalDensity.current
+
+    val horizontalPadding = 12.dp
+    val verticalPadding = 8.dp
+    val itemSpace = 7.dp
+
+    Row(
+        modifier = modifier
+            .background(
+                color = Black.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(6.dp)
+            ),
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = verticalPadding, horizontal = horizontalPadding),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            iconResource?.let {
+                Icon(
+                    painter = painterResource(id = iconResource),
+                    contentDescription = "아이콘",
+                    modifier = Modifier
+                        .size(SizeUtils().textSizeToDp(density, diffValue, 3)),
+                    tint = White
+                )
+
+                Spacer(modifier = Modifier.width(itemSpace))
+            }
+
+            Text(
+                text = text,
+                style = storeMeTextStyle(FontWeight.ExtraBold, diffValue),
+                color = White
+            )
+        }
+    }
+}
+
+/**
+ * 기본 HorizontalDivider
+ */
 @Composable
 fun DefaultHorizontalDivider(){
     HorizontalDivider(color = DefaultDividerColor, thickness = 1.dp)

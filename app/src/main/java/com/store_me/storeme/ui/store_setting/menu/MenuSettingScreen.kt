@@ -83,7 +83,6 @@ import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.MenuData
 import com.store_me.storeme.data.MenuPrice
 import com.store_me.storeme.data.hasMenu
-import com.store_me.storeme.ui.component.AddButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.LargeButton
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
@@ -725,8 +724,9 @@ fun EditButtonsSection(
 
         Spacer(modifier = Modifier.width(10.dp))
 
-        AddButton(
+        LargeButton(
             text = addText,
+            iconResource = R.drawable.ic_circle_plus,
             containerColor = Black,
             contentColor = White,
             modifier = Modifier.weight(1f)
