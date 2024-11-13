@@ -17,7 +17,7 @@ import com.store_me.storeme.data.database.location.LocationDataBaseHelper
 import com.store_me.storeme.data.database.location.LocationEntity
 import com.store_me.storeme.data.datastore.getLocation
 import com.store_me.storeme.data.datastore.saveLocation
-import com.store_me.storeme.network.naver.NaverRepository
+import com.store_me.storeme.repository.naver.NaverRepository
 import com.store_me.storeme.utils.ServerResponse
 import com.store_me.storeme.utils.ToastMessageUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
