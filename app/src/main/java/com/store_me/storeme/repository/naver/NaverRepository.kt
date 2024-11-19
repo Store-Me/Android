@@ -1,7 +1,8 @@
-package com.store_me.storeme.network.naver
+package com.store_me.storeme.repository.naver
 
 import android.util.Log
 import com.naver.maps.geometry.LatLng
+import com.store_me.storeme.network.naver.NaverApiService
 import com.store_me.storeme.utils.ServerResponse
 import javax.inject.Inject
 
