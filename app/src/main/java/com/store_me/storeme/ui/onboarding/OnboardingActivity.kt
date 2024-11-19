@@ -1,4 +1,4 @@
-package com.store_me.storeme.ui.login
+package com.store_me.storeme.ui.onboarding
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,14 +17,15 @@ import com.store_me.storeme.ui.create_account.SmsAuthScreen
 import com.store_me.storeme.ui.post.AddNormalPostScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 
-class LoginActivity : ComponentActivity() {
-    sealed class Screen(val route: LoginRoute){
-        data object Login : Screen(route = LoginRoute.LOGIN)
-        data object SmsAuth : Screen(route = LoginRoute.SMS_AUTH)
+class OnboardingActivity : ComponentActivity() {
+    sealed class Screen(val route: OnboardingRoute){
+        data object Onboarding : Screen(route = OnboardingRoute.ONBOARDING)
+        data object Login : Screen(route = OnboardingRoute.LOGIN)
+        data object SmsAuth : Screen(route = OnboardingRoute.SMS_AUTH)
     }
 
-    enum class LoginRoute{
-        LOGIN, SMS_AUTH,
+    enum class OnboardingRoute{
+        ONBOARDING, LOGIN, SMS_AUTH,
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,7 +73,8 @@ class LoginActivity : ComponentActivity() {
 
     @Composable
     fun NavGraph(navController: NavHostController) {
-        NavHost(navController = navController, startDestination = Screen.Login.route.name) {
+        NavHost(navController = navController, startDestination = Screen.Onboarding.route.name) {
+            composable(Screen.Onboarding.route.name) { OnboardingScreen(navController) }
             composable(Screen.Login.route.name) { LoginScreen(navController) }
             composable(Screen.SmsAuth.route.name) { SmsAuthScreen(navController) }
         }
