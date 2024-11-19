@@ -13,6 +13,7 @@ enum class StoreCategory(val displayName: String){
 class CategoryUtils {
     companion object {
         fun getStoreCategories(): List<StoreCategory> {
+
             return StoreCategory.values().toList()
         }
     }
