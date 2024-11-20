@@ -29,4 +29,7 @@
 
     <string name="alert_edit_already">순서 편집/삭제 작업을 모두 완료 후 진행해 주세요.</string>
     <string name="alert_max_link">최대 7개의 링크 설정이 가능합니다.</string>
+
+    <!--Error Message-->
+    <string name="default_error_message">오류가 발생했습니다. 다시 시도해주세요.</string>
 </resources>
