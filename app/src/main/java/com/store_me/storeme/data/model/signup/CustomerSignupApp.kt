@@ -1,5 +1,7 @@
 package com.store_me.storeme.data.model.signup
 
+import android.net.Uri
+
 /**
  * Customer 의 App 계정 회원가입
  * @param accountId 계정 아이디
@@ -17,5 +19,5 @@ data class CustomerSignupApp(
     val nickname: String,
     val privacyConsent: Boolean,
     val marketingConsent: Boolean,
-    val verificationCode: String
+    val verificationCode: String,
 )

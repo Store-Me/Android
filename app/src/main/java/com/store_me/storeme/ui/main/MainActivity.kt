@@ -1,6 +1,7 @@
 
 package com.store_me.storeme.ui.main
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -50,6 +51,7 @@ import com.store_me.storeme.ui.mycoupon.MyCouponScreenWithBottomSheet
 import com.store_me.storeme.ui.mystore.MyStoreScreenWithBottomSheet
 import com.store_me.storeme.ui.near_place.NearPlaceScreen
 import com.store_me.storeme.ui.notification.NotificationScreen
+import com.store_me.storeme.ui.onboarding.OnboardingActivity
 import com.store_me.storeme.ui.post.AddNormalPostScreen
 import com.store_me.storeme.ui.store_detail.StoreDetailScreen
 import com.store_me.storeme.ui.store_setting.closed_day.ClosedDaySettingScreen
@@ -82,10 +84,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        /*if(!Auth.isLoggedIn.value){
-            val intent = Intent(this, LoginActivity::class.java)
+        if(!Auth.isLoggedIn.value){
+            val intent = Intent(this, OnboardingActivity::class.java)
             startActivity(intent)
-        }*/
+        }
 
         setContent {
             StoreMeTheme {

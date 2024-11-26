@@ -397,7 +397,6 @@ fun SetAvailableSection() {
         LargeButton(
             text = "다음",
             enabled = availableType != null,
-            modifier = Modifier.weight(1f),
             containerColor = Black,
             contentColor = White
         ) {

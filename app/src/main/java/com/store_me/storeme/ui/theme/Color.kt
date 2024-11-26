@@ -78,10 +78,22 @@ val CopyButtonColor = Color(0xFFD449DA)
 //Next Button Color
 val NextButtonColor = Color(0xFFD44ADA)
 
+//Kakao Login Color
+val KakaoLoginButtonColor = Color(0xFFFEE500)
+
+//StoreMe Login Color
+val StoreMeLoginButtonColor = Color(0xFFF393F6)
+
 /**
  * Icon 관련 Color
  */
 val WebIconColor = Color(0xFFD449DA)
+
+/**
+ * 온보딩 Color
+ */
+val LoginDividerColor = Color(0xFF898C93)
+
 
 /**
  * SwipeItemColor

@@ -35,6 +35,8 @@ android {
 
         buildConfigField("String", "NAVER_CLIENT_SECRET", getApiKey("naver_client_secret"))
         buildConfigField("String", "NAVER_CLIENT_ID", getApiKey("naver_client_id"))
+        val kakaoKey = gradleLocalProperties(rootDir).getProperty("kakao_key")
+        buildConfigField("String", "KAKAO_KEY", "\"${kakaoKey}\"")
     }
 
     val properties = Properties()
@@ -54,6 +56,7 @@ android {
 
     buildTypes {
         debug {
+            manifestPlaceholders["KAKAO_KEY"] = getApiKey("kakao_key")
             manifestPlaceholders["NAVER_MAP_CLIENT_ID"] = properties.getProperty("naver_map_client_id", "")
         }
         release {
@@ -62,6 +65,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            manifestPlaceholders["KAKAO_KEY"] = getApiKey("kakao_key")
             manifestPlaceholders["NAVER_MAP_CLIENT_ID"] = getApiKey("naver_map_client_id")
             manifestPlaceholders["NAVER_MAP_CLIENT_SECRET"] = getApiKey("naver_map_client_secret")
         }
@@ -111,6 +115,9 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
+    //Kakao Login
+    implementation("com.kakao.sdk:v2-user:2.12.1")
 
     //Hilt
     implementation("com.google.dagger:hilt-android:2.48.1")

@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.store_me.storeme.R
@@ -27,27 +29,26 @@ fun OnboardingScreen(navController: NavController) {
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
-                    .fillMaxSize()
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Spacer(modifier = Modifier.height(240.dp))
+                Spacer(modifier = Modifier.height(120.dp))
 
                 Image(
                     painter = painterResource(id = R.drawable.logo_color),
                     contentDescription = "로고",
                     modifier = Modifier
-                        .size(240.dp)
+                        .size(150.dp)
                 )
-
-                Spacer(modifier = Modifier.height(120.dp))
 
                 Image(
                     painter = painterResource(id = R.drawable.logo_home),
                     contentDescription = "로고 텍스트",
                     modifier = Modifier
-                        .width(240.dp)
+                        .width(150.dp)
                 )
 
-                Spacer(modifier = Modifier.height(360.dp))
+                Spacer(modifier = Modifier.height(180.dp))
 
 
                 SmallButton(
