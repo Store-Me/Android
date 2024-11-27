@@ -6,9 +6,14 @@ import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
 import androidx.core.net.toFile
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.store_me.storeme.data.model.StoreMeResponse
+import com.store_me.storeme.data.model.login.KakaoLoginRequest
+import com.store_me.storeme.data.model.login.LoginResponse
 import com.store_me.storeme.data.model.signup.CustomerSignupApp
 import com.store_me.storeme.network.storeme.UserApiService
+import com.store_me.storeme.utils.ApiException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -21,7 +26,11 @@ import javax.inject.Inject
  * 사용자 관련 UserRepository
  */
 interface UserRepository {
+    //회원가입
     suspend fun customerSignupApp(customerSignupApp: CustomerSignupApp, profileImage: Uri?): Result<Unit>
+
+    //로그인
+    suspend fun loginWithKakao(kakaoId: String): Result<LoginResponse>
 }
 
 class UserRepositoryImpl @Inject constructor(
@@ -94,6 +103,47 @@ class UserRepositoryImpl @Inject constructor(
                 Log.d("signup", response.errorBody()?.string() ?: "")
 
                 Result.failure(Exception("오류가 발생했습니다. ${response.code()} - ${response.message()}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun loginWithKakao(kakaoId: String): Result<LoginResponse> {
+        return try {
+            // API 호출
+            val response = userApiService.loginWithKakao(
+                kakaoLoginRequest = KakaoLoginRequest(kakaoId = kakaoId)
+            )
+
+            if(response.isSuccessful) {
+                Log.d("loginWithKakao", response.message())
+                val responseBody = response.body()
+
+                when(responseBody?.isSuccess) {
+                    true -> {
+                        if(responseBody.result != null){
+                            Result.success(responseBody.result)
+                        } else {
+                            Result.failure(ApiException(code = null ,message = "알 수 없는 오류 발생"))
+                        }
+                    }
+                    false -> {
+                        Result.failure(ApiException(code = responseBody.code, message = responseBody.message))
+                    }
+                    else -> {
+                        Result.failure(ApiException(code = responseBody?.code, message = responseBody?.message))
+                    }
+                }
+            } else {
+                val errorBodyString = response.errorBody()?.string()
+                if (errorBodyString != null) {
+                    // 서버가 실패 시에도 StoreMeResponse<T> 형식으로 응답한다고 가정
+                    val errorResponse = Gson().fromJson(errorBodyString, StoreMeResponse::class.java)
+                    Result.failure(ApiException(code = errorResponse.code, message = errorResponse.message))
+                } else {
+                    Result.failure(ApiException(code = response.code().toString(), message = response.message()))
+                }
             }
         } catch (e: Exception) {
             Result.failure(e)

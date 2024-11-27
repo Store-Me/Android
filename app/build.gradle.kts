@@ -117,7 +117,7 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
     //Kakao Login
-    implementation("com.kakao.sdk:v2-user:2.12.1")
+    implementation("com.kakao.sdk:v2-user:2.14.0")
 
     //Hilt
     implementation("com.google.dagger:hilt-android:2.48.1")

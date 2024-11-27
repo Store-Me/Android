@@ -76,7 +76,7 @@ object StoreMeModule {
 
     @Provides
     @Singleton
-    fun signupApp(
+    fun userApiService(
         @Named("UnauthorizedRetrofit") retrofit: Retrofit
     ): UserApiService {
         return retrofit.create(UserApiService::class.java)

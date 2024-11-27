@@ -15,13 +15,16 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.component.LargeButton
@@ -30,9 +33,13 @@ import com.store_me.storeme.ui.theme.KakaoLoginButtonColor
 import com.store_me.storeme.ui.theme.LoginDividerColor
 import com.store_me.storeme.ui.theme.StoreMeLoginButtonColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
+import com.store_me.storeme.utils.KakaoLoginHelper
+import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = hiltViewModel()) {
+    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     Scaffold(
         containerColor = Color.White,
@@ -73,7 +80,15 @@ fun LoginScreen(navController: NavController) {
                     containerColor = KakaoLoginButtonColor,
                     contentColor = Black
                 ) {
-                    navController.navigate(OnboardingActivity.Screen.Login.route.name)
+                    coroutineScope.launch {
+
+                        when (val kakaoId = KakaoLoginHelper.getKakaoId(context)) {
+                            null -> {}
+                            else -> {
+                                loginViewModel.loginWithKakao(kakaoId)
+                            }
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
