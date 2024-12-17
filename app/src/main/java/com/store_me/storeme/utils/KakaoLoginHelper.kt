@@ -1,7 +1,6 @@
 package com.store_me.storeme.utils
 
 import android.content.Context
-import android.util.Log
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -15,7 +14,6 @@ object KakaoLoginHelper {
     suspend fun getKakaoId(context: Context): String? {
         return suspendCancellableCoroutine { continuation ->
             val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-
                 if (error != null) {
                     // 로그인 실패
                     continuation.resume(null)

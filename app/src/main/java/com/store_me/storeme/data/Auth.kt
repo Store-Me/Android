@@ -10,6 +10,10 @@ object Auth {
         CUSTOMER, OWNER
     }
 
+    enum class LoginType {
+        APP, KAKAO
+    }
+
     //로그인 상태 관련
     private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn

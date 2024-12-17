@@ -15,6 +15,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
+import com.store_me.storeme.data.Auth
 import com.store_me.storeme.ui.component.LargeButton
 import com.store_me.storeme.ui.onboarding.OnboardingActivity
 import com.store_me.storeme.ui.theme.KakaoLoginButtonColor
@@ -40,6 +44,15 @@ import kotlinx.coroutines.launch
 fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = hiltViewModel()) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+
+    val isKakaoLoginFailed by loginViewModel.isKakaoLoginFailed.collectAsState()
+
+    LaunchedEffect(isKakaoLoginFailed) {
+        if(isKakaoLoginFailed){
+            loginViewModel.clearKakaoLoginFailedState()
+            navController.navigate(OnboardingActivity.Screen.Signup.route.name + "/${Auth.LoginType.KAKAO}")
+        }
+    }
 
     Scaffold(
         containerColor = Color.White,

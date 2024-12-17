@@ -1,7 +1,6 @@
 package com.store_me.storeme.ui.onboarding
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,14 +12,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.user.UserApiClient
-import com.store_me.storeme.ui.create_account.SignupScreen
+import com.store_me.storeme.data.Auth
+import com.store_me.storeme.data.Auth.LoginType
+import com.store_me.storeme.ui.signup.SignupScreen
 import com.store_me.storeme.ui.login.LoginScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
 
 @AndroidEntryPoint
 class OnboardingActivity : ComponentActivity() {
@@ -55,7 +52,11 @@ class OnboardingActivity : ComponentActivity() {
         NavHost(navController = navController, startDestination = Screen.Onboarding.route.name) {
             composable(Screen.Onboarding.route.name) { OnboardingScreen(navController) }
             composable(Screen.Login.route.name) { LoginScreen(navController) }
-            composable(Screen.Signup.route.name) { SignupScreen(navController) }
+            composable(
+                route = Screen.Signup.route.name + "/{loginType}") { backstackEntry ->
+                val loginType = backstackEntry.arguments?.getString("loginType") ?: LoginType.APP.name
+                SignupScreen(navController, loginType = LoginType.valueOf(loginType))
+            }
         }
     }
 }
