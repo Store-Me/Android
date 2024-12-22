@@ -133,9 +133,10 @@ fun CreateCouponScreen(
                             } else {
                                 (slideInHorizontally { -it } + fadeIn()).togetherWith(slideOutHorizontally { it } + fadeOut())
                             }
-                        }, label = ""
-                    ) { targetProgress ->
-                        when(targetProgress){
+                        },
+                        label = ""
+                    ) { targetState ->
+                        when(targetState){
                             SET_VALUE -> { SetValueSection(couponType) }
                             SET_NAME -> { SetNameSection() }
                             SET_AVAILABLE -> { SetAvailableSection() }

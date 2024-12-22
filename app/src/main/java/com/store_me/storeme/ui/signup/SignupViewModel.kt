@@ -7,20 +7,56 @@ import com.store_me.storeme.data.Auth.AccountType
 import com.store_me.storeme.data.Auth.LoginType
 import com.store_me.storeme.data.model.signup.CustomerSignupApp
 import com.store_me.storeme.repository.storeme.UserRepository
-import com.store_me.storeme.ui.signup.SignupViewModel.CustomerProgress
-import com.store_me.storeme.ui.signup.SignupViewModel.OwnerProgress
-import com.store_me.storeme.ui.signup.SignupViewModel.SignupProgress
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-sealed class SignupState {
+enum class SignupProgress {
+    TERMS,
+    NUMBER,
+    CERTIFICATION,
+    ACCOUNT_DATA,
+    ACCOUNT_TYPE
+}
+
+enum class CustomerProgress {
+    NICKNAME,
+    PROFILE_IMAGE,
+    FINISH
+}
+
+enum class OwnerProgress {
+    STORE_NAME,
+    CATEGORY,
+    CUSTOM_CATEGORY,
+    ADDRESS,
+    STORE_PROFILE_IMAGE,
+    STORE_IMAGE,
+    INTRO,
+    NUMBER,
+    FINISH
+}
+
+sealed class SignupState: Comparable<SignupState> {
     data class Signup(val progress: SignupProgress) : SignupState()
     data object Onboarding : SignupState()
     data class Customer(val progress: CustomerProgress) : SignupState()
     data class Owner(val progress: OwnerProgress) : SignupState()
+
+    override fun compareTo(other: SignupState): Int {
+        return this.order - other.order
+    }
+
+    private val order: Int
+        get() = when (this) {
+            is Signup -> 0
+            Onboarding -> 1
+            is Customer -> 2
+            is Owner -> 3
+            else -> -1
+        }
 }
 
 @HiltViewModel
@@ -34,8 +70,13 @@ class SignupViewModel @Inject constructor(
     private val _loginType = MutableStateFlow<LoginType?>(null)
     val loginType: StateFlow<LoginType?> = _loginType
 
+    //진행 상태
     private val _signupState = MutableStateFlow<SignupState>(SignupState.Signup(SignupProgress.TERMS))
     val signupState: StateFlow<SignupState> = _signupState
+
+    fun setLoginType(loginType: LoginType) {
+        _loginType.value = loginType
+    }
 
     fun moveToNextProgress() {
         when(_signupState.value) {
@@ -192,32 +233,6 @@ class SignupViewModel @Inject constructor(
             OwnerProgress.FINISH -> OwnerProgress.NUMBER
         }
         _signupState.value = SignupState.Owner(nextProgress)
-    }
-
-    enum class SignupProgress {
-        TERMS,
-        NUMBER,
-        CERTIFICATION,
-        ACCOUNT_DATA,
-        ACCOUNT_TYPE
-    }
-
-    enum class CustomerProgress {
-        NICKNAME,
-        PROFILE_IMAGE,
-        FINISH
-    }
-
-    enum class OwnerProgress {
-        STORE_NAME,
-        CATEGORY,
-        CUSTOM_CATEGORY,
-        ADDRESS,
-        STORE_PROFILE_IMAGE,
-        STORE_IMAGE,
-        INTRO,
-        NUMBER,
-        FINISH
     }
 
     private val _profileImage = MutableStateFlow<Uri?>(null)

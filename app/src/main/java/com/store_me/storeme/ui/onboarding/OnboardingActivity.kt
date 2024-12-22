@@ -12,7 +12,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.Auth.LoginType
 import com.store_me.storeme.ui.signup.SignupScreen
 import com.store_me.storeme.ui.login.LoginScreen
@@ -24,11 +23,11 @@ class OnboardingActivity : ComponentActivity() {
     sealed class Screen(val route: OnboardingRoute){
         data object Onboarding : Screen(route = OnboardingRoute.ONBOARDING)
         data object Login : Screen(route = OnboardingRoute.LOGIN)
-        data object Signup : Screen(route = OnboardingRoute.Signup)
+        data object Signup : Screen(route = OnboardingRoute.SIGNUP)
     }
 
     enum class OnboardingRoute{
-        ONBOARDING, LOGIN, Signup,
+        ONBOARDING, LOGIN, SIGNUP,
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
