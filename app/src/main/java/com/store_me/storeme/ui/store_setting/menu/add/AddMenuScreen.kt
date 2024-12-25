@@ -521,7 +521,7 @@ fun MenuCategorySection() {
         Spacer(modifier = Modifier.width(10.dp))
 
         Icon(
-            painter = painterResource(id = R.drawable.arrow_right),
+            painter = painterResource(id = R.drawable.ic_arrow_right),
             contentDescription = "이동 아이콘",
             modifier = Modifier.size(SizeUtils().textSizeToDp(LocalDensity.current, 2, 0))
         )

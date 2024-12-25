@@ -141,7 +141,7 @@ fun ShowMoreTextSection(onClick: () -> Unit){
         Spacer(modifier = Modifier.width(5.dp))
 
         Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.arrow_right),
+            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_right),
             tint = SelectedCategoryColor,
             contentDescription = "더보기",
             modifier = Modifier

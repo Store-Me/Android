@@ -442,7 +442,7 @@ fun LocationLayout(navController: NavController, locationViewModel: LocationView
             )
             Spacer(modifier = Modifier.width(5.dp))
             Icon(
-                painter = painterResource(id = R.drawable.arrow_down),
+                painter = painterResource(id = R.drawable.ic_arrow_down),
                 contentDescription = "지역 설정 아이콘",
                 modifier = Modifier
                     .size(12.dp)

@@ -375,7 +375,7 @@ fun StoreItemDefault(
 
                 false -> {
                     Icon(
-                        painter = painterResource(id = R.drawable.arrow_right),
+                        painter = painterResource(id = R.drawable.ic_arrow_right),
                         contentDescription = "이동 아이콘",
                         modifier = Modifier
                             .size(18.dp)

@@ -403,7 +403,7 @@ fun ReviewItem(reviewComment: ReviewComment, onClickMenu: (String) -> Unit, onWr
                     Spacer(modifier = Modifier.weight(1f))
 
                     Icon(
-                        painter = painterResource(id = R.drawable.arrow_right),
+                        painter = painterResource(id = R.drawable.ic_arrow_right),
                         contentDescription = "더보기 아이콘",
                         modifier = Modifier.size(SizeUtils().textSizeToDp(density, -1)),
                         tint = ReviewMenuBorderColor
@@ -634,7 +634,7 @@ fun TopReviewSection() {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.arrow_down),
+                    painter = painterResource(id = R.drawable.ic_arrow_down),
                     contentDescription = "더보기 아이콘",
                     modifier = Modifier
                         .size(18.dp),
@@ -649,7 +649,7 @@ fun TopReviewSection() {
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.arrow_up),
+                    painter = painterResource(id = R.drawable.ic_arrow_up),
                     contentDescription = "축소 아이콘",
                     modifier = Modifier
                         .size(18.dp),

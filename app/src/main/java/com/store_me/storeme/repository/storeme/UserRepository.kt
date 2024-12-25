@@ -5,21 +5,21 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
-import androidx.core.net.toFile
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.store_me.storeme.data.check_duplicate.CheckAccountIdDuplicate
 import com.store_me.storeme.data.model.StoreMeResponse
 import com.store_me.storeme.data.model.login.KakaoLoginRequest
 import com.store_me.storeme.data.model.login.LoginResponse
 import com.store_me.storeme.data.model.signup.CustomerSignupApp
+import com.store_me.storeme.data.model.verification.ConfirmCode
+import com.store_me.storeme.data.model.verification.PhoneNumber
+import com.store_me.storeme.data.model.verification.PhoneNumberResponse
 import com.store_me.storeme.network.storeme.UserApiService
 import com.store_me.storeme.utils.ApiException
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.File
 import javax.inject.Inject
 
 /**
@@ -31,6 +31,15 @@ interface UserRepository {
 
     //로그인
     suspend fun loginWithKakao(kakaoId: String): Result<LoginResponse>
+
+    //인증 번호 전송
+    suspend fun sendSmsMessage(phoneNumber: String): Result<PhoneNumberResponse>
+
+    //인증코드 확인
+    suspend fun confirmVerificationCode(confirmCode: ConfirmCode): Result<Unit>
+
+    //아이디 중복 확인
+    suspend fun checkAccountIdDuplicate(accountId: String): Result<Boolean>
 }
 
 class UserRepositoryImpl @Inject constructor(
@@ -74,7 +83,6 @@ class UserRepositoryImpl @Inject constructor(
         } else {
             null
         }
-
 
 
         return try {
@@ -139,6 +147,81 @@ class UserRepositoryImpl @Inject constructor(
                 val errorBodyString = response.errorBody()?.string()
                 if (errorBodyString != null) {
                     // 서버가 실패 시에도 StoreMeResponse<T> 형식으로 응답한다고 가정
+                    val errorResponse = Gson().fromJson(errorBodyString, StoreMeResponse::class.java)
+                    Result.failure(ApiException(code = errorResponse.code, message = errorResponse.message))
+                } else {
+                    Result.failure(ApiException(code = response.code().toString(), message = response.message()))
+                }
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun sendSmsMessage(phoneNumber: String): Result<PhoneNumberResponse> {
+        return try {
+            // API 호출
+            val response = userApiService.sendSmsMessage(
+                phoneNumber = PhoneNumber(phoneNumber = phoneNumber)
+            )
+
+            if(response.isSuccessful) {
+                Log.d("sendSmsMessage", response.message())
+                val responseBody = response.body()
+
+                Result.success(PhoneNumberResponse(timeLimit = responseBody?.result?.timeLimit ?: 300))
+            } else {
+                val errorBodyString = response.errorBody()?.string()
+                if (errorBodyString != null) {
+                    // 서버가 실패 시에도 StoreMeResponse<T> 형식으로 응답한다고 가정
+                    val errorResponse = Gson().fromJson(errorBodyString, StoreMeResponse::class.java)
+                    Result.failure(ApiException(code = errorResponse.code, message = errorResponse.message))
+                } else {
+                    Result.failure(ApiException(code = response.code().toString(), message = response.message()))
+                }
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun confirmVerificationCode(confirmCode: ConfirmCode): Result<Unit> {
+        return try {
+            // API 호출
+            val response = userApiService.confirmVerificationCode(confirmCode = confirmCode)
+
+            if(response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                val errorBodyString = response.errorBody()?.string()
+
+                Log.d("confirmCode", errorBodyString.toString())
+
+                if (errorBodyString != null) {
+                    val errorResponse = Gson().fromJson(errorBodyString, StoreMeResponse::class.java)
+                    Result.failure(ApiException(code = errorResponse.code, message = errorResponse.message))
+                } else {
+                    Result.failure(ApiException(code = response.code().toString(), message = response.message()))
+                }
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun checkAccountIdDuplicate(accountId: String): Result<Boolean> {
+        return try {
+            // API 호출
+            val response = userApiService.checkAccountIdDuplication(accountId = CheckAccountIdDuplicate(accountId = accountId))
+
+            if(response.isSuccessful) {
+                Result.success(response.body()?.result?.isDuplicated ?: true)
+            } else {
+                val errorBodyString = response.errorBody()?.string()
+
+                Log.d("checkAccountIdDuplicate", errorBodyString.toString())
+
+                if (errorBodyString != null) {
                     val errorResponse = Gson().fromJson(errorBodyString, StoreMeResponse::class.java)
                     Result.failure(ApiException(code = errorResponse.code, message = errorResponse.message))
                 } else {

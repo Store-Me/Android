@@ -378,7 +378,7 @@ fun SelectMonthSection(nowDate: DateData, year: Int, month: Int, onBeforeMonth: 
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.arrow_left),
+            painter = painterResource(id = R.drawable.ic_arrow_left),
             contentDescription = "이전 달",
             modifier = Modifier
                 .size(14.dp)
@@ -398,7 +398,7 @@ fun SelectMonthSection(nowDate: DateData, year: Int, month: Int, onBeforeMonth: 
         Spacer(modifier = Modifier.weight(1f))
 
         Icon(
-            painter = painterResource(id = R.drawable.arrow_right),
+            painter = painterResource(id = R.drawable.ic_arrow_right),
             contentDescription = "다음 달",
             modifier = Modifier
                 .size(14.dp)

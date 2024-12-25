@@ -402,7 +402,7 @@ fun MyCouponIconText(onClick: () -> Unit){
         Spacer(modifier = Modifier.width(2.dp))
 
         Icon(
-            painter = painterResource(id = R.drawable.arrow_right),
+            painter = painterResource(id = R.drawable.ic_arrow_right),
             contentDescription = "화살표 아이콘",
             modifier = Modifier.size(8.dp)
         )

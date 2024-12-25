@@ -55,7 +55,6 @@ sealed class SignupState: Comparable<SignupState> {
             Onboarding -> 1
             is Customer -> 2
             is Owner -> 3
-            else -> -1
         }
 }
 

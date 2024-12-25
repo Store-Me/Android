@@ -326,7 +326,7 @@ fun SetSortTypeButton(onClick: () -> Unit){
         Spacer(modifier = Modifier.width(5.dp))
 
         Icon(
-            imageVector =  ImageVector.vectorResource(R.drawable.arrow_down),
+            imageVector =  ImageVector.vectorResource(R.drawable.ic_arrow_down),
             contentDescription = "정렬 목록 열기",
             modifier = Modifier
                 .size(10.dp)

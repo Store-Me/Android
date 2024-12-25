@@ -293,7 +293,7 @@ fun CreateCouponButton(couponType: CouponType, onClick: () -> Unit) {
         Spacer(modifier = Modifier.weight(1f))
 
         Icon(
-            painter = painterResource(id = R.drawable.arrow_right),
+            painter = painterResource(id = R.drawable.ic_arrow_right),
             contentDescription = "이동 아이콘",
             modifier = Modifier
                 .size(18.dp),

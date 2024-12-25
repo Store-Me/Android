@@ -361,7 +361,7 @@ fun WeekListSection(onClickWeek: (DateTimeUtils.DayOfWeek) -> Unit) {
                 Spacer(modifier = Modifier.width(10.dp))
 
                 Icon(
-                    imageVector = ImageVector.vectorResource(id = R.drawable.arrow_right),
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_arrow_right),
                     contentDescription = "더보기 아이콘",
                     modifier = Modifier
                         .size(12.dp),
