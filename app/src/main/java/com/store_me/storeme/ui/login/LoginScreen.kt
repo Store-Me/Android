@@ -50,7 +50,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
     LaunchedEffect(isKakaoLoginFailed) {
         if(isKakaoLoginFailed){
             loginViewModel.clearKakaoLoginFailedState()
-            navController.navigate(OnboardingActivity.Screen.Signup.route.name + "/${Auth.LoginType.KAKAO}")
+            navController.navigate(OnboardingActivity.Screen.Signup.route.name + "/${Auth.LoginType.KAKAO}?additionalData=${loginViewModel.kakaoId.value}")
         }
     }
 
@@ -114,7 +114,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
                     containerColor = StoreMeLoginButtonColor,
                     contentColor = Black
                 ) {
-                    navController.navigate(OnboardingActivity.Screen.Signup.route.name)
+                    navController.navigate(OnboardingActivity.Screen.Signup.route.name + "/${Auth.LoginType.APP}")
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
