@@ -11,7 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.data.Auth
-import com.store_me.storeme.ui.signup.NextButton
+import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.signup.owner.ProfileImageSection
 import com.store_me.storeme.utils.composition_locals.signup.LocalCustomerDataViewModel
@@ -39,7 +39,7 @@ fun CustomerProfileImageSection(onFinish: () -> Unit) {
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        NextButton(buttonText = "다음") {
+        DefaultButton(buttonText = "다음") {
             onFinish()
         }
     }

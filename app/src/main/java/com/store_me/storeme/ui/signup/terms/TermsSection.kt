@@ -27,8 +27,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
+import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
-import com.store_me.storeme.ui.signup.NextButton
 import com.store_me.storeme.ui.theme.DeleteTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.composition_locals.signup.LocalTermsViewModel
@@ -109,7 +109,7 @@ fun TermsSection(onFinish: () -> Unit) {
         } }
 
         item {
-            NextButton(
+            DefaultButton(
                 buttonText = "다음",
                 modifier = Modifier
                     .padding(top = 48.dp)

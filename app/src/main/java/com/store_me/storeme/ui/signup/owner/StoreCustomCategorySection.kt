@@ -32,9 +32,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
+import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.signup.GuidTextBoxItem
-import com.store_me.storeme.ui.signup.NextButton
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
@@ -163,7 +163,7 @@ fun StoreCustomCategorySection(onFinish: () -> Unit) {
         }
 
         item {
-            NextButton(
+            DefaultButton(
                 buttonText = "다음",
                 enabled = !isError.value
             ) {

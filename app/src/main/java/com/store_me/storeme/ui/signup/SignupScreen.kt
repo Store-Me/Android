@@ -409,28 +409,6 @@ fun SignupTitleText(title: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun NextButton(buttonText: String, modifier: Modifier = Modifier, enabled: Boolean = true, onClick: () -> Unit) {
-    Button(
-        onClick = { onClick() },
-        modifier = modifier
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
-        colors = ButtonDefaults.buttonColors(
-            contentColor = White,
-            containerColor = Black
-        ),
-        enabled = enabled
-    ) {
-        Text(
-            text = buttonText,
-            style = storeMeTextStyle(FontWeight.ExtraBold, 3),
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-        )
-    }
-}
-
-@Composable
 fun GuidTextBoxItem(title: String, content: String) {
     Column(
         modifier = Modifier

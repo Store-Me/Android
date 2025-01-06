@@ -32,7 +32,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
-import com.store_me.storeme.ui.signup.NextButton
+import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
@@ -207,10 +207,8 @@ fun AuthenticationSection(onFinish: () -> Unit) {
         }
 
         item {
-            NextButton(
-                buttonText = "확인",
-                modifier = Modifier
-                    .fillMaxWidth()
+            DefaultButton(
+                buttonText = "확인"
             ) {
                 phoneNumberViewModel.confirmCode()
             }

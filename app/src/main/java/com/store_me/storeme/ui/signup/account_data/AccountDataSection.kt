@@ -33,7 +33,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
-import com.store_me.storeme.ui.signup.NextButton
+import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
@@ -283,7 +283,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
         item { Spacer(modifier = Modifier.height(48.dp)) }
 
         item {
-            NextButton(
+            DefaultButton(
                 buttonText = "다음",
                 enabled = accountIdDuplicate == false && isPasswordMatching && !isPwError.value && accountPw.isNotEmpty()
             ) {

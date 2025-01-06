@@ -27,7 +27,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
-import com.store_me.storeme.ui.signup.NextButton
+import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
@@ -132,10 +132,8 @@ fun PhoneNumberSection(onFinish: () -> Unit) {
         }
 
         item {
-            NextButton(
-                buttonText = "인증 요청",
-                modifier = Modifier
-                    .fillMaxWidth()
+            DefaultButton(
+                buttonText = "인증 요청"
             ) {
                 if(PhoneNumberUtils().isValidPhoneNumber(phoneNumber = phoneNumber)){
                     isError.value = false

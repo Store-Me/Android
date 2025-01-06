@@ -65,6 +65,8 @@ fun DefaultButton(
         contentColor = Color.White,
         containerColor = Color.Black
     ),
+    diffValue: Int = 3,
+    fontWeight: FontWeight = FontWeight.ExtraBold,
     onClick: () -> Unit
 ) {
     Button(
@@ -77,13 +79,20 @@ fun DefaultButton(
     ) {
         Text(
             text = buttonText,
-            style = storeMeTextStyle(FontWeight.ExtraBold, 3),
+            style = storeMeTextStyle(fontWeight, diffValue),
             modifier = Modifier
                 .padding(vertical = 8.dp)
         )
     }
 }
 
+/**
+ * Text + Icon Default Button
+ * @param leftIconResource Text 기준 왼쪽 Icon Resource
+ * @param rightIconResource Text 기준 오른쪽 Icon Resource
+ * @param leftIconTint leftIcon Color
+ * @param rightIconTint RightIcon Color
+ */
 @Composable
 fun DefaultButton(
     buttonText: String,
@@ -93,6 +102,8 @@ fun DefaultButton(
         contentColor = Color.White,
         containerColor = Color.Black
     ),
+    diffValue: Int = 3,
+    fontWeight: FontWeight = FontWeight.ExtraBold,
     leftIconResource: Int? = null,
     rightIconResource: Int? = null,
     leftIconTint: Color = Color.Unspecified,
@@ -101,7 +112,7 @@ fun DefaultButton(
 ) {
     val density = LocalDensity.current
 
-    val iconSize = SizeUtils.textSizeToDp(density, 3)
+    val iconSize = SizeUtils.textSizeToDp(density, diffValue, 4)
 
     Button(
         onClick = { onClick() },
@@ -125,7 +136,7 @@ fun DefaultButton(
 
         Text(
             text = buttonText,
-            style = storeMeTextStyle(FontWeight.ExtraBold, 3),
+            style = storeMeTextStyle(fontWeight, diffValue),
             modifier = Modifier
                 .padding(vertical = 8.dp)
         )

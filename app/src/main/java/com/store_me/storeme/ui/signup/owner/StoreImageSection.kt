@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.component.CircleBorderWithIcon
-import com.store_me.storeme.ui.signup.NextButton
+import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.StoreImageBoxColor
@@ -135,7 +135,7 @@ fun StoreImageSection(onFinish: () -> Unit) {
 
         Spacer(modifier = Modifier.height(48.dp))
 
-        NextButton(
+        DefaultButton(
             buttonText = "다음",
             enabled = !isExceedingLimit
         ) {

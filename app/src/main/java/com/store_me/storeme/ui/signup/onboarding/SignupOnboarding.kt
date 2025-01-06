@@ -29,7 +29,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.data.Auth
-import com.store_me.storeme.ui.signup.NextButton
+import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.theme.OnboardingSelectedIndicatorColor
 import com.store_me.storeme.ui.theme.OnboardingUnselectedIndicatorColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
@@ -116,7 +116,7 @@ fun SignupOnboardingSection(onFinish: () -> Unit) {
 
             Spacer(modifier = Modifier.width(48.dp))
 
-            NextButton(
+            DefaultButton(
                 buttonText = "다음"
             ) {
                 if(pagerState.currentPage == onboardingTitleList.lastIndex)

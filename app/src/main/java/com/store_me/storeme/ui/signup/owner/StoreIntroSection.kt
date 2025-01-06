@@ -18,9 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.TextLengthRow
-import com.store_me.storeme.ui.signup.NextButton
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
@@ -110,7 +110,7 @@ fun StoreIntroSection(onFinish: () -> Unit) {
             Column(
                 modifier = Modifier.padding(horizontal = 20.dp)
             ) {
-                NextButton(buttonText = "다음") {
+                DefaultButton(buttonText = "다음") {
                     onFinish()
                 }
             }

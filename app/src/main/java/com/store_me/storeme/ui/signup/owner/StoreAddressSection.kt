@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.store_me.storeme.R
 import com.store_me.storeme.data.response.DaumPostcodeResponse
-import com.store_me.storeme.ui.signup.NextButton
+import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.DeleteTextColor
 import com.store_me.storeme.ui.theme.DisabledColor
@@ -359,7 +359,7 @@ fun AddressSection(onFinish: () -> Unit) {
                         }
 
                         item {
-                            NextButton(
+                            DefaultButton(
                                 buttonText = "다음",
                                 enabled = storeLocationAddress.isNotEmpty() && storeLocationCode != null
                             ) {
