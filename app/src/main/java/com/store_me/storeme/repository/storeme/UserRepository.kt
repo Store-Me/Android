@@ -3,7 +3,7 @@ package com.store_me.storeme.repository.storeme
 import android.content.Context
 import android.util.Log
 import com.google.gson.Gson
-import com.store_me.storeme.data.check_duplicate.CheckAccountIdDuplicate
+import com.store_me.storeme.data.model.check_duplicate.CheckAccountIdDuplicate
 import com.store_me.storeme.data.response.StoreMeResponse
 import com.store_me.storeme.data.request.AppLoginRequest
 import com.store_me.storeme.data.request.KakaoLoginRequest

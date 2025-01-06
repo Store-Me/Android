@@ -1,7 +1,7 @@
 package com.store_me.storeme.network.storeme
 
-import com.store_me.storeme.data.check_duplicate.CheckAccountIdDuplicate
-import com.store_me.storeme.data.check_duplicate.CheckAccountIdDuplicateResponse
+import com.store_me.storeme.data.model.check_duplicate.CheckAccountIdDuplicate
+import com.store_me.storeme.data.response.CheckAccountIdDuplicateResponse
 import com.store_me.storeme.data.response.StoreMeResponse
 import com.store_me.storeme.data.request.AppLoginRequest
 import com.store_me.storeme.data.request.KakaoLoginRequest
