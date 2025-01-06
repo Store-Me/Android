@@ -1,9 +1,10 @@
-package com.store_me.storeme.ui.signup
+package com.store_me.storeme.ui.signup.phone_authentication
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.store_me.storeme.data.model.verification.ConfirmCode
 import com.store_me.storeme.repository.storeme.UserRepository
+import com.store_me.storeme.ui.component.filterNonNumeric
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,7 +28,7 @@ class PhoneNumberViewModel @Inject constructor(
     val verificationSuccess: StateFlow<Boolean?> = _verificationSuccess
 
     fun updatePhoneNumber(newPhoneNumber: String) {
-        _phoneNumber.value = newPhoneNumber
+        _phoneNumber.value = filterNonNumeric(newPhoneNumber)
     }
 
     fun updateVerificationCode(newVerificationCode: String) {
