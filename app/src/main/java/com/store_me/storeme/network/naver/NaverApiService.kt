@@ -12,6 +12,39 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
 
+interface NaverGeocodingApiService {
+    @Headers("X-NCP-APIGW-API-KEY-ID: ${BuildConfig.NAVER_CLIENT_ID}", "X-NCP-APIGW-API-KEY: ${BuildConfig.NAVER_CLIENT_SECRET}")
+    @GET("geocode")
+    suspend fun geocode(
+        @Query("query") query: String,
+    ): Response<GeocodeResponse>
+
+    @Module
+    @InstallIn(SingletonComponent::class)
+    object NetworkModule {
+        @Provides
+        fun create(): NaverGeocodingApiService {
+            val retrofit = Retrofit.Builder()
+                .baseUrl("https://naveropenapi.apigw.ntruss.com/map-geocode/v2/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+
+            return retrofit.create(NaverGeocodingApiService::class.java)
+        }
+    }
+
+    data class GeocodeResponse(
+        val status: String,
+        val addresses: List<Address>
+    )
+
+    data class Address(
+        val roadAddress: String, //도로명 주소
+        val x: String, //longitude
+        val y: String  //latitude
+    )
+}
+
 interface NaverApiService {
     @Headers("X-NCP-APIGW-API-KEY-ID: ${BuildConfig.NAVER_CLIENT_ID}", "X-NCP-APIGW-API-KEY: ${BuildConfig.NAVER_CLIENT_SECRET}")
     @GET("gc")
