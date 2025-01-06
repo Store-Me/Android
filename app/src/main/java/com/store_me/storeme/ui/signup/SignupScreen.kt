@@ -2,113 +2,107 @@
 
 package com.store_me.storeme.ui.signup
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
+import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.Auth.LoginType
-import com.store_me.storeme.ui.component.DefaultHorizontalDivider
-import com.store_me.storeme.ui.theme.DeleteTextColor
-import com.store_me.storeme.ui.theme.ErrorTextFieldColor
-import com.store_me.storeme.ui.theme.HighlightTextFieldColor
-import com.store_me.storeme.ui.theme.UndefinedTextColor
+import com.store_me.storeme.data.model.signup.CustomerSignupApp
+import com.store_me.storeme.data.model.signup.CustomerSignupKakao
+import com.store_me.storeme.data.model.signup.OwnerSignupApp
+import com.store_me.storeme.data.model.signup.OwnerSignupKakao
+import com.store_me.storeme.ui.component.StoreMeSnackbar
+import com.store_me.storeme.ui.component.addFocusCleaner
+import com.store_me.storeme.ui.signup.account_data.AccountDataSection
+import com.store_me.storeme.ui.signup.account_data.AccountDataViewModel
+import com.store_me.storeme.ui.signup.account_data.AccountTypeSection
+import com.store_me.storeme.ui.signup.customer.CustomerDataViewModel
+import com.store_me.storeme.ui.signup.customer.CustomerNickNameSection
+import com.store_me.storeme.ui.signup.customer.CustomerProfileImageSection
+import com.store_me.storeme.ui.signup.phone_authentication.PhoneNumberSection
+import com.store_me.storeme.ui.signup.phone_authentication.PhoneNumberViewModel
+import com.store_me.storeme.ui.signup.onboarding.SignupOnboardingSection
+import com.store_me.storeme.ui.signup.onboarding.SignupOnboardingViewModel
+import com.store_me.storeme.ui.signup.owner.AddressSection
+import com.store_me.storeme.ui.signup.owner.StoreCategorySection
+import com.store_me.storeme.ui.signup.owner.StoreCustomCategorySection
+import com.store_me.storeme.ui.signup.owner.StoreDataViewModel
+import com.store_me.storeme.ui.signup.owner.StoreImageSection
+import com.store_me.storeme.ui.signup.owner.StoreIntroSection
+import com.store_me.storeme.ui.signup.owner.StoreNameSection
+import com.store_me.storeme.ui.signup.owner.StoreNumberSection
+import com.store_me.storeme.ui.signup.owner.StoreProfileImageSection
+import com.store_me.storeme.ui.signup.phone_authentication.AuthenticationSection
+import com.store_me.storeme.ui.signup.terms.OptionalTerms
+import com.store_me.storeme.ui.signup.terms.TermsSection
+import com.store_me.storeme.ui.signup.terms.TermsViewModel
+import com.store_me.storeme.ui.theme.SignupTextBoxColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.ui.theme.textClearIconColor
-import com.store_me.storeme.utils.PhoneNumberUtils
-import com.store_me.storeme.utils.PhoneNumberVisualTransformation
-import com.store_me.storeme.utils.SizeUtils
-
-val LocalSignupViewModel = staticCompositionLocalOf<SignupViewModel> {
-    error("No LocalSignupViewModel provided")
-}
-
-val LocalTermsViewModel = staticCompositionLocalOf<TermsViewModel> {
-    error("No LocalTermsVieWModel Provided")
-}
-
-val LocalPhoneNumberViewModel = staticCompositionLocalOf<PhoneNumberViewModel> {
-    error("No PhoneNumberViewModel Provided")
-}
-
-val LocalAccountDataViewModel = staticCompositionLocalOf<AccountDataViewModel> {
-    error("No AccountDataViewModel Provided")
-}
+import com.store_me.storeme.utils.composition_locals.signup.LocalAccountDataViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalCustomerDataViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalPhoneNumberViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalSignupOnboardingViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalSignupViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalSnackbarHostState
+import com.store_me.storeme.utils.composition_locals.signup.LocalStoreDataViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalTermsViewModel
 
 @Composable
 fun SignupScreen(
     navController: NavController,
     loginType: LoginType,
+    additionalData: String = "",
     signupViewModel: SignupViewModel = hiltViewModel(),
     phoneNumberViewModel: PhoneNumberViewModel = hiltViewModel(),
     termsViewModel: TermsViewModel = viewModel(),
-    accountDataViewModel: AccountDataViewModel = hiltViewModel()
+    signupOnboardingViewModel: SignupOnboardingViewModel = viewModel(),
+    accountDataViewModel: AccountDataViewModel = hiltViewModel(),
+    storeDataViewModel: StoreDataViewModel = hiltViewModel(),
+    customerDataViewModel: CustomerDataViewModel = viewModel()
 ) {
-    BackHandler {
-        signupViewModel.moveToPreviousProgress()
-    }
 
     LaunchedEffect(loginType) {
         signupViewModel.setLoginType(loginType)
@@ -116,29 +110,50 @@ fun SignupScreen(
 
     val signupState by signupViewModel.signupState.collectAsState()
 
-    val context = LocalContext.current
+    val accountType by signupViewModel.accountType.collectAsState()
 
-    // 갤러리에서 이미지 선택 런처 설정
-    /*val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        uri?.let {
-            // ViewModel에 URI 저장
-            signupViewModel.setImageUri(it)
-            signupViewModel.signup()
+    val focusManager = LocalFocusManager.current
+
+    fun onClickBackButton() {
+        if(signupState is SignupState.Signup){
+            if((signupState as SignupState.Signup).progress == SignupProgress.TERMS) {
+                navController.popBackStack()
+            } else {
+                signupViewModel.moveToPreviousProgress()
+            }
+        } else {
+            signupViewModel.moveToPreviousProgress()
         }
-    }*/
+    }
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    fun moveToNextProgress() {
+        signupViewModel.moveToNextProgress()
+    }
+
+    BackHandler {
+        onClickBackButton()
+    }
 
     CompositionLocalProvider(
+        LocalSnackbarHostState provides snackbarHostState,
         LocalSignupViewModel provides signupViewModel,
         LocalTermsViewModel provides termsViewModel,
         LocalPhoneNumberViewModel provides phoneNumberViewModel,
-        LocalAccountDataViewModel provides accountDataViewModel
+        LocalAccountDataViewModel provides accountDataViewModel,
+        LocalSignupOnboardingViewModel provides signupOnboardingViewModel,
+        LocalStoreDataViewModel provides storeDataViewModel,
+        LocalCustomerDataViewModel provides customerDataViewModel
     ) {
         Scaffold(
+            snackbarHost = { SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { StoreMeSnackbar(snackbarData = it) }
+            ) },
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .addFocusCleaner(focusManager),
             containerColor = White,
             topBar = {
                 TopAppBar(
@@ -162,7 +177,7 @@ fun SignupScreen(
                                 )
                             },
                             onClick = {
-                                Log.d("Icon Click", "Clicked")
+                                onClickBackButton()
                             }
                         )
                     },
@@ -193,37 +208,187 @@ fun SignupScreen(
                                 when(targetState.progress) {
                                     SignupProgress.TERMS -> {
                                         TermsSection {
-                                            signupViewModel.moveToNextProgress()
+                                            moveToNextProgress()
                                         }
                                     }
                                     SignupProgress.NUMBER -> {
                                         PhoneNumberSection {
-                                            signupViewModel.moveToNextProgress()
+                                            moveToNextProgress()
                                         }
                                     }
                                     SignupProgress.CERTIFICATION -> {
-                                        CertificationSection {
-                                            signupViewModel.moveToNextProgress()
+                                        AuthenticationSection {
+                                            moveToNextProgress()
                                         }
                                     }
                                     SignupProgress.ACCOUNT_DATA -> {
                                         AccountDataSection {
-
+                                            moveToNextProgress()
                                         }
                                     }
                                     SignupProgress.ACCOUNT_TYPE -> {
-
+                                        AccountTypeSection {
+                                            signupViewModel.setAccountType(it)
+                                            moveToNextProgress()
+                                        }
                                     }
                                 }
                             }
                             is SignupState.Onboarding -> {
-
+                                SignupOnboardingSection {
+                                    moveToNextProgress()
+                                }
                             }
                             is SignupState.Customer -> {
+                                when(targetState.progress) {
+                                    CustomerProgress.NICKNAME -> {
+                                        CustomerNickNameSection {
+                                            moveToNextProgress()
+                                        }
+                                    }
+                                    CustomerProgress.PROFILE_IMAGE -> {
+                                        CustomerProfileImageSection {
+                                            moveToNextProgress()
+                                        }
+                                    }
+                                    CustomerProgress.FINISH -> {
 
+                                    }
+                                }
                             }
                             is SignupState.Owner -> {
+                                when(targetState.progress) {
+                                    OwnerProgress.STORE_NAME -> {
+                                        StoreNameSection {
+                                            moveToNextProgress()
+                                        }
+                                    }
+                                    OwnerProgress.CATEGORY -> {
+                                        StoreCategorySection {
+                                            moveToNextProgress()
+                                        }
+                                    }
+                                    OwnerProgress.CUSTOM_CATEGORY -> {
+                                        StoreCustomCategorySection {
+                                            moveToNextProgress()
+                                        }
+                                    }
+                                    OwnerProgress.ADDRESS -> {
+                                        AddressSection {
+                                            moveToNextProgress()
+                                        }
+                                    }
+                                    OwnerProgress.STORE_PROFILE_IMAGE -> {
+                                        StoreProfileImageSection {
+                                            moveToNextProgress()
+                                        }
+                                    }
+                                    OwnerProgress.STORE_IMAGE -> {
+                                        StoreImageSection {
+                                            moveToNextProgress()
+                                        }
+                                    }
+                                    OwnerProgress.INTRO -> {
+                                        StoreIntroSection {
+                                            moveToNextProgress()
+                                        }
+                                    }
+                                    OwnerProgress.NUMBER -> {
+                                        StoreNumberSection {
+                                            moveToNextProgress()
+                                        }
+                                    }
+                                    OwnerProgress.FINISH -> {
+                                        FinishSection {
+                                            when {
+                                                accountType == Auth.AccountType.OWNER && signupViewModel.loginType.value == LoginType.KAKAO-> {
+                                                    signupViewModel.ownerSignupKakao(
+                                                        ownerSignupKakao = OwnerSignupKakao(
+                                                            kakaoId = additionalData,
+                                                            phoneNumber = phoneNumberViewModel.phoneNumber.value,
+                                                            privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
+                                                            marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
+                                                            verificationCode = phoneNumberViewModel.verificationCode.value,
 
+                                                            storeName = storeDataViewModel.storeName.value,
+                                                            storeDescription = "",
+                                                            storeCategory = storeDataViewModel.storeCategory.value!!.name,
+                                                            storeDetailCategory = storeDataViewModel.storeDetailCategory.value,
+                                                            storeLocation = storeDataViewModel.storeLocation.value,
+                                                            storeLocationCode = storeDataViewModel.storeLocationCode.value!!,
+                                                            storeLocationDetail = storeDataViewModel.storeLocationDetail.value,
+                                                            storeLat = storeDataViewModel.storeLatLng.value?.latitude,
+                                                            storeLng = storeDataViewModel.storeLatLng.value?.longitude,
+                                                            storePhoneNumber = storeDataViewModel.storeNumber.value,
+                                                            storeIntro = storeDataViewModel.storeIntro.value
+                                                        ),
+                                                        storeProfileImage = storeDataViewModel.storeProfileImage.value,
+                                                        storeImages = storeDataViewModel.storeImages.value
+                                                    )
+                                                }
+
+                                                accountType == Auth.AccountType.OWNER && loginType == LoginType.APP-> {
+                                                    signupViewModel.ownerSignupApp(
+                                                        ownerSignupApp = OwnerSignupApp(
+                                                            accountId = accountDataViewModel.accountId.value,
+                                                            password = accountDataViewModel.accountPw.value,
+                                                            phoneNumber = phoneNumberViewModel.phoneNumber.value,
+                                                            privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
+                                                            marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
+                                                            verificationCode = phoneNumberViewModel.verificationCode.value,
+
+                                                            storeName = storeDataViewModel.storeName.value,
+                                                            storeDescription = "",
+                                                            storeCategory = storeDataViewModel.storeCategory.value!!.name,
+                                                            storeDetailCategory = storeDataViewModel.storeDetailCategory.value,
+                                                            storeLocation = storeDataViewModel.storeLocation.value,
+                                                            storeLocationCode = storeDataViewModel.storeLocationCode.value!!,
+                                                            storeLocationDetail = storeDataViewModel.storeLocationDetail.value,
+                                                            storeLat = storeDataViewModel.storeLatLng.value?.latitude,
+                                                            storeLng = storeDataViewModel.storeLatLng.value?.longitude,
+                                                            storePhoneNumber = storeDataViewModel.storeNumber.value,
+                                                            storeIntro = storeDataViewModel.storeIntro.value
+                                                        ),
+                                                        storeProfileImage = storeDataViewModel.storeProfileImage.value,
+                                                        storeImages = storeDataViewModel.storeImages.value
+                                                    )
+                                                }
+
+                                                accountType == Auth.AccountType.CUSTOMER && loginType == LoginType.KAKAO-> {
+                                                    signupViewModel.customerSignupKakao(
+                                                        customerSignupKakao = CustomerSignupKakao(
+                                                            kakaoId = additionalData,
+                                                            phoneNumber = phoneNumberViewModel.phoneNumber.value,
+                                                            privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
+                                                            marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
+                                                            verificationCode = phoneNumberViewModel.verificationCode.value,
+
+                                                            nickname = customerDataViewModel.nickName.value
+                                                        ),
+                                                        profileImage = customerDataViewModel.profileImage.value
+                                                    )
+                                                }
+
+                                                accountType == Auth.AccountType.CUSTOMER && loginType == LoginType.APP-> {
+                                                    signupViewModel.customerSignupApp(
+                                                        customerSignupApp = CustomerSignupApp(
+                                                            accountId = accountDataViewModel.accountId.value,
+                                                            password = accountDataViewModel.accountPw.value,
+                                                            phoneNumber = phoneNumberViewModel.phoneNumber.value,
+                                                            privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
+                                                            marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
+                                                            verificationCode = phoneNumberViewModel.verificationCode.value,
+
+                                                            nickname = customerDataViewModel.nickName.value
+                                                        ),
+                                                        profileImage = customerDataViewModel.profileImage.value
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                }
                             }
                         }
                     }
@@ -234,467 +399,14 @@ fun SignupScreen(
 }
 
 @Composable
-fun AccountDataSection(onClick: () -> Unit) {
-    val accountDataViewModel = LocalAccountDataViewModel.current
-
-    LazyColumn(
-
-    ) {
-        item {
-            SignupTitleText(title = "아이디와 비밀번호를\n 설정해주세요.")
-        }
-
-        item { Spacer(modifier = Modifier.height(36.dp)) }
-    }
-}
-
-@Composable
-fun CertificationSection(onClick: () -> Unit) {
-    val phoneNumberViewModel = LocalPhoneNumberViewModel.current
-    val signupViewModel = LocalSignupViewModel.current
-
-    val phoneNumber by phoneNumberViewModel.phoneNumber.collectAsState()
-    val verificationCode by phoneNumberViewModel.verificationCode.collectAsState()
-
-    val verificationSuccess by phoneNumberViewModel.verificationSuccess.collectAsState()
-
-    val isError = remember { mutableStateOf(false) }
-
-    LaunchedEffect(verificationSuccess) {
-        when(verificationSuccess){
-            true -> {
-                phoneNumberViewModel.clearVerificationSuccess()
-                onClick()
-            }
-            false -> {
-                isError.value = true
-            }
-            null -> {
-
-            }
-        }
-    }
-
-    LazyColumn(
-
-    ) {
-        item {
-            SignupTitleText(title = "휴대폰으로 발송된\n인증 번호를 입력해주세요.")
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(36.dp))
-        }
-
-        item {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Row(
-                ) {
-                    Text(
-                        text = PhoneNumberUtils().phoneNumberAddDashes(phoneNumber),
-                        style = storeMeTextStyle(FontWeight.ExtraBold, 2, isFixedSize = true)
-                    )
-
-                    Text(
-                        text = "로 인증번호를 보냈어요.",
-                        style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true)
-                    )
-                }
-                Text(
-                    text = "확인 후 인증번호를 입력해주세요.",
-                    style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true)
-                )
-            }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(26.dp))
-        }
-
-        item {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .clickable {
-                        signupViewModel.moveToPreviousProgress()
-                    }
-                    .padding(vertical = 10.dp),
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "휴대폰 번호 변경 / 다시 보내기",
-                    style = storeMeTextStyle(FontWeight.ExtraBold, 2, isFixedSize = true),
-                    color = HighlightTextFieldColor
-                )
-                
-                Icon(
-                    painterResource(id = R.drawable.ic_arrow_right),
-                    contentDescription = "화살표",
-                    modifier = Modifier
-                        .size(16.dp),
-                    tint = HighlightTextFieldColor
-                )
-            }
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(26.dp))
-        }
-
-        item {
-            Text(
-                text = "인증 번호",
-                style = storeMeTextStyle(FontWeight.ExtraBold, 2, true),
-                color = Black,
-                modifier = Modifier
-                    .padding(start = 20.dp)
-            )
-        }
-
-        item { Spacer(modifier = Modifier.height(8.dp)) }
-
-        item {
-            OutlinedTextField(
-                value = verificationCode,
-                onValueChange = { phoneNumberViewModel.updateVerificationCode(it) },
-                textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-                trailingIcon = {
-                    if(verificationCode.isNotEmpty()){
-                        IconButton(onClick = { phoneNumberViewModel.updateVerificationCode("") }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_text_clear),
-                                contentDescription = "삭제",
-                                modifier = Modifier
-                                    .size(24.dp),
-                                tint = Unspecified
-                            )
-                        }
-                    }
-                },
-                placeholder = {
-                    Text(
-                        text = "인증코드를 입력해주세요.",
-                        style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
-                        color = UndefinedTextColor
-                    )
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = HighlightTextFieldColor,
-                    errorBorderColor = ErrorTextFieldColor,
-                    errorLabelColor = ErrorTextFieldColor,
-                ),
-                isError = isError.value,
-                supportingText = {
-                    if(isError.value){
-                        Text(
-                            text = "인증번호가 일치하지 않습니다.",
-                            style = storeMeTextStyle(FontWeight.Normal, 0, isFixedSize = true),
-                            color = ErrorTextFieldColor
-                        )
-                    }
-                }
-            )
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(48.dp))
-        }
-
-        item {
-            NextButton(
-                buttonText = "확인",
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth()
-            ) {
-                //phoneNumberViewModel.confirmCode()
-                onClick() //이거 지워야됨
-            }
-        }
-    }
-}
-
-@Composable
-fun PhoneNumberSection(onClick: () -> Unit) {
-    val phoneNumberViewModel = LocalPhoneNumberViewModel.current
-
-    val phoneNumber by phoneNumberViewModel.phoneNumber.collectAsState()
-    val smsSentSuccess by phoneNumberViewModel.smsSentSuccess.collectAsState()
-
-    val isError = remember { mutableStateOf(false) }
-
-    LaunchedEffect(smsSentSuccess) {
-        if(smsSentSuccess) {
-            phoneNumberViewModel.clearSmsSentSuccess()
-            onClick()
-        }
-    }
-
-    LazyColumn(
-
-    ) {
-        item {
-            SignupTitleText(title = "본인 인증을 위해\n휴대폰 번호를 입력해주세요.")
-        }
-
-        item { Spacer(modifier = Modifier.height(36.dp)) }
-
-        item {
-            Text(
-                text = "휴대폰 번호",
-                style = storeMeTextStyle(FontWeight.ExtraBold, 2, true),
-                color = Black,
-                modifier = Modifier
-                    .padding(start = 20.dp)
-            )
-        }
-
-        item { Spacer(modifier = Modifier.height(8.dp)) }
-
-        item {
-            OutlinedTextField(
-                value = phoneNumber,
-                onValueChange = { if(it.length < 12) phoneNumberViewModel.updatePhoneNumber(it) },
-                textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
-                trailingIcon = {
-                    if(phoneNumber.isNotEmpty()){
-                        IconButton(onClick = { phoneNumberViewModel.updatePhoneNumber("") }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_text_clear),
-                                contentDescription = "삭제",
-                                modifier = Modifier
-                                    .size(24.dp),
-                                tint = Unspecified
-                            )
-                        }
-                    }
-                },
-                placeholder = {
-                    Text(
-                        text = "휴대폰 번호를 입력하세요",
-                        style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
-                        color = UndefinedTextColor
-                    )
-                },
-                visualTransformation = PhoneNumberVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = HighlightTextFieldColor,
-                    errorBorderColor = ErrorTextFieldColor,
-                    errorLabelColor = ErrorTextFieldColor,
-                ),
-                isError = isError.value,
-                supportingText = {
-                    if(isError.value){
-                        Text(
-                            text = "휴대폰 번호 형식에 맞지 않습니다.",
-                            style = storeMeTextStyle(FontWeight.Normal, 0, isFixedSize = true),
-                            color = ErrorTextFieldColor
-                        )
-                    }
-                }
-            )
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(48.dp))
-        }
-
-        item {
-            NextButton(
-                buttonText = "인증 요청",
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth()
-            ) {
-                if(PhoneNumberUtils().isValidPhoneNumber(phoneNumber = phoneNumber)){
-                    isError.value = false
-
-                    //phoneNumberViewModel.sendSmsMessage(phoneNumber = phoneNumber)
-                    onClick() //이거 지워야됨
-                } else {
-                    isError.value = true
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun TermsSection(onClick: () -> Unit) {
-    val termsViewModel = LocalTermsViewModel.current
-
-    val requiredTerms by termsViewModel.requiredTermsState.collectAsState()
-    val optionalTerms by termsViewModel.optionalTermsState.collectAsState()
-
-    val isAllTermsAgreed by termsViewModel.isAllTermsAgreed.collectAsState()
-
-    LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(36.dp)
-    ) {
-
-        item {
-            SignupTitleText(title = "서비스 이용을 위한\n약관에 동의해주세요.")
-        }
-
-        item { DefaultHorizontalDivider() }
-
-        //전체 동의
-        item {
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "전체 동의",
-                    style = storeMeTextStyle(FontWeight.ExtraBold, 2, isFixedSize = true),
-                    color = Black
-                )
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Icon(
-                    painter = painterResource(id = if(isAllTermsAgreed) R.drawable.ic_check_on else R.drawable.ic_check_off),
-                    contentDescription = "체크",
-                    tint = if(isAllTermsAgreed) Black else DeleteTextColor,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable(
-                            onClick = {
-                                if (isAllTermsAgreed) {
-                                    termsViewModel.updateAllTerms(false)
-                                } else {
-                                    termsViewModel.updateAllTerms(true)
-                                }
-                            },
-                            indication = null,
-                            interactionSource = null
-                        )
-                )
-
-            }
-        }
-
-        item { TermItem("서비스 이용 약관 (필수)", stringResource(id = R.string.example_terms), requiredTerms[RequiredTerms.USE] ?: false) {
-            termsViewModel.updateRequiredTerms(RequiredTerms.USE)
-        } }
-
-        item { TermItem("개인정보 이용 약관 (필수)", stringResource(id = R.string.example_terms), requiredTerms[RequiredTerms.PRIVACY] ?: false) {
-            termsViewModel.updateRequiredTerms(RequiredTerms.PRIVACY)
-        } }
-
-        item { TermItem("마케팅 활용 정보 동의 약관 (선택)", stringResource(id = R.string.example_terms), optionalTerms[OptionalTerms.MARKETING] ?: false) {
-            termsViewModel.updateOptionalTerms(OptionalTerms.MARKETING)
-        } }
-
-        item {
-            NextButton(
-                buttonText = "다음",
-                modifier = Modifier
-                    .padding(top = 48.dp)
-                    .padding(horizontal = 20.dp),
-                enabled = requiredTerms.all { it.value }
-            ) {
-                onClick()
-            }
-        }
-    }
-}
-
-@Composable
-fun SignupTitleText(title: String) {
+fun SignupTitleText(title: String, modifier: Modifier = Modifier) {
     Text(
         text = title,
         style = storeMeTextStyle(FontWeight.ExtraBold, 6, isFixedSize = true),
         color = Black,
-        modifier = Modifier
-            .padding(horizontal = 20.dp)
+        modifier = modifier
             .padding(top = 20.dp)
     )
-}
-
-@Composable
-fun TermItem(title: String, content: String, isChecked: Boolean, onClick: () -> Unit) {
-    val isFolded = remember { mutableStateOf(true) }
-
-    fun onClickTitle() {
-        isFolded.value = !isFolded.value
-    }
-
-    Column(
-        modifier = Modifier
-            .padding(horizontal = 20.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = title,
-                style = storeMeTextStyle(FontWeight.ExtraBold, 2, isFixedSize = true),
-                color = Black,
-                modifier = Modifier
-                    .clickable(
-                        onClick = { onClickTitle() }
-                    )
-            )
-
-            Spacer(modifier = Modifier.width(4.dp))
-
-            Icon(
-                painter = painterResource(id = if(isFolded.value) R.drawable.ic_arrow_right else R.drawable.ic_arrow_down),
-                contentDescription = "화살표",
-                modifier = Modifier
-                    .size(16.dp)
-                    .clickable(
-                        onClick = { onClickTitle() },
-                        indication = ripple(bounded = false),
-                        interactionSource = remember { MutableInteractionSource() }
-                    )
-            )
-            
-            Spacer(modifier = Modifier.weight(1f))
-
-            Icon(
-                painter = painterResource(id = if(isChecked) R.drawable.ic_check_on else R.drawable.ic_check_off),
-                contentDescription = "체크",
-                tint = if(isChecked) Black else DeleteTextColor,
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickable(
-                        onClick = {
-                            onClick()
-                            isFolded.value = true
-                        },
-                        indication = null,
-                        interactionSource = null
-                    )
-            )
-        }
-
-        AnimatedVisibility(visible = !isFolded.value) {
-            Text(
-                text = content,
-                style = storeMeTextStyle(FontWeight.Normal, 0, isFixedSize = true),
-                modifier = Modifier
-                    .padding(top = 4.dp, end = 24.dp)
-            )
-        }
-    }
 }
 
 @Composable
@@ -715,6 +427,29 @@ fun NextButton(buttonText: String, modifier: Modifier = Modifier, enabled: Boole
             style = storeMeTextStyle(FontWeight.ExtraBold, 3, isFixedSize = true),
             modifier = Modifier
                 .padding(vertical = 8.dp)
+        )
+    }
+}
+
+@Composable
+fun GuidTextBoxItem(title: String, content: String) {
+    Column(
+        modifier = Modifier
+            .background(color = SignupTextBoxColor, shape = RoundedCornerShape(14.dp))
+            .padding(horizontal = 24.dp, vertical = 20.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = title,
+            style = storeMeTextStyle(FontWeight.ExtraBold, 1, isFixedSize = true),
+            color = Black
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = content,
+            style = storeMeTextStyle(FontWeight.Normal, -1, isFixedSize = true)
         )
     }
 }

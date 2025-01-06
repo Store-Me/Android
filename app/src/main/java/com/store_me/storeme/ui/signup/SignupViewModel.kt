@@ -1,13 +1,19 @@
 package com.store_me.storeme.ui.signup
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.store_me.storeme.data.Auth.AccountType
 import com.store_me.storeme.data.Auth.LoginType
 import com.store_me.storeme.data.model.signup.CustomerSignupApp
+import com.store_me.storeme.data.model.signup.CustomerSignupKakao
+import com.store_me.storeme.data.model.signup.OwnerSignupApp
+import com.store_me.storeme.data.model.signup.OwnerSignupKakao
 import com.store_me.storeme.repository.storeme.UserRepository
+import com.store_me.storeme.utils.FileUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -60,6 +66,7 @@ sealed class SignupState: Comparable<SignupState> {
 
 @HiltViewModel
 class SignupViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val userRepository: UserRepository
 ): ViewModel() {
     //계정 타입
@@ -75,6 +82,10 @@ class SignupViewModel @Inject constructor(
 
     fun setLoginType(loginType: LoginType) {
         _loginType.value = loginType
+    }
+
+    fun setAccountType(accountType: AccountType) {
+        _accountType.value = accountType
     }
 
     fun moveToNextProgress() {
@@ -234,26 +245,105 @@ class SignupViewModel @Inject constructor(
         _signupState.value = SignupState.Owner(nextProgress)
     }
 
-    private val _profileImage = MutableStateFlow<Uri?>(null)
-    val profileImage: StateFlow<Uri?> = _profileImage
+    fun customerSignupApp(customerSignupApp: CustomerSignupApp, profileImage: Uri?) {
+        val profileImageFile =
+            if(profileImage != null)
+                FileUtils.createMultipart(context, profileImage, "profileImageFile")
+            else
+                null
 
+        if(profileImage != null && profileImageFile == null) {
+            onErrorImageFile()
 
-    fun setImageUri(uri: Uri) {
-        _profileImage.value =  uri
-    }
+            return
+        }
 
-    fun signup() {
         viewModelScope.launch {
-            val result = userRepository.customerSignupApp(customerSignupApp = CustomerSignupApp(
-                accountId = "joonbo97",
-                password = "tlawnsqh123",
-                phoneNumber = "01071649416",
-                nickname= "딕네임",
-                privacyConsent = true,
-                marketingConsent = true,
-                verificationCode = "iesDfY"),
-                profileImage = profileImage.value
+            userRepository.customerSignupApp(
+                customerSignupApp = customerSignupApp,
+                profileImage = profileImageFile
             )
         }
+    }
+
+    fun customerSignupKakao(customerSignupKakao: CustomerSignupKakao, profileImage: Uri?) {
+        val profileImageFile =
+            if(profileImage != null)
+                FileUtils.createMultipart(context, profileImage, "profileImageFile")
+            else
+                null
+
+        if(profileImage != null && profileImageFile == null) {
+            onErrorImageFile()
+
+            return
+        }
+
+        viewModelScope.launch {
+            userRepository.customerSignupKakao(
+                customerSignupKakao = customerSignupKakao,
+                profileImage = profileImageFile
+            )
+        }
+    }
+
+    fun ownerSignupApp(ownerSignupApp: OwnerSignupApp, storeProfileImage: Uri?, storeImages: List<Uri>) {
+        val storeProfileImageFile =
+            if(storeProfileImage != null)
+                FileUtils.createMultipart(context, storeProfileImage, "storeProfileImageFile")
+            else
+                null
+
+        val storeImageFiles =
+            if(storeImages.isNotEmpty())
+                FileUtils.createMultipart(context, storeImages, "storeImageFileList")
+            else
+                null
+
+        if((storeProfileImage != null && storeProfileImageFile == null) || (storeImages.isNotEmpty() && storeImageFiles == null)) {
+            onErrorImageFile()
+
+            return
+        }
+
+        viewModelScope.launch {
+            userRepository.ownerSignupApp(
+                ownerSignupApp = ownerSignupApp,
+                storeProfileImage = storeProfileImageFile,
+                storeImageList = storeImageFiles
+            )
+        }
+    }
+
+    fun ownerSignupKakao(ownerSignupKakao: OwnerSignupKakao, storeProfileImage: Uri?, storeImages: List<Uri>) {
+        val storeProfileImageFile =
+            if(storeProfileImage != null)
+                FileUtils.createMultipart(context, storeProfileImage, "storeProfileImageFile")
+            else
+                null
+
+        val storeImageFiles =
+            if(storeImages.isNotEmpty())
+            FileUtils.createMultipart(context, storeImages, "storeImageFileList")
+        else
+            null
+
+        if((storeProfileImage != null && storeProfileImageFile == null) || (storeImages.isNotEmpty() && storeImageFiles == null)) {
+            onErrorImageFile()
+
+            return
+        }
+
+        viewModelScope.launch {
+            userRepository.ownerSignupKakao(
+                ownerSignupKakao = ownerSignupKakao,
+                storeProfileImage = storeProfileImageFile,
+                storeImageList = storeImageFiles
+            )
+        }
+    }
+
+    private fun onErrorImageFile() {
+
     }
 }
