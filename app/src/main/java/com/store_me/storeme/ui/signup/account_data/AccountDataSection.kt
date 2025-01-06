@@ -41,6 +41,7 @@ import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.ValidIconColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.TextClearIconColor
+import com.store_me.storeme.utils.ValidationUtils
 import com.store_me.storeme.utils.composition_locals.signup.LocalAccountDataViewModel
 
 @Composable
@@ -64,9 +65,9 @@ fun AccountDataSection(onFinish: () -> Unit) {
     LaunchedEffect(accountPwConfirm, accountPw) {
         if(accountPw.isNotEmpty() && accountPwConfirm.isNotEmpty()) {
             isPwConfirmError.value = !isPasswordMatching
-            isPwError.value = !accountDataViewModel.isValidPw()
+            isPwError.value = !ValidationUtils.isValidPw(accountPw)
         } else if (accountPw.isNotEmpty()) {
-            isPwError.value = !accountDataViewModel.isValidPw()
+            isPwError.value = !ValidationUtils.isValidPw(accountPw)
         }
     }
 
@@ -104,7 +105,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                     trailingIcon = {
                         Button(
                             onClick = {
-                                if(accountDataViewModel.isValidId()){
+                                if(ValidationUtils.isValidId(accountId)){
                                     isIdError.value = false
                                     accountDataViewModel.checkDuplicate()
                                 } else {
@@ -173,7 +174,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                     onValueChange = {
                         accountDataViewModel.updateAccountPw(it)
                         if(it.isNotEmpty()) {
-                            isPwError.value = !accountDataViewModel.isValidPw()
+                            isPwError.value = !ValidationUtils.isValidPw(accountPw)
                         }
                     },
                     textStyle = storeMeTextStyle(FontWeight.Normal, 1),

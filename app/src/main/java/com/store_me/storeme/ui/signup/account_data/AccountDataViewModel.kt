@@ -69,13 +69,4 @@ class AccountDataViewModel @Inject constructor(
     fun clearAccountIdDuplicate() {
         _accountIdDuplicate.value = null
     }
-
-    fun isValidId(): Boolean {
-        val regex = Regex("^[a-zA-Z0-9]{4,20}$")
-        return regex.matches(_accountId.value)
-    }
-
-    fun isValidPw(): Boolean {
-        return _accountPw.value.length in 4..20
-    }
 }
