@@ -54,7 +54,7 @@ import com.store_me.storeme.utils.SizeUtils
  */
 
 /**
- * 기본 버튼
+ * Text Default Button
  */
 @Composable
 fun DefaultButton(
@@ -81,7 +81,7 @@ fun DefaultButton(
             text = buttonText,
             style = storeMeTextStyle(fontWeight, diffValue),
             modifier = Modifier
-                .padding(vertical = 8.dp)
+                .padding(vertical = 12.dp)
         )
     }
 }
@@ -138,7 +138,7 @@ fun DefaultButton(
             text = buttonText,
             style = storeMeTextStyle(fontWeight, diffValue),
             modifier = Modifier
-                .padding(vertical = 8.dp)
+                .padding(vertical = 12.dp)
         )
 
         if(rightIconResource != null) {
