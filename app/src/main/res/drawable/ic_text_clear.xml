@@ -1,7 +1,7 @@
 <vector android:alpha="0.98" android:height="15dp"
     android:viewportHeight="15" android:viewportWidth="15"
     android:width="15dp" xmlns:android="http://schemas.android.com/apk/res/android">
-    <path android:fillColor="#CDCDCD" android:pathData="M7.5,7.5m-7.5,0a7.5,7.5 0,1 1,15 0a7.5,7.5 0,1 1,-15 0"/>
+    <path android:fillColor="#545A68" android:pathData="M7.5,7.5m-7.5,0a7.5,7.5 0,1 1,15 0a7.5,7.5 0,1 1,-15 0"/>
     <group>
         <clip-path android:pathData="M3.947,3.947h7.105v7.105h-7.105z"/>
         <path android:fillColor="#ffffff" android:fillType="evenOdd" android:pathData="M10.911,10.253L8.157,7.5L10.911,4.747C11.344,4.314 10.686,3.656 10.253,4.089L7.5,6.843L4.746,4.089C4.314,3.656 3.656,4.314 4.089,4.746L6.842,7.5L4.089,10.253C3.656,10.686 4.314,11.344 4.746,10.911L7.5,8.157L10.253,10.911C10.686,11.344 11.344,10.686 10.911,10.253Z"/>
