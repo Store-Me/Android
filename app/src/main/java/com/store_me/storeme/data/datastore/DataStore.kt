@@ -2,7 +2,7 @@ package com.store_me.storeme.data.datastore
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.map
@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
 private val locationDisplay = stringPreferencesKey(Settings.LOCATION_DISPLAY.value)
-private val locationCode = intPreferencesKey(Settings.LOCATION_CODE.value)
+private val locationCode = longPreferencesKey(Settings.LOCATION_CODE.value)
 
 enum class Settings(val value: String) {
     LOCATION_DISPLAY("locationDisplay"),
@@ -21,7 +21,7 @@ enum class Settings(val value: String) {
 /**
  * 데이터 저장 함수
  */
-suspend fun saveLocation(context: Context, location: String, code: Int) {
+suspend fun saveLocation(context: Context, location: String, code: Long) {
     context.dataStore.edit { preferences ->
         preferences[locationDisplay] = location
         preferences[locationCode] = code
