@@ -4,6 +4,7 @@ import com.store_me.storeme.data.DateData
 import com.store_me.storeme.data.UserCouponWithStoreInfoData
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
@@ -155,5 +156,14 @@ class DateTimeUtils {
         val date = LocalDate.of(year, month, day)
 
         return DayOfWeek.entries[date.dayOfWeek.value % 7].displayName
+    }
+
+    /**
+     * DateTime 을 Long 으로 변환하는 함수
+     */
+    fun dateTimeToLong(dateTime: String): Long {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val localDateTime = LocalDateTime.parse(dateTime, formatter)
+        return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
     }
 }
