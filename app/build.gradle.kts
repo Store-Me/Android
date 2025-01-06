@@ -177,4 +177,6 @@ dependencies {
     //UCrop
     implementation("com.github.yalantis:ucrop:2.2.10")
 
+    //Timber
+    implementation("com.jakewharton.timber:timber:4.7.1")
 }
