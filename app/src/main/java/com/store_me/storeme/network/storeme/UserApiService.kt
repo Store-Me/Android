@@ -3,9 +3,13 @@ package com.store_me.storeme.network.storeme
 import com.store_me.storeme.data.check_duplicate.CheckAccountIdDuplicate
 import com.store_me.storeme.data.check_duplicate.CheckAccountIdDuplicateResponse
 import com.store_me.storeme.data.model.StoreMeResponse
+import com.store_me.storeme.data.model.login.AppLoginRequest
 import com.store_me.storeme.data.model.login.KakaoLoginRequest
 import com.store_me.storeme.data.model.login.LoginResponse
 import com.store_me.storeme.data.model.signup.CustomerSignupApp
+import com.store_me.storeme.data.model.signup.CustomerSignupKakao
+import com.store_me.storeme.data.model.signup.OwnerSignupApp
+import com.store_me.storeme.data.model.signup.OwnerSignupKakao
 import com.store_me.storeme.data.model.verification.ConfirmCode
 import com.store_me.storeme.data.model.verification.PhoneNumber
 import com.store_me.storeme.data.model.verification.PhoneNumberResponse
@@ -20,9 +24,38 @@ interface UserApiService {
     @Multipart
     @POST("signup/app/customer")
     suspend fun customerSignupApp(
-        @Part("appCustomerSignupRequestDto") customerSignupApp: CustomerSignupApp,
-        @Part profileImageFile: MultipartBody.Part?
+        @Part profileImageFile: MultipartBody.Part?,
+        @Part ("appCustomerSignupRequestDto") appCustomerSignupRequestDto: CustomerSignupApp
     ): Response<StoreMeResponse<Unit>>
+
+    @Multipart
+    @POST("signup/kakao/customer")
+    suspend fun customerSignupKakao(
+        @Part profileImageFile: MultipartBody.Part?,
+        @Part ("kakaoCustomerSignupRequestDto") kakaoCustomerSignupRequestDto: CustomerSignupKakao
+    ): Response<StoreMeResponse<Unit>>
+
+    @Multipart
+    @POST("signup/app/owner")
+    suspend fun ownerSignupApp(
+        @Part storeProfileImageFile: MultipartBody.Part?,
+        @Part storeFeaturedImageFile: MultipartBody.Part?,
+        @Part storeImageFileList: List<MultipartBody.Part>?,
+        @Part("appOwnerSignupRequestDto") appOwnerSignupRequestDto: OwnerSignupApp
+    ): Response<StoreMeResponse<Unit>>
+    @Multipart
+    @POST("signup/kakao/owner")
+    suspend fun ownerSignupKakao(
+        @Part storeProfileImageFile: MultipartBody.Part?,
+        @Part storeFeaturedImageFile: MultipartBody.Part?,
+        @Part storeImageFileList: List<MultipartBody.Part>?,
+        @Part("kakaoOwnerSignupRequestDto") kakaoOwnerSignupRequestDto: OwnerSignupKakao
+    ): Response<StoreMeResponse<Unit>>
+
+    @POST("login/app")
+    suspend fun loginWithApp(
+        @Body appLoginRequest: AppLoginRequest
+    ): Response<StoreMeResponse<LoginResponse>>
 
     @POST("login/kakao")
     suspend fun loginWithKakao(
