@@ -1,7 +1,7 @@
 package com.store_me.storeme.ui.signup.owner
 
 import android.webkit.JavascriptInterface
-import com.store_me.storeme.data.DaumPostcodeResponse
+import com.store_me.storeme.data.response.DaumPostcodeResponse
 import org.json.JSONObject
 
 class WebAppInterface(

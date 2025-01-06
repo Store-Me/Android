@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
-import com.store_me.storeme.data.DaumPostcodeResponse
+import com.store_me.storeme.data.response.DaumPostcodeResponse
 import com.store_me.storeme.data.database.location.LocationDataBaseHelper
 import com.store_me.storeme.repository.naver.NaverRepository
 import com.store_me.storeme.ui.component.filterNonNumeric

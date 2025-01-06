@@ -1,4 +1,4 @@
-package com.store_me.storeme.data
+package com.store_me.storeme.data.response
 
 /**
  * 주소 검색 결과

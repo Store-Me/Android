@@ -1,4 +1,4 @@
-package com.store_me.storeme.data.model.login
+package com.store_me.storeme.data.request
 
 data class AppLoginRequest(
     val accountId: String,

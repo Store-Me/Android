@@ -1,6 +1,6 @@
 package com.store_me.storeme.network.storeme
 
-import com.store_me.storeme.data.model.StoreMeResponse
+import com.store_me.storeme.data.response.StoreMeResponse
 import com.store_me.storeme.data.response.StoreListResponse
 import retrofit2.Response
 import retrofit2.http.GET

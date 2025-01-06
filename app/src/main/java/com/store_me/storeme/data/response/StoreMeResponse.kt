@@ -1,4 +1,4 @@
-package com.store_me.storeme.data.model
+package com.store_me.storeme.data.response
 
 data class StoreMeResponse<T>(
     val isSuccess: Boolean,

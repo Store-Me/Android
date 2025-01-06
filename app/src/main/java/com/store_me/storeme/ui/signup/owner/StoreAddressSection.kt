@@ -48,7 +48,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.store_me.storeme.R
-import com.store_me.storeme.data.DaumPostcodeResponse
+import com.store_me.storeme.data.response.DaumPostcodeResponse
 import com.store_me.storeme.ui.signup.NextButton
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.DeleteTextColor
