@@ -9,9 +9,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.store_me.storeme.data.Auth.LoginType
 import com.store_me.storeme.ui.signup.SignupScreen
 import com.store_me.storeme.ui.login.LoginScreen
@@ -52,9 +54,15 @@ class OnboardingActivity : ComponentActivity() {
             composable(Screen.Onboarding.route.name) { OnboardingScreen(navController) }
             composable(Screen.Login.route.name) { LoginScreen(navController) }
             composable(
-                route = Screen.Signup.route.name + "/{loginType}") { backstackEntry ->
+                route = Screen.Signup.route.name + "/{loginType}?additionalData={additionalData}",
+                arguments = listOf(
+                    navArgument("loginType") { type = NavType.StringType },
+                    navArgument("additionalData") { type = NavType.StringType; defaultValue = "" }
+                )
+            ) { backstackEntry ->
                 val loginType = backstackEntry.arguments?.getString("loginType") ?: LoginType.APP.name
-                SignupScreen(navController, loginType = LoginType.valueOf(loginType))
+                val additionalData = backstackEntry.arguments?.getString("additionalData") ?: ""
+                SignupScreen(navController, loginType = LoginType.valueOf(loginType), additionalData = additionalData)
             }
         }
     }
