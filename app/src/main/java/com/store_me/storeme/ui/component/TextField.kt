@@ -222,13 +222,13 @@ fun TextLengthRow(text: String, limitSize: Int){
     ){
         Text(
             text = text.length.toString(),
-            style = storeMeTextStyle(FontWeight.Bold, 0),
+            style = storeMeTextStyle(FontWeight.Bold, 2),
             color = if(text.length > limitSize) ErrorTextFieldColor else Black
         )
 
         Text(
             text = "/${limitSize}",
-            style = storeMeTextStyle(FontWeight.Bold, 0),
+            style = storeMeTextStyle(FontWeight.Bold, 2),
             color = UndefinedTextColor
         )
     }
@@ -243,6 +243,10 @@ fun Modifier.addFocusCleaner(
             focusManager.clearFocus()
         })
     }
+}
+
+fun filterNonNumeric(text: String): String {
+    return text.filter { it in '0'..'9' }
 }
 
 @Composable
