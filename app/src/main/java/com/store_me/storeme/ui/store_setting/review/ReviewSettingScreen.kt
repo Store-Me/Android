@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -70,7 +71,7 @@ import com.store_me.storeme.ui.component.KeyBoardInputField
 import com.store_me.storeme.ui.component.StoreMeSnackbar
 import com.store_me.storeme.ui.component.SubTitleSection
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
-import com.store_me.storeme.ui.component.CircleProfileImage
+import com.store_me.storeme.ui.component.ProfileImage
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.theme.EditButtonColor
@@ -271,7 +272,13 @@ fun ReviewItem(reviewComment: ReviewComment, onClickMenu: (String) -> Unit, onWr
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CircleProfileImage(reviewComment.userData.profileImage, 40, isUser = true)
+            ProfileImage(
+                accountType = Auth.AccountType.CUSTOMER,
+                url = reviewComment.userData.profileImage,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape),
+            )
 
             Spacer(modifier = Modifier.width(10.dp))
 
