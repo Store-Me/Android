@@ -1,6 +1,8 @@
 package com.store_me.di
 
+import com.store_me.storeme.network.storeme.OwnerApiService
 import com.store_me.storeme.network.storeme.UserApiService
+import com.store_me.storeme.utils.TokenPreferencesHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,7 +30,7 @@ object StoreMeModule {
             .addInterceptor { chain ->
                 val originalRequest = chain.request()
                 val requestBuilder = originalRequest.newBuilder()
-                    .addHeader("Bearer", "")
+                    .addHeader("Authorization", "Bearer ${TokenPreferencesHelper.getAccessToken()}")
                 val request = requestBuilder.build()
                 chain.proceed(request)
             }
@@ -80,5 +82,13 @@ object StoreMeModule {
         @Named("UnauthorizedRetrofit") retrofit: Retrofit
     ): UserApiService {
         return retrofit.create(UserApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun ownerApiService(
+        @Named("AuthorizedRetrofit") retrofit: Retrofit
+    ): OwnerApiService {
+        return retrofit.create(OwnerApiService::class.java)
     }
 }
