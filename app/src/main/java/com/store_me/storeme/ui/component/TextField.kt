@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,14 +47,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
+import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.DateTimeUtils
+import com.store_me.storeme.utils.ValidationUtils
 import java.time.LocalDate
 
 enum class TextFieldErrorType {
@@ -514,4 +519,58 @@ fun KeyBoardInputField(
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
+}
+
+@Composable
+fun PwOutlinedTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    isHidePw: Boolean,
+    onHideValueChange: () -> Unit,
+    isError: Boolean,
+    imeAction: ImeAction
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = { onValueChange(it) },
+        textStyle = storeMeTextStyle(FontWeight.Normal, 1),
+        modifier = Modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        visualTransformation = if (isHidePw) PasswordVisualTransformation() else VisualTransformation.None,
+        trailingIcon = {
+            IconButton(onClick = { onHideValueChange() }) {
+                Icon(
+                    painter = painterResource(id = if(isHidePw) R.drawable.ic_hide else R.drawable.ic_show),
+                    contentDescription = "보이기/숨기기",
+                    modifier = Modifier
+                        .size(24.dp),
+                    tint = TextClearIconColor
+                )
+            }
+        },
+        placeholder = {
+            Text(
+                text = "비밀번호를 입력해주세요.",
+                style = storeMeTextStyle(FontWeight.Normal, 1),
+                color = UndefinedTextColor
+            )
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = imeAction),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = HighlightTextFieldColor,
+            errorBorderColor = ErrorTextFieldColor,
+            errorLabelColor = ErrorTextFieldColor,
+        ),
+        isError = isError,
+        supportingText = {
+            if(isError){
+                Text(
+                    text = "4 ~ 20 글자로 구성되어야 합니다.",
+                    style = storeMeTextStyle(FontWeight.Normal, 0),
+                    color = ErrorTextFieldColor
+                )
+            }
+        }
+    )
 }

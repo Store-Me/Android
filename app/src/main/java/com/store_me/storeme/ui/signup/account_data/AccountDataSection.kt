@@ -34,6 +34,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.ui.component.PwOutlinedTextField
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
@@ -169,7 +170,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                     color = Color.Black
                 )
 
-                OutlinedTextField(
+                PwOutlinedTextField(
                     value = accountPw,
                     onValueChange = {
                         accountDataViewModel.updateAccountPw(it)
@@ -177,45 +178,10 @@ fun AccountDataSection(onFinish: () -> Unit) {
                             isPwError.value = !ValidationUtils.isValidPw(accountPw)
                         }
                     },
-                    textStyle = storeMeTextStyle(FontWeight.Normal, 1),
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    shape = RoundedCornerShape(14.dp),
-                    visualTransformation = if (isHidePw.value) PasswordVisualTransformation() else VisualTransformation.None,
-                    trailingIcon = {
-                        IconButton(onClick = { isHidePw.value = !isHidePw.value }) {
-                            Icon(
-                                painter = painterResource(id = if(isHidePw.value) R.drawable.ic_hide else R.drawable.ic_show),
-                                contentDescription = "보이기/숨기기",
-                                modifier = Modifier
-                                    .size(24.dp),
-                                tint = TextClearIconColor
-                            )
-                        }
-                    },
-                    placeholder = {
-                        Text(
-                            text = "비밀번호를 입력해주세요.",
-                            style = storeMeTextStyle(FontWeight.Normal, 1),
-                            color = UndefinedTextColor
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = HighlightTextFieldColor,
-                        errorBorderColor = ErrorTextFieldColor,
-                        errorLabelColor = ErrorTextFieldColor,
-                    ),
+                    isHidePw = isHidePw.value,
+                    onHideValueChange = { isHidePw.value = !isHidePw.value },
                     isError = isPwError.value,
-                    supportingText = {
-                        if(isPwError.value){
-                            Text(
-                                text = "4 ~ 20 글자로 구성되어야 합니다.",
-                                style = storeMeTextStyle(FontWeight.Normal, 0),
-                                color = ErrorTextFieldColor
-                            )
-                        }
-                    }
+                    imeAction = ImeAction.Next
                 )
             }
         }
