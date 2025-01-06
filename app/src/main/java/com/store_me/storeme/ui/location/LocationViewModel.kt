@@ -2,7 +2,6 @@ package com.store_me.storeme.ui.location
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -43,8 +42,8 @@ class LocationViewModel @Inject constructor(
     private val _lastLocation = MutableStateFlow("")
     val lastLocation: StateFlow<String> = _lastLocation
 
-    private val _code = MutableStateFlow<Int?>(null)
-    val code: StateFlow<Int?> = _code
+    private val _code = MutableStateFlow<Long?>(null)
+    val code: StateFlow<Long?> = _code
 
     private val _searchResults = MutableStateFlow<List<LocationEntity>>(emptyList())
     val searchResults: StateFlow<List<LocationEntity>> = _searchResults
@@ -54,6 +53,18 @@ class LocationViewModel @Inject constructor(
 
     private val _locationText = MutableStateFlow<String?>(null)
     val locationText: StateFlow<String?> = _locationText
+
+    private val _storeLocation = MutableStateFlow("")
+    val storeLocation: StateFlow<String> = _storeLocation
+
+    private val _storeLocationCode = MutableStateFlow<Long?>(null)
+    val storeLocationCode: StateFlow<Long?> = _storeLocationCode
+
+    private val _storeLocationAddress = MutableStateFlow("")
+    val storeLocationAddress: StateFlow<String> = _storeLocationAddress
+
+    private val _storeLatLng = MutableStateFlow<LatLng?>(null)
+    val storeLatLng: StateFlow<LatLng?> = _storeLatLng
 
     init {
         viewModelScope.launch {
@@ -76,10 +87,33 @@ class LocationViewModel @Inject constructor(
         }
     }
 
+    private val locationCallbackOwner = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            for(location in locationResult.locations) {
+                val latLng = LatLng(location.latitude, location.longitude)
+
+                reverseGeoCodeOwner(latLng)
+                _storeLatLng.value = LatLng(location.latitude, location.longitude)
+                fusedLocationClient.removeLocationUpdates(this)
+            }
+        }
+    }
+
     @SuppressLint("MissingPermission")
     fun setLocation() {
+        setReverseGeocodeCompletedValue(false)
+
         viewModelScope.launch {
             fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun setLocationOwner() {
+        setReverseGeocodeCompletedValue(false)
+
+        viewModelScope.launch {
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallbackOwner, null)
         }
     }
 
@@ -107,6 +141,41 @@ class LocationViewModel @Inject constructor(
                         setReverseGeocodeCompletedValue(true)
                     }
 
+                } else {
+                    failGetLocation()
+                    return@onSuccess
+                }
+            }.onFailure {
+                failGetLocation(it.message)
+            }
+
+        }
+    }
+
+    private fun reverseGeoCodeOwner(latLng: LatLng) {
+        viewModelScope.launch {
+            val result = naverRepository.reverseGeocode(latLng)
+
+            result.onSuccess { response ->
+                val first = response.results.firstOrNull()?.region?.area1?.name
+                val second = response.results.firstOrNull()?.region?.area2?.name
+                val third = response.results.firstOrNull()?.region?.area3?.name
+
+                if (first != null && second != null && third != null) {
+
+                    val code = withContext(Dispatchers.IO) {
+                        dbHelper.getLocationCode(first, second, third)
+                    }
+
+                    if(code != null) {
+                        _storeLocationAddress.value = "$first $second $third"
+                        _storeLocation.value = third
+                        _storeLocationCode.value = code
+
+                        setReverseGeocodeCompletedValue(true)
+                    } else {
+                        failGetLocation()
+                    }
                 } else {
                     failGetLocation()
                     return@onSuccess
@@ -150,13 +219,17 @@ class LocationViewModel @Inject constructor(
     fun setReverseGeocodeCompletedValue(value: Boolean) {
         viewModelScope.launch {
             _reverseGeoCodeCompleted.value = value
-            Log.d("ASD", "${_reverseGeoCodeCompleted.value}")
         }
     }
 
-    fun saveLocation(third: String, code: Int) {
+    fun saveLocation(third: String, code: Long) {
         viewModelScope.launch {
             saveLocation(context, third, code)
         }
+    }
+
+    //사장님
+    fun clearStoreLatLng() {
+        _storeLatLng.value = null
     }
 }

@@ -15,13 +15,13 @@ class LocationDataBaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {  }
 
-    fun getLocationCode(first: String?, second: String?, third: String?): Int? {
+    fun getLocationCode(first: String?, second: String?, third: String?): Long? {
         val db = this.readableDatabase
         val query = "SELECT code FROM location_table WHERE first = ? AND second = ? AND third = ?"
         val cursor = db.rawQuery(query, arrayOf(first, second, third))
 
         return if (cursor.moveToFirst()) {
-            val code = cursor.getInt(cursor.getColumnIndexOrThrow("code"))
+            val code = cursor.getLong(cursor.getColumnIndexOrThrow("code"))
             cursor.close()
             code
         } else {
@@ -48,7 +48,7 @@ class LocationDataBaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         val results = mutableListOf<LocationEntity>()
         if (cursor.moveToFirst()) {
             do {
-                val code = cursor.getInt(cursor.getColumnIndexOrThrow("code"))
+                val code = cursor.getLong(cursor.getColumnIndexOrThrow("code"))
                 val first = cursor.getString(cursor.getColumnIndexOrThrow("first"))
                 val second = cursor.getString(cursor.getColumnIndexOrThrow("second"))
                 val third = cursor.getString(cursor.getColumnIndexOrThrow("third"))
@@ -58,10 +58,49 @@ class LocationDataBaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         cursor.close()
         return results
     }
+
+    fun getStoreLocationCode(sigunguCode: String, legalDong: String): Long {
+        val db = readableDatabase
+
+        val query = """
+        SELECT * FROM location_table 
+        WHERE CAST(code AS TEXT) LIKE ?
+        ORDER BY code ASC
+        """
+
+        val cursor = db.rawQuery(query, arrayOf("$sigunguCode%"))
+
+        val results = mutableListOf<LocationEntity>()
+        if(cursor.moveToFirst()) {
+            do {
+                val code = cursor.getLong(cursor.getColumnIndexOrThrow("code"))
+                val first = cursor.getString(cursor.getColumnIndexOrThrow("first"))
+                val second = cursor.getString(cursor.getColumnIndexOrThrow("second"))
+                val third = cursor.getString(cursor.getColumnIndexOrThrow("third"))
+                results.add(LocationEntity(code, first, second, third))
+            } while (cursor.moveToNext())
+        }
+        cursor.close()
+
+        //동읍면 완전 일치
+        val exactMatch = results.find { it.third == legalDong }
+        if (exactMatch != null) {
+            return exactMatch.code
+        }
+
+        //부분 일치
+        val partialMatch = results.find { it.third?.contains(legalDong) == true }
+        if (partialMatch != null) {
+            return partialMatch.code
+        }
+
+        //일치 항목 없음
+        return "${sigunguCode}00000".toLong()
+    }
 }
 
 data class LocationEntity(
-    val code: Int,
+    val code: Long,
     val first: String?,
     val second: String?,
     val third: String?
