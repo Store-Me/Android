@@ -1,7 +1,5 @@
 package com.store_me.storeme.utils.composition_locals.signup
 
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.store_me.storeme.ui.signup.SignupViewModel
 import com.store_me.storeme.ui.signup.account_data.AccountDataViewModel
@@ -10,10 +8,6 @@ import com.store_me.storeme.ui.signup.onboarding.SignupOnboardingViewModel
 import com.store_me.storeme.ui.signup.owner.StoreDataViewModel
 import com.store_me.storeme.ui.signup.phone_authentication.PhoneNumberViewModel
 import com.store_me.storeme.ui.signup.terms.TermsViewModel
-
-val LocalSnackbarHostState = compositionLocalOf<SnackbarHostState> {
-    error("No SnackbarHostState provided")
-}
 
 val LocalSignupViewModel = staticCompositionLocalOf<SignupViewModel> {
     error("No LocalSignupViewModel provided")

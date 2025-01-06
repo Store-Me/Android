@@ -3,11 +3,16 @@ package com.store_me.storeme.ui.onboarding
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -15,9 +20,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.store_me.storeme.data.Auth.LoginType
+import com.store_me.storeme.ui.loading.LoadingScreen
+import com.store_me.storeme.ui.loading.LoadingViewModel
 import com.store_me.storeme.ui.signup.SignupScreen
 import com.store_me.storeme.ui.login.LoginScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -37,12 +45,30 @@ class OnboardingActivity : ComponentActivity() {
 
         setContent{
             StoreMeTheme {
-                Surface (
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                val navController = rememberNavController()
+
+                val loadingViewModel: LoadingViewModel = viewModel()
+                
+                val isLoading by loadingViewModel.isLoading.collectAsState()
+
+                CompositionLocalProvider(
+                    LocalLoadingViewModel provides loadingViewModel
                 ) {
-                    val navController = rememberNavController()
-                    NavGraph(navController = navController)
+                    Surface (
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                        ) {
+                            NavGraph(navController = navController)
+
+                            if(isLoading) {
+                                LoadingScreen()
+                            }
+                        }
+                    }
                 }
             }
         }

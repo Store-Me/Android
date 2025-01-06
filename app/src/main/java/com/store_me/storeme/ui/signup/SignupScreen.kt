@@ -81,12 +81,12 @@ import com.store_me.storeme.ui.signup.terms.TermsSection
 import com.store_me.storeme.ui.signup.terms.TermsViewModel
 import com.store_me.storeme.ui.theme.SignupTextBoxColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
+import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.signup.LocalAccountDataViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalCustomerDataViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalPhoneNumberViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalSignupOnboardingViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalSignupViewModel
-import com.store_me.storeme.utils.composition_locals.signup.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.signup.LocalStoreDataViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalTermsViewModel
 
