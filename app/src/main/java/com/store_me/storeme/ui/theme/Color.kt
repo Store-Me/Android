@@ -1,8 +1,6 @@
 package com.store_me.storeme.ui.theme
 
-import android.text.Highlights
 import androidx.compose.ui.graphics.Color
-import com.store_me.storeme.data.CouponAvailable
 
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
@@ -234,6 +232,15 @@ val ReviewMenuContentColor = Color(0xFF898C93)
 val OwnerReplyBoxColor = Color(0xFFFEF7FF)
 
 /**
+ * Signup Color
+ */
+val SignupTextBoxColor = Color(0xFFFEEBFE)
+val OnboardingSelectedIndicatorColor = Color(0xFFF393F6)
+val OnboardingUnselectedIndicatorColor = Color(0xFFAAADB4)
+val HighlightGuidTextColor = Color(0xFFD44ADA)
+val StoreImageBoxColor = Color(0xFF898C93)
+
+/**
  * Default Color
  */
 val DefaultDividerColor = Color(0xFFEFF0F5)
@@ -246,4 +253,6 @@ val DeleteTextColor = Color(0xFFAAADB4)
 
 val UndefinedBorderColor = Color(0xFF898C93)
 
-val textClearIconColor = Color(0xFF545A68)
+val TextClearIconColor = Color(0xFF545A68)
+
+val DisabledColor = Color(0xFFAAADB4)
