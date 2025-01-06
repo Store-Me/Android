@@ -38,6 +38,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.theme.EditButtonColor
 import com.store_me.storeme.ui.theme.SelectedCheckBoxColor
+import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.ToggleButtonBorderColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
@@ -177,7 +178,7 @@ fun LargeButton(
 @Composable
 fun SearchButton(onClick: () -> Unit) {
     Icon(
-        imageVector = ImageVector.vectorResource(id = R.drawable.search_icon),
+        imageVector = ImageVector.vectorResource(id = R.drawable.ic_search),
         contentDescription = "검색",
         modifier = Modifier
             .size(24.dp)
@@ -185,7 +186,8 @@ fun SearchButton(onClick: () -> Unit) {
                 onClick = { onClick() },
                 interactionSource = remember { MutableInteractionSource() },
                 indication = ripple(bounded = false)
-            )
+            ),
+        tint = TextClearIconColor
     )
 }
 
