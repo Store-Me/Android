@@ -716,24 +716,7 @@ fun SocialMediaIcon(url: String, size: Int = 40) {
     )
 }
 
-/**
- * 원형 프로필 이미지 Composable
- * @param url 이미지 URL
- * @param size 크기
- */
-@Composable
-fun CircleProfileImage(url: String?, size: Int, modifier: Modifier = Modifier, isUser: Boolean) {
-    val errorImage = if(isUser) R.drawable.profile_null_image else R.drawable.store_null_image
 
-    AsyncImage(
-        model = url,
-        contentDescription = "프로필 이미지",
-        error = painterResource(id = errorImage),
-        modifier = modifier
-            .size(size.dp)
-            .clip(CircleShape)
-    )
-}
 
 /**
  * 가게 배경 이미지 Composable
@@ -797,7 +780,41 @@ fun CircleBorderWithIcon(modifier: Modifier, borderColor: Color, circleColor: Co
             }
         }
     }
+}
 
+@Composable
+fun CircleBorderWithIcon(modifier: Modifier, borderColor: Color, circleColor: Color, iconResource: Int?, iconColor: Color, size: Int, onClick: () -> Unit) {
+    Box(
+        modifier = modifier
+            .size(size.dp)
+            .border(width = 2.dp, shape = CircleShape, color = borderColor)
+            .clickable(
+                onClick = { onClick() },
+                indication = ripple(bounded = false),
+                interactionSource = remember { MutableInteractionSource() }
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size((size - 1).dp)
+                .background(
+                    color = circleColor,
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            iconResource?.let {
+                Icon(
+                    painter = painterResource(id = it),
+                    contentDescription = "아이콘",
+                    tint = iconColor,
+                    modifier = Modifier
+                        .size((size / 2).dp)
+                )
+            }
+        }
+    }
 }
 
 /**
@@ -848,6 +865,6 @@ fun AlphaBackgroundText(text: String, diffValue: Int, modifier: Modifier = Modif
  * 기본 HorizontalDivider
  */
 @Composable
-fun DefaultHorizontalDivider(){
-    HorizontalDivider(color = DefaultDividerColor, thickness = 1.dp)
+fun DefaultHorizontalDivider(modifier: Modifier = Modifier){
+    HorizontalDivider(modifier = modifier, color = DefaultDividerColor, thickness = 1.dp)
 }
