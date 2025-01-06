@@ -177,7 +177,7 @@ fun CalendarSelectRangeSection(
     ) {
         var currentDay = 1
 
-        val boxSize = SizeUtils().textSizeToDp(density = LocalDensity.current, diffValue = 2, offset = 20)
+        val boxSize = SizeUtils.textSizeToDp(density = LocalDensity.current, diffValue = 2, offset = 20)
 
         var weekCount = 0
         weekCount += daysInMonth / 7
@@ -492,7 +492,7 @@ fun CalendarSelectDateSection(
     ) {
         var currentDay = 1
 
-        val boxSize = SizeUtils().textSizeToDp(density = LocalDensity.current, diffValue = 2, offset = 20)
+        val boxSize = SizeUtils.textSizeToDp(density = LocalDensity.current, diffValue = 2, offset = 20)
 
         var weekCount = 0
         weekCount += daysInMonth / 7
@@ -632,7 +632,7 @@ fun WeekOfDayTextSection() {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        val boxSize = SizeUtils().textSizeToDp(density = LocalDensity.current, diffValue = 2, offset = 20)
+        val boxSize = SizeUtils.textSizeToDp(density = LocalDensity.current, diffValue = 2, offset = 20)
 
         DateTimeUtils.DayOfWeek.entries.forEach {
             Box(

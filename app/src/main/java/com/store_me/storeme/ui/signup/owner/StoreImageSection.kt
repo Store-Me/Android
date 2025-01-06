@@ -101,7 +101,7 @@ fun StoreImageSection(onFinish: () -> Unit) {
 
         Text(
             text = annotatedString,
-            style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true)
+            style = storeMeTextStyle(FontWeight.Normal, 2)
         )
 
         Spacer(modifier = Modifier.height(36.dp))
@@ -111,7 +111,7 @@ fun StoreImageSection(onFinish: () -> Unit) {
         ) {
             Text(
                 text = annotatedImagesCountString,
-                style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true),
+                style = storeMeTextStyle(FontWeight.Normal, 2),
                 color = Color.Black
             )
         }

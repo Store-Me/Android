@@ -348,7 +348,7 @@ fun CouponItem(
             modifier = Modifier
                 .weight(1f)
                 .height(
-                    SizeUtils().textSizeToDp(
+                    SizeUtils.textSizeToDp(
                         density = LocalDensity.current,
                         diffValue = 0,
                         offset = 40
@@ -367,7 +367,7 @@ fun CouponItem(
             modifier = Modifier
                 .weight(1f)
                 .height(
-                    SizeUtils().textSizeToDp(
+                    SizeUtils.textSizeToDp(
                         density = LocalDensity.current,
                         diffValue = 0,
                         offset = 40
@@ -386,7 +386,7 @@ fun CouponItem(
             modifier = Modifier
                 .weight(1f)
                 .height(
-                    SizeUtils().textSizeToDp(
+                    SizeUtils.textSizeToDp(
                         density = LocalDensity.current,
                         diffValue = 0,
                         offset = 40

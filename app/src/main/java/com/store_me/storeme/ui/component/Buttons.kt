@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -33,6 +35,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.main.MainActivity
@@ -49,6 +52,97 @@ import com.store_me.storeme.utils.SizeUtils
 /*
  * Button Composable 관리 파일
  */
+
+/**
+ * 기본 버튼
+ */
+@Composable
+fun DefaultButton(
+    buttonText: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        contentColor = Color.White,
+        containerColor = Color.Black
+    ),
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = { onClick() },
+        modifier = modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = colors,
+        enabled = enabled
+    ) {
+        Text(
+            text = buttonText,
+            style = storeMeTextStyle(FontWeight.ExtraBold, 3),
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+        )
+    }
+}
+
+@Composable
+fun DefaultButton(
+    buttonText: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        contentColor = Color.White,
+        containerColor = Color.Black
+    ),
+    leftIconResource: Int? = null,
+    rightIconResource: Int? = null,
+    leftIconTint: Color = Color.Unspecified,
+    rightIconTint: Color = Color.Unspecified,
+    onClick: () -> Unit
+) {
+    val density = LocalDensity.current
+
+    val iconSize = SizeUtils.textSizeToDp(density, 3)
+
+    Button(
+        onClick = { onClick() },
+        modifier = modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        colors = colors,
+        enabled = enabled
+    ) {
+        if(leftIconResource != null) {
+            Icon(
+                painter = painterResource(id = leftIconResource),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(iconSize),
+                tint = leftIconTint
+            )
+
+            Spacer(modifier = Modifier.width(4.dp))
+        }
+
+        Text(
+            text = buttonText,
+            style = storeMeTextStyle(FontWeight.ExtraBold, 3),
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+        )
+
+        if(rightIconResource != null) {
+            Spacer(modifier = Modifier.width(4.dp))
+
+            Icon(
+                painter = painterResource(id = rightIconResource),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(iconSize),
+                tint = rightIconTint
+            )
+        }
+    }
+}
 
 /**
  * Stroke 를 가지는 Button
@@ -162,7 +256,7 @@ fun LargeButton(
                 painter = painterResource(id = iconResource),
                 contentDescription = "아이콘",
                 modifier = Modifier
-                    .size(SizeUtils().textSizeToDp(density, 2))
+                    .size(SizeUtils.textSizeToDp(density, 2))
                     .clip(CircleShape),
                 tint = contentColor
             )
@@ -307,7 +401,7 @@ fun DefaultCheckButton(
                 painter = painterResource(id = iconId),
                 contentDescription = "체크 아이콘",
                 modifier = Modifier
-                    .size(SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4)),
+                    .size(SizeUtils.textSizeToDp(LocalDensity.current, diffValue, 4)),
                 tint = contentColor
             )
 
@@ -328,7 +422,7 @@ fun DefaultCheckButton(
                 painter = painterResource(id = iconId),
                 contentDescription = "체크 아이콘",
                 modifier = Modifier
-                    .size(SizeUtils().textSizeToDp(LocalDensity.current, diffValue, 4)),
+                    .size(SizeUtils.textSizeToDp(LocalDensity.current, diffValue, 4)),
                 tint = contentColor
             )
         }
@@ -339,7 +433,7 @@ fun DefaultCheckButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
-                    start = SizeUtils().textSizeToDp(
+                    start = SizeUtils.textSizeToDp(
                         LocalDensity.current,
                         diffValue,
                         4

@@ -655,7 +655,7 @@ fun SelectTimeSection(thisType: EditTimeType) {
                     contentColor = if(selected) HighlightTextColor else Black,
                     modifier = Modifier
                         .weight(1f)
-                        .height(SizeUtils().textSizeToDp(LocalDensity.current, 0, 20))
+                        .height(SizeUtils.textSizeToDp(LocalDensity.current, 0, 20))
                 ) {
                     closedDaySettingViewModel.setIsStartTime(true)
                     closedDaySettingViewModel.setNowEditTimeType(thisType)
@@ -682,7 +682,7 @@ fun SelectTimeSection(thisType: EditTimeType) {
                     contentColor = if(selected) HighlightTextColor else Black,
                     modifier = Modifier
                         .weight(1f)
-                        .height(SizeUtils().textSizeToDp(LocalDensity.current, 0, 20))
+                        .height(SizeUtils.textSizeToDp(LocalDensity.current, 0, 20))
                 ) {
                     closedDaySettingViewModel.setIsStartTime(false)
                     closedDaySettingViewModel.setNowEditTimeType(thisType)

@@ -59,7 +59,7 @@ fun SearchStoreCategorySection(
             OutlinedTextField(
                 value = storeCategory?.displayName ?: "",
                 onValueChange = {  },
-                textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable(
@@ -84,7 +84,7 @@ fun SearchStoreCategorySection(
                 placeholder = {
                     Text(
                         text = "업종을 선택해주세요.",
-                        style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                        style = storeMeTextStyle(FontWeight.Normal, 1),
                         color = UndefinedTextColor
                     )
                 },

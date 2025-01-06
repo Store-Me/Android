@@ -503,7 +503,7 @@ fun MenuItemSection(navController: NavController, menuData: MenuData, modifier: 
                 painter = painterResource(id = R.drawable.ic_edit),
                 contentDescription = "수정 아이콘",
                 tint = White.copy(alpha = editAlpha),
-                modifier = Modifier.size(SizeUtils().textSizeToDp(density, 6))
+                modifier = Modifier.size(SizeUtils.textSizeToDp(density, 6))
             )
 
             Text(
@@ -529,7 +529,7 @@ fun MenuItemSection(navController: NavController, menuData: MenuData, modifier: 
                 painter = painterResource(id = R.drawable.ic_delete_trashcan),
                 contentDescription = "삭제 아이콘",
                 tint = White.copy(alpha = deleteAlpha),
-                modifier = Modifier.size(SizeUtils().textSizeToDp(density, 6))
+                modifier = Modifier.size(SizeUtils.textSizeToDp(density, 6))
             )
         }
 

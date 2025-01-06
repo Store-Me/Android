@@ -79,7 +79,7 @@ fun StoreNameSection(onFinish: () -> Unit) {
         item {
             Text(
                 text = annotatedString,
-                style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true)
+                style = storeMeTextStyle(FontWeight.Normal, 2)
             )
         }
 
@@ -94,7 +94,7 @@ fun StoreNameSection(onFinish: () -> Unit) {
             ) {
                 Text(
                     text = "스토어 이름",
-                    style = storeMeTextStyle(FontWeight.ExtraBold, 2, true),
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                     color = Color.Black
                 )
 
@@ -103,7 +103,7 @@ fun StoreNameSection(onFinish: () -> Unit) {
                     onValueChange = {
                         storeDataViewModel.updateStoreName(it)
                     },
-                    textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                    textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                     modifier = Modifier
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
@@ -123,7 +123,7 @@ fun StoreNameSection(onFinish: () -> Unit) {
                     placeholder = {
                         Text(
                             text = "스토어 이름을 입력해주세요.",
-                            style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                            style = storeMeTextStyle(FontWeight.Normal, 1),
                             color = UndefinedTextColor
                         )
                     },
@@ -138,7 +138,7 @@ fun StoreNameSection(onFinish: () -> Unit) {
                         if(isError.value){
                             Text(
                                 text = "스토어 이름은 30자 이내로 작성되어야 합니다.",
-                                style = storeMeTextStyle(FontWeight.Normal, 0, isFixedSize = true),
+                                style = storeMeTextStyle(FontWeight.Normal, 0),
                                 color = ErrorTextFieldColor
                             )
                         }

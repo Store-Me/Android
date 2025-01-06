@@ -80,7 +80,7 @@ fun SignupOnboardingSection(onFinish: () -> Unit) {
                 ) {
                     Text(
                         text = onboardingTitleList[page],
-                        style = storeMeTextStyle(FontWeight.ExtraBold, 10, isFixedSize = true),
+                        style = storeMeTextStyle(FontWeight.ExtraBold, 10),
                         color = Color.Black
                     )
 
@@ -88,7 +88,7 @@ fun SignupOnboardingSection(onFinish: () -> Unit) {
 
                     Text(
                         text = onboardingContentList[page],
-                        style = storeMeTextStyle(FontWeight.Normal, 5, isFixedSize = true),
+                        style = storeMeTextStyle(FontWeight.Normal, 5),
                         color = Color.Black
                     )
                 }

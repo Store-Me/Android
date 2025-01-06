@@ -54,7 +54,7 @@ fun StoreProfileImageSection(onFinish: () -> Unit) {
 
         Text(
             text = "등록한 사진은 나중에도 자유롭게 변경할 수 있어요.",
-            style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true)
+            style = storeMeTextStyle(FontWeight.Normal, 2)
         )
 
         Spacer(modifier = Modifier.height(36.dp))

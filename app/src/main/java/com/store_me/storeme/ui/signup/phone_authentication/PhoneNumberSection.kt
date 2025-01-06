@@ -72,7 +72,7 @@ fun PhoneNumberSection(onFinish: () -> Unit) {
         item {
             Text(
                 text = "휴대폰 번호",
-                style = storeMeTextStyle(FontWeight.ExtraBold, 2, true),
+                style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                 color = Color.Black
             )
         }
@@ -83,7 +83,7 @@ fun PhoneNumberSection(onFinish: () -> Unit) {
             OutlinedTextField(
                 value = phoneNumber,
                 onValueChange = { if(it.length < 12) phoneNumberViewModel.updatePhoneNumber(it) },
-                textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                 modifier = Modifier
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
@@ -103,7 +103,7 @@ fun PhoneNumberSection(onFinish: () -> Unit) {
                 placeholder = {
                     Text(
                         text = "휴대폰 번호를 입력하세요",
-                        style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                        style = storeMeTextStyle(FontWeight.Normal, 1),
                         color = UndefinedTextColor
                     )
                 },
@@ -119,7 +119,7 @@ fun PhoneNumberSection(onFinish: () -> Unit) {
                     if(isError.value){
                         Text(
                             text = "휴대폰 번호 형식에 맞지 않습니다.",
-                            style = storeMeTextStyle(FontWeight.Normal, 0, isFixedSize = true),
+                            style = storeMeTextStyle(FontWeight.Normal, 0),
                             color = ErrorTextFieldColor
                         )
                     }

@@ -370,7 +370,7 @@ fun MenuHighlightSection() {
         Button(
             modifier = Modifier
                 .wrapContentWidth()
-                .height(SizeUtils().textSizeToDp(LocalDensity.current, 2, 10)),
+                .height(SizeUtils.textSizeToDp(LocalDensity.current, 2, 10)),
             shape = RoundedCornerShape(6.dp),
             border = borderStroke,
             colors = ButtonDefaults.buttonColors(
@@ -523,7 +523,7 @@ fun MenuCategorySection() {
         Icon(
             painter = painterResource(id = R.drawable.ic_arrow_right),
             contentDescription = "이동 아이콘",
-            modifier = Modifier.size(SizeUtils().textSizeToDp(LocalDensity.current, 2, 0))
+            modifier = Modifier.size(SizeUtils.textSizeToDp(LocalDensity.current, 2, 0))
         )
     }
 
@@ -575,7 +575,7 @@ fun MenuCategoryListSection(onFinish: () -> Unit) {
                     painter = painterResource(id = if(!isSelected) R.drawable.ic_check_off else R.drawable.ic_check_on),
                     contentDescription = "체크 아이콘",
                     modifier = Modifier
-                        .size(SizeUtils().textSizeToDp(LocalDensity.current, 2, 4)),
+                        .size(SizeUtils.textSizeToDp(LocalDensity.current, 2, 4)),
                     tint = if(!isSelected) UndefinedTextColor else SelectedCheckBoxColorPink
                 )
             }

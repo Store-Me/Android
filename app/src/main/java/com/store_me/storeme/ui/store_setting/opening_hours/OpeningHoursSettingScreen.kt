@@ -464,7 +464,7 @@ fun SelectTimeSection(thisType: EditTimeType, selectedWeek: DateTimeUtils.DayOfW
                     contentColor = if(selected) HighlightTextColor else Black,
                     modifier = Modifier
                         .weight(1f)
-                        .height(SizeUtils().textSizeToDp(LocalDensity.current, 0, 20))
+                        .height(SizeUtils.textSizeToDp(LocalDensity.current, 0, 20))
                 ) {
                     openingHoursSettingViewModel.setIsStartTime(true)
                     openingHoursSettingViewModel.setNowEditTimeType(thisType)
@@ -491,7 +491,7 @@ fun SelectTimeSection(thisType: EditTimeType, selectedWeek: DateTimeUtils.DayOfW
                     contentColor = if(selected) HighlightTextColor else Black,
                     modifier = Modifier
                         .weight(1f)
-                        .height(SizeUtils().textSizeToDp(LocalDensity.current, 0, 20))
+                        .height(SizeUtils.textSizeToDp(LocalDensity.current, 0, 20))
                 ) {
                     openingHoursSettingViewModel.setIsStartTime(false)
                     openingHoursSettingViewModel.setNowEditTimeType(thisType)

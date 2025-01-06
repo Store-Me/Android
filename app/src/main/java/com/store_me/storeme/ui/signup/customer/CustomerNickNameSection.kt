@@ -59,7 +59,7 @@ fun CustomerNickNameSection(onFinish: () -> Unit) {
 
         Text(
             text = "닉네임",
-            style = storeMeTextStyle(FontWeight.ExtraBold, 2, true),
+            style = storeMeTextStyle(FontWeight.ExtraBold, 2),
             color = Color.Black
         )
 
@@ -70,7 +70,7 @@ fun CustomerNickNameSection(onFinish: () -> Unit) {
             onValueChange = {
                 customerDataViewModel.updateNickName(it)
             },
-            textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+            textStyle = storeMeTextStyle(FontWeight.Normal, 1),
             modifier = Modifier
                 .fillMaxWidth(),
             shape = RoundedCornerShape(14.dp),
@@ -90,7 +90,7 @@ fun CustomerNickNameSection(onFinish: () -> Unit) {
             placeholder = {
                 Text(
                     text = "닉네임을 입력해 주세요.",
-                    style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                    style = storeMeTextStyle(FontWeight.Normal, 1),
                     color = UndefinedTextColor
                 )
             },
@@ -105,7 +105,7 @@ fun CustomerNickNameSection(onFinish: () -> Unit) {
                 if(isError.value){
                     Text(
                         text = "닉네임은 10자 이내로 작성되어야 합니다.",
-                        style = storeMeTextStyle(FontWeight.Normal, 0, isFixedSize = true),
+                        style = storeMeTextStyle(FontWeight.Normal, 0),
                         color = ErrorTextFieldColor
                     )
                 }

@@ -23,12 +23,9 @@ const val defaultFontSize = 12
  * TextStyle 반환 함수
  * @param fontWeight FontWeight
  * @param changeSizeValue fontSize 변화량
- * @param isFixedSize 고정된 크기 여부
  */
-fun storeMeTextStyle(fontWeight: FontWeight, changeSizeValue: Int, isFixedSize: Boolean = false): TextStyle {
-    //고정된 크기인 경우, 12 + changeSizeValue 값을 크기로 사용
-    //변동 크기인 경우, defaultFontSize + changeSizeValue 값을 크기로 사용
-    val fontSize = if(!isFixedSize) defaultFontSize + changeSizeValue else 12 + changeSizeValue
+fun storeMeTextStyle(fontWeight: FontWeight, changeSizeValue: Int): TextStyle {
+    val fontSize = defaultFontSize + changeSizeValue
 
     return TextStyle(
         fontWeight = fontWeight,

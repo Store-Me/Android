@@ -291,7 +291,7 @@ fun EditAndDeleteRow(
             painter = painterResource(id = R.drawable.ic_edit),
             contentDescription = "수정 아이콘",
             tint = White.copy(alpha = editAlpha),
-            modifier = Modifier.size(SizeUtils().textSizeToDp(density, diffValue))
+            modifier = Modifier.size(SizeUtils.textSizeToDp(density, diffValue))
         )
 
         Text(
@@ -316,7 +316,7 @@ fun EditAndDeleteRow(
             painter = painterResource(id = R.drawable.ic_delete_trashcan),
             contentDescription = "삭제 아이콘",
             tint = White.copy(alpha = deleteAlpha),
-            modifier = Modifier.size(SizeUtils().textSizeToDp(density, diffValue))
+            modifier = Modifier.size(SizeUtils.textSizeToDp(density, diffValue))
         )
     }
 }
@@ -845,7 +845,7 @@ fun AlphaBackgroundText(text: String, diffValue: Int, modifier: Modifier = Modif
                     painter = painterResource(id = iconResource),
                     contentDescription = "아이콘",
                     modifier = Modifier
-                        .size(SizeUtils().textSizeToDp(density, diffValue, 3)),
+                        .size(SizeUtils.textSizeToDp(density, diffValue, 3)),
                     tint = White
                 )
 

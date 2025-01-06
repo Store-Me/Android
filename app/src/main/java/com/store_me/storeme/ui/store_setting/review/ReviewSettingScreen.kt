@@ -300,7 +300,7 @@ fun ReviewItem(reviewComment: ReviewComment, onClickMenu: (String) -> Unit, onWr
                 contentDescription = "메뉴 아이콘",
                 tint = ReviewMenuContentColor,
                 modifier = Modifier
-                    .size(SizeUtils().textSizeToDp(density, 0))
+                    .size(SizeUtils.textSizeToDp(density, 0))
                     .clickable(
                         onClick = { showCommentMenu = true },
                         interactionSource = interactionSource,
@@ -317,7 +317,7 @@ fun ReviewItem(reviewComment: ReviewComment, onClickMenu: (String) -> Unit, onWr
                 maxLines = if(isTextExpanded) Int.MAX_VALUE else 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .padding(start = 50.dp, end = SizeUtils().textSizeToDp(density, 0))
+                    .padding(start = 50.dp, end = SizeUtils.textSizeToDp(density, 0))
                     .clickable(
                         onClick = { isTextExpanded = !isTextExpanded },
                         interactionSource = null,
@@ -412,7 +412,7 @@ fun ReviewItem(reviewComment: ReviewComment, onClickMenu: (String) -> Unit, onWr
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_right),
                         contentDescription = "더보기 아이콘",
-                        modifier = Modifier.size(SizeUtils().textSizeToDp(density, -1)),
+                        modifier = Modifier.size(SizeUtils.textSizeToDp(density, -1)),
                         tint = ReviewMenuBorderColor
                     )
 
@@ -453,7 +453,7 @@ fun ReviewItem(reviewComment: ReviewComment, onClickMenu: (String) -> Unit, onWr
                             contentDescription = "메뉴 아이콘",
                             tint = ReviewMenuContentColor,
                             modifier = Modifier
-                                .size(SizeUtils().textSizeToDp(density, 0))
+                                .size(SizeUtils.textSizeToDp(density, 0))
                                 .clickable(
                                     onClick = { showReplyMenu = true },
                                     interactionSource = replyInteractionSource,
@@ -467,7 +467,7 @@ fun ReviewItem(reviewComment: ReviewComment, onClickMenu: (String) -> Unit, onWr
                     Text(
                         text = it.replyText,
                         style = storeMeTextStyle(FontWeight.Normal, -2),
-                        modifier = Modifier.padding(end = SizeUtils().textSizeToDp(density, 0))
+                        modifier = Modifier.padding(end = SizeUtils.textSizeToDp(density, 0))
                     )
                 }
 
@@ -580,7 +580,7 @@ fun TopReviewSection() {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(SizeUtils().textSizeToDp(density, 4, 24))
+                        .height(SizeUtils.textSizeToDp(density, 4, 24))
                         .background(
                             color = EditButtonColor.copy(alpha = 0.4f),
                             shape = RoundedCornerShape(6.dp)

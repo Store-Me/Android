@@ -49,7 +49,7 @@ fun TermsSection(onFinish: () -> Unit) {
         item {
             Text(
                 text = "서비스 이용을 위한\n약관에 동의해주세요.",
-                style = storeMeTextStyle(FontWeight.ExtraBold, 6, isFixedSize = true),
+                style = storeMeTextStyle(FontWeight.ExtraBold, 6),
                 color = Color.Black,
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
@@ -68,7 +68,7 @@ fun TermsSection(onFinish: () -> Unit) {
             ) {
                 Text(
                     text = "전체 동의",
-                    style = storeMeTextStyle(FontWeight.ExtraBold, 2, isFixedSize = true),
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                     color = Color.Black
                 )
 
@@ -139,7 +139,7 @@ fun TermItem(title: String, content: String, isChecked: Boolean, onFinish: () ->
         ) {
             Text(
                 text = title,
-                style = storeMeTextStyle(FontWeight.ExtraBold, 2, isFixedSize = true),
+                style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                 color = Color.Black,
                 modifier = Modifier
                     .clickable(
@@ -183,7 +183,7 @@ fun TermItem(title: String, content: String, isChecked: Boolean, onFinish: () ->
         AnimatedVisibility(visible = !isFolded.value) {
             Text(
                 text = content,
-                style = storeMeTextStyle(FontWeight.Normal, 0, isFixedSize = true),
+                style = storeMeTextStyle(FontWeight.Normal, 0),
                 modifier = Modifier
                     .padding(top = 4.dp, end = 24.dp)
             )

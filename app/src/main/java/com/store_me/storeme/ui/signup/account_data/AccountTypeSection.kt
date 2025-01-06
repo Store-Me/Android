@@ -48,19 +48,19 @@ fun AccountTypeSection(onFinish: (Auth.AccountType) -> Unit) {
             ) {
                 Text(
                     text = "설정에서 추후 자유롭게",
-                    style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true)
+                    style = storeMeTextStyle(FontWeight.Normal, 2)
                 )
 
                 Row(
                 ) {
                     Text(
                         text = "사장님/손님",
-                        style = storeMeTextStyle(FontWeight.ExtraBold, 2, isFixedSize = true)
+                        style = storeMeTextStyle(FontWeight.ExtraBold, 2)
                     )
 
                     Text(
                         text = " 추가 및 전환이 가능합니다.",
-                        style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true)
+                        style = storeMeTextStyle(FontWeight.Normal, 2)
                     )
                 }
             }
@@ -107,7 +107,7 @@ fun AccountTypeBox(accountType: Auth.AccountType, onClick: () -> Unit) {
                         Auth.AccountType.OWNER -> { "사장님으로 시작하기" }
                         Auth.AccountType.CUSTOMER -> { "손님으로 시작하기" }
                     },
-                    style = storeMeTextStyle(FontWeight.ExtraBold, 2, isFixedSize = true),
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                     color = Color.Black
                 )
 
@@ -127,7 +127,7 @@ fun AccountTypeBox(accountType: Auth.AccountType, onClick: () -> Unit) {
                     Auth.AccountType.OWNER -> { "소식 및 이벤트로 내 가게 홍보하기" }
                     Auth.AccountType.CUSTOMER -> { "내 주변 가게 소식 및 이벤트 모아보기" }
                 },
-                style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true)
+                style = storeMeTextStyle(FontWeight.Normal, 1)
             )
         }
 

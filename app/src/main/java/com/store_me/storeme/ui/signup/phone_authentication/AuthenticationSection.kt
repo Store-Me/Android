@@ -95,17 +95,17 @@ fun AuthenticationSection(onFinish: () -> Unit) {
                 ) {
                     Text(
                         text = PhoneNumberUtils().phoneNumberAddDashes(phoneNumber),
-                        style = storeMeTextStyle(FontWeight.ExtraBold, 2, isFixedSize = true)
+                        style = storeMeTextStyle(FontWeight.ExtraBold, 2)
                     )
 
                     Text(
                         text = "로 인증번호를 보냈어요.",
-                        style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true)
+                        style = storeMeTextStyle(FontWeight.Normal, 2)
                     )
                 }
                 Text(
                     text = "확인 후 인증번호를 입력해주세요.",
-                    style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true)
+                    style = storeMeTextStyle(FontWeight.Normal, 2)
                 )
             }
         }
@@ -126,7 +126,7 @@ fun AuthenticationSection(onFinish: () -> Unit) {
             ) {
                 Text(
                     text = "휴대폰 번호 변경 / 다시 보내기",
-                    style = storeMeTextStyle(FontWeight.ExtraBold, 2, isFixedSize = true),
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                     color = HighlightTextFieldColor
                 )
 
@@ -147,7 +147,7 @@ fun AuthenticationSection(onFinish: () -> Unit) {
         item {
             Text(
                 text = "인증 번호",
-                style = storeMeTextStyle(FontWeight.ExtraBold, 2, true),
+                style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                 color = Color.Black,
                 modifier = Modifier
             )
@@ -159,7 +159,7 @@ fun AuthenticationSection(onFinish: () -> Unit) {
             OutlinedTextField(
                 value = verificationCode,
                 onValueChange = { phoneNumberViewModel.updateVerificationCode(it) },
-                textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                 modifier = Modifier
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp),
@@ -179,7 +179,7 @@ fun AuthenticationSection(onFinish: () -> Unit) {
                 placeholder = {
                     Text(
                         text = "인증코드를 입력해주세요.",
-                        style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                        style = storeMeTextStyle(FontWeight.Normal, 1),
                         color = UndefinedTextColor
                     )
                 },
@@ -194,7 +194,7 @@ fun AuthenticationSection(onFinish: () -> Unit) {
                     if(isError.value){
                         Text(
                             text = "인증번호가 일치하지 않습니다.",
-                            style = storeMeTextStyle(FontWeight.Normal, 0, isFixedSize = true),
+                            style = storeMeTextStyle(FontWeight.Normal, 0),
                             color = ErrorTextFieldColor
                         )
                     }

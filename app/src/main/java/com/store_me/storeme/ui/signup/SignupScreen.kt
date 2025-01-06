@@ -108,6 +108,8 @@ fun SignupScreen(
         signupViewModel.setLoginType(loginType)
     }
 
+    val snackbarHostState = LocalSnackbarHostState.current
+
     val signupState by signupViewModel.signupState.collectAsState()
 
     val accountType by signupViewModel.accountType.collectAsState()
@@ -126,8 +128,6 @@ fun SignupScreen(
         }
     }
 
-    val snackbarHostState = remember { SnackbarHostState() }
-
     fun moveToNextProgress() {
         signupViewModel.moveToNextProgress()
     }
@@ -137,7 +137,6 @@ fun SignupScreen(
     }
 
     CompositionLocalProvider(
-        LocalSnackbarHostState provides snackbarHostState,
         LocalSignupViewModel provides signupViewModel,
         LocalTermsViewModel provides termsViewModel,
         LocalPhoneNumberViewModel provides phoneNumberViewModel,
@@ -402,7 +401,7 @@ fun SignupScreen(
 fun SignupTitleText(title: String, modifier: Modifier = Modifier) {
     Text(
         text = title,
-        style = storeMeTextStyle(FontWeight.ExtraBold, 6, isFixedSize = true),
+        style = storeMeTextStyle(FontWeight.ExtraBold, 6),
         color = Black,
         modifier = modifier
             .padding(top = 20.dp)
@@ -424,7 +423,7 @@ fun NextButton(buttonText: String, modifier: Modifier = Modifier, enabled: Boole
     ) {
         Text(
             text = buttonText,
-            style = storeMeTextStyle(FontWeight.ExtraBold, 3, isFixedSize = true),
+            style = storeMeTextStyle(FontWeight.ExtraBold, 3),
             modifier = Modifier
                 .padding(vertical = 8.dp)
         )
@@ -441,7 +440,7 @@ fun GuidTextBoxItem(title: String, content: String) {
     ) {
         Text(
             text = title,
-            style = storeMeTextStyle(FontWeight.ExtraBold, 1, isFixedSize = true),
+            style = storeMeTextStyle(FontWeight.ExtraBold, 1),
             color = Black
         )
 
@@ -449,7 +448,7 @@ fun GuidTextBoxItem(title: String, content: String) {
 
         Text(
             text = content,
-            style = storeMeTextStyle(FontWeight.Normal, -1, isFixedSize = true)
+            style = storeMeTextStyle(FontWeight.Normal, -1)
         )
     }
 }

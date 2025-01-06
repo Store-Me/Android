@@ -96,7 +96,7 @@ fun StoreCategorySection(onFinish: () -> Unit) {
                     item {
                         Text(
                             text = annotatedString,
-                            style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true)
+                            style = storeMeTextStyle(FontWeight.Normal, 2)
                         )
                     }
 
@@ -109,7 +109,7 @@ fun StoreCategorySection(onFinish: () -> Unit) {
                         OutlinedTextField(
                             value = storeCategory?.displayName ?: "",
                             onValueChange = {  },
-                            textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                            textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable(
@@ -134,7 +134,7 @@ fun StoreCategorySection(onFinish: () -> Unit) {
                             placeholder = {
                                 Text(
                                     text = "업종을 선택해 주세요.",
-                                    style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                                    style = storeMeTextStyle(FontWeight.Normal, 1),
                                     color = UndefinedTextColor
                                 )
                             },
@@ -228,7 +228,7 @@ fun StoreCategoryItem(storeCategory: StoreCategory, onClick: () -> Unit) {
     ) {
         Text(
             text = storeCategory.displayName,
-            style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true),
+            style = storeMeTextStyle(FontWeight.Normal, 2),
             color = Color.Black
         )
 
@@ -248,7 +248,7 @@ fun StoreCategoryItem(storeCategory: StoreCategory, onClick: () -> Unit) {
 fun AdditionalGuidText(text: String) {
     Text(
         text = text,
-        style = storeMeTextStyle(FontWeight.Bold, -1, isFixedSize = true),
+        style = storeMeTextStyle(FontWeight.Bold, -1),
         color = UndefinedTextColor
     )
 }

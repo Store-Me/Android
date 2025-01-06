@@ -95,7 +95,7 @@ fun SearchStoreLocationSection(
                     if(it.length >= 2)
                         locationViewModel.getSearchResults(query = it)
                 },
-                textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                 modifier = Modifier
                     .fillMaxWidth()
                     .sharedElement(
@@ -115,7 +115,7 @@ fun SearchStoreLocationSection(
                 placeholder = {
                     Text(
                         text = "지역을 검색해 주세요.",
-                        style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                        style = storeMeTextStyle(FontWeight.Normal, 1),
                         color = UndefinedTextColor
                     )
                 },
@@ -201,7 +201,7 @@ fun SetLocationButton(locationViewModel: LocationViewModel) {
     ) {
         Text(
             text = "현재 위치로 설정",
-            style = storeMeTextStyle(FontWeight.ExtraBold, 2, isFixedSize = true),
+            style = storeMeTextStyle(FontWeight.ExtraBold, 2),
             modifier = Modifier
                 .padding(vertical = 8.dp)
         )

@@ -38,10 +38,16 @@ import com.store_me.storeme.ui.theme.LoginDividerColor
 import com.store_me.storeme.ui.theme.StoreMeLoginButtonColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.KakaoLoginHelper
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = hiltViewModel()) {
+fun LoginScreen(
+    navController: NavController,
+    loginViewModel: LoginViewModel = hiltViewModel()
+) {
+    val loadingViewModel = LocalLoadingViewModel.current
+
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
@@ -49,6 +55,8 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
 
     LaunchedEffect(isKakaoLoginFailed) {
         if(isKakaoLoginFailed){
+            loadingViewModel.hideLoading()
+
             loginViewModel.clearKakaoLoginFailedState()
             navController.navigate(OnboardingActivity.Screen.Signup.route.name + "/${Auth.LoginType.KAKAO}?additionalData=${loginViewModel.kakaoId.value}")
         }
@@ -79,7 +87,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
 
                 Text(
                     text = "내 주변 나만의 가게들",
-                    style = storeMeTextStyle(FontWeight.Normal, 6, isFixedSize = true),
+                    style = storeMeTextStyle(FontWeight.Normal, 6),
                     modifier = Modifier
                         .padding(top = 12.dp, bottom = 24.dp)
                 )
@@ -93,10 +101,13 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
                     containerColor = KakaoLoginButtonColor,
                     contentColor = Black
                 ) {
-                    coroutineScope.launch {
+                    loadingViewModel.showLoading()
 
+                    coroutineScope.launch {
                         when (val kakaoId = KakaoLoginHelper.getKakaoId(context)) {
-                            null -> {}
+                            null -> {
+                                loadingViewModel.hideLoading()
+                            }
                             else -> {
                                 loginViewModel.loginWithKakao(kakaoId)
                             }
@@ -134,7 +145,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
 
                     Text(
                         text = "또는",
-                        style = storeMeTextStyle(FontWeight.Bold, 1, isFixedSize = true),
+                        style = storeMeTextStyle(FontWeight.Bold, 1),
                         color = LoginDividerColor
                     )
 

@@ -50,7 +50,7 @@ fun StoreIntroSection(onFinish: () -> Unit) {
         item {
             Text(
                 text = "지금 입력 후 나중에도 자유롭게 변경할 수 있어요.",
-                style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true),
+                style = storeMeTextStyle(FontWeight.Normal, 2),
                 color = Color.Black,
                 modifier = Modifier.padding(horizontal = 20.dp)
             )
@@ -64,11 +64,11 @@ fun StoreIntroSection(onFinish: () -> Unit) {
             TextField(
                 value = storeIntro,
                 onValueChange = { storeDataViewModel.updateStoreIntro(it) },
-                textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                 placeholder = {
                     Text(
                         text = "손님들에게 알리고 싶은 내용을 남겨보세요.\n우리 스토어만의 차별점과 특별한 서비스를 안내하면 좋아요.",
-                        style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                        style = storeMeTextStyle(FontWeight.Normal, 1),
                         color = UndefinedTextColor
                     )
                 },

@@ -87,7 +87,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
             ) {
                 Text(
                     text = "아이디",
-                    style = storeMeTextStyle(FontWeight.ExtraBold, 2, true),
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                     color = Color.Black
                 )
 
@@ -97,7 +97,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                         accountDataViewModel.updateAccountId(it)
                         accountDataViewModel.clearAccountIdDuplicate()
                     },
-                    textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                    textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                     modifier = Modifier
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
@@ -122,7 +122,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                         ) {
                             Text(
                                 text = if(accountIdDuplicate == null || accountIdDuplicate == true) "중복 확인" else "확인 완료",
-                                style = storeMeTextStyle(FontWeight.ExtraBold, -1, isFixedSize = true),
+                                style = storeMeTextStyle(FontWeight.ExtraBold, -1),
                                 modifier = Modifier
                                     .padding(vertical = 4.dp)
                             )
@@ -131,7 +131,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                     placeholder = {
                         Text(
                             text = "아이디를 입력해주세요.",
-                            style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                            style = storeMeTextStyle(FontWeight.Normal, 1),
                             color = UndefinedTextColor
                         )
                     },
@@ -146,7 +146,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                         if(isIdError.value){
                             Text(
                                 text = "4 ~ 20 글자 영어 혹은 숫자로 구성되어야 합니다.",
-                                style = storeMeTextStyle(FontWeight.Normal, 0, isFixedSize = true),
+                                style = storeMeTextStyle(FontWeight.Normal, 0),
                                 color = ErrorTextFieldColor
                             )
                         }
@@ -164,7 +164,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
             ) {
                 Text(
                     text = "비밀번호",
-                    style = storeMeTextStyle(FontWeight.ExtraBold, 2, true),
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                     color = Color.Black
                 )
 
@@ -176,7 +176,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                             isPwError.value = !accountDataViewModel.isValidPw()
                         }
                     },
-                    textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                    textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                     modifier = Modifier
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
@@ -195,7 +195,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                     placeholder = {
                         Text(
                             text = "비밀번호를 입력해주세요.",
-                            style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                            style = storeMeTextStyle(FontWeight.Normal, 1),
                             color = UndefinedTextColor
                         )
                     },
@@ -210,7 +210,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                         if(isPwError.value){
                             Text(
                                 text = "4 ~ 20 글자로 구성되어야 합니다.",
-                                style = storeMeTextStyle(FontWeight.Normal, 0, isFixedSize = true),
+                                style = storeMeTextStyle(FontWeight.Normal, 0),
                                 color = ErrorTextFieldColor
                             )
                         }
@@ -228,7 +228,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
             ) {
                 Text(
                     text = "비밀번호 확인",
-                    style = storeMeTextStyle(FontWeight.ExtraBold, 2, true),
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                     color = Color.Black
                 )
 
@@ -237,7 +237,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                     onValueChange = {
                         accountDataViewModel.updateAccountPwConfirm(it)
                     },
-                    textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                    textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                     modifier = Modifier
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
@@ -256,7 +256,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                     placeholder = {
                         Text(
                             text = "동일한 비밀번호를 입력해주세요.",
-                            style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                            style = storeMeTextStyle(FontWeight.Normal, 1),
                             color = UndefinedTextColor
                         )
                     },
@@ -271,7 +271,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                         if(isPwConfirmError.value){
                             Text(
                                 text = "비밀번호가 일치하지 않습니다.",
-                                style = storeMeTextStyle(FontWeight.Normal, 0, isFixedSize = true),
+                                style = storeMeTextStyle(FontWeight.Normal, 0),
                                 color = ErrorTextFieldColor
                             )
                         }

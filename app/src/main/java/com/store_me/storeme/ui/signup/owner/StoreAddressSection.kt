@@ -140,7 +140,7 @@ fun AddressSection(onFinish: () -> Unit) {
                         item {
                             Text(
                                 text = annotatedString,
-                                style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true)
+                                style = storeMeTextStyle(FontWeight.Normal, 2)
                             )
                         }
 
@@ -154,14 +154,14 @@ fun AddressSection(onFinish: () -> Unit) {
                             ) {
                                 Text(
                                     text = "주소",
-                                    style = storeMeTextStyle(FontWeight.ExtraBold, 2, true),
+                                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                                     color = if(hasAddress) Color.Black else DisabledColor
                                 )
 
                                 OutlinedTextField(
                                     value = if(hasAddress) storeLocationAddress else "",
                                     onValueChange = {  },
-                                    textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                                    textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable(
@@ -182,7 +182,7 @@ fun AddressSection(onFinish: () -> Unit) {
                                     placeholder = {
                                         Text(
                                             text = "주소를 검색해 주세요.",
-                                            style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                                            style = storeMeTextStyle(FontWeight.Normal, 1),
                                             color = UndefinedTextColor
                                         )
                                     },
@@ -203,7 +203,7 @@ fun AddressSection(onFinish: () -> Unit) {
                                     onValueChange = {
                                         storeDataViewModel.updateStoreLocationDetail(it)
                                     },
-                                    textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                                    textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                                     modifier = Modifier
                                         .fillMaxWidth(),
                                     shape = RoundedCornerShape(14.dp),
@@ -223,7 +223,7 @@ fun AddressSection(onFinish: () -> Unit) {
                                     placeholder = {
                                         Text(
                                             text = "상세 주소를 입력해 주세요.",
-                                            style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                                            style = storeMeTextStyle(FontWeight.Normal, 1),
                                             color = UndefinedTextColor
                                         )
                                     },
@@ -241,7 +241,7 @@ fun AddressSection(onFinish: () -> Unit) {
                                         if(isError.value){
                                             Text(
                                                 text = "상세 주소는 100자 이내로 작성되어야 합니다.",
-                                                style = storeMeTextStyle(FontWeight.Normal, 0, isFixedSize = true),
+                                                style = storeMeTextStyle(FontWeight.Normal, 0),
                                                 color = ErrorTextFieldColor
                                             )
                                         }
@@ -273,7 +273,7 @@ fun AddressSection(onFinish: () -> Unit) {
                                 ) {
                                     Text(
                                         text = "주소가 없어요",
-                                        style = storeMeTextStyle(FontWeight.Normal, -1, isFixedSize = true),
+                                        style = storeMeTextStyle(FontWeight.Normal, -1),
                                         color = Color.Black
                                     )
 
@@ -297,14 +297,14 @@ fun AddressSection(onFinish: () -> Unit) {
                                 ) {
                                     Text(
                                         text = "지역명",
-                                        style = storeMeTextStyle(FontWeight.ExtraBold, 2, true),
+                                        style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                                         color = Color.Black
                                     )
 
                                     OutlinedTextField(
                                         value = if(!hasAddress) storeLocationAddress else "",
                                         onValueChange = {  },
-                                        textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                                        textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .clickable(
@@ -329,7 +329,7 @@ fun AddressSection(onFinish: () -> Unit) {
                                         placeholder = {
                                             Text(
                                                 text = "지역을 검색해 주세요.",
-                                                style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                                                style = storeMeTextStyle(FontWeight.Normal, 1),
                                                 color = UndefinedTextColor
                                             )
                                         },
@@ -347,7 +347,7 @@ fun AddressSection(onFinish: () -> Unit) {
 
                                     Text(
                                         text = "· 상세한 주소 대신 지역명을 등록해 주세요.",
-                                        style = storeMeTextStyle(FontWeight.Bold, 0, isFixedSize = true),
+                                        style = storeMeTextStyle(FontWeight.Bold, 0),
                                         color = HighlightGuidTextColor
                                     )
                                 }
@@ -399,9 +399,7 @@ fun AddressWebView(
                 loadUrl("https://storeme.shop/html/daum_postcode.html")
             }
         },
-        update = { webView ->
-            // 필요 시 업데이트 로직
-        },
+        update = {  },
         modifier = Modifier
             .fillMaxSize()
     )

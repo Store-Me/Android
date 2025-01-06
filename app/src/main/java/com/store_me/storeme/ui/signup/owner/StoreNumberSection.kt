@@ -82,7 +82,7 @@ fun StoreNumberSection(onFinish: () -> Unit) {
         item {
             Text(
                 text = annotatedString,
-                style = storeMeTextStyle(FontWeight.Normal, 2, isFixedSize = true)
+                style = storeMeTextStyle(FontWeight.Normal, 2)
             )
         }
 
@@ -97,7 +97,7 @@ fun StoreNumberSection(onFinish: () -> Unit) {
             ) {
                 Text(
                     text = "전화번호",
-                    style = storeMeTextStyle(FontWeight.ExtraBold, 2, true),
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                     color = Color.Black
                 )
                 
@@ -107,7 +107,7 @@ fun StoreNumberSection(onFinish: () -> Unit) {
                         if(it.length < 13)
                             storeDataViewModel.updateStoreNumber(it)
                     },
-                    textStyle = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                    textStyle = storeMeTextStyle(FontWeight.Normal, 1),
                     modifier = Modifier
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(14.dp),
@@ -127,7 +127,7 @@ fun StoreNumberSection(onFinish: () -> Unit) {
                     placeholder = {
                         Text(
                             text = "스토어 전화번호를 입력해주세요.",
-                            style = storeMeTextStyle(FontWeight.Normal, 1, isFixedSize = true),
+                            style = storeMeTextStyle(FontWeight.Normal, 1),
                             color = UndefinedTextColor
                         )
                     },
@@ -143,7 +143,7 @@ fun StoreNumberSection(onFinish: () -> Unit) {
                         if(isError.value){
                             Text(
                                 text = "전화번호 형식이 올바르지 않습니다.",
-                                style = storeMeTextStyle(FontWeight.Normal, 0, isFixedSize = true),
+                                style = storeMeTextStyle(FontWeight.Normal, 0),
                                 color = ErrorTextFieldColor
                             )
                         }

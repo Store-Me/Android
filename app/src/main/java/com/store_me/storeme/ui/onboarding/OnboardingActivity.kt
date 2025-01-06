@@ -6,11 +6,13 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -25,6 +27,7 @@ import com.store_me.storeme.ui.loading.LoadingViewModel
 import com.store_me.storeme.ui.signup.SignupScreen
 import com.store_me.storeme.ui.login.LoginScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
+import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -51,8 +54,11 @@ class OnboardingActivity : ComponentActivity() {
                 
                 val isLoading by loadingViewModel.isLoading.collectAsState()
 
+                val snackbarHostState = remember { SnackbarHostState() }
+
                 CompositionLocalProvider(
-                    LocalLoadingViewModel provides loadingViewModel
+                    LocalLoadingViewModel provides loadingViewModel,
+                    LocalSnackbarHostState provides snackbarHostState
                 ) {
                     Surface (
                         modifier = Modifier.fillMaxSize(),
