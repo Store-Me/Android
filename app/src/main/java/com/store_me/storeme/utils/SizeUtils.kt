@@ -6,7 +6,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.store_me.storeme.ui.theme.defaultFontSize
 
-class SizeUtils {
+object SizeUtils {
     /**
      * Text의 크기에 따른 Dp 값 반환 함수
      * @param density Density
