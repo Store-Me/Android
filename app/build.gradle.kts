@@ -116,6 +116,9 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.35.0-alpha")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
+    //EncryptedSharedPreferences
+    implementation("androidx.security:security-crypto-ktx:1.1.0-alpha06")
+
     //Kakao Login
     implementation("com.kakao.sdk:v2-user:2.14.0")
 
@@ -170,5 +173,8 @@ dependencies {
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation("androidx.media3:media3-exoplayer:1.4.1")
     implementation("androidx.media3:media3-ui:1.4.1")
+
+    //UCrop
+    implementation("com.github.yalantis:ucrop:2.2.10")
 
 }
