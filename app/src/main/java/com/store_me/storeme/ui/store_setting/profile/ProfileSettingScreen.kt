@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -25,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalFocusManager
@@ -33,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
+import com.store_me.storeme.data.Auth
 import com.store_me.storeme.ui.component.AlphaBackgroundText
 import com.store_me.storeme.ui.component.BackgroundSection
 import com.store_me.storeme.ui.component.CircleBorderWithIcon
@@ -40,7 +44,7 @@ import com.store_me.storeme.ui.component.DefaultOutlineTextField
 import com.store_me.storeme.ui.component.TextFieldErrorType
 import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
-import com.store_me.storeme.ui.component.CircleProfileImage
+import com.store_me.storeme.ui.component.ProfileImage
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 
@@ -112,12 +116,13 @@ fun ProfileImageSettingSection(onClick: () -> Unit) {
                     interactionSource = interactionSource
                 )
         ) {
-            CircleProfileImage(
+            ProfileImage(
+                accountType = Auth.AccountType.OWNER,
                 url = profileImage,
-                size = 100,
                 modifier = Modifier
+                    .size(100.dp)
+                    .clip(CircleShape)
                     .align(Alignment.TopCenter),
-                isUser = false
             )
 
             CircleBorderWithIcon(
@@ -131,8 +136,6 @@ fun ProfileImageSettingSection(onClick: () -> Unit) {
             )
         }
     }
-
-
 }
 
 @Composable
