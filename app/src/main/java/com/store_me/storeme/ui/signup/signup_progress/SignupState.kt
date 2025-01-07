@@ -12,9 +12,9 @@ sealed class SignupState: Comparable<SignupState> {
 
     private val order: Int
         get() = when (this) {
-            is Signup -> 0
-            Onboarding -> 1
-            is Customer -> 2
-            is Owner -> 3
+            is Signup -> 0 + progress.order
+            Onboarding -> 100
+            is Customer -> 200 + progress.order
+            is Owner -> 300 + progress.order
         }
 }
