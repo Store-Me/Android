@@ -81,6 +81,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.BannerData
 import com.store_me.storeme.data.SocialMediaAccountData
+import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.location.LocationViewModel
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.mystore.CategoryViewModel
@@ -612,7 +613,8 @@ fun LinkSection(
     socialMediaAccountData: SocialMediaAccountData?,
     modifier: Modifier = Modifier,
     onShareClick: () -> Unit,
-    onEditClick: () -> Unit
+    onEditClick: () -> Unit,
+    accountType: AccountType
 ) {
 
     @Composable
@@ -676,7 +678,7 @@ fun LinkSection(
             }
         }
 
-        if(Auth.accountType == Auth.AccountType.OWNER)
+        if(accountType == AccountType.OWNER)
             item { EditLinkIcon { onEditClick() } }
     }
 }

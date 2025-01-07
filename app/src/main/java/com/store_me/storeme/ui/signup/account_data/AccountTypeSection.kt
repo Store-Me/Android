@@ -24,12 +24,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
+import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.SignupTextBoxColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 
 @Composable
-fun AccountTypeSection(onFinish: (Auth.AccountType) -> Unit) {
+fun AccountTypeSection(onFinish: (AccountType) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .padding(horizontal = 20.dp)
@@ -74,12 +75,12 @@ fun AccountTypeSection(onFinish: (Auth.AccountType) -> Unit) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                AccountTypeBox(accountType = Auth.AccountType.CUSTOMER) {
-                    onFinish(Auth.AccountType.CUSTOMER)
+                AccountTypeBox(accountType = AccountType.CUSTOMER) {
+                    onFinish(AccountType.CUSTOMER)
                 }
 
-                AccountTypeBox(accountType = Auth.AccountType.OWNER) {
-                    onFinish(Auth.AccountType.OWNER)
+                AccountTypeBox(accountType = AccountType.OWNER) {
+                    onFinish(AccountType.OWNER)
                 }
             }
         }
@@ -87,7 +88,7 @@ fun AccountTypeSection(onFinish: (Auth.AccountType) -> Unit) {
 }
 
 @Composable
-fun AccountTypeBox(accountType: Auth.AccountType, onClick: () -> Unit) {
+fun AccountTypeBox(accountType: AccountType, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .background(color = SignupTextBoxColor, shape = RoundedCornerShape(14.dp))
@@ -104,8 +105,8 @@ fun AccountTypeBox(accountType: Auth.AccountType, onClick: () -> Unit) {
             ) {
                 Text(
                     text = when(accountType) {
-                        Auth.AccountType.OWNER -> { "사장님으로 시작하기" }
-                        Auth.AccountType.CUSTOMER -> { "손님으로 시작하기" }
+                        AccountType.OWNER -> { "사장님으로 시작하기" }
+                        AccountType.CUSTOMER -> { "손님으로 시작하기" }
                     },
                     style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                     color = Color.Black
@@ -124,8 +125,8 @@ fun AccountTypeBox(accountType: Auth.AccountType, onClick: () -> Unit) {
 
             Text(
                 text = when(accountType) {
-                    Auth.AccountType.OWNER -> { "소식 및 이벤트로 내 가게 홍보하기" }
-                    Auth.AccountType.CUSTOMER -> { "내 주변 가게 소식 및 이벤트 모아보기" }
+                    AccountType.OWNER -> { "소식 및 이벤트로 내 가게 홍보하기" }
+                    AccountType.CUSTOMER -> { "내 주변 가게 소식 및 이벤트 모아보기" }
                 },
                 style = storeMeTextStyle(FontWeight.Normal, 1)
             )
@@ -136,8 +137,8 @@ fun AccountTypeBox(accountType: Auth.AccountType, onClick: () -> Unit) {
         Icon(
             painterResource(
                 id = when(accountType) {
-                    Auth.AccountType.OWNER -> { R.drawable.ic_signup_owner }
-                    Auth.AccountType.CUSTOMER -> { R.drawable.ic_signup_customer }
+                    AccountType.OWNER -> { R.drawable.ic_signup_owner }
+                    AccountType.CUSTOMER -> { R.drawable.ic_signup_customer }
                 }
             ),
             contentDescription = "계정 타입 아이콘",
