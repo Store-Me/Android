@@ -1,6 +1,7 @@
 
 package com.store_me.storeme.ui.main
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -21,11 +22,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -40,6 +45,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.StoreHomeItem
 import com.store_me.storeme.data.StoreNormalItem
+import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.banner.BannerDetailScreen
 import com.store_me.storeme.ui.banner.BannerListScreen
 import com.store_me.storeme.ui.home.customer.CustomerHomeScreen
@@ -77,30 +83,50 @@ import com.store_me.storeme.ui.store_talk.StoreTalkScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.storeMeTypography
+import com.store_me.storeme.utils.composition_locals.LocalAuth
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var auth: com.store_me.auth.Auth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if(!Auth.isLoggedIn.value){
-            val intent = Intent(this, OnboardingActivity::class.java)
-            startActivity(intent)
-        }
-
         setContent {
             StoreMeTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                CompositionLocalProvider(
+                    LocalAuth provides auth
                 ) {
-                    when(Auth.accountType){
-                        Auth.AccountType.CUSTOMER -> { CustomerScreen() }
-                        Auth.AccountType.OWNER -> { OwnerScreen() }
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
+                        val isLoggedIn by auth.isLoggedIn.collectAsState()
+                        val accountType by auth.accountType.collectAsState()
+
+                        if(!isLoggedIn) {
+                            NavigateToOnboarding()
+                        } else {
+                            when(accountType){
+                                AccountType.CUSTOMER -> { CustomerScreen() }
+                                AccountType.OWNER -> { OwnerScreen() }
+                            }
+                        }
                     }
                 }
             }
+        }
+    }
+    @Composable
+    private fun NavigateToOnboarding() {
+        val context = LocalContext.current
+        LaunchedEffect(Unit) {
+            val intent = Intent(context, OnboardingActivity::class.java)
+            context.startActivity(intent)
+            (context as? Activity)?.finish()
         }
     }
 
@@ -248,6 +274,10 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun BottomNavigationBar(navController: NavHostController) {
+        val auth = LocalAuth.current
+
+        val accountType by auth.accountType.collectAsState()
+
         val customerItems = listOf(
             CustomerBottomNavItem.CustomerHome,
             CustomerBottomNavItem.Favorite,
@@ -264,9 +294,9 @@ class MainActivity : ComponentActivity() {
             OwnerBottomNavItem.StoreInfo
         )
 
-        val items = when(Auth.accountType){
-            Auth.AccountType.CUSTOMER -> customerItems
-            Auth.AccountType.OWNER -> ownerItems
+        val items = when(accountType){
+            AccountType.CUSTOMER -> customerItems
+            AccountType.OWNER -> ownerItems
         }
 
         Column {
@@ -283,8 +313,8 @@ class MainActivity : ComponentActivity() {
 
                 items.forEach { item ->
                     val isSelected =
-                        when(Auth.accountType){
-                            Auth.AccountType.CUSTOMER -> {
+                        when(accountType){
+                            AccountType.CUSTOMER -> {
                                 when {
                                     currentRoute == item.screenRoute -> true
                                     currentRoute?.startsWith(USER_HOME) == true && item.screenRoute == CustomerBottomNavItem.CustomerHome.screenRoute -> true
@@ -295,7 +325,7 @@ class MainActivity : ComponentActivity() {
                                     else -> false
                                 }
                             }
-                            Auth.AccountType.OWNER -> {
+                            AccountType.OWNER -> {
                                 when {
                                     currentRoute == item.screenRoute -> true
                                     currentRoute?.startsWith(OWNER_HOME) == true && item.screenRoute == OwnerBottomNavItem.OwnerHome.screenRoute -> true

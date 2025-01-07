@@ -21,7 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.store_me.storeme.data.Auth.LoginType
+import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.ui.loading.LoadingScreen
 import com.store_me.storeme.ui.loading.LoadingViewModel
 import com.store_me.storeme.ui.signup.SignupScreen
