@@ -1,11 +1,15 @@
 package com.store_me.storeme.ui.signup.phone_authentication
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.store_me.storeme.R
 import com.store_me.storeme.data.model.verification.ConfirmCode
 import com.store_me.storeme.repository.storeme.UserRepository
 import com.store_me.storeme.ui.component.filterNonNumeric
+import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -13,9 +17,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PhoneNumberViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val userRepository: UserRepository
 ): ViewModel() {
-    private val _phoneNumber = MutableStateFlow<String>("")
+    private val _phoneNumber = MutableStateFlow("")
     val phoneNumber: StateFlow<String> = _phoneNumber
 
     private val _smsSentSuccess = MutableStateFlow(false)
@@ -24,8 +29,11 @@ class PhoneNumberViewModel @Inject constructor(
     private val _verificationCode = MutableStateFlow("")
     val verificationCode: StateFlow<String> = _verificationCode
 
-    private val _verificationSuccess = MutableStateFlow<Boolean?>(null)
+    private val _verificationSuccess = MutableStateFlow<Boolean?>(false)
     val verificationSuccess: StateFlow<Boolean?> = _verificationSuccess
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
 
     fun updatePhoneNumber(newPhoneNumber: String) {
         _phoneNumber.value = filterNonNumeric(newPhoneNumber)
@@ -35,6 +43,10 @@ class PhoneNumberViewModel @Inject constructor(
         _verificationCode.value = newVerificationCode
     }
 
+    fun updateErrorMessage(errorMessage: String?) {
+        _errorMessage.value = errorMessage
+    }
+
     fun sendSmsMessage(phoneNumber: String) {
         viewModelScope.launch {
             val result = userRepository.sendSmsMessage(phoneNumber = phoneNumber)
@@ -42,19 +54,32 @@ class PhoneNumberViewModel @Inject constructor(
             result.onSuccess {
                 _smsSentSuccess.value = true
             }.onFailure {
-                _smsSentSuccess.value = false
+                if(it is ApiException) {
+                    _errorMessage.value = it.message
+                } else {
+                    _errorMessage.value = context.getString(R.string.unknown_error_message)
+                }
             }
         }
     }
 
     fun confirmCode() {
         viewModelScope.launch {
-            val result = userRepository.confirmVerificationCode(confirmCode = ConfirmCode(phoneNumber = _phoneNumber.value, verificationCode = _verificationCode.value))
+            val result = userRepository.confirmVerificationCode(
+                confirmCode = ConfirmCode(
+                    phoneNumber = _phoneNumber.value, verificationCode = _verificationCode.value)
+            )
 
             result.onSuccess {
                 _verificationSuccess.value = true
             }.onFailure {
                 _verificationSuccess.value = false
+
+                if(it is ApiException) {
+                    _errorMessage.value = it.message
+                } else {
+                    _errorMessage.value = context.getString(R.string.unknown_error_message)
+                }
             }
         }
     }

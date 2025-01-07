@@ -4,7 +4,11 @@ import android.content.Context
 import android.util.Log
 import com.store_me.storeme.data.response.StoreListResponse
 import com.store_me.storeme.network.storeme.OwnerApiService
+import com.store_me.storeme.utils.exception.ApiExceptionHandler
+import com.store_me.storeme.utils.exception.ApiExceptionHandler.toResult
+import com.store_me.storeme.utils.response.ResponseHandler
 import dagger.hilt.android.qualifiers.ApplicationContext
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -23,18 +27,33 @@ class OwnerRepositoryImpl @Inject constructor(
             val response = ownerApiService.getStoreList()
 
             if(response.isSuccessful) {
-                Log.d("getStoreList", response.body().toString())
+                val responseBody = response.body()
 
-                Result.success(response.body()?.result ?: StoreListResponse(emptyList()))
+                Timber.i(response.body().toString())
+
+                when(responseBody?.isSuccess) {
+                    true -> {
+                        Result.success(responseBody.result ?: StoreListResponse(emptyList()))
+                    }
+                    false -> {
+                        Result.failure(
+                            ApiExceptionHandler.apiException(
+                                code = responseBody.code, message = responseBody.message
+                            ))
+                    }
+                    else -> {
+                        Result.failure(
+                            ApiExceptionHandler.apiException(
+                                code = responseBody?.code, message = responseBody?.message
+                            ))
+                    }
+                }
+
             } else {
-                Log.d("getStoreList", response.errorBody()?.string() ?: "")
-
-                Result.failure(Exception("오류가 발생했습니다. ${response.code()} - ${response.message()}"))
+                ResponseHandler.handleErrorResponse(response, context)
             }
         } catch (e: Exception) {
-            Log.d("getStoreList", e.message.toString())
-
-            Result.failure(e)
+            e.toResult(context)
         }
     }
 

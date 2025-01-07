@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -43,11 +44,18 @@ import com.store_me.storeme.ui.theme.ValidIconColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.utils.ValidationUtils
+import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalAccountDataViewModel
 
 @Composable
 fun AccountDataSection(onFinish: () -> Unit) {
+    val context = LocalContext.current
+
+    val loadingViewModel = LocalLoadingViewModel.current
     val accountDataViewModel = LocalAccountDataViewModel.current
+
+    val snackbarHostState = LocalSnackbarHostState.current
 
     val accountId by accountDataViewModel.accountId.collectAsState()
     val accountPw by accountDataViewModel.accountPw.collectAsState()
@@ -56,6 +64,8 @@ fun AccountDataSection(onFinish: () -> Unit) {
     val isIdError = remember { mutableStateOf(false) }
     val isPwError = remember { mutableStateOf(false) }
     val isPwConfirmError = remember { mutableStateOf(false) }
+
+    val errorMessage by accountDataViewModel.errorMessage.collectAsState()
 
     val isHidePw = remember { mutableStateOf(true) }
     val isHidePwConfirm = remember { mutableStateOf(true) }
@@ -69,6 +79,26 @@ fun AccountDataSection(onFinish: () -> Unit) {
             isPwError.value = !ValidationUtils.isValidPw(accountPw)
         } else if (accountPw.isNotEmpty()) {
             isPwError.value = !ValidationUtils.isValidPw(accountPw)
+        }
+    }
+
+    LaunchedEffect(accountIdDuplicate) {
+        if(accountIdDuplicate == true) {
+            snackbarHostState.showSnackbar(context.getString(R.string.account_id_is_duplicate))
+
+            accountDataViewModel.clearAccountIdDuplicate()
+        } else if(accountIdDuplicate == false) {
+            snackbarHostState.showSnackbar(context.getString(R.string.account_id_not_duplicate))
+        }
+    }
+
+    LaunchedEffect(errorMessage) {
+        if(errorMessage != null) {
+            loadingViewModel.hideLoading()
+
+            snackbarHostState.showSnackbar(errorMessage.toString())
+
+            accountDataViewModel.updateErrorMessage(null)
         }
     }
 
@@ -254,6 +284,7 @@ fun AccountDataSection(onFinish: () -> Unit) {
                 buttonText = "다음",
                 enabled = accountIdDuplicate == false && isPasswordMatching && !isPwError.value && accountPw.isNotEmpty()
             ) {
+                accountDataViewModel.clearAccountIdDuplicate()
                 onFinish()
             }
         }

@@ -82,7 +82,7 @@ class UserRepositoryImpl @Inject constructor(
                     else -> {
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody?.code, message = context.getString(R.string.default_error_message)
+                                code = responseBody?.code, message = responseBody?.message
                             ))
                     }
                 }
@@ -119,7 +119,7 @@ class UserRepositoryImpl @Inject constructor(
                     else -> {
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody?.code, message = context.getString(R.string.default_error_message)
+                                code = responseBody?.code, message = responseBody?.message
                             ))
                     }
                 }
@@ -158,7 +158,7 @@ class UserRepositoryImpl @Inject constructor(
                     else -> {
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody?.code, message = context.getString(R.string.default_error_message)
+                                code = responseBody?.code, message = responseBody?.message
                             ))
                     }
                 }
@@ -200,7 +200,7 @@ class UserRepositoryImpl @Inject constructor(
                     else -> {
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody?.code, message = context.getString(R.string.default_error_message)
+                                code = responseBody?.code, message = responseBody?.message
                             ))
                     }
                 }
@@ -239,7 +239,7 @@ class UserRepositoryImpl @Inject constructor(
                             Result.success(responseBody.result)
                         } else {
                             Result.failure(ApiExceptionHandler.apiException(
-                                code = responseBody.code, message = context.getString(R.string.login_token_error_message)
+                                code = responseBody.code, message = context.getString(R.string.token_error_message)
                             ))
                         }
                     }
@@ -247,13 +247,13 @@ class UserRepositoryImpl @Inject constructor(
                         //로그인 실패
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody.code, message = context.getString(R.string.default_error_message)
+                                code = responseBody.code, message = responseBody.message
                             ))
                     }
                     else -> {
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody?.code, message = context.getString(R.string.default_error_message)
+                                code = responseBody?.code, message = responseBody?.message
                             ))
                     }
                 }
@@ -293,7 +293,7 @@ class UserRepositoryImpl @Inject constructor(
                             Result.success(responseBody.result)
                         } else {
                             Result.failure(ApiExceptionHandler.apiException(
-                                code = responseBody.code, message = context.getString(R.string.login_token_error_message)
+                                code = responseBody.code, message = context.getString(R.string.token_error_message)
                             ))
                         }
                     }
@@ -301,13 +301,13 @@ class UserRepositoryImpl @Inject constructor(
                         //로그인 실패
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody.code, message = context.getString(R.string.default_error_message)
+                                code = responseBody.code, message = responseBody.message
                             ))
                     }
                     else -> {
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody?.code, message = context.getString(R.string.default_error_message)
+                                code = responseBody?.code, message = responseBody?.message
                             ))
                     }
                 }
@@ -356,7 +356,7 @@ class UserRepositoryImpl @Inject constructor(
                     else -> {
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody?.code, message = context.getString(R.string.default_error_message)
+                                code = responseBody?.code, message = responseBody?.message
                             ))
                     }
                 }
@@ -394,7 +394,7 @@ class UserRepositoryImpl @Inject constructor(
                     else -> {
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody?.code, message = context.getString(R.string.default_error_message)
+                                code = responseBody?.code, message = responseBody?.message
                             ))
                     }
                 }
@@ -431,7 +431,7 @@ class UserRepositoryImpl @Inject constructor(
                     else -> {
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody?.code, message = context.getString(R.string.default_error_message)
+                                code = responseBody?.code, message = responseBody?.message
                             ))
                     }
                 }

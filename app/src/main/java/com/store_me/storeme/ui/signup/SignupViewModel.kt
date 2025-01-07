@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.data.model.signup.CustomerSignupApp
@@ -12,6 +13,7 @@ import com.store_me.storeme.data.model.signup.OwnerSignupApp
 import com.store_me.storeme.data.model.signup.OwnerSignupKakao
 import com.store_me.storeme.repository.storeme.UserRepository
 import com.store_me.storeme.utils.FileUtils
+import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,6 +33,12 @@ class SignupViewModel @Inject constructor(
     private val _loginType = MutableStateFlow<LoginType?>(null)
     val loginType: StateFlow<LoginType?> = _loginType
 
+    private val _isSignupFinish = MutableStateFlow(false)
+    val isSignupFinish: StateFlow<Boolean> = _isSignupFinish
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
 
     fun setLoginType(loginType: LoginType) {
         _loginType.value = loginType
@@ -40,7 +48,9 @@ class SignupViewModel @Inject constructor(
         _accountType.value = accountType
     }
 
-
+    fun updateErrorMessage(errorMessage: String?) {
+        _errorMessage.value = errorMessage
+    }
 
     fun customerSignupApp(customerSignupApp: CustomerSignupApp, profileImage: Uri?) {
         val profileImageFile =
@@ -56,10 +66,12 @@ class SignupViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            userRepository.customerSignupApp(
+            val response = userRepository.customerSignupApp(
                 customerSignupApp = customerSignupApp,
                 profileImage = profileImageFile
             )
+
+            signupResponse(response)
         }
     }
 
@@ -77,10 +89,12 @@ class SignupViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            userRepository.customerSignupKakao(
+            val response = userRepository.customerSignupKakao(
                 customerSignupKakao = customerSignupKakao,
                 profileImage = profileImageFile
             )
+
+            signupResponse(response)
         }
     }
 
@@ -104,11 +118,13 @@ class SignupViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            userRepository.ownerSignupApp(
+            val response = userRepository.ownerSignupApp(
                 ownerSignupApp = ownerSignupApp,
                 storeProfileImage = storeProfileImageFile,
                 storeImageList = storeImageFiles
             )
+
+            signupResponse(response)
         }
     }
 
@@ -132,15 +148,29 @@ class SignupViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            userRepository.ownerSignupKakao(
+            val response = userRepository.ownerSignupKakao(
                 ownerSignupKakao = ownerSignupKakao,
                 storeProfileImage = storeProfileImageFile,
                 storeImageList = storeImageFiles
             )
+
+            signupResponse(response)
+        }
+    }
+
+    private fun signupResponse(response: Result<Unit>) {
+        response.onSuccess {
+            _isSignupFinish.value = true
+        }.onFailure {
+            if(it is ApiException) {
+                _errorMessage.value = it.message
+            } else {
+                _errorMessage.value = context.getString(R.string.unknown_error_message)
+            }
         }
     }
 
     private fun onErrorImageFile() {
-
+        _errorMessage.value = context.getString(R.string.fail_convert_multipart)
     }
 }

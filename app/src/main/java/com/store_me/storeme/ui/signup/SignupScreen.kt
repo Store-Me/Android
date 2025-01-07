@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,6 +55,7 @@ import com.store_me.storeme.data.model.signup.OwnerSignupApp
 import com.store_me.storeme.data.model.signup.OwnerSignupKakao
 import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.StoreMeSnackbar
+import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.signup.account_data.AccountDataSection
 import com.store_me.storeme.ui.signup.account_data.AccountDataViewModel
@@ -86,6 +88,7 @@ import com.store_me.storeme.ui.signup.terms.TermsViewModel
 import com.store_me.storeme.ui.theme.SignupTextBoxColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalAccountDataViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalCustomerDataViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalPhoneNumberViewModel
@@ -109,27 +112,56 @@ fun SignupScreen(
     storeDataViewModel: StoreDataViewModel = hiltViewModel(),
     customerDataViewModel: CustomerDataViewModel = viewModel()
 ) {
-
-    LaunchedEffect(loginType) {
-        signupViewModel.setLoginType(loginType)
-    }
+    val context = LocalContext.current
 
     val snackbarHostState = LocalSnackbarHostState.current
+    val loadingViewModel = LocalLoadingViewModel.current
 
     val signupState by signupProgressViewModel.signupState.collectAsState()
 
     val accountType by signupViewModel.accountType.collectAsState()
 
+    val isSignupFinish by signupViewModel.isSignupFinish.collectAsState()
+    val errorMessage by signupViewModel.errorMessage.collectAsState()
+
     val focusManager = LocalFocusManager.current
 
     val showDialog = remember { mutableStateOf(false) }
+    val showNumberWarningDialog = remember { mutableStateOf(false) }
+
+    LaunchedEffect(loginType) {
+        signupViewModel.setLoginType(loginType)
+    }
+
+    LaunchedEffect(errorMessage) {
+        if(errorMessage != null) {
+            loadingViewModel.hideLoading()
+
+            snackbarHostState.showSnackbar(errorMessage.toString())
+
+            signupViewModel.updateErrorMessage(null)
+        }
+    }
+
+    LaunchedEffect(isSignupFinish) {
+        if(isSignupFinish) {
+            snackbarHostState.showSnackbar(context.getString(R.string.signup_finish))
+            navController.popBackStack()
+        }
+    }
 
     fun onClickBackButton() {
         if(signupState is SignupState.Signup){
-            if((signupState as SignupState.Signup).progress == SignupProgress.TERMS) {
-                showDialog.value = true
-            } else {
-                signupProgressViewModel.moveToPreviousProgress(loginType)
+            when ((signupState as SignupState.Signup).progress) {
+                SignupProgress.TERMS -> {
+                    showDialog.value = true
+                }
+                SignupProgress.CERTIFICATION -> {
+                    showNumberWarningDialog.value = true
+                }
+                else -> {
+                    signupProgressViewModel.moveToPreviousProgress(loginType)
+                }
             }
         } else {
             signupProgressViewModel.moveToPreviousProgress(loginType)
@@ -144,12 +176,26 @@ fun SignupScreen(
         onClickBackButton()
     }
 
-    if (showDialog.value) {
+    if(showDialog.value) {
         BackWarningDialog(
             onDismiss = { showDialog.value = false },
             onAction = {
                 showDialog.value = false
                 navController.popBackStack()
+            }
+        )
+    }
+
+    if(showNumberWarningDialog.value) {
+        WarningDialog(
+            title = "전화번호 입력 화면으로 이동할까요?",
+            warningContent = null,
+            content = "이전 화면으로 이동 시, 전화번호 재인증이 필요해요.",
+            actionText = "확인",
+            onDismiss = { showNumberWarningDialog.value = false },
+            onAction = {
+                showNumberWarningDialog.value = false
+                signupProgressViewModel.moveToPreviousProgress(loginType)
             }
         )
     }
@@ -235,7 +281,9 @@ fun SignupScreen(
                                         }
                                     }
                                     SignupProgress.CERTIFICATION -> {
-                                        AuthenticationSection {
+                                        AuthenticationSection(
+                                            onBack = { onClickBackButton() }
+                                        ) {
                                             moveToNextProgress()
                                         }
                                     }
@@ -318,6 +366,8 @@ fun SignupScreen(
                                     }
                                     OwnerProgress.FINISH -> {
                                         FinishSection {
+                                            loadingViewModel.showLoading()
+
                                             when {
                                                 accountType == AccountType.OWNER && signupViewModel.loginType.value == LoginType.KAKAO-> {
                                                     signupViewModel.ownerSignupKakao(
@@ -405,7 +455,6 @@ fun SignupScreen(
                                             }
                                         }
                                     }
-
                                 }
                             }
                         }

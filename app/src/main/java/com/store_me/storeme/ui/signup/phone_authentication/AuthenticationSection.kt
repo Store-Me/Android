@@ -41,24 +41,28 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.composition_locals.signup.LocalPhoneNumberViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalSignupViewModel
 import com.store_me.storeme.utils.PhoneNumberUtils
+import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalSignupProgressViewModel
 
 @Composable
-fun AuthenticationSection(onFinish: () -> Unit) {
+fun AuthenticationSection(onBack: () -> Unit, onFinish: () -> Unit) {
+    val loadingViewModel = LocalLoadingViewModel.current
     val phoneNumberViewModel = LocalPhoneNumberViewModel.current
-    val signupViewModel = LocalSignupViewModel.current
-    val signupProgressViewModel = LocalSignupProgressViewModel.current
-
-    val loginType by signupViewModel.loginType.collectAsState()
+    val snackbarHostState = LocalSnackbarHostState.current
 
     val phoneNumber by phoneNumberViewModel.phoneNumber.collectAsState()
     val verificationCode by phoneNumberViewModel.verificationCode.collectAsState()
 
     val verificationSuccess by phoneNumberViewModel.verificationSuccess.collectAsState()
 
+    val errorMessage by phoneNumberViewModel.errorMessage.collectAsState()
+
     val isError = remember { mutableStateOf(false) }
 
     LaunchedEffect(verificationSuccess) {
+        loadingViewModel.hideLoading()
+
         when(verificationSuccess){
             true -> {
                 phoneNumberViewModel.clearVerificationSuccess()
@@ -68,7 +72,7 @@ fun AuthenticationSection(onFinish: () -> Unit) {
                 isError.value = true
             }
             null -> {
-
+                
             }
         }
     }
@@ -76,6 +80,16 @@ fun AuthenticationSection(onFinish: () -> Unit) {
     LaunchedEffect(verificationCode) {
         if(isError.value) {
             isError.value = false
+        }
+    }
+
+    LaunchedEffect(errorMessage) {
+        if (errorMessage != null) {
+            loadingViewModel.hideLoading()
+
+            snackbarHostState.showSnackbar(errorMessage.toString())
+
+            phoneNumberViewModel.updateErrorMessage(null)
         }
     }
 
@@ -122,7 +136,7 @@ fun AuthenticationSection(onFinish: () -> Unit) {
             Row(
                 modifier = Modifier
                     .clickable {
-                        loginType?.let { signupProgressViewModel.moveToPreviousProgress(loginType = it) }
+                        onBack()
                     }
                     .padding(vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -214,6 +228,8 @@ fun AuthenticationSection(onFinish: () -> Unit) {
             DefaultButton(
                 buttonText = "확인"
             ) {
+                loadingViewModel.showLoading()
+
                 phoneNumberViewModel.confirmCode()
             }
         }

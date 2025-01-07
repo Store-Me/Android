@@ -36,20 +36,37 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.composition_locals.signup.LocalPhoneNumberViewModel
 import com.store_me.storeme.utils.PhoneNumberUtils
 import com.store_me.storeme.utils.PhoneNumberVisualTransformation
+import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 
 @Composable
 fun PhoneNumberSection(onFinish: () -> Unit) {
+    val loadingViewModel = LocalLoadingViewModel.current
     val phoneNumberViewModel = LocalPhoneNumberViewModel.current
+
+    val snackbarHostState = LocalSnackbarHostState.current
 
     val phoneNumber by phoneNumberViewModel.phoneNumber.collectAsState()
     val smsSentSuccess by phoneNumberViewModel.smsSentSuccess.collectAsState()
+    val errorMessage by phoneNumberViewModel.errorMessage.collectAsState()
 
     val isError = remember { mutableStateOf(false) }
 
     LaunchedEffect(smsSentSuccess) {
         if(smsSentSuccess) {
             phoneNumberViewModel.clearSmsSentSuccess()
+            loadingViewModel.hideLoading()
             onFinish()
+        }
+    }
+
+    LaunchedEffect(errorMessage) {
+        if(errorMessage != null) {
+            loadingViewModel.hideLoading()
+
+            snackbarHostState.showSnackbar(errorMessage.toString())
+
+            phoneNumberViewModel.updateErrorMessage(null)
         }
     }
 
@@ -136,7 +153,7 @@ fun PhoneNumberSection(onFinish: () -> Unit) {
                 buttonText = "인증 요청"
             ) {
                 if(PhoneNumberUtils().isValidPhoneNumber(phoneNumber = phoneNumber)){
-                    isError.value = false
+                    loadingViewModel.showLoading()
 
                     phoneNumberViewModel.sendSmsMessage(phoneNumber = phoneNumber)
                 } else {
