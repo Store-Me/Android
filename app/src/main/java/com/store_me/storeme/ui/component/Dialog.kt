@@ -33,8 +33,8 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 @Composable
 fun WarningDialog(
     title: String,
-    warningContent: String,
-    content: String,
+    warningContent: String?,
+    content: String?,
     actionText: String,
     onDismiss: () -> Unit,
     onAction: () -> Unit,
@@ -63,24 +63,28 @@ fun WarningDialog(
 
             Text(text = title, style = storeMeTextStyle(FontWeight.ExtraBold, 6))
 
-            Spacer(modifier = Modifier.height(20.dp))
+            if(!warningContent.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(20.dp))
 
-            Text(
-                text= warningContent,
-                style = storeMeTextStyle(FontWeight.ExtraBold, 2),
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Visible
-            )
+                Text(
+                    text= warningContent,
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    overflow = TextOverflow.Visible
+                )
+            }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            if(!content.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(20.dp))
 
-            Text(
-                text= content,
-                style = storeMeTextStyle(FontWeight.Bold, 2),
-                color = UnselectedItemColor,
-                textAlign = TextAlign.Center
-            )
+                Text(
+                    text= content,
+                    style = storeMeTextStyle(FontWeight.Bold, 2),
+                    color = UnselectedItemColor,
+                    textAlign = TextAlign.Center
+                )
+            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
