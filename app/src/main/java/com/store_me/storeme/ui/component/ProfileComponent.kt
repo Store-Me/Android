@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
+import com.store_me.storeme.data.enums.AccountType
 
 /**
  * 프로필 이미지 Composable
@@ -15,13 +15,13 @@ import com.store_me.storeme.data.Auth
  * @param modifier Modifier
  */
 @Composable
-fun ProfileImage(accountType: Auth.AccountType, uri: Uri?, modifier: Modifier = Modifier) {
+fun ProfileImage(accountType: AccountType, uri: Uri?, modifier: Modifier = Modifier) {
     val errorImage = when(accountType) {
-        Auth.AccountType.CUSTOMER -> {
+        AccountType.CUSTOMER -> {
             R.drawable.profile_null_image
         }
 
-        Auth.AccountType.OWNER -> {
+        AccountType.OWNER -> {
             R.drawable.store_null_image
         }
     }
@@ -41,13 +41,13 @@ fun ProfileImage(accountType: Auth.AccountType, uri: Uri?, modifier: Modifier = 
  * @param modifier Modifier
  */
 @Composable
-fun ProfileImage(accountType: Auth.AccountType, url: String?, modifier: Modifier = Modifier) {
+fun ProfileImage(accountType: AccountType, url: String?, modifier: Modifier = Modifier) {
     val errorImage = when(accountType) {
-        Auth.AccountType.CUSTOMER -> {
+        AccountType.CUSTOMER -> {
             R.drawable.profile_null_image
         }
 
-        Auth.AccountType.OWNER -> {
+        AccountType.OWNER -> {
             R.drawable.store_null_image
         }
     }

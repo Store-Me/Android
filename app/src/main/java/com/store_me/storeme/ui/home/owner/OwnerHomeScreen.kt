@@ -99,6 +99,7 @@ import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.LikeCountUtils
 import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.ToastMessageUtils
+import com.store_me.storeme.utils.composition_locals.LocalAuth
 import kotlinx.coroutines.launch
 
 val LocalOwnerHomeViewModel = staticCompositionLocalOf<OwnerHomeViewModel> {
@@ -152,6 +153,10 @@ fun OwnerHomeScreen(
 
 @Composable
 fun ProfileSection(navController: NavController) {
+    val auth = LocalAuth.current
+
+    val accountType by auth.accountType.collectAsState()
+
     val linkListData by Auth.linkListData.collectAsState()
 
     Column {
@@ -174,7 +179,8 @@ fun ProfileSection(navController: NavController) {
                     navController,
                     MainActivity.OwnerNavItem.LINK_SETTING
                 )
-            }
+            },
+            accountType = accountType
         )
 
         Spacer(modifier = Modifier.height(15.dp))

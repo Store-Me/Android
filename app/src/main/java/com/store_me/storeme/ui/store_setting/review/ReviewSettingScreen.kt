@@ -63,6 +63,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.ReviewComment
 import com.store_me.storeme.data.StoreHomeItem
+import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.hasMenu
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.KeyBoardInputField
@@ -271,7 +272,7 @@ fun ReviewItem(reviewComment: ReviewComment, onClickMenu: (String) -> Unit, onWr
             verticalAlignment = Alignment.CenterVertically
         ) {
             ProfileImage(
-                accountType = Auth.AccountType.CUSTOMER,
+                accountType = AccountType.CUSTOMER,
                 url = reviewComment.userData.profileImage,
                 modifier = Modifier
                     .size(40.dp)

@@ -10,7 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.store_me.storeme.data.Auth
+import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.signup.owner.ProfileImageSection
@@ -31,7 +31,7 @@ fun CustomerProfileImageSection(onFinish: () -> Unit) {
         Spacer(modifier = Modifier.height(36.dp))
 
         ProfileImageSection(
-            accountType = Auth.AccountType.CUSTOMER,
+            accountType = AccountType.CUSTOMER,
             uri = profileImage,
             onDelete = { customerDataViewModel.updateProfileImage(null) },
             onCropResult = { customerDataViewModel.updateProfileImage(it) }

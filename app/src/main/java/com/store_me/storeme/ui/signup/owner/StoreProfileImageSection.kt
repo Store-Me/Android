@@ -27,7 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
+import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.component.CircleBorderWithIcon
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.ProfileImage
@@ -60,7 +60,7 @@ fun StoreProfileImageSection(onFinish: () -> Unit) {
         Spacer(modifier = Modifier.height(36.dp))
 
         ProfileImageSection(
-            accountType = Auth.AccountType.OWNER,
+            accountType = AccountType.OWNER,
             uri = storeProfileImage,
             onDelete = { storeDataViewModel.updateStoreProfileImage(null) },
             onCropResult = { storeDataViewModel.updateStoreProfileImage(it) }
@@ -76,7 +76,7 @@ fun StoreProfileImageSection(onFinish: () -> Unit) {
 
 @Composable
 fun ProfileImageSection(
-    accountType: Auth.AccountType,
+    accountType: AccountType,
     uri: Uri?,
     onDelete: () -> Unit,
     onCropResult: (Uri) -> Unit

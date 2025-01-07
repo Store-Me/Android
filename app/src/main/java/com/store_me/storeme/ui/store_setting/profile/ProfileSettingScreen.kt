@@ -37,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
+import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.component.AlphaBackgroundText
 import com.store_me.storeme.ui.component.BackgroundSection
 import com.store_me.storeme.ui.component.CircleBorderWithIcon
@@ -117,7 +118,7 @@ fun ProfileImageSettingSection(onClick: () -> Unit) {
                 )
         ) {
             ProfileImage(
-                accountType = Auth.AccountType.OWNER,
+                accountType = AccountType.OWNER,
                 url = profileImage,
                 modifier = Modifier
                     .size(100.dp)
