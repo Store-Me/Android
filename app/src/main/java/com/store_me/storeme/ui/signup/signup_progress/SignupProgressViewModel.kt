@@ -57,9 +57,6 @@ class SignupProgressViewModel: ViewModel() {
                     LoginType.APP -> {
                         SignupProgress.ACCOUNT_DATA
                     }
-                    else -> {
-                        return
-                    }
                 }
             }
             SignupProgress.ACCOUNT_DATA -> SignupProgress.ACCOUNT_TYPE
@@ -85,9 +82,6 @@ class SignupProgressViewModel: ViewModel() {
                     }
                     LoginType.APP -> {
                         SignupProgress.ACCOUNT_DATA
-                    }
-                    else -> {
-                        return
                     }
                 }
             }

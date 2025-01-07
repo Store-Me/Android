@@ -33,6 +33,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Black
@@ -51,6 +52,7 @@ import com.store_me.storeme.data.model.signup.CustomerSignupApp
 import com.store_me.storeme.data.model.signup.CustomerSignupKakao
 import com.store_me.storeme.data.model.signup.OwnerSignupApp
 import com.store_me.storeme.data.model.signup.OwnerSignupKakao
+import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.StoreMeSnackbar
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.signup.account_data.AccountDataSection
@@ -120,10 +122,12 @@ fun SignupScreen(
 
     val focusManager = LocalFocusManager.current
 
+    val showDialog = remember { mutableStateOf(false) }
+
     fun onClickBackButton() {
         if(signupState is SignupState.Signup){
             if((signupState as SignupState.Signup).progress == SignupProgress.TERMS) {
-                navController.popBackStack()
+                showDialog.value = true
             } else {
                 signupProgressViewModel.moveToPreviousProgress(loginType)
             }
@@ -138,6 +142,16 @@ fun SignupScreen(
 
     BackHandler {
         onClickBackButton()
+    }
+
+    if (showDialog.value) {
+        BackWarningDialog(
+            onDismiss = { showDialog.value = false },
+            onAction = {
+                showDialog.value = false
+                navController.popBackStack()
+            }
+        )
     }
 
     CompositionLocalProvider(
