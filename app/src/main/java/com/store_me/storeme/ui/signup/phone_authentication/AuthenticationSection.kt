@@ -41,11 +41,15 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.composition_locals.signup.LocalPhoneNumberViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalSignupViewModel
 import com.store_me.storeme.utils.PhoneNumberUtils
+import com.store_me.storeme.utils.composition_locals.signup.LocalSignupProgressViewModel
 
 @Composable
 fun AuthenticationSection(onFinish: () -> Unit) {
     val phoneNumberViewModel = LocalPhoneNumberViewModel.current
     val signupViewModel = LocalSignupViewModel.current
+    val signupProgressViewModel = LocalSignupProgressViewModel.current
+
+    val loginType by signupViewModel.loginType.collectAsState()
 
     val phoneNumber by phoneNumberViewModel.phoneNumber.collectAsState()
     val verificationCode by phoneNumberViewModel.verificationCode.collectAsState()
@@ -118,7 +122,7 @@ fun AuthenticationSection(onFinish: () -> Unit) {
             Row(
                 modifier = Modifier
                     .clickable {
-                        signupViewModel.moveToPreviousProgress()
+                        loginType?.let { signupProgressViewModel.moveToPreviousProgress(loginType = it) }
                     }
                     .padding(vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
