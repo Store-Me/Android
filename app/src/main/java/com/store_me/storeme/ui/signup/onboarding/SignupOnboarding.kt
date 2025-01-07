@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.store_me.storeme.data.Auth
+import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.theme.OnboardingSelectedIndicatorColor
 import com.store_me.storeme.ui.theme.OnboardingUnselectedIndicatorColor
@@ -44,9 +44,9 @@ fun SignupOnboardingSection(onFinish: () -> Unit) {
 
     val accountType by signupViewModel.accountType.collectAsState()
 
-    val onboardingImageList = signupOnboardingViewModel.getOnboardingImageList(accountType ?: Auth.AccountType.CUSTOMER)
-    val onboardingTitleList = signupOnboardingViewModel.getOnboardingTitleList(accountType ?: Auth.AccountType.CUSTOMER)
-    val onboardingContentList = signupOnboardingViewModel.getOnboardingContentList(accountType ?: Auth.AccountType.CUSTOMER)
+    val onboardingImageList = signupOnboardingViewModel.getOnboardingImageList(accountType ?: AccountType.CUSTOMER)
+    val onboardingTitleList = signupOnboardingViewModel.getOnboardingTitleList(accountType ?: AccountType.CUSTOMER)
+    val onboardingContentList = signupOnboardingViewModel.getOnboardingContentList(accountType ?: AccountType.CUSTOMER)
 
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
