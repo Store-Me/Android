@@ -45,8 +45,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
-import com.store_me.storeme.data.Auth.LoginType
+import com.store_me.storeme.data.enums.AccountType
+import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.data.model.signup.CustomerSignupApp
 import com.store_me.storeme.data.model.signup.CustomerSignupKakao
 import com.store_me.storeme.data.model.signup.OwnerSignupApp
@@ -73,6 +73,11 @@ import com.store_me.storeme.ui.signup.owner.StoreNameSection
 import com.store_me.storeme.ui.signup.owner.StoreNumberSection
 import com.store_me.storeme.ui.signup.owner.StoreProfileImageSection
 import com.store_me.storeme.ui.signup.phone_authentication.AuthenticationSection
+import com.store_me.storeme.ui.signup.signup_progress.CustomerProgress
+import com.store_me.storeme.ui.signup.signup_progress.OwnerProgress
+import com.store_me.storeme.ui.signup.signup_progress.SignupProgress
+import com.store_me.storeme.ui.signup.signup_progress.SignupProgressViewModel
+import com.store_me.storeme.ui.signup.signup_progress.SignupState
 import com.store_me.storeme.ui.signup.terms.OptionalTerms
 import com.store_me.storeme.ui.signup.terms.TermsSection
 import com.store_me.storeme.ui.signup.terms.TermsViewModel
@@ -83,6 +88,7 @@ import com.store_me.storeme.utils.composition_locals.signup.LocalAccountDataView
 import com.store_me.storeme.utils.composition_locals.signup.LocalCustomerDataViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalPhoneNumberViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalSignupOnboardingViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalSignupProgressViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalSignupViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalStoreDataViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalTermsViewModel
@@ -92,6 +98,7 @@ fun SignupScreen(
     navController: NavController,
     loginType: LoginType,
     additionalData: String = "",
+    signupProgressViewModel: SignupProgressViewModel = viewModel(),
     signupViewModel: SignupViewModel = hiltViewModel(),
     phoneNumberViewModel: PhoneNumberViewModel = hiltViewModel(),
     termsViewModel: TermsViewModel = viewModel(),
@@ -107,7 +114,7 @@ fun SignupScreen(
 
     val snackbarHostState = LocalSnackbarHostState.current
 
-    val signupState by signupViewModel.signupState.collectAsState()
+    val signupState by signupProgressViewModel.signupState.collectAsState()
 
     val accountType by signupViewModel.accountType.collectAsState()
 
@@ -118,15 +125,15 @@ fun SignupScreen(
             if((signupState as SignupState.Signup).progress == SignupProgress.TERMS) {
                 navController.popBackStack()
             } else {
-                signupViewModel.moveToPreviousProgress()
+                signupProgressViewModel.moveToPreviousProgress(loginType)
             }
         } else {
-            signupViewModel.moveToPreviousProgress()
+            signupProgressViewModel.moveToPreviousProgress(loginType)
         }
     }
 
     fun moveToNextProgress() {
-        signupViewModel.moveToNextProgress()
+        signupProgressViewModel.moveToNextProgress(accountType = accountType, loginType = loginType)
     }
 
     BackHandler {
@@ -134,6 +141,7 @@ fun SignupScreen(
     }
 
     CompositionLocalProvider(
+        LocalSignupProgressViewModel provides signupProgressViewModel,
         LocalSignupViewModel provides signupViewModel,
         LocalTermsViewModel provides termsViewModel,
         LocalPhoneNumberViewModel provides phoneNumberViewModel,
@@ -297,7 +305,7 @@ fun SignupScreen(
                                     OwnerProgress.FINISH -> {
                                         FinishSection {
                                             when {
-                                                accountType == Auth.AccountType.OWNER && signupViewModel.loginType.value == LoginType.KAKAO-> {
+                                                accountType == AccountType.OWNER && signupViewModel.loginType.value == LoginType.KAKAO-> {
                                                     signupViewModel.ownerSignupKakao(
                                                         ownerSignupKakao = OwnerSignupKakao(
                                                             kakaoId = additionalData,
@@ -323,7 +331,7 @@ fun SignupScreen(
                                                     )
                                                 }
 
-                                                accountType == Auth.AccountType.OWNER && loginType == LoginType.APP-> {
+                                                accountType == AccountType.OWNER && loginType == LoginType.APP-> {
                                                     signupViewModel.ownerSignupApp(
                                                         ownerSignupApp = OwnerSignupApp(
                                                             accountId = accountDataViewModel.accountId.value,
@@ -350,7 +358,7 @@ fun SignupScreen(
                                                     )
                                                 }
 
-                                                accountType == Auth.AccountType.CUSTOMER && loginType == LoginType.KAKAO-> {
+                                                accountType == AccountType.CUSTOMER && loginType == LoginType.KAKAO-> {
                                                     signupViewModel.customerSignupKakao(
                                                         customerSignupKakao = CustomerSignupKakao(
                                                             kakaoId = additionalData,
@@ -365,7 +373,7 @@ fun SignupScreen(
                                                     )
                                                 }
 
-                                                accountType == Auth.AccountType.CUSTOMER && loginType == LoginType.APP-> {
+                                                accountType == AccountType.CUSTOMER && loginType == LoginType.APP-> {
                                                     signupViewModel.customerSignupApp(
                                                         customerSignupApp = CustomerSignupApp(
                                                             accountId = accountDataViewModel.accountId.value,
