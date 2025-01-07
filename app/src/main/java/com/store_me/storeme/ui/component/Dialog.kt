@@ -61,7 +61,11 @@ fun WarningDialog(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Text(text = title, style = storeMeTextStyle(FontWeight.ExtraBold, 6))
+            Text(
+                text = title,
+                style = storeMeTextStyle(FontWeight.ExtraBold, 6),
+                textAlign = TextAlign.Center
+            )
 
             if(!warningContent.isNullOrEmpty()) {
                 Spacer(modifier = Modifier.height(20.dp))
@@ -71,7 +75,7 @@ fun WarningDialog(
                     style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                     textAlign = TextAlign.Center,
                     maxLines = 1,
-                    overflow = TextOverflow.Visible
+                    overflow = TextOverflow.Visible,
                 )
             }
 
