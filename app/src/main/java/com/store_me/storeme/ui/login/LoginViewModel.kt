@@ -102,6 +102,16 @@ class LoginViewModel @Inject constructor(
     }
 
     private suspend fun loginSuccess() {
-        ownerRepository.getStoreList()
+        val response = ownerRepository.getStoreList()
+
+        response.onSuccess {
+
+        }.onFailure {
+            if(it is ApiException) {
+                _errorMessage.value = it.message
+            } else {
+                _errorMessage.value = context.getString(R.string.unknown_error_message)
+            }
+        }
     }
 }
