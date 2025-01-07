@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -101,8 +102,10 @@ class MainActivity : ComponentActivity() {
                     LocalAuth provides auth
                 ) {
                     Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = Color.White),
+                        color = Color.Transparent
                     ) {
                         val isLoggedIn by auth.isLoggedIn.collectAsState()
                         val accountType by auth.accountType.collectAsState()

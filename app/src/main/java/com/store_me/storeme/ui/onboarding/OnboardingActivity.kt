@@ -3,6 +3,7 @@ package com.store_me.storeme.ui.onboarding
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -14,6 +15,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -61,8 +63,10 @@ class OnboardingActivity : ComponentActivity() {
                     LocalSnackbarHostState provides snackbarHostState
                 ) {
                     Surface (
-                        modifier = Modifier.fillMaxSize(),
-                        color = MaterialTheme.colorScheme.background
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = Color.White),
+                        color = Color.Transparent
                     ) {
                         Box(
                             modifier = Modifier

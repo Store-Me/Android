@@ -29,7 +29,11 @@ fun StoreMeSnackbar(snackbarData: SnackbarData) {
             }
         },
         modifier = Modifier
-            .padding(12.dp)
+            .padding(
+                start = 12.dp,
+                end = 12.dp,
+                bottom = 12.dp
+            )
     ) {
         Text(
             text = snackbarData.visuals.message,
