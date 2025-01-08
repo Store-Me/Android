@@ -1,5 +1,7 @@
 package com.store_me.di
 
+import com.store_me.auth.AuthInterceptor
+import com.store_me.storeme.network.storeme.AuthApiService
 import com.store_me.storeme.network.storeme.OwnerApiService
 import com.store_me.storeme.network.storeme.UserApiService
 import com.store_me.storeme.utils.TokenPreferencesHelper
@@ -25,15 +27,11 @@ object StoreMeModule {
     @Provides
     @Singleton
     @Named("Authorized")
-    fun provideAuthorizedOkHttpClient(): OkHttpClient {
+    fun provideAuthorizedOkHttpClient(
+        authInterceptor: AuthInterceptor
+    ): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor { chain ->
-                val originalRequest = chain.request()
-                val requestBuilder = originalRequest.newBuilder()
-                    .addHeader("Authorization", "Bearer ${TokenPreferencesHelper.getAccessToken()}")
-                val request = requestBuilder.build()
-                chain.proceed(request)
-            }
+            .addInterceptor(authInterceptor)
             .build()
     }
 
@@ -45,6 +43,21 @@ object StoreMeModule {
             .build()
     }
 
+    @Provides
+    @Singleton
+    @Named("Reissue")
+    fun provideReissueOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .addInterceptor { chain ->
+                val originalRequest = chain.request()
+                val requestBuilder = originalRequest.newBuilder()
+                    .addHeader("Authorization", "Bearer ${TokenPreferencesHelper.getAccessToken()}")
+                    .addHeader("Authorization-Refresh", "${TokenPreferencesHelper.getRefreshToken()}")
+                val request = requestBuilder.build()
+                chain.proceed(request)
+            }
+            .build()
+    }
 
     // Authorization 헤더가 필요한 Retrofit 인스턴스
     @Provides
@@ -76,12 +89,45 @@ object StoreMeModule {
             .build()
     }
 
+    //Reissue Retrofit 인스턴스
     @Provides
     @Singleton
-    fun userApiService(
+    @Named("ReissueRetrofit")
+    fun provideReissueRetrofit(
+        @Named("Reissue") okHttpClient: OkHttpClient,
+        baseUrl: String
+    ): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    @Named("UserApiServiceWithoutAuth")
+    fun userApiServiceWithoutAuth(
         @Named("UnauthorizedRetrofit") retrofit: Retrofit
     ): UserApiService {
         return retrofit.create(UserApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    @Named("UserApiServiceWithAuth")
+    fun userApiServiceWithAuth(
+        @Named("AuthorizedRetrofit") retrofit: Retrofit
+    ): UserApiService {
+        return retrofit.create(UserApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun authApiService(
+        @Named("ReissueRetrofit") retrofit: Retrofit
+    ): AuthApiService {
+        return retrofit.create(AuthApiService::class.java)
     }
 
     @Provides

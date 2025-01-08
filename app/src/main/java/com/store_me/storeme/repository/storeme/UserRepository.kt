@@ -24,6 +24,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.MultipartBody
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Named
 
 /**
  * 전체 사용자 관련 UserRepository
@@ -54,12 +55,13 @@ interface UserRepository {
 
 class UserRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val userApiService: UserApiService
+    @Named("UserApiServiceWithoutAuth") private val userApiServiceWithoutAuth: UserApiService,
+    @Named("UserApiServiceWithAuth") private val userApiServiceWithAuth: UserApiService
 ): UserRepository {
 
     override suspend fun customerSignupApp(customerSignupApp: CustomerSignupApp, profileImage: MultipartBody.Part?): Result<Unit> {
         return try {
-            val response = userApiService.customerSignupApp(
+            val response = userApiServiceWithoutAuth.customerSignupApp(
                 appCustomerSignupRequestDto = customerSignupApp,
                 profileImageFile = profileImage
             )
@@ -96,7 +98,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun customerSignupKakao(customerSignupKakao: CustomerSignupKakao, profileImage: MultipartBody.Part?): Result<Unit> {
         return try {
-            val response = userApiService.customerSignupKakao(
+            val response = userApiServiceWithoutAuth.customerSignupKakao(
                 kakaoCustomerSignupRequestDto = customerSignupKakao,
                 profileImageFile = profileImage
             )
@@ -133,7 +135,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun ownerSignupApp(ownerSignupApp: OwnerSignupApp, storeProfileImage: MultipartBody.Part?, storeImageList: List<MultipartBody.Part>?): Result<Unit> {
         return try {
-            val response = userApiService.ownerSignupApp(
+            val response = userApiServiceWithoutAuth.ownerSignupApp(
                 appOwnerSignupRequestDto = ownerSignupApp,
                 storeProfileImageFile = storeProfileImage,
                 storeImageFileList = storeImageList,
@@ -175,7 +177,7 @@ class UserRepositoryImpl @Inject constructor(
      */
     override suspend fun ownerSignupKakao(ownerSignupKakao: OwnerSignupKakao, storeProfileImage: MultipartBody.Part?, storeImageList: List<MultipartBody.Part>?): Result<Unit> {
         return try {
-            val response = userApiService.ownerSignupKakao(
+            val response = userApiServiceWithoutAuth.ownerSignupKakao(
                 kakaoOwnerSignupRequestDto = ownerSignupKakao,
                 storeProfileImageFile = storeProfileImage,
                 storeImageFileList = storeImageList,
@@ -217,7 +219,7 @@ class UserRepositoryImpl @Inject constructor(
      */
     override suspend fun loginWithApp(accountId: String, accountPw: String): Result<LoginResponse> {
         return try {
-            val response = userApiService.loginWithApp(
+            val response = userApiServiceWithoutAuth.loginWithApp(
                 appLoginRequest = AppLoginRequest(accountId = accountId, password = accountPw)
             )
 
@@ -270,7 +272,7 @@ class UserRepositoryImpl @Inject constructor(
      */
     override suspend fun loginWithKakao(kakaoId: String): Result<LoginResponse> {
         return try {
-            val response = userApiService.loginWithKakao(
+            val response = userApiServiceWithoutAuth.loginWithKakao(
                 kakaoLoginRequest = KakaoLoginRequest(kakaoId = kakaoId)
             )
 
@@ -334,7 +336,7 @@ class UserRepositoryImpl @Inject constructor(
 
     override suspend fun sendSmsMessage(phoneNumber: String): Result<PhoneNumberResponse> {
         return try {
-            val response = userApiService.sendSmsMessage(
+            val response = userApiServiceWithoutAuth.sendSmsMessage(
                 phoneNumber = PhoneNumber(phoneNumber = phoneNumber)
             )
 
@@ -372,7 +374,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun confirmVerificationCode(confirmCode: ConfirmCode): Result<Unit> {
         return try {
             // API 호출
-            val response = userApiService.confirmVerificationCode(
+            val response = userApiServiceWithoutAuth.confirmVerificationCode(
                 confirmCode = confirmCode
             )
 
@@ -409,7 +411,7 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun checkAccountIdDuplicate(accountId: String): Result<Boolean> {
         return try {
             // API 호출
-            val response = userApiService.checkAccountIdDuplication(
+            val response = userApiServiceWithoutAuth.checkAccountIdDuplication(
                 accountId = CheckAccountIdDuplicate(accountId = accountId)
             )
 

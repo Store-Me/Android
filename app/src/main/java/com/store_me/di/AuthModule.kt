@@ -2,6 +2,8 @@ package com.store_me.di
 
 import android.content.Context
 import com.store_me.auth.Auth
+import com.store_me.auth.AuthInterceptor
+import com.store_me.storeme.repository.storeme.AuthRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,5 +25,14 @@ object AuthModule {
         auth.init()
 
         return auth
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthInterceptor(
+        authRepository: AuthRepository,
+        auth: Auth
+    ): AuthInterceptor {
+        return AuthInterceptor(authRepository, auth)
     }
 }

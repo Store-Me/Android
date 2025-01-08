@@ -1,8 +1,10 @@
 package com.store_me.storeme.repository.storeme
 
 import android.content.Context
-import com.store_me.storeme.data.response.StoreListResponse
-import com.store_me.storeme.network.storeme.OwnerApiService
+import com.store_me.storeme.R
+import com.store_me.storeme.data.response.LoginResponse
+import com.store_me.storeme.network.storeme.AuthApiService
+import com.store_me.storeme.utils.TokenPreferencesHelper
 import com.store_me.storeme.utils.exception.ApiExceptionHandler
 import com.store_me.storeme.utils.exception.ApiExceptionHandler.toResult
 import com.store_me.storeme.utils.response.ResponseHandler
@@ -10,20 +12,17 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import timber.log.Timber
 import javax.inject.Inject
 
-/**
- * 사장님 관련 Repository
- */
-interface OwnerRepository {
-    suspend fun getStoreList(): Result<StoreListResponse>
+interface AuthRepository {
+    fun reissueTokens(): Result<LoginResponse>
 }
 
-class OwnerRepositoryImpl @Inject constructor(
+class AuthRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val ownerApiService: OwnerApiService
-): OwnerRepository {
-    override suspend fun getStoreList(): Result<StoreListResponse> {
+    private val authApiService: AuthApiService
+): AuthRepository {
+    override fun reissueTokens(): Result<LoginResponse> {
         return try {
-            val response = ownerApiService.getStoreList()
+            val response = authApiService.reissueTokens().execute()
 
             if(response.isSuccessful) {
                 val responseBody = response.body()
@@ -32,7 +31,22 @@ class OwnerRepositoryImpl @Inject constructor(
 
                 when(responseBody?.isSuccess) {
                     true -> {
-                        Result.success(responseBody.result ?: StoreListResponse(emptyList()))
+                        if(responseBody.result != null) {
+                            val result = responseBody.result
+
+                            TokenPreferencesHelper.saveTokens(
+                                accessToken = result.accessToken,
+                                refreshToken = result.refreshToken,
+                                expireTime = result.expiredTime
+                            )
+
+                            Result.success(result)
+                        }
+                        else
+                            Result.failure(
+                                ApiExceptionHandler.apiException(
+                                    code = responseBody.code, message = context.getString(R.string.token_expired_message)
+                                ))
                     }
                     false -> {
                         Result.failure(
@@ -47,7 +61,6 @@ class OwnerRepositoryImpl @Inject constructor(
                             ))
                     }
                 }
-
             } else {
                 ResponseHandler.handleErrorResponse(response, context)
             }
@@ -55,5 +68,4 @@ class OwnerRepositoryImpl @Inject constructor(
             e.toResult(context)
         }
     }
-
 }

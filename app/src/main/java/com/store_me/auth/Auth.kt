@@ -48,4 +48,13 @@ class Auth @Inject constructor(
         }
     }
 
+    /**
+     * 로그아웃 함수
+     */
+    fun logout() {
+        _isLoggedIn.value = false
+
+        TokenPreferencesHelper.clearTokens()
+    }
+
 }
