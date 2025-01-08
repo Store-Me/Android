@@ -2,7 +2,7 @@ package com.store_me.storeme.repository.storeme
 
 import android.content.Context
 import com.store_me.storeme.R
-import com.store_me.storeme.data.response.LoginResponse
+import com.store_me.storeme.data.response.ReissueResponse
 import com.store_me.storeme.network.storeme.AuthApiService
 import com.store_me.storeme.utils.TokenPreferencesHelper
 import com.store_me.storeme.utils.exception.ApiExceptionHandler
@@ -13,14 +13,14 @@ import timber.log.Timber
 import javax.inject.Inject
 
 interface AuthRepository {
-    fun reissueTokens(): Result<LoginResponse>
+    fun reissueTokens(): Result<ReissueResponse>
 }
 
 class AuthRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val authApiService: AuthApiService
 ): AuthRepository {
-    override fun reissueTokens(): Result<LoginResponse> {
+    override fun reissueTokens(): Result<ReissueResponse> {
         return try {
             val response = authApiService.reissueTokens().execute()
 
