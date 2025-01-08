@@ -53,6 +53,14 @@ import com.store_me.storeme.utils.SizeUtils
  * Button Composable 관리 파일
  */
 
+private fun defaultButtonPadding(diffValue: Int): Int {
+    return when {
+        diffValue > 0 -> 12
+
+        else -> 6
+    }
+}
+
 /**
  * Text Default Button
  */
@@ -81,7 +89,7 @@ fun DefaultButton(
             text = buttonText,
             style = storeMeTextStyle(fontWeight, diffValue),
             modifier = Modifier
-                .padding(vertical = 12.dp)
+                .padding(vertical = defaultButtonPadding(diffValue).dp)
         )
     }
 }
@@ -138,7 +146,7 @@ fun DefaultButton(
             text = buttonText,
             style = storeMeTextStyle(fontWeight, diffValue),
             modifier = Modifier
-                .padding(vertical = 12.dp)
+                .padding(vertical = defaultButtonPadding(diffValue).dp)
         )
 
         if(rightIconResource != null) {
