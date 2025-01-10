@@ -179,4 +179,7 @@ dependencies {
 
     //Timber
     implementation("com.jakewharton.timber:timber:4.7.1")
+
+    //Lottie
+    implementation("com.airbnb.android:lottie-compose:6.0.1")
 }
