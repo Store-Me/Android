@@ -64,6 +64,7 @@ import com.store_me.storeme.ui.signup.account_data.AccountTypeSection
 import com.store_me.storeme.ui.signup.customer.CustomerDataViewModel
 import com.store_me.storeme.ui.signup.customer.CustomerNickNameSection
 import com.store_me.storeme.ui.signup.customer.CustomerProfileImageSection
+import com.store_me.storeme.ui.signup.finish.FinishSection
 import com.store_me.storeme.ui.signup.phone_authentication.PhoneNumberSection
 import com.store_me.storeme.ui.signup.phone_authentication.PhoneNumberViewModel
 import com.store_me.storeme.ui.signup.onboarding.SignupOnboardingSection
@@ -146,8 +147,9 @@ fun SignupScreen(
 
     LaunchedEffect(isSignupFinish) {
         if(isSignupFinish) {
+            loadingViewModel.hideLoading()
+
             snackbarHostState.showSnackbar(context.getString(R.string.signup_finish))
-            navController.popBackStack()
         }
     }
 
@@ -169,7 +171,7 @@ fun SignupScreen(
         }
     }
 
-    fun moveToNextProgress() {
+    fun moveToNextProgress(accountType: AccountType? = null) {
         signupProgressViewModel.moveToNextProgress(accountType = accountType, loginType = loginType)
     }
 
@@ -196,7 +198,7 @@ fun SignupScreen(
             onDismiss = { showNumberWarningDialog.value = false },
             onAction = {
                 showNumberWarningDialog.value = false
-                signupProgressViewModel.moveToPreviousProgress(loginType)
+                onClickBackButton()
             }
         )
     }
@@ -297,14 +299,9 @@ fun SignupScreen(
                                     SignupProgress.ACCOUNT_TYPE -> {
                                         AccountTypeSection {
                                             signupViewModel.setAccountType(it)
-                                            moveToNextProgress()
+                                            moveToNextProgress(it)
                                         }
                                     }
-                                }
-                            }
-                            is SignupState.Onboarding -> {
-                                SignupOnboardingSection {
-                                    moveToNextProgress()
                                 }
                             }
                             is SignupState.Customer -> {
@@ -316,11 +313,46 @@ fun SignupScreen(
                                     }
                                     CustomerProgress.PROFILE_IMAGE -> {
                                         CustomerProfileImageSection {
-                                            moveToNextProgress()
+                                            loadingViewModel.showLoading()
+
+                                            when {
+                                                accountType == AccountType.CUSTOMER && loginType == LoginType.KAKAO-> {
+                                                    signupViewModel.customerSignupKakao(
+                                                        customerSignupKakao = CustomerSignupKakao(
+                                                            kakaoId = additionalData,
+                                                            phoneNumber = phoneNumberViewModel.phoneNumber.value,
+                                                            privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
+                                                            marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
+                                                            verificationCode = phoneNumberViewModel.verificationCode.value,
+
+                                                            nickname = customerDataViewModel.nickName.value
+                                                        ),
+                                                        profileImage = customerDataViewModel.profileImage.value
+                                                    )
+                                                }
+
+                                                accountType == AccountType.CUSTOMER && loginType == LoginType.APP-> {
+                                                    signupViewModel.customerSignupApp(
+                                                        customerSignupApp = CustomerSignupApp(
+                                                            accountId = accountDataViewModel.accountId.value,
+                                                            password = accountDataViewModel.accountPw.value,
+                                                            phoneNumber = phoneNumberViewModel.phoneNumber.value,
+                                                            privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
+                                                            marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
+                                                            verificationCode = phoneNumberViewModel.verificationCode.value,
+
+                                                            nickname = customerDataViewModel.nickName.value
+                                                        ),
+                                                        profileImage = customerDataViewModel.profileImage.value
+                                                    )
+                                                }
+                                            }
                                         }
                                     }
                                     CustomerProgress.FINISH -> {
-
+                                        FinishSection {
+                                            moveToNextProgress()
+                                        }
                                     }
                                 }
                             }
@@ -363,11 +395,6 @@ fun SignupScreen(
                                     }
                                     OwnerProgress.NUMBER -> {
                                         StoreNumberSection {
-                                            moveToNextProgress()
-                                        }
-                                    }
-                                    OwnerProgress.FINISH -> {
-                                        FinishSection {
                                             loadingViewModel.showLoading()
 
                                             when {
@@ -423,40 +450,19 @@ fun SignupScreen(
                                                         storeImages = storeDataViewModel.storeImages.value
                                                     )
                                                 }
-
-                                                accountType == AccountType.CUSTOMER && loginType == LoginType.KAKAO-> {
-                                                    signupViewModel.customerSignupKakao(
-                                                        customerSignupKakao = CustomerSignupKakao(
-                                                            kakaoId = additionalData,
-                                                            phoneNumber = phoneNumberViewModel.phoneNumber.value,
-                                                            privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
-                                                            marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
-                                                            verificationCode = phoneNumberViewModel.verificationCode.value,
-
-                                                            nickname = customerDataViewModel.nickName.value
-                                                        ),
-                                                        profileImage = customerDataViewModel.profileImage.value
-                                                    )
-                                                }
-
-                                                accountType == AccountType.CUSTOMER && loginType == LoginType.APP-> {
-                                                    signupViewModel.customerSignupApp(
-                                                        customerSignupApp = CustomerSignupApp(
-                                                            accountId = accountDataViewModel.accountId.value,
-                                                            password = accountDataViewModel.accountPw.value,
-                                                            phoneNumber = phoneNumberViewModel.phoneNumber.value,
-                                                            privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
-                                                            marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
-                                                            verificationCode = phoneNumberViewModel.verificationCode.value,
-
-                                                            nickname = customerDataViewModel.nickName.value
-                                                        ),
-                                                        profileImage = customerDataViewModel.profileImage.value
-                                                    )
-                                                }
                                             }
                                         }
                                     }
+                                    OwnerProgress.FINISH -> {
+                                        FinishSection {
+                                            moveToNextProgress()
+                                        }
+                                    }
+                                }
+                            }
+                            is SignupState.Onboarding -> {
+                                SignupOnboardingSection {
+                                    navController.popBackStack()
                                 }
                             }
                         }

@@ -14,16 +14,16 @@ class SignupProgressViewModel: ViewModel() {
     fun moveToNextProgress(loginType: LoginType, accountType: AccountType?) {
         when(_signupState.value) {
             is SignupState.Signup -> {
-                moveToNextSignupProgress(loginType = loginType)
-            }
-            is SignupState.Onboarding -> {
-                accountType?.let { moveToNextOnboardingProgress(accountType = it) }
+                moveToNextSignupProgress(loginType = loginType, accountType)
             }
             is SignupState.Customer -> {
                 moveToNextCustomerProgress()
             }
             is SignupState.Owner -> {
                 moveToNextOwnerProgress()
+            }
+            is SignupState.Onboarding -> {
+
             }
         }
     }
@@ -33,19 +33,20 @@ class SignupProgressViewModel: ViewModel() {
             is SignupState.Signup -> {
                 moveToPreviousSignupProgress(loginType)
             }
-            is SignupState.Onboarding -> {
-                moveToPreviousOnboardingProgress()
-            }
+
             is SignupState.Customer -> {
                 moveToPreviousCustomerProgress()
             }
             is SignupState.Owner -> {
                 moveToPreviousOwnerProgress()
             }
+            is SignupState.Onboarding -> {
+                //moveToPreviousOnboardingProgress(accountType)
+            }
         }
     }
 
-    private fun moveToNextSignupProgress(loginType: LoginType) {
+    private fun moveToNextSignupProgress(loginType: LoginType, accountType: AccountType?) {
         val nextProgress = when((_signupState.value as SignupState.Signup).progress) {
             SignupProgress.TERMS -> SignupProgress.NUMBER
             SignupProgress.NUMBER -> SignupProgress.CERTIFICATION
@@ -61,7 +62,15 @@ class SignupProgressViewModel: ViewModel() {
             }
             SignupProgress.ACCOUNT_DATA -> SignupProgress.ACCOUNT_TYPE
             SignupProgress.ACCOUNT_TYPE -> {
-                _signupState.value = SignupState.Onboarding
+                when(accountType){
+                    AccountType.CUSTOMER -> {
+                        _signupState.value = SignupState.Customer(CustomerProgress.NICKNAME)
+                    }
+                    AccountType.OWNER -> {
+                        _signupState.value = SignupState.Owner(OwnerProgress.STORE_NAME)
+                    }
+                    else -> {  }
+                }
                 return
             }
         }
@@ -90,26 +99,22 @@ class SignupProgressViewModel: ViewModel() {
         _signupState.value = SignupState.Signup(nextProgress)
     }
 
-    private fun moveToNextOnboardingProgress(accountType: AccountType) {
-        when(accountType){
-            AccountType.CUSTOMER -> {
-                _signupState.value = SignupState.Customer(CustomerProgress.NICKNAME)
-            }
-            AccountType.OWNER -> {
-                _signupState.value = SignupState.Owner(OwnerProgress.STORE_NAME)
-            }
+    private fun moveToPreviousOnboardingProgress(accountType: AccountType?) {
+        when(accountType) {
+            AccountType.OWNER -> { _signupState.value = SignupState.Owner(OwnerProgress.FINISH) }
+            AccountType.CUSTOMER -> { _signupState.value = SignupState.Customer(CustomerProgress.FINISH) }
+            else -> {  }
         }
-    }
-
-    private fun moveToPreviousOnboardingProgress() {
-        _signupState.value = SignupState.Signup(SignupProgress.ACCOUNT_TYPE)
     }
 
     private fun moveToNextCustomerProgress() {
         val nextProgress = when((_signupState.value as SignupState.Customer).progress) {
             CustomerProgress.NICKNAME -> CustomerProgress.PROFILE_IMAGE
             CustomerProgress.PROFILE_IMAGE -> CustomerProgress.FINISH
-            CustomerProgress.FINISH -> return
+            CustomerProgress.FINISH ->  {
+                _signupState.value = SignupState.Onboarding
+                return
+            }
         }
         _signupState.value = SignupState.Customer(nextProgress)
     }
@@ -117,11 +122,11 @@ class SignupProgressViewModel: ViewModel() {
     private fun moveToPreviousCustomerProgress() {
         val nextProgress = when((_signupState.value as SignupState.Customer).progress) {
             CustomerProgress.NICKNAME -> {
-                _signupState.value = SignupState.Onboarding
+                _signupState.value = SignupState.Signup(SignupProgress.ACCOUNT_TYPE)
                 return
             }
             CustomerProgress.PROFILE_IMAGE -> CustomerProgress.NICKNAME
-            CustomerProgress.FINISH -> CustomerProgress.PROFILE_IMAGE
+            CustomerProgress.FINISH -> return
         }
         _signupState.value = SignupState.Customer(nextProgress)
     }
@@ -136,7 +141,10 @@ class SignupProgressViewModel: ViewModel() {
             OwnerProgress.STORE_IMAGE -> OwnerProgress.INTRO
             OwnerProgress.INTRO -> OwnerProgress.NUMBER
             OwnerProgress.NUMBER -> OwnerProgress.FINISH
-            OwnerProgress.FINISH -> return
+            OwnerProgress.FINISH -> {
+                _signupState.value = SignupState.Onboarding
+                return
+            }
         }
         _signupState.value = SignupState.Owner(nextProgress)
     }
@@ -144,7 +152,7 @@ class SignupProgressViewModel: ViewModel() {
     private fun moveToPreviousOwnerProgress() {
         val nextProgress = when((_signupState.value as SignupState.Owner).progress) {
             OwnerProgress.STORE_NAME -> {
-                _signupState.value = SignupState.Onboarding
+                _signupState.value = SignupState.Signup(SignupProgress.ACCOUNT_TYPE)
                 return
             }
             OwnerProgress.CATEGORY -> OwnerProgress.STORE_NAME
@@ -154,7 +162,7 @@ class SignupProgressViewModel: ViewModel() {
             OwnerProgress.STORE_IMAGE -> OwnerProgress.STORE_PROFILE_IMAGE
             OwnerProgress.INTRO -> OwnerProgress.STORE_IMAGE
             OwnerProgress.NUMBER -> OwnerProgress.INTRO
-            OwnerProgress.FINISH -> OwnerProgress.NUMBER
+            OwnerProgress.FINISH -> return
         }
         _signupState.value = SignupState.Owner(nextProgress)
     }
