@@ -59,7 +59,7 @@ import com.store_me.storeme.ui.mystore.MyStoreScreenWithBottomSheet
 import com.store_me.storeme.ui.near_place.NearPlaceScreen
 import com.store_me.storeme.ui.notification.NotificationScreen
 import com.store_me.storeme.ui.onboarding.OnboardingActivity
-import com.store_me.storeme.ui.post.AddNormalPostScreen
+import com.store_me.storeme.ui.post.AddPostScreen
 import com.store_me.storeme.ui.store_detail.StoreDetailScreen
 import com.store_me.storeme.ui.store_setting.closed_day.ClosedDaySettingScreen
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponSettingScreen
@@ -218,7 +218,7 @@ class MainActivity : ComponentActivity() {
             //기본 Bottom Item
             composable(OwnerBottomNavItem.OwnerHome.screenRoute) { OwnerHomeScreen(navController) }
             composable(OwnerBottomNavItem.CustomerManagement.screenRoute) {  }
-            composable(OwnerBottomNavItem.OwnerAdd.screenRoute) { AddNormalPostScreen() }
+            composable(OwnerBottomNavItem.OwnerAdd.screenRoute) { AddPostScreen(navController) }
             composable(OwnerBottomNavItem.StoreTalk.screenRoute) {  }
             composable(OwnerBottomNavItem.StoreInfo.screenRoute) {  }
 
