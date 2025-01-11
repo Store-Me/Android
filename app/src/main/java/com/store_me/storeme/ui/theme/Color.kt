@@ -241,6 +241,17 @@ val HighlightGuidTextColor = Color(0xFFD44ADA)
 val StoreImageBoxColor = Color(0xFF898C93)
 
 /**
+ * Add Post Color
+ */
+val AddPostEditIconColor = Color(0xFFD449DA)
+val AddPostCouponIconColor = Color(0xFF508EFA)
+val AddPostEventIconColor = Color(0xFF00CD55)
+val AddPostSurveyIconColor = Color(0xFF21C9E9)
+val AddPostNoticeIconColor = Color(0xFFFFAB00)
+val AddPostStoryIconColor = Color(0xFFFE4343)
+
+
+/**
  * Default Color
  */
 val DefaultDividerColor = Color(0xFFEFF0F5)
