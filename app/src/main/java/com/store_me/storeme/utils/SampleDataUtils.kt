@@ -18,7 +18,6 @@ import com.store_me.storeme.data.MyPickWithStoreInfoData
 import com.store_me.storeme.data.NearPlaceStoreWithStoreInfoData
 import com.store_me.storeme.data.NotificationType
 import com.store_me.storeme.data.NotificationWithStoreInfoData
-import com.store_me.storeme.data.PostType
 import com.store_me.storeme.data.PreviewPostData
 import com.store_me.storeme.data.SocialMediaAccountData
 import com.store_me.storeme.data.StoreDetailData
@@ -29,6 +28,7 @@ import com.store_me.storeme.data.StoreInfoData
 import com.store_me.storeme.data.StoreMenuData
 import com.store_me.storeme.data.StorePromotionData
 import com.store_me.storeme.data.UserCouponWithStoreInfoData
+import com.store_me.storeme.data.enums.PostType
 
 class SampleDataUtils {
 
@@ -247,8 +247,8 @@ class SampleDataUtils {
             return mutableListOf(
                 ChatRoomWithStoreInfoData("1", "1번 채팅방", sampleStoreInfo[0], "안녕하세요", "17:30", 30),
                 ChatRoomWithStoreInfoData("2", "2번 채팅방", sampleStoreInfo[1], "안녕하세요", "17:30", 30),
-                ChatRoomWithStoreInfoData("3", "3번 채팅방", sampleStoreInfo[2], "저번에도 노쇼하셨잖아요 손님같으면 손님한테 예약 받겠어요?", "9:50", 1),
-                ChatRoomWithStoreInfoData("4", "4번 채팅방", sampleStoreInfo[3], "저희 주방장들은 모두 머리가 없는데 머리카락이 어떻게 나와요 손님", "1일 전", 99),
+                ChatRoomWithStoreInfoData("3", "3번 채팅방", sampleStoreInfo[2], "안녕하세용", "9:50", 1),
+                ChatRoomWithStoreInfoData("4", "4번 채팅방", sampleStoreInfo[3], "테스트 메시징", "1일 전", 99),
                 ChatRoomWithStoreInfoData("5", "5번 채팅방", sampleStoreInfo[4], "넵! 내일 20시 예약 완료했습니다!", "1주 전", 1),
                 ChatRoomWithStoreInfoData("6", "6번 채팅방", sampleStoreInfo[5], "모두 직접 가져오는 과일입니다.", "1달 전", 500),
                 ChatRoomWithStoreInfoData("7", "7번 채팅방", sampleStoreInfo[6], "이번 만두는 바르지못해 폐기하였습니다.", "1년 전", 0),
