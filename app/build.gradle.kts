@@ -145,9 +145,6 @@ dependencies {
     //FCM
     implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
 
-    //Chat
-    implementation("com.google.firebase:firebase-database-ktx")
-
     //Local Data Storage
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
@@ -166,7 +163,7 @@ dependencies {
     //markdown
     implementation("com.github.jeziellago:compose-markdown:0.5.2")
 
-    //recorderable
+    //reorderable
     implementation("sh.calvin.reorderable:reorderable:2.3.1")
 
     //ExoPlayer
