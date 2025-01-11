@@ -719,34 +719,6 @@ fun SocialMediaIcon(url: String, size: Int = 40) {
 }
 
 
-
-/**
- * 가게 배경 이미지 Composable
- * @param imageUrl 배경 이미지 url
- */
-@Composable
-fun BackgroundSection(imageUrl: String?) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(2f / 1f)
-    ) {
-        imageUrl?.let {
-            AsyncImage(
-                model = imageUrl,
-                contentDescription = "배경 이미지",
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-        }
-
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            drawRect(color = Black.copy(alpha = 0.3f))
-        }
-    }
-}
-
 /**
  * 원형 테두리를 가진 아이콘 Composable
  * @param borderColor Border Color
