@@ -14,7 +14,7 @@ class Auth @Inject constructor(
 
 ) {
     //로그인 상태
-    private val _isLoggedIn = MutableStateFlow(false)
+    private val _isLoggedIn = MutableStateFlow(true)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
     //계정 타입

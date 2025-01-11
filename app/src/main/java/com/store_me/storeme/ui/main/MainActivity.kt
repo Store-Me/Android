@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -37,13 +36,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.StoreHomeItem
 import com.store_me.storeme.data.StoreNormalItem
 import com.store_me.storeme.data.enums.AccountType
@@ -59,7 +58,8 @@ import com.store_me.storeme.ui.mystore.MyStoreScreenWithBottomSheet
 import com.store_me.storeme.ui.near_place.NearPlaceScreen
 import com.store_me.storeme.ui.notification.NotificationScreen
 import com.store_me.storeme.ui.onboarding.OnboardingActivity
-import com.store_me.storeme.ui.post.AddPostScreen
+import com.store_me.storeme.ui.post.SelectPostTypeScreen
+import com.store_me.storeme.ui.post.normal.AddNormalPostSection
 import com.store_me.storeme.ui.store_detail.StoreDetailScreen
 import com.store_me.storeme.ui.store_setting.closed_day.ClosedDaySettingScreen
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponSettingScreen
@@ -218,7 +218,9 @@ class MainActivity : ComponentActivity() {
             //기본 Bottom Item
             composable(OwnerBottomNavItem.OwnerHome.screenRoute) { OwnerHomeScreen(navController) }
             composable(OwnerBottomNavItem.CustomerManagement.screenRoute) {  }
-            composable(OwnerBottomNavItem.OwnerAdd.screenRoute) { AddPostScreen(navController) }
+            composable(OwnerBottomNavItem.OwnerAdd.screenRoute) {
+                SelectPostTypeGraph(navController)
+            }
             composable(OwnerBottomNavItem.StoreTalk.screenRoute) {  }
             composable(OwnerBottomNavItem.StoreInfo.screenRoute) {  }
 
@@ -374,6 +376,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+        }
+    }
+
+    @Composable
+    fun SelectPostTypeGraph(navController: NavHostController) {
+        NavHost(navController = navController, startDestination = "owner_add") {
+            composable("owner_add") {
+                SelectPostTypeScreen(navController = navController)
+            }
+            composable("add_post") { AddNormalPostSection(navController = navController) }
         }
     }
 

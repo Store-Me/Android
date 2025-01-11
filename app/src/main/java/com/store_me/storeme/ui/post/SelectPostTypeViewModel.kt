@@ -6,7 +6,7 @@ import com.store_me.storeme.data.enums.PostType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class AddPostViewModel: ViewModel() {
+class SelectPostTypeViewModel: ViewModel() {
     private val _postType = MutableStateFlow<PostType?>(null)
     val postType: StateFlow<PostType?> = _postType
 
