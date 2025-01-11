@@ -36,7 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -59,7 +58,6 @@ import com.store_me.storeme.ui.near_place.NearPlaceScreen
 import com.store_me.storeme.ui.notification.NotificationScreen
 import com.store_me.storeme.ui.onboarding.OnboardingActivity
 import com.store_me.storeme.ui.post.SelectPostTypeScreen
-import com.store_me.storeme.ui.post.normal.AddNormalPostSection
 import com.store_me.storeme.ui.store_detail.StoreDetailScreen
 import com.store_me.storeme.ui.store_setting.closed_day.ClosedDaySettingScreen
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponSettingScreen
@@ -218,9 +216,7 @@ class MainActivity : ComponentActivity() {
             //기본 Bottom Item
             composable(OwnerBottomNavItem.OwnerHome.screenRoute) { OwnerHomeScreen(navController) }
             composable(OwnerBottomNavItem.CustomerManagement.screenRoute) {  }
-            composable(OwnerBottomNavItem.OwnerAdd.screenRoute) {
-                SelectPostTypeGraph(navController)
-            }
+            composable(OwnerBottomNavItem.OwnerAdd.screenRoute) { SelectPostTypeScreen(navController) }
             composable(OwnerBottomNavItem.StoreTalk.screenRoute) {  }
             composable(OwnerBottomNavItem.StoreInfo.screenRoute) {  }
 
@@ -376,16 +372,6 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-        }
-    }
-
-    @Composable
-    fun SelectPostTypeGraph(navController: NavHostController) {
-        NavHost(navController = navController, startDestination = "owner_add") {
-            composable("owner_add") {
-                SelectPostTypeScreen(navController = navController)
-            }
-            composable("add_post") { AddNormalPostSection(navController = navController) }
         }
     }
 
