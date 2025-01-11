@@ -32,11 +32,6 @@ class OwnerHomeViewModel @Inject constructor(
         Auth.setStoreHomeItemData(sampleStoreHomeItemData())
     }
 
-    enum class OwnerHomeTabMenu(val displayName: String) {
-        HOME("스토어 홈"),
-        NEWS("소식"),
-    }
-
     //Store Phone Number Copy 함수
     fun copyToClipboard(){
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
