@@ -1,5 +1,7 @@
 package com.store_me.storeme.data
 
+import com.store_me.storeme.data.enums.PostType
+
 
 /**
  * 기본 Post 정보
@@ -23,16 +25,3 @@ data class NormalPostWithStoreInfoData(
     val title: String,
     val content: String,
 )
-
-/**
- * 게시글 Type 정보
- * @property NORMAL 일반 SNS 형태의 게시글
- * @property BLOG 사진과 텍스트가 나열 된 블로그 형태의 게시글
- * @property NOTICE 공지 게시글
- * @property VOTE 투표 게시글
- * @property SURVEY 설문 게시글
- * @property EVENT 이벤트 게시글
- */
-enum class PostType{
-    NORMAL, BLOG, NOTICE, VOTE, SURVEY, EVENT
-}
