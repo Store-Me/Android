@@ -36,10 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.component.AlphaBackgroundText
-import com.store_me.storeme.ui.component.BackgroundSection
 import com.store_me.storeme.ui.component.CircleBorderWithIcon
 import com.store_me.storeme.ui.component.DefaultOutlineTextField
 import com.store_me.storeme.ui.component.TextFieldErrorType
@@ -47,6 +45,7 @@ import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.component.ProfileImage
 import com.store_me.storeme.ui.component.addFocusCleaner
+import com.store_me.storeme.ui.home.owner.BackgroundSection
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 
 
