@@ -49,6 +49,7 @@ import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.PwOutlinedTextField
+import com.store_me.storeme.ui.component.SelectStoreDialog
 import com.store_me.storeme.ui.component.StoreMeSnackbar
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.onboarding.OnboardingActivity
@@ -63,6 +64,7 @@ import com.store_me.storeme.utils.KakaoLoginHelper
 import com.store_me.storeme.utils.ValidationUtils
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 @Composable
@@ -87,7 +89,11 @@ fun LoginScreen(
     val isIdError = remember { mutableStateOf(false) }
     val isPwError = remember { mutableStateOf(false) }
 
+    val storeListResponse by loginViewModel.storeListResponse.collectAsState()
+
     val loginErrorMessage by loginViewModel.errorMessage.collectAsState()
+
+    val showSelectStoreDialog = remember { MutableStateFlow(false) }
 
     LaunchedEffect(isKakaoLoginFailed) {
         if(isKakaoLoginFailed){
@@ -106,6 +112,25 @@ fun LoginScreen(
         if(isPwError.value) {
             isPwError.value = !ValidationUtils.isValidPw(accountPw)
         }
+    }
+
+    LaunchedEffect(storeListResponse) {
+        if(storeListResponse == null){
+            return@LaunchedEffect
+        }
+
+        loadingViewModel.hideLoading()
+
+        showSelectStoreDialog.value = true
+
+        /*when(storeListResponse?.storeInfoList?.size) {
+            1 -> {
+
+            }
+            else -> {
+
+            }
+        }*/
     }
 
     LaunchedEffect(loginErrorMessage) {
@@ -291,6 +316,22 @@ fun LoginScreen(
             }
         }
     )
+
+    if(showSelectStoreDialog.value) {
+        storeListResponse?.let {
+            SelectStoreDialog(
+                storeListResponse = it,
+                onAction = { selectedStoreId ->
+                    showSelectStoreDialog.value = false
+                    loginViewModel.selectStoreFinish(selectedStoreId)
+                },
+                onCustomer = {
+                    showSelectStoreDialog.value = false
+                    loginViewModel.loginByCustomerAccount()
+                }
+            )
+        }
+    }
 }
 
 @Composable

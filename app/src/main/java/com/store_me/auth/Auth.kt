@@ -2,6 +2,7 @@ package com.store_me.auth
 
 import android.content.Context
 import com.store_me.storeme.data.enums.AccountType
+import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.utils.TokenPreferencesHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,15 +12,22 @@ import javax.inject.Inject
 
 class Auth @Inject constructor(
     private val context: Context,
-
 ) {
     //로그인 상태
-    private val _isLoggedIn = MutableStateFlow(true)
+    private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
+
+    //로그인 타입
+    private val _loginType = MutableStateFlow<LoginType?>(null)
+    val loginType: StateFlow<LoginType?> = _loginType
 
     //계정 타입
     private val _accountType = MutableStateFlow(AccountType.OWNER)
     val accountType: StateFlow<AccountType> = _accountType
+
+    //Owner 계정에서 선택된 StoreId
+    private val _storeId = MutableStateFlow<Long?>(null)
+    val storeId: StateFlow<Long?> = _storeId
 
     //초기화
     fun init() {
@@ -31,10 +39,17 @@ class Auth @Inject constructor(
      * 계정 타입 설정 함수.
      * 사장님 계정시,OWNER
      * 일반 계정시, CUSTOMER
-     * @param type 해당 값에 따라 계정의 타입을 설정
+     * @param newAccountType 해당 값에 따라 계정의 타입을 설정
      */
-    fun setAccountType(type: AccountType) {
-        _accountType.value = type
+    fun updateAccountType(newAccountType: AccountType) {
+        _accountType.value = newAccountType
+    }
+
+    /**
+     * 로그인 타입 설정 함수
+     */
+    fun updateLoginType(newLoginType: LoginType) {
+        _loginType.value = newLoginType
     }
 
     /**
@@ -49,12 +64,24 @@ class Auth @Inject constructor(
     }
 
     /**
-     * 로그아웃 함수
+     * 로그인 값 변경
      */
-    fun logout() {
-        _isLoggedIn.value = false
+    fun updateIsLoggedIn(isLoggedIn: Boolean) {
+        if(isLoggedIn) {
+            //로그인
+            _isLoggedIn.value = true
+        } else {
+            //로그아웃
+            _isLoggedIn.value = false
 
-        TokenPreferencesHelper.clearTokens()
+            TokenPreferencesHelper.clearTokens()
+        }
     }
 
+    /**
+     * OWNER 계정에서 선택된 StoreId 변경 함수
+     */
+    fun updateSelectedStoreId(storeId: Long) {
+        _storeId.value = storeId
+    }
 }

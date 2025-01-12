@@ -44,7 +44,7 @@ class AuthInterceptor(
 
                             return chain.proceed(retriedRequest)
                         }.onFailure {
-                            auth.logout()
+                            auth.updateIsLoggedIn(false)
 
                             Timber.e("Token reissue Failed: $it")
                         }

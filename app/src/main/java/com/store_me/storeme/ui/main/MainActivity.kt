@@ -41,6 +41,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.store_me.auth.Auth
 import com.store_me.storeme.R
 import com.store_me.storeme.data.StoreHomeItem
 import com.store_me.storeme.data.StoreNormalItem
@@ -89,7 +90,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject
-    lateinit var auth: com.store_me.auth.Auth
+    lateinit var auth: Auth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

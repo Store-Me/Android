@@ -3,7 +3,11 @@ package com.store_me.storeme.ui.login
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.store_me.auth.Auth
 import com.store_me.storeme.R
+import com.store_me.storeme.data.enums.AccountType
+import com.store_me.storeme.data.enums.LoginType
+import com.store_me.storeme.data.response.StoreListResponse
 import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.repository.storeme.UserRepository
 import com.store_me.storeme.ui.main.LOGIN_FAIL
@@ -18,6 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
+    private val auth: Auth,
     private val userRepository: UserRepository,
     private val ownerRepository: OwnerRepository
 ): ViewModel() {
@@ -32,6 +37,9 @@ class LoginViewModel @Inject constructor(
 
     private val _accountPw = MutableStateFlow("")
     val accountPw: StateFlow<String> = _accountPw
+
+    private val _storeListResponse = MutableStateFlow<StoreListResponse?>(null)
+    val storeListResponse: StateFlow<StoreListResponse?> = _storeListResponse
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
@@ -65,6 +73,7 @@ class LoginViewModel @Inject constructor(
 
             response.onSuccess {
                 //로그인 성공 시
+                auth.updateLoginType(LoginType.KAKAO)
                 loginSuccess()
             }.onFailure {
                 //로그인 실패 시
@@ -89,6 +98,7 @@ class LoginViewModel @Inject constructor(
 
             response.onSuccess {
                 //로그인 성공 시
+                auth.updateLoginType(LoginType.APP)
                 loginSuccess()
             }.onFailure {
                 //로그인 실패 시
@@ -102,10 +112,23 @@ class LoginViewModel @Inject constructor(
     }
 
     private suspend fun loginSuccess() {
+        getStoreList()
+    }
+
+    private suspend fun getStoreList() {
         val response = ownerRepository.getStoreList()
 
         response.onSuccess {
+            if(it.storeInfoList.isEmpty()) {
+                //Customer
+                auth.updateAccountType(AccountType.CUSTOMER)
 
+                auth.updateIsLoggedIn(true) //손님은 바로 로그인 완료
+            } else {
+                //Owner
+                auth.updateAccountType(AccountType.OWNER)
+                _storeListResponse.value = it   //사장님은 가게 선택 후 로그인 완료
+            }
         }.onFailure {
             if(it is ApiException) {
                 _errorMessage.value = it.message
@@ -113,5 +136,21 @@ class LoginViewModel @Inject constructor(
                 _errorMessage.value = context.getString(R.string.unknown_error_message)
             }
         }
+    }
+
+    fun selectStoreFinish(selectedStoreId: Long) {
+        auth.updateSelectedStoreId(selectedStoreId)
+
+        auth.updateIsLoggedIn(true)
+    }
+
+    /**
+     * OWNER 로그인 후 CUSTOMER 로그인 선택시 호출되는 함수
+     */
+    fun loginByCustomerAccount() {
+        //TODO CUSTOMER 계정 존재 확인 필요
+
+        auth.updateAccountType(AccountType.CUSTOMER)
+        auth.updateIsLoggedIn(true)
     }
 }

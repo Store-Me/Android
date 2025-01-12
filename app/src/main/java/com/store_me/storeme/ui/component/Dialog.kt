@@ -3,6 +3,7 @@
 package com.store_me.storeme.ui.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,24 +12,36 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
+import com.store_me.storeme.data.enums.AccountType
+import com.store_me.storeme.data.response.StoreListResponse
 import com.store_me.storeme.ui.theme.CancelButtonColor
+import com.store_me.storeme.ui.theme.SelectedCheckBoxColorPink
+import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
+import com.store_me.storeme.utils.SizeUtils
 
 @Composable
 fun WarningDialog(
@@ -157,6 +170,112 @@ fun BackWarningDialog(
                 LargeButton(text = "확인", containerColor = Color.Black, contentColor = Color.White, modifier = Modifier.weight(1f)) {
                     onAction()
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun SelectStoreDialog(
+    storeListResponse: StoreListResponse,
+    onAction: (Long) -> Unit,
+    onCustomer: () -> Unit
+) {
+    val selectedStoreId = remember { mutableStateOf<Long?>(null) }
+
+    val localDensity = LocalDensity.current
+
+    BasicAlertDialog(
+        onDismissRequest = {  },
+        modifier = Modifier
+            .background(shape = RoundedCornerShape(20.dp), color = Color.White)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(15.dp)
+        ) {
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = "로그인할 스토어를 선택해주세요.",
+                style = storeMeTextStyle(FontWeight.ExtraBold, 6)
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(storeListResponse.storeInfoList) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .clickable { selectedStoreId.value = it.storeId },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        ProfileImage(
+                            accountType = AccountType.OWNER,
+                            url = it.storeProfileImageUrl,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(SizeUtils.textSizeToDp(localDensity, 2, 16))
+                        )
+
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                        ) {
+                            Text(
+                                text = it.storeName,
+                                style = storeMeTextStyle(FontWeight.Bold, 2)
+                            )
+                        }
+
+                        Icon(
+                            painter = painterResource(
+                                id =
+                                if(it.storeId == selectedStoreId.value)
+                                    R.drawable.ic_check_on
+                                else
+                                    R.drawable.ic_check_off
+                            ),
+                            contentDescription = "체크",
+                            tint = if(selectedStoreId.value == it.storeId) SelectedCheckBoxColorPink else UndefinedTextColor,
+                            modifier = Modifier.size(SizeUtils.textSizeToDp(localDensity, 2, 8))
+                        )
+                    }
+                }
+
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onCustomer() }
+                    ) {
+                        Text(
+                            text = "손님 계정으로 시작하기",
+                            style = storeMeTextStyle(FontWeight.Bold, 2),
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            DefaultButton(
+                buttonText = "완료",
+                diffValue = 2,
+                enabled = selectedStoreId.value != null
+            ) {
+                selectedStoreId.value?.let { onAction(it) }
             }
         }
     }
