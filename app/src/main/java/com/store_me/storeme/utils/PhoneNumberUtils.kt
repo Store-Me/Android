@@ -28,7 +28,7 @@ class PhoneNumberUtils {
             input.matches(Regex("^050\\d{1}\\d{8}\$")) -> true // 안심번호
             input.matches(Regex("^010\\d{8}\$")) -> true       // 휴대전화번호
             input.matches(Regex("^070\\d{8}\$")) -> true       // 인터넷전화번호
-            areaCodes.any { input.matches(Regex("^$it\\d{6,8}\$")) } -> true // 유선전화
+            areaCodes.any { input.matches(Regex("^$it\\d{7,8}\$")) } -> true // 유선전화
             else -> false
         }
     }
