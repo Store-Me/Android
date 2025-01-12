@@ -3,6 +3,7 @@ package com.store_me.storeme.ui.onboarding
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -27,12 +28,11 @@ import com.airbnb.lottie.compose.rememberLottieAnimatable
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.utils.composition_locals.onboarding.LocalOnboardingComposition
 
 @Composable
 fun OnboardingScreen(navController: NavController) {
-    val composition by rememberLottieComposition(
-        LottieCompositionSpec.RawRes(R.raw.onboarding_animation)
-    )
+    val composition = LocalOnboardingComposition.current
     val lottieAnimatable = rememberLottieAnimatable()
 
     LaunchedEffect(composition) {
@@ -78,23 +78,14 @@ fun OnboardingScreen(navController: NavController) {
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                if(composition == null) {
-                    Image(
-                        painter = painterResource(id = R.drawable.onboarding_image),
-                        contentDescription = "온보딩 이미지",
-                        contentScale = ContentScale.FillWidth,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
-                } else {
-                    LottieAnimation(
-                        composition = composition,
-                        iterations = LottieConstants.IterateForever,
-                        speed = 0.1f,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    )
-                }
+
+                LottieAnimation(
+                    composition = composition,
+                    iterations = LottieConstants.IterateForever,
+                    speed = 0.3f,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
             }
         }
     )
