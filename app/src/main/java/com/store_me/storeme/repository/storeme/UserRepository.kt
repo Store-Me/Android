@@ -230,20 +230,13 @@ class UserRepositoryImpl @Inject constructor(
 
                 when(responseBody?.isSuccess) {
                     true -> {
-                        if(responseBody.result != null){
-                            //Token 저장
-                            TokenPreferencesHelper.saveTokens(
-                                refreshToken = responseBody.result.refreshToken,
-                                accessToken = responseBody.result.accessToken,
-                                expireTime = responseBody.result.expiredTime
-                            )
+                        TokenPreferencesHelper.saveTokens(
+                            refreshToken = responseBody.result.refreshToken,
+                            accessToken = responseBody.result.accessToken,
+                            expireTime = responseBody.result.expiredTime
+                        )
 
-                            Result.success(responseBody.result)
-                        } else {
-                            Result.failure(ApiExceptionHandler.apiException(
-                                code = responseBody.code, message = context.getString(R.string.token_error_message)
-                            ))
-                        }
+                        Result.success(responseBody.result)
                     }
                     false -> {
                         //로그인 실패
@@ -284,20 +277,15 @@ class UserRepositoryImpl @Inject constructor(
                 when(responseBody?.isSuccess) {
                     true -> {
                         //로그인 성공
-                        if(responseBody.result != null){
-                            //Token 저장
-                            TokenPreferencesHelper.saveTokens(
-                                refreshToken = responseBody.result.refreshToken,
-                                accessToken = responseBody.result.accessToken,
-                                expireTime = responseBody.result.expiredTime
-                            )
 
-                            Result.success(responseBody.result)
-                        } else {
-                            Result.failure(ApiExceptionHandler.apiException(
-                                code = responseBody.code, message = context.getString(R.string.token_error_message)
-                            ))
-                        }
+                        //Token 저장
+                        TokenPreferencesHelper.saveTokens(
+                            refreshToken = responseBody.result.refreshToken,
+                            accessToken = responseBody.result.accessToken,
+                            expireTime = responseBody.result.expiredTime
+                        )
+
+                        Result.success(responseBody.result)
                     }
                     false -> {
                         //로그인 실패
@@ -347,7 +335,7 @@ class UserRepositoryImpl @Inject constructor(
 
                 when(responseBody?.isSuccess) {
                     true -> {
-                        Result.success(PhoneNumberResponse(timeLimit = responseBody.result?.timeLimit ?: 300))
+                        Result.success(PhoneNumberResponse(timeLimit = responseBody.result.timeLimit))
                     }
                     false -> {
                         Result.failure(
