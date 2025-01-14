@@ -1,10 +1,10 @@
 package com.store_me.storeme.repository.naver
 
-import android.util.Log
 import com.naver.maps.geometry.LatLng
 import com.store_me.storeme.network.naver.NaverApiService
 import com.store_me.storeme.network.naver.NaverGeocodingApiService
 import com.store_me.storeme.utils.ServerResponse
+import timber.log.Timber
 import javax.inject.Inject
 
 class NaverRepository @Inject constructor(private val naverApiService: NaverApiService, private val naverGeocodingApiService: NaverGeocodingApiService) {
@@ -15,15 +15,15 @@ class NaverRepository @Inject constructor(private val naverApiService: NaverApiS
             val response = naverApiService.reverseGeocode("${latLng.longitude},${latLng.latitude}", "admcode", "json")
 
             if(response.isSuccessful){
-                Log.d("reverseGeocode", "SUCCESS: ${response.body()}")
+                Timber.i("ReverseGeocode Success: ${response.body()}")
                 Result.success(response.body()!!)
             }
             else{
-                Log.d("reverseGeocode", "FAIL: ${response.errorBody()?.string()}")
+                Timber.w("ReverseGeocode Fail: ${response.errorBody()?.string()}")
                 Result.failure(Exception(ServerResponse.FAIL.code))
             }
         } catch (e: Exception) {
-            Log.e("reverseGeocode", "ERROR", e)
+            Timber.e("ReverseGeocode Error: $e")
             Result.failure(Exception(ServerResponse.ERROR.code))
         }
     }
@@ -35,14 +35,15 @@ class NaverRepository @Inject constructor(private val naverApiService: NaverApiS
             val response = naverGeocodingApiService.geocode(roadAddress)
 
             if(response.isSuccessful) {
-                Log.d("geocode", "SUCCESS: ${response.body()}")
+                Timber.i("Geocode Success: ${response.body()}")
+
                 Result.success(response.body()!!)
             } else {
-                Log.d("geocode", "FAIL: ${response.errorBody()?.string()}")
+                Timber.w("Geocode Fail: ${response.errorBody()?.string()}")
                 Result.failure(Exception(ServerResponse.FAIL.code))
             }
         } catch (e: Exception) {
-            Log.e("geocode", "ERROR", e)
+            Timber.e("Geocode Error: $e")
             Result.failure(Exception(ServerResponse.ERROR.code))
         }
     }
