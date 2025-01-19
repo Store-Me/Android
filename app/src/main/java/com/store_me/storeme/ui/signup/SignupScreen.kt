@@ -145,14 +145,6 @@ fun SignupScreen(
         }
     }
 
-    LaunchedEffect(isSignupFinish) {
-        if(isSignupFinish) {
-            loadingViewModel.hideLoading()
-
-            snackbarHostState.showSnackbar(context.getString(R.string.signup_finish))
-        }
-    }
-
     fun onClickBackButton() {
         if(signupState is SignupState.Signup){
             when ((signupState as SignupState.Signup).progress) {
@@ -173,6 +165,16 @@ fun SignupScreen(
 
     fun moveToNextProgress(accountType: AccountType? = null) {
         signupProgressViewModel.moveToNextProgress(accountType = accountType, loginType = loginType)
+    }
+
+    LaunchedEffect(isSignupFinish) {
+        if(isSignupFinish) {
+            loadingViewModel.hideLoading()
+
+            snackbarHostState.showSnackbar(context.getString(R.string.signup_finish))
+
+            moveToNextProgress(accountType = accountType)
+        }
     }
 
     BackHandler {
