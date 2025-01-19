@@ -8,6 +8,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.data.response.StoreListResponse
+import com.store_me.storeme.repository.storeme.CustomerRepository
 import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.repository.storeme.UserRepository
 import com.store_me.storeme.ui.main.LOGIN_FAIL
@@ -24,7 +25,8 @@ class LoginViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val auth: Auth,
     private val userRepository: UserRepository,
-    private val ownerRepository: OwnerRepository
+    private val ownerRepository: OwnerRepository,
+    private val customerRepository: CustomerRepository
 ): ViewModel() {
     private val _isKakaoLoginFailed = MutableStateFlow(false)
     val isKakaoLoginFailed: StateFlow<Boolean> = _isKakaoLoginFailed
@@ -40,6 +42,9 @@ class LoginViewModel @Inject constructor(
 
     private val _storeListResponse = MutableStateFlow<StoreListResponse?>(null)
     val storeListResponse: StateFlow<StoreListResponse?> = _storeListResponse
+
+    private val _customerLoginSuccess = MutableStateFlow(false)
+    val customerLoginSuccess: StateFlow<Boolean> = _customerLoginSuccess
 
     private val _errorMessage = MutableStateFlow<String?>(null)
     val errorMessage: StateFlow<String?> = _errorMessage
@@ -121,9 +126,7 @@ class LoginViewModel @Inject constructor(
         response.onSuccess {
             if(it.storeInfoList.isEmpty()) {
                 //Customer
-                auth.updateAccountType(AccountType.CUSTOMER)
-
-                auth.updateIsLoggedIn(true) //손님은 바로 로그인 완료
+                loginByCustomerAccount()
             } else {
                 //Owner
                 auth.updateAccountType(AccountType.OWNER)
@@ -145,12 +148,29 @@ class LoginViewModel @Inject constructor(
     }
 
     /**
-     * OWNER 로그인 후 CUSTOMER 로그인 선택시 호출되는 함수
+     * Customer 정보 받는 함수
      */
     fun loginByCustomerAccount() {
-        //TODO CUSTOMER 계정 존재 확인 필요
+        viewModelScope.launch {
+            val response = customerRepository.getCustomerInfo()
 
-        auth.updateAccountType(AccountType.CUSTOMER)
-        auth.updateIsLoggedIn(true)
+            response.onSuccess {
+                updateCustomerLoginSuccess(true)
+                auth.updateAccountType(AccountType.CUSTOMER)
+                auth.updateIsLoggedIn(true)
+            }.onFailure {
+                _storeListResponse.value = null
+
+                if(it is ApiException) {
+                    _errorMessage.value = it.message
+                } else {
+                    _errorMessage.value = context.getString(R.string.unknown_error_message)
+                }
+            }
+        }
+    }
+
+    fun updateCustomerLoginSuccess(customerLoginSuccess: Boolean) {
+        _customerLoginSuccess.value = customerLoginSuccess
     }
 }
