@@ -19,6 +19,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,16 +27,17 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -51,6 +53,8 @@ import com.store_me.storeme.ui.banner.BannerListScreen
 import com.store_me.storeme.ui.home.customer.CustomerHomeScreen
 import com.store_me.storeme.ui.home.owner.OwnerHomeScreen
 import com.store_me.storeme.ui.link.LinkSettingScreen
+import com.store_me.storeme.ui.loading.LoadingScreen
+import com.store_me.storeme.ui.loading.LoadingViewModel
 import com.store_me.storeme.ui.location.LocationScreen
 import com.store_me.storeme.ui.my_menu.MyMenuScreen
 import com.store_me.storeme.ui.mycoupon.MyCouponScreenWithBottomSheet
@@ -83,8 +87,14 @@ import com.store_me.storeme.ui.store_talk.StoreTalkScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.storeMeTypography
+import com.store_me.storeme.utils.KeyboardHeightObserver
 import com.store_me.storeme.utils.composition_locals.LocalAuth
+import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
+import com.store_me.storeme.utils.preference.SettingPreferencesHelper
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -92,13 +102,33 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var auth: Auth
 
+    @Inject
+    lateinit var settingPreferencesHelper: SettingPreferencesHelper
+
+    private lateinit var keyboardHeightObserver: KeyboardHeightObserver
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
+            keyboardHeightObserver = KeyboardHeightObserver(this) { height ->
+                lifecycleScope.launch {
+                    settingPreferencesHelper.saveKeyboardHeight(height)
+                }
+            }
+
+            keyboardHeightObserver.startObserving()
+
             StoreMeTheme {
+                val loadingViewModel: LoadingViewModel = viewModel()
+                val isLoading by loadingViewModel.isLoading.collectAsState()
+
+                val snackBarHostState = remember { SnackbarHostState() }
+
                 CompositionLocalProvider(
-                    LocalAuth provides auth
+                    LocalAuth provides auth,
+                    LocalSnackbarHostState provides snackBarHostState,
+                    LocalLoadingViewModel provides loadingViewModel
                 ) {
                     Surface(
                         modifier = Modifier
@@ -112,9 +142,18 @@ class MainActivity : ComponentActivity() {
                         if(!isLoggedIn) {
                             NavigateToOnboarding()
                         } else {
-                            when(accountType){
-                                AccountType.CUSTOMER -> { CustomerScreen() }
-                                AccountType.OWNER -> { OwnerScreen() }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                            ) {
+                                when(accountType){
+                                    AccountType.CUSTOMER -> { CustomerScreen() }
+                                    AccountType.OWNER -> { OwnerScreen() }
+                                }
+
+                                if(isLoading) {
+                                    LoadingScreen()
+                                }
                             }
                         }
                     }
@@ -305,7 +344,7 @@ class MainActivity : ComponentActivity() {
             HorizontalDivider(color = UnselectedItemColor, thickness = 0.2.dp)
 
             NavigationBar (
-                containerColor = White,
+                containerColor = Color.White,
                 modifier = Modifier
                     .height(67.dp),
                 tonalElevation = 0.dp
@@ -353,7 +392,7 @@ class MainActivity : ComponentActivity() {
                             )
                         },
                         label = {
-                            val textColor = if(isSelected) Black else UnselectedItemColor
+                            val textColor = if(isSelected) Color.Black else UnselectedItemColor
                             Text(stringResource(id = item.title), style = storeMeTypography.titleSmall, fontSize = 10.sp, color = textColor) },
                         selected = isSelected,
                         alwaysShowLabel = true,
@@ -405,5 +444,11 @@ class MainActivity : ComponentActivity() {
 
     enum class OwnerNavItem {
         LINK_SETTING, STORE_SETTING, CREATE_COUPON, EDIT_COUPON, ADD_MENU, EDIT_MENU, MENU_CATEGORY_SETTING, EDIT_MENU_CATEGORY, EDIT_PROFILE
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        keyboardHeightObserver.stopObserving()
     }
 }
