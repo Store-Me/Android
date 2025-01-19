@@ -250,6 +250,13 @@ val AddPostSurveyIconColor = Color(0xFF21C9E9)
 val AddPostNoticeIconColor = Color(0xFFFFAB00)
 val AddPostStoryIconColor = Color(0xFFFE4343)
 
+/**
+ * Keyboard Toolbar Color
+ */
+val SelectedToolbarItemColor = Color(0xFFD449DA)
+val SecondaryToolbarBackgroundColor = Color(0xFFF9F9F9)
+
+val SelectedToolbarTextStyleBackgroundColor = Color(0xFFFEEBFE)
 
 /**
  * Default Color
