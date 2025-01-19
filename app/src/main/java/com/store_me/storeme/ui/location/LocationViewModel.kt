@@ -14,11 +14,10 @@ import com.naver.maps.geometry.LatLng
 import com.store_me.storeme.R
 import com.store_me.storeme.data.database.location.LocationDataBaseHelper
 import com.store_me.storeme.data.database.location.LocationEntity
-import com.store_me.storeme.data.datastore.getLocation
-import com.store_me.storeme.data.datastore.saveLocation
 import com.store_me.storeme.repository.naver.NaverRepository
 import com.store_me.storeme.utils.ServerResponse
 import com.store_me.storeme.utils.ToastMessageUtils
+import com.store_me.storeme.utils.preference.LocationPreferencesHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +31,8 @@ import javax.inject.Inject
 class LocationViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val dbHelper: LocationDataBaseHelper,
-    private val naverRepository: NaverRepository
+    private val naverRepository: NaverRepository,
+    private val locationPreferencesHelper: LocationPreferencesHelper
 ) : ViewModel() {
     private val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
@@ -68,7 +68,7 @@ class LocationViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            getLocation(context).collect { location ->
+            locationPreferencesHelper.getLocation().collect { location ->
                 _lastLocation.value = location
             }
         }
@@ -137,7 +137,7 @@ class LocationViewModel @Inject constructor(
                     _lastLocation.value = third
 
                     if(code != null) {
-                        saveLocation(context, third, code)
+                        locationPreferencesHelper.saveLocation(third, code)
                         setReverseGeocodeCompletedValue(true)
                     }
 
@@ -224,7 +224,7 @@ class LocationViewModel @Inject constructor(
 
     fun saveLocation(third: String, code: Long) {
         viewModelScope.launch {
-            saveLocation(context, third, code)
+            locationPreferencesHelper.saveLocation(third, code)
         }
     }
 
