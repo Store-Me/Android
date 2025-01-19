@@ -32,7 +32,7 @@ class OwnerRepositoryImpl @Inject constructor(
 
                 when(responseBody?.isSuccess) {
                     true -> {
-                        Result.success(responseBody.result ?: StoreListResponse(emptyList()))
+                        Result.success(responseBody.result)
                     }
                     false -> {
                         Result.failure(
