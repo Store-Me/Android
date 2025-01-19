@@ -2,8 +2,8 @@
 
 package com.store_me.storeme.ui.post
 
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,25 +16,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -42,9 +35,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.PostType
-import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.post.SelectPostTypeViewModel.*
-import com.store_me.storeme.ui.post.normal.AddNormalPostSection
+import com.store_me.storeme.ui.post.add.AddPostActivity
 import com.store_me.storeme.ui.theme.AddPostCouponIconColor
 import com.store_me.storeme.ui.theme.AddPostEditIconColor
 import com.store_me.storeme.ui.theme.AddPostEventIconColor
@@ -65,46 +57,21 @@ fun SelectPostTypeScreen(
     navController: NavController,
     selectPostTypeViewModel: SelectPostTypeViewModel = viewModel()
 ) {
-    val focusManager = LocalFocusManager.current
-
-    val postType by selectPostTypeViewModel.postType.collectAsState()
-    
-    BackHandler {
-        if(postType == null){
-            navController.popBackStack()
-        } else {
-            selectPostTypeViewModel.updatePostType(null)
-        }
-    }
+    val context = LocalContext.current
 
     CompositionLocalProvider(LocalSelectPostTypeViewModel provides selectPostTypeViewModel) {
         Scaffold(
             modifier = Modifier
-                .addFocusCleaner(focusManager),
+                .fillMaxSize(),
             containerColor = Color.White,
-            topBar = {
-                if(postType != null) {
-                    AddPostTopBar(
-                        canFinish = false,
-                        onClose = { selectPostTypeViewModel.updatePostType(null) },
-                        onFinish = { }
-                    )
-                } },
-            bottomBar = {},
             content = { innerPadding ->
                 Column(
                     modifier = Modifier
                         .padding(innerPadding)
                         .fillMaxSize()
                 ) {
-                    when(postType) {
-                        PostType.NORMAL -> { navController.navigate("add_post") }
-                        PostType.COUPON -> {  }
-                        PostType.EVENT -> {  }
-                        PostType.SURVEY -> {  }
-                        PostType.NOTICE -> {  }
-                        PostType.STORY -> {  }
-                        null -> { SelectPostTypeSection() }
+                    SelectPostTypeSection {
+                        navigateToAddPostActivity(context = context, postType = it)
                     }
                 }
             }
@@ -112,41 +79,16 @@ fun SelectPostTypeScreen(
     }
 }
 
-@Composable
-fun AddPostTopBar(canFinish: Boolean, onClose: () -> Unit, onFinish: () -> Unit) {
+fun navigateToAddPostActivity(context: Context, postType: PostType) {
+    val intent = Intent(context, AddPostActivity::class.java).apply {
+        putExtra("postType", postType.name)
+    }
 
-    CenterAlignedTopAppBar(
-        title = { Text(
-            text = "추가하기",
-            style = storeMeTextStyle(FontWeight.ExtraBold, 6)
-        ) },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White
-        ),
-        navigationIcon = { IconButton(onClick = { onClose() }) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_delete),
-                contentDescription = "닫기",
-                modifier = Modifier
-                    .size(24.dp)
-            )
-        } },
-        actions = { TextButton(
-            onClick = { onFinish() },
-            interactionSource = remember { MutableInteractionSource() },
-            enabled = canFinish,
-            content = { Text(
-                text = "완료",
-                style = storeMeTextStyle(FontWeight.ExtraBold, 2),
-            ) }
-        ) },
-    )
+    context.startActivity(intent)
 }
 
 @Composable
-fun SelectPostTypeSection() {
-    val addPostViewModel = LocalSelectPostTypeViewModel.current
-
+fun SelectPostTypeSection(onSelectType: (PostType) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -170,7 +112,7 @@ fun SelectPostTypeSection() {
                 iconResource = R.drawable.ic_edit,
                 iconTint = AddPostEditIconColor
             ) {
-                addPostViewModel.updatePostType(PostType.NORMAL)
+                onSelectType(PostType.NORMAL)
             }
 
             Row(
@@ -185,7 +127,7 @@ fun SelectPostTypeSection() {
                     iconResource = R.drawable.ic_post_coupon,
                     iconTint = AddPostCouponIconColor
                 ) {
-                    addPostViewModel.updatePostType(PostType.COUPON)
+                    onSelectType(PostType.COUPON)
                 }
 
                 PostTypeSmallItem(
@@ -195,7 +137,7 @@ fun SelectPostTypeSection() {
                     iconResource = R.drawable.ic_event,
                     iconTint = AddPostEventIconColor
                 ) {
-                    addPostViewModel.updatePostType(PostType.EVENT)
+                    onSelectType(PostType.EVENT)
                 }
             }
 
@@ -211,7 +153,7 @@ fun SelectPostTypeSection() {
                     iconResource = R.drawable.ic_survey,
                     iconTint = AddPostSurveyIconColor
                 ) {
-                    addPostViewModel.updatePostType(PostType.SURVEY)
+                    onSelectType(PostType.SURVEY)
                 }
 
                 PostTypeSmallItem(
@@ -221,7 +163,7 @@ fun SelectPostTypeSection() {
                     iconResource = R.drawable.ic_notice,
                     iconTint = AddPostNoticeIconColor
                 ) {
-                    addPostViewModel.updatePostType(PostType.NOTICE)
+                    onSelectType(PostType.NOTICE)
                 }
             }
 
@@ -230,7 +172,7 @@ fun SelectPostTypeSection() {
                 iconResource = R.drawable.ic_story,
                 iconTint = AddPostStoryIconColor
             ) {
-                addPostViewModel.updatePostType(PostType.STORY)
+                onSelectType(PostType.STORY)
             }
         }
     }

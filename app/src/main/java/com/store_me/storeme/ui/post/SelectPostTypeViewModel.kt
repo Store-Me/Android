@@ -7,12 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class SelectPostTypeViewModel: ViewModel() {
-    private val _postType = MutableStateFlow<PostType?>(null)
-    val postType: StateFlow<PostType?> = _postType
 
-    fun updatePostType(newPostType: PostType?) {
-        _postType.value = newPostType
-    }
 
 
 
