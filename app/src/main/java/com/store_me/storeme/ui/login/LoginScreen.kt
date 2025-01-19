@@ -90,6 +90,7 @@ fun LoginScreen(
     val isPwError = remember { mutableStateOf(false) }
 
     val storeListResponse by loginViewModel.storeListResponse.collectAsState()
+    val customerLoginSuccess by loginViewModel.customerLoginSuccess.collectAsState()
 
     val loginErrorMessage by loginViewModel.errorMessage.collectAsState()
 
@@ -122,15 +123,6 @@ fun LoginScreen(
         loadingViewModel.hideLoading()
 
         showSelectStoreDialog.value = true
-
-        /*when(storeListResponse?.storeInfoList?.size) {
-            1 -> {
-
-            }
-            else -> {
-
-            }
-        }*/
     }
 
     LaunchedEffect(loginErrorMessage) {
@@ -140,6 +132,13 @@ fun LoginScreen(
             snackbarHostState.showSnackbar(loginErrorMessage.toString())
 
             loginViewModel.updateErrorMessage(null)
+        }
+    }
+
+    LaunchedEffect(customerLoginSuccess) {
+        if(customerLoginSuccess) {
+            loadingViewModel.hideLoading()
+            loginViewModel.updateCustomerLoginSuccess(false)
         }
     }
 

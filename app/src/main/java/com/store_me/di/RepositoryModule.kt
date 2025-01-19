@@ -2,6 +2,8 @@ package com.store_me.di
 
 import com.store_me.storeme.repository.storeme.AuthRepository
 import com.store_me.storeme.repository.storeme.AuthRepositoryImpl
+import com.store_me.storeme.repository.storeme.CustomerRepository
+import com.store_me.storeme.repository.storeme.CustomerRepositoryImpl
 import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.repository.storeme.OwnerRepositoryImpl
 import com.store_me.storeme.repository.storeme.UserRepository
@@ -26,6 +28,12 @@ abstract class RepositoryModule {
     abstract fun bindOwnerRepository(
         ownerRepositoryImpl: OwnerRepositoryImpl
     ): OwnerRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCustomerRepository(
+        customerRepositoryImpl: CustomerRepositoryImpl
+    ): CustomerRepository
 
     @Binds
     @Singleton
