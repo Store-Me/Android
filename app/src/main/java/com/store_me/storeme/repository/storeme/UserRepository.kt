@@ -16,7 +16,7 @@ import com.store_me.storeme.data.model.verification.ConfirmCode
 import com.store_me.storeme.data.model.verification.PhoneNumber
 import com.store_me.storeme.data.model.verification.PhoneNumberResponse
 import com.store_me.storeme.network.storeme.UserApiService
-import com.store_me.storeme.utils.TokenPreferencesHelper
+import com.store_me.storeme.utils.preference.TokenPreferencesHelper
 import com.store_me.storeme.utils.exception.ApiExceptionHandler
 import com.store_me.storeme.utils.exception.ApiExceptionHandler.toResult
 import com.store_me.storeme.utils.response.ResponseHandler

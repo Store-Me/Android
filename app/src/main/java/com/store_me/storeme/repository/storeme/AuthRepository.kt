@@ -4,7 +4,7 @@ import android.content.Context
 import com.store_me.storeme.R
 import com.store_me.storeme.data.response.ReissueResponse
 import com.store_me.storeme.network.storeme.AuthApiService
-import com.store_me.storeme.utils.TokenPreferencesHelper
+import com.store_me.storeme.utils.preference.TokenPreferencesHelper
 import com.store_me.storeme.utils.exception.ApiExceptionHandler
 import com.store_me.storeme.utils.exception.ApiExceptionHandler.toResult
 import com.store_me.storeme.utils.response.ResponseHandler

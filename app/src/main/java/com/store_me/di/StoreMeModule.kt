@@ -2,9 +2,10 @@ package com.store_me.di
 
 import com.store_me.auth.AuthInterceptor
 import com.store_me.storeme.network.storeme.AuthApiService
+import com.store_me.storeme.network.storeme.CustomerApiService
 import com.store_me.storeme.network.storeme.OwnerApiService
 import com.store_me.storeme.network.storeme.UserApiService
-import com.store_me.storeme.utils.TokenPreferencesHelper
+import com.store_me.storeme.utils.preference.TokenPreferencesHelper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -136,5 +137,13 @@ object StoreMeModule {
         @Named("AuthorizedRetrofit") retrofit: Retrofit
     ): OwnerApiService {
         return retrofit.create(OwnerApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun CustomerApiService(
+        @Named("AuthorizedRetrofit") retrofit: Retrofit
+    ): CustomerApiService {
+        return retrofit.create(CustomerApiService::class.java)
     }
 }

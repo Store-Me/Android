@@ -1,7 +1,7 @@
 package com.store_me.auth
 
 import com.store_me.storeme.repository.storeme.AuthRepository
-import com.store_me.storeme.utils.TokenPreferencesHelper
+import com.store_me.storeme.utils.preference.TokenPreferencesHelper
 import okhttp3.Interceptor
 import okhttp3.Response
 import timber.log.Timber
