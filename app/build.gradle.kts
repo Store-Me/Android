@@ -1,4 +1,5 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
 plugins {
@@ -9,6 +10,8 @@ plugins {
     id("kotlin-kapt")
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
+
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
 fun getApiKey(propertyKey: String): String {
@@ -75,14 +78,16 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_1_8)
+        }
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"
+        kotlinCompilerExtensionVersion = "2.0.21"
     }
     packaging {
         resources {
@@ -109,7 +114,6 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.0")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     debugImplementation("androidx.compose.ui:ui-tooling")
@@ -163,7 +167,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-rxjava2:1.6.8")
 
     //rich-editor
-    implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc05")
+    implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc10")
 
     //reorderable
     implementation("sh.calvin.reorderable:reorderable:2.3.1")
