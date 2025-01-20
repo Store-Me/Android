@@ -3,7 +3,7 @@ package com.store_me.auth
 import android.content.Context
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
-import com.store_me.storeme.utils.TokenPreferencesHelper
+import com.store_me.storeme.utils.preference.TokenPreferencesHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
