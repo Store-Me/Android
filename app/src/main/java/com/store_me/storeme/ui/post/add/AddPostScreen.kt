@@ -2,6 +2,7 @@
 
 package com.store_me.storeme.ui.post.add
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -62,11 +63,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.mohamedrejeb.richeditor.model.rememberRichTextState
-import com.mohamedrejeb.richeditor.ui.material3.RichText
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults
 import com.store_me.storeme.R
@@ -82,7 +81,6 @@ import com.store_me.storeme.ui.theme.SelectedToolbarItemColor
 import com.store_me.storeme.ui.theme.SelectedToolbarTextStyleBackgroundColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.ui.theme.storeMeTypography
 import com.store_me.storeme.utils.SizeUtils
 import com.store_me.storeme.utils.composition_locals.post.LocalAddPostViewModel
 import timber.log.Timber
@@ -323,21 +321,6 @@ fun KeyboardToolbar(
         )
     }
 
-    LaunchedEffect(selectedToolbarItem) {
-        if (selectedToolbarItem == ToolbarItems.IMAGE) {
-            val imageUrl = "https://image.utoimage.com/preview/cp872722/2022/12/202212008462_500.jpg"
-            val imageHtml = """<img src="$imageUrl" alt="Example Image" width="200" height="200" />"""
-
-            // 기존 HTML에 이미지 태그 추가
-            val updatedHtml = state.toHtml() + imageHtml
-            state.setHtml(updatedHtml)
-
-            // 로깅으로 결과 확인
-            Timber.d("current: $updatedHtml")
-        }
-    }
-
-
     val items = listOf(
         ToolbarItems.IMAGE to R.drawable.ic_image,
         ToolbarItems.ALIGN to textAlignPainterResource,
@@ -357,6 +340,13 @@ fun KeyboardToolbar(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
+
+            AnimatedVisibility(
+                visible = selectedToolbarItem == ToolbarItems.IMAGE
+            ) {
+                ToolbarTitleText("이미지")
+            }
+
             AnimatedVisibility(
                 visible = selectedToolbarItem == ToolbarItems.ALIGN
             ) {
@@ -369,6 +359,12 @@ fun KeyboardToolbar(
                 visible = selectedToolbarItem == ToolbarItems.TEXT_STYLE
             ) {
                 TextStyleItems(state = state)
+            }
+
+            AnimatedVisibility(
+                visible = selectedToolbarItem == ToolbarItems.EMOJI
+            ) {
+                ToolbarTitleText("이모티콘")
             }
 
             LazyRow(
@@ -438,8 +434,65 @@ fun KeyboardToolbar(
         }
 
 
-        if(isKeyboardOpen)
-            Spacer(modifier = Modifier.height(with(LocalDensity.current) { keyboardHeight.toDp() }))
+
+        AnimatedVisibility(
+            visible = selectedToolbarItem != null || isKeyboardOpen,
+        ) {
+            when (selectedToolbarItem) {
+                ToolbarItems.EMOJI -> {
+                    SelectEmojiSection()
+                }
+                ToolbarItems.IMAGE -> {
+                    SelectImageSection()
+                }
+                else -> {
+                    if (isKeyboardOpen) {
+                        Spacer(modifier = Modifier.height(with(LocalDensity.current) { keyboardHeight.toDp() }))
+                    }
+                }
+            }
+        }
+
+    }
+}
+
+@Composable
+fun SelectEmojiSection() {
+    val addPostViewModel = LocalAddPostViewModel.current
+    val keyboardHeight by addPostViewModel.keyboardHeight.collectAsState()
+
+    Column(
+        modifier = Modifier
+            .height(with(LocalDensity.current) { keyboardHeight.toDp() })
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "준비중인 기능입니다.",
+            style = storeMeTextStyle(FontWeight.Bold, 4),
+            color = UndefinedTextColor
+        )
+    }
+}
+
+@Composable
+fun SelectImageSection() {
+    val addPostViewModel = LocalAddPostViewModel.current
+    val keyboardHeight by addPostViewModel.keyboardHeight.collectAsState()
+
+    Column(
+        modifier = Modifier
+            .height(with(LocalDensity.current) { keyboardHeight.toDp() })
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "준비중인 기능입니다.",
+            style = storeMeTextStyle(FontWeight.Bold, 4),
+            color = UndefinedTextColor
+        )
     }
 }
 
@@ -483,6 +536,22 @@ fun TextAlignItems(textAlign: TextAlign, onClick: (TextAlign) -> Unit) {
 }
 
 @Composable
+fun ToolbarTitleText(text: String) {
+    Column(
+        modifier = Modifier
+            .height(48.dp)
+            .padding(start = 12.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = text,
+            style = storeMeTextStyle(FontWeight.Bold, 2),
+            color = Color.Black,
+        )
+    }
+}
+
+@Composable
 fun TextStyleItems(state: RichTextState) {
     val addPostViewModel = LocalAddPostViewModel.current
 
@@ -521,6 +590,76 @@ fun TextStyleItems(state: RichTextState) {
             state.removeSpanStyle(
                 spanStyle = SpanStyle(textDecoration = TextDecoration.Underline)
             )
+        }
+    }
+
+    LaunchedEffect(state.currentSpanStyle.fontSize) {
+        when(state.currentSpanStyle.fontSize) {
+            TextSizeOptions.SMALL.spSize -> {
+                if(textSize != TextSizeOptions.SMALL) {
+                    addPostViewModel.updateTextSize(TextSizeOptions.SMALL)
+                }
+            }
+            TextSizeOptions.REGULAR.spSize -> {
+                if(textSize != TextSizeOptions.REGULAR) {
+                    addPostViewModel.updateTextSize(TextSizeOptions.REGULAR)
+                }
+            }
+            TextSizeOptions.BIGGER.spSize -> {
+                if(textSize != TextSizeOptions.BIGGER) {
+                    addPostViewModel.updateTextSize(TextSizeOptions.BIGGER)
+                }
+            }
+            TextSizeOptions.BIGGEST.spSize -> {
+                if(textSize != TextSizeOptions.BIGGEST) {
+                    addPostViewModel.updateTextSize(TextSizeOptions.BIGGEST)
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(state.currentSpanStyle.fontWeight) {
+        when(state.currentSpanStyle.fontWeight) {
+            FontWeight.Bold -> {
+                if(!textIsBold) {
+                    addPostViewModel.updateTextBold(true)
+                }
+            }
+            else -> {
+                if(textIsBold) {
+                    addPostViewModel.updateTextBold(false)
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(state.currentSpanStyle.fontStyle) {
+        when(state.currentSpanStyle.fontStyle) {
+            FontStyle.Italic -> {
+                if(!textIsItalic) {
+                    addPostViewModel.updateTextItalic(true)
+                }
+            }
+            else -> {
+                if(textIsItalic) {
+                    addPostViewModel.updateTextItalic(false)
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(state.currentSpanStyle.textDecoration ) {
+        when(state.currentSpanStyle.textDecoration) {
+            TextDecoration.Underline -> {
+                if(!textHasUnderLine){
+                    addPostViewModel.updateTextUnderLine(true)
+                }
+            }
+            else -> {
+                if(textHasUnderLine){
+                    addPostViewModel.updateTextUnderLine(false)
+                }
+            }
         }
     }
 
