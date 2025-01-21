@@ -66,6 +66,7 @@ import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @Composable
 fun LoginScreen(
@@ -94,7 +95,7 @@ fun LoginScreen(
 
     val loginErrorMessage by loginViewModel.errorMessage.collectAsState()
 
-    val showSelectStoreDialog = remember { MutableStateFlow(false) }
+    val showSelectStoreDialog = remember { mutableStateOf(false) }
 
     LaunchedEffect(isKakaoLoginFailed) {
         if(isKakaoLoginFailed){
@@ -116,6 +117,8 @@ fun LoginScreen(
     }
 
     LaunchedEffect(storeListResponse) {
+        Timber.d("storeListResponse: $storeListResponse")
+
         if(storeListResponse == null){
             return@LaunchedEffect
         }
@@ -123,6 +126,7 @@ fun LoginScreen(
         loadingViewModel.hideLoading()
 
         showSelectStoreDialog.value = true
+        Timber.d("showSelectStoreDialog: ${showSelectStoreDialog.value}")
     }
 
     LaunchedEffect(loginErrorMessage) {
@@ -317,6 +321,7 @@ fun LoginScreen(
     )
 
     if(showSelectStoreDialog.value) {
+        Timber.d("showDialog")
         storeListResponse?.let {
             SelectStoreDialog(
                 storeListResponse = it,
