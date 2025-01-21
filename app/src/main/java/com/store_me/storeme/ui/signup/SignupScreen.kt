@@ -152,7 +152,12 @@ fun SignupScreen(
                     showDialog.value = true
                 }
                 SignupProgress.CERTIFICATION -> {
-                    showNumberWarningDialog.value = true
+                    if(showNumberWarningDialog.value) {
+                        showNumberWarningDialog.value = false
+                        signupProgressViewModel.moveToPreviousProgress(loginType)
+                    } else {
+                        showNumberWarningDialog.value = true
+                    }
                 }
                 else -> {
                     signupProgressViewModel.moveToPreviousProgress(loginType)
@@ -171,9 +176,9 @@ fun SignupScreen(
         if(isSignupFinish) {
             loadingViewModel.hideLoading()
 
-            snackbarHostState.showSnackbar(context.getString(R.string.signup_finish))
-
             moveToNextProgress(accountType = accountType)
+
+            snackbarHostState.showSnackbar(context.getString(R.string.signup_finish))
         }
     }
 
@@ -199,7 +204,6 @@ fun SignupScreen(
             actionText = "확인",
             onDismiss = { showNumberWarningDialog.value = false },
             onAction = {
-                showNumberWarningDialog.value = false
                 onClickBackButton()
             }
         )
@@ -315,40 +319,46 @@ fun SignupScreen(
                                     }
                                     CustomerProgress.PROFILE_IMAGE -> {
                                         CustomerProfileImageSection {
-                                            loadingViewModel.showLoading()
+                                            if(isSignupFinish) {
+                                                moveToNextProgress()
+                                            } else {
+                                                loadingViewModel.showLoading()
 
-                                            when {
-                                                accountType == AccountType.CUSTOMER && loginType == LoginType.KAKAO-> {
-                                                    signupViewModel.customerSignupKakao(
-                                                        customerSignupKakao = CustomerSignupKakao(
-                                                            kakaoId = additionalData,
-                                                            phoneNumber = phoneNumberViewModel.phoneNumber.value,
-                                                            privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
-                                                            marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
-                                                            verificationCode = phoneNumberViewModel.verificationCode.value,
+                                                when {
+                                                    accountType == AccountType.CUSTOMER && loginType == LoginType.KAKAO-> {
+                                                        signupViewModel.customerSignupKakao(
+                                                            customerSignupKakao = CustomerSignupKakao(
+                                                                kakaoId = additionalData,
+                                                                phoneNumber = phoneNumberViewModel.phoneNumber.value,
+                                                                privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
+                                                                marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
+                                                                verificationCode = phoneNumberViewModel.verificationCode.value,
 
-                                                            nickname = customerDataViewModel.nickName.value
-                                                        ),
-                                                        profileImage = customerDataViewModel.profileImage.value
-                                                    )
-                                                }
+                                                                nickname = customerDataViewModel.nickName.value
+                                                            ),
+                                                            profileImage = customerDataViewModel.profileImage.value
+                                                        )
+                                                    }
 
-                                                accountType == AccountType.CUSTOMER && loginType == LoginType.APP-> {
-                                                    signupViewModel.customerSignupApp(
-                                                        customerSignupApp = CustomerSignupApp(
-                                                            accountId = accountDataViewModel.accountId.value,
-                                                            password = accountDataViewModel.accountPw.value,
-                                                            phoneNumber = phoneNumberViewModel.phoneNumber.value,
-                                                            privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
-                                                            marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
-                                                            verificationCode = phoneNumberViewModel.verificationCode.value,
+                                                    accountType == AccountType.CUSTOMER && loginType == LoginType.APP-> {
+                                                        signupViewModel.customerSignupApp(
+                                                            customerSignupApp = CustomerSignupApp(
+                                                                accountId = accountDataViewModel.accountId.value,
+                                                                password = accountDataViewModel.accountPw.value,
+                                                                phoneNumber = phoneNumberViewModel.phoneNumber.value,
+                                                                privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
+                                                                marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
+                                                                verificationCode = phoneNumberViewModel.verificationCode.value,
 
-                                                            nickname = customerDataViewModel.nickName.value
-                                                        ),
-                                                        profileImage = customerDataViewModel.profileImage.value
-                                                    )
+                                                                nickname = customerDataViewModel.nickName.value
+                                                            ),
+                                                            profileImage = customerDataViewModel.profileImage.value
+                                                        )
+                                                    }
                                                 }
                                             }
+
+
                                         }
                                     }
                                     CustomerProgress.FINISH -> {

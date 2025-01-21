@@ -39,11 +39,9 @@ import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.composition_locals.signup.LocalPhoneNumberViewModel
-import com.store_me.storeme.utils.composition_locals.signup.LocalSignupViewModel
 import com.store_me.storeme.utils.PhoneNumberUtils
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
-import com.store_me.storeme.utils.composition_locals.signup.LocalSignupProgressViewModel
 
 @Composable
 fun AuthenticationSection(onBack: () -> Unit, onFinish: () -> Unit) {
