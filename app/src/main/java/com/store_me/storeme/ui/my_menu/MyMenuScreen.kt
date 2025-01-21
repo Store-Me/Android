@@ -87,7 +87,7 @@ fun MyMenuScreen(
                     item { HorizontalDivider(color = DefaultDividerColor, thickness = 1.dp, modifier = Modifier.padding(vertical = 20.dp)) }
                     item { StoreMeNoticeSection(navController = navController) }
                     item { HorizontalDivider(color = DefaultDividerColor, thickness = 1.dp, modifier = Modifier.padding(vertical = 20.dp)) }
-                    item { MyMenuNormalItemSection(navController = navController) }
+                    item { MyMenuNormalItemSection(navController = navController, myMenuViewModel) }
                     item { Spacer(modifier = Modifier.height(300.dp)) }
                 }
             }
@@ -373,7 +373,7 @@ fun MyMenuIconWithText(menu: MyMenuViewModel.MyMenuItem, onClick: () -> Unit) {
 }
 
 @Composable
-fun MyMenuNormalItemSection(navController: NavController) {
+fun MyMenuNormalItemSection(navController: NavController, myMenuViewModel: MyMenuViewModel) {
     MyMenuNormalItem(MyMenuViewModel.MyMenuNormalItem.FQA) {
 
     }
@@ -390,7 +390,7 @@ fun MyMenuNormalItemSection(navController: NavController) {
 
     }
     MyMenuNormalItem(MyMenuViewModel.MyMenuNormalItem.QUIT) {
-
+        myMenuViewModel.deleteUser()
     }
 
 }

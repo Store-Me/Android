@@ -1,12 +1,22 @@
 package com.store_me.storeme.ui.my_menu
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.UserData
+import com.store_me.storeme.data.model.verification.ConfirmCode
+import com.store_me.storeme.repository.storeme.UserRepository
+import com.store_me.storeme.utils.exception.ApiException
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MyMenuViewModel: ViewModel() {
+@HiltViewModel
+class MyMenuViewModel @Inject constructor(
+    val userRepository: UserRepository
+): ViewModel() {
     val userData: StateFlow<UserData> = Auth.userData
 
     enum class MyProfileMenuItem(val displayName: String, val icon: Int){
@@ -29,5 +39,16 @@ class MyMenuViewModel: ViewModel() {
         POLICY("약관 및 정책"),
         LOGOUT("로그아웃"),
         QUIT("탈퇴하기")
+    }
+
+    fun deleteUser() {
+        viewModelScope.launch {
+            val result = userRepository.deleteUser()
+
+            result.onSuccess {
+            }.onFailure {
+
+            }
+        }
     }
 }

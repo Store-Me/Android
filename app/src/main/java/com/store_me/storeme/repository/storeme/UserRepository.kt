@@ -51,6 +51,9 @@ interface UserRepository {
 
     //아이디 중복 확인
     suspend fun checkAccountIdDuplicate(accountId: String): Result<Boolean>
+
+    //회원 탈퇴
+    suspend fun deleteUser(): Result<Unit>
 }
 
 class UserRepositoryImpl @Inject constructor(
@@ -427,6 +430,41 @@ class UserRepositoryImpl @Inject constructor(
                 }
 
 
+            } else {
+                ResponseHandler.handleErrorResponse(response, context)
+            }
+        } catch (e: Exception) {
+            e.toResult(context)
+        }
+    }
+
+    override suspend fun deleteUser(): Result<Unit> {
+        return try {
+            // API 호출
+            val response = userApiServiceWithAuth.deleteUser()
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.i(responseBody.toString())
+
+                when(responseBody?.isSuccess) {
+                    true -> {
+                        Result.success(Unit)
+                    }
+                    false -> {
+                        Result.failure(
+                            ApiExceptionHandler.apiException(
+                                code = responseBody.code, message = responseBody.message
+                            ))
+                    }
+                    else -> {
+                        Result.failure(
+                            ApiExceptionHandler.apiException(
+                                code = responseBody?.code, message = responseBody?.message
+                            ))
+                    }
+                }
             } else {
                 ResponseHandler.handleErrorResponse(response, context)
             }
