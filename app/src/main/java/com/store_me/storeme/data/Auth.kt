@@ -42,15 +42,6 @@ object Auth {
         _linkListData.value = SocialMediaAccountData(currentList)
     }
 
-    /*   메인 화면 순서 및 숨기기 설정   */
-
-    private val _storeHomeItemList = MutableStateFlow<List<StoreHomeItemData>>(emptyList())
-    val storeHomeItemList: StateFlow<List<StoreHomeItemData>> = _storeHomeItemList
-
-    fun setStoreHomeItemData(storeHomeItemList: List<StoreHomeItemData>) {
-        _storeHomeItemList.value = storeHomeItemList
-    }
-
     /*   영업 시간 정보 및 휴무일 설정   */
     private val _storeHoursData = MutableStateFlow(StoreHoursData(emptyList(), emptyList(), emptyList(),""))
     val storeHoursData: StateFlow<StoreHoursData> = _storeHoursData
