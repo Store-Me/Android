@@ -1,6 +1,7 @@
 package com.store_me.auth
 
 import android.content.Context
+import com.store_me.storeme.data.StoreData
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.utils.preference.TokenPreferencesHelper
@@ -67,13 +68,9 @@ class Auth @Inject constructor(
      * 로그인 값 변경
      */
     fun updateIsLoggedIn(isLoggedIn: Boolean) {
-        if(isLoggedIn) {
-            //로그인
-            _isLoggedIn.value = true
-        } else {
-            //로그아웃
-            _isLoggedIn.value = false
+        _isLoggedIn.value = isLoggedIn
 
+        if(!isLoggedIn) {
             TokenPreferencesHelper.clearTokens()
         }
     }
