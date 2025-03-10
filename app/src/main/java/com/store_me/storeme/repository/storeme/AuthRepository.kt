@@ -36,8 +36,7 @@ class AuthRepositoryImpl @Inject constructor(
 
                             TokenPreferencesHelper.saveTokens(
                                 accessToken = result.accessToken,
-                                refreshToken = result.refreshToken,
-                                expireTime = result.expiredTime
+                                refreshToken = result.refreshToken
                             )
 
                             Result.success(result)
@@ -45,19 +44,19 @@ class AuthRepositoryImpl @Inject constructor(
                         else
                             Result.failure(
                                 ApiExceptionHandler.apiException(
-                                    code = responseBody.code, message = context.getString(R.string.token_expired_message)
+                                    code = 1 /*responseBody.code*/, message = context.getString(R.string.token_expired_message)
                                 ))
                     }
                     false -> {
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody.code, message = responseBody.message
+                                code = 1 /*responseBody.code*/, message = responseBody.message
                             ))
                     }
                     else -> {
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody?.code, message = responseBody?.message
+                                code = 1 /*responseBody?.code*/, message = responseBody?.message
                             ))
                     }
                 }

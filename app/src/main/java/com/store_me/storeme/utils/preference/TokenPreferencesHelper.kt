@@ -36,11 +36,10 @@ object TokenPreferencesHelper {
     /**
      * AccessToken 및 RefreshToken 저장
      */
-    fun saveTokens(accessToken: String, refreshToken: String, expireTime: String) {
+    fun saveTokens(accessToken: String, refreshToken: String) {
         sharedPreferences.edit().apply {
             putString(KEY_ACCESS_TOKEN, accessToken)
             putString(KEY_REFRESH_TOKEN, refreshToken)
-            putLong(KEY_EXPIRED_TIME, DateTimeUtils().dateTimeToLong(expireTime))
             apply()
         }
     }
