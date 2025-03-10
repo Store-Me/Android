@@ -40,12 +40,12 @@ import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.composition_locals.signup.LocalStoreDataViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalStoreSignupDataViewModel
 import com.store_me.storeme.utils.StoreCategory
 
 @Composable
 fun StoreCustomCategorySection(onFinish: () -> Unit) {
-    val storeDataViewModel = LocalStoreDataViewModel.current
+    val storeDataViewModel = LocalStoreSignupDataViewModel.current
 
     val storeDetailCategory by storeDataViewModel.storeDetailCategory.collectAsState()
 

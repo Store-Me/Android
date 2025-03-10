@@ -89,13 +89,15 @@ fun StoreHomeProfileSection(navController: NavController) {
  */
 @Composable
 fun ProfileInfoSection() {
-    val ownerHomeViewModel = LocalOwnerHomeViewModel.current
+    val ownerHomeViewModel = LocalStoreDataViewModel.current
+
+    val storeData by ownerHomeViewModel.storeData.collectAsState()
 
     val subText =
-        if(ownerHomeViewModel.storeData.storeInfo.customCategory.isEmpty())
-            ownerHomeViewModel.storeData.storeInfo.location
+        if(storeData?.storeDetailCategory?.isEmpty() == true)
+            storeData?.storeLocation
         else
-            ownerHomeViewModel.storeData.storeInfo.location + " · " + ownerHomeViewModel.storeData.storeInfo.customCategory
+            storeData?.storeLocation + " · " + storeData?.storeDetailCategory
 
     Row(
         modifier = Modifier
@@ -106,7 +108,7 @@ fun ProfileInfoSection() {
     ) {
         ProfileImage(
             accountType = AccountType.OWNER,
-            url = ownerHomeViewModel.storeData.storeInfo.storeImage,
+            url = storeData?.storeProfileImageUrl,
             modifier = Modifier
                 .size(100.dp)
                 .clip(CircleShape)
@@ -118,17 +120,17 @@ fun ProfileInfoSection() {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = ownerHomeViewModel.storeData.storeInfo.storeName,
+                text = storeData?.storeName ?: "",
                 style = storeMeTextStyle(FontWeight.ExtraBold, 6)
             )
 
             Text(
-                text = subText,
+                text = subText ?: "",
                 style = storeMeTextStyle(FontWeight.Bold, 0)
             )
         }
 
-        LikeIconWithCount(ownerHomeViewModel.storeData.storeInfo.favoriteCount)
+        LikeIconWithCount(0)
     }
 
 }

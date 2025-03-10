@@ -47,12 +47,12 @@ import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.composition_locals.signup.LocalStoreDataViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalStoreSignupDataViewModel
 import com.store_me.storeme.utils.StoreCategory
 
 @Composable
 fun StoreCategorySection(onFinish: () -> Unit) {
-    val storeDataViewModel = LocalStoreDataViewModel.current
+    val storeDataViewModel = LocalStoreSignupDataViewModel.current
 
     val storeCategory by storeDataViewModel.storeCategory.collectAsState()
 
@@ -208,7 +208,7 @@ fun StoreCategoryList(onClick: () -> Unit) {
 
 @Composable
 fun StoreCategoryItem(storeCategory: StoreCategory, onClick: () -> Unit) {
-    val storeDataViewModel = LocalStoreDataViewModel.current
+    val storeDataViewModel = LocalStoreSignupDataViewModel.current
     val selectedCategory = storeDataViewModel.storeCategory.collectAsState()
     
     val isChecked = selectedCategory.value == storeCategory

@@ -47,7 +47,7 @@ import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.composition_locals.signup.LocalStoreDataViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalStoreSignupDataViewModel
 
 @Composable
 fun SearchStoreLocationSection(
@@ -56,7 +56,7 @@ fun SearchStoreLocationSection(
     locationViewModel: LocationViewModel = hiltViewModel(),
     onClick: () -> Unit
 ) {
-    val storeDataViewModel = LocalStoreDataViewModel.current
+    val storeDataViewModel = LocalStoreSignupDataViewModel.current
 
     val storeLocationAddress by storeDataViewModel.storeLocationAddress.collectAsState()
 
@@ -141,7 +141,7 @@ fun SearchStoreLocationSection(
 
 @Composable
 fun SearchResultListSection(locationViewModel: LocationViewModel, onClick: () -> Unit) {
-    val storeDataViewModel = LocalStoreDataViewModel.current
+    val storeDataViewModel = LocalStoreSignupDataViewModel.current
 
     val searchQuery by locationViewModel.searchQuery.collectAsState()
     val searchResults by locationViewModel.searchResults.collectAsState()

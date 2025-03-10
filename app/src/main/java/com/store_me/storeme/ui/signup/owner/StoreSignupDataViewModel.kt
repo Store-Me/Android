@@ -1,24 +1,32 @@
 package com.store_me.storeme.ui.signup.owner
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
+import com.store_me.storeme.R
 import com.store_me.storeme.data.response.DaumPostcodeResponse
 import com.store_me.storeme.data.database.location.LocationDataBaseHelper
 import com.store_me.storeme.repository.naver.NaverRepository
+import com.store_me.storeme.repository.storeme.ImageRepository
 import com.store_me.storeme.ui.component.filterNonNumeric
+import com.store_me.storeme.utils.StoragePaths
 import com.store_me.storeme.utils.StoreCategory
+import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class StoreDataViewModel @Inject constructor(
+class StoreSignupDataViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val dbHelper: LocationDataBaseHelper,
-    private val naverRepository: NaverRepository
+    private val naverRepository: NaverRepository,
+    private val imageRepository: ImageRepository
 ): ViewModel() {
     private val _storeName = MutableStateFlow("")
     val storeName: StateFlow<String> = _storeName
@@ -63,9 +71,20 @@ class StoreDataViewModel @Inject constructor(
     private val _storeProfileImage = MutableStateFlow<Uri?>(null)
     val storeProfileImage: StateFlow<Uri?> = _storeProfileImage
 
+    //프로필 URL 정보
+    private val _storeProfileImageUrl = MutableStateFlow<String?>(null)
+    val storeProfileImageUrl: StateFlow<String?> = _storeProfileImageUrl
+
     //스토어 대표 이미지
     private val _storeImages = MutableStateFlow<List<Uri>>(emptyList())
     val storeImages: StateFlow<List<Uri>> = _storeImages
+
+    //이미지 업로드 상태
+    private val _storeProfileImageProgress = MutableStateFlow<Float>(0.0f)
+    val storeProfileImageProgress: StateFlow<Float> = _storeProfileImageProgress
+
+    private val _storeImageUrls = MutableStateFlow<List<String>>(emptyList())
+    val storeImageUrls: StateFlow<List<String>> = _storeImageUrls
 
     //스토어 소개
     private val _storeIntro = MutableStateFlow("")
@@ -74,6 +93,11 @@ class StoreDataViewModel @Inject constructor(
     //스토어 번호
     private val _storeNumber = MutableStateFlow("")
     val storeNumber: StateFlow<String> = _storeNumber
+
+    //에러 메시지
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
 
     fun updateStoreName(newStoreName: String) {
         _storeName.value = newStoreName
@@ -111,6 +135,10 @@ class StoreDataViewModel @Inject constructor(
         _storeLatLng.value = newStoreLatLng
     }
 
+    fun updateErrorMessage(errorMessage: String?) {
+        _errorMessage.value = errorMessage
+    }
+
     fun updateDaumPostcodeResponse(newDaumPostcodeResponse: DaumPostcodeResponse) {
         _daumPostcodeResponse.value = newDaumPostcodeResponse
         _storeLocationAddress.value = newDaumPostcodeResponse.roadAddress
@@ -138,6 +166,35 @@ class StoreDataViewModel @Inject constructor(
 
     fun updateStoreProfileImage(newUri: Uri?) {
         _storeProfileImage.value = newUri
+
+        if(newUri == null)
+            _storeProfileImageUrl.value = null
+    }
+
+    fun uploadStoreProfileImage(accountId: String) {
+        if(storeProfileImage.value == null)
+            return
+
+        viewModelScope.launch {
+
+            val response = imageRepository.uploadImage(
+                folderName = StoragePaths.STORE_PROFILE_IMAGE,
+                uri = storeProfileImage.value!!,
+                accountId = accountId
+            ) {
+                _storeProfileImageProgress.value = it
+            }
+
+            response.onSuccess {
+                _storeProfileImageUrl.value = it
+            }.onFailure {
+                if(it is ApiException) {
+                    _errorMessage.value = it.message
+                } else {
+                    _errorMessage.value = context.getString(R.string.unknown_error_message)
+                }
+            }
+        }
     }
 
     private fun roadAddressToLatLng(roadAddress: String) {

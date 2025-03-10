@@ -47,7 +47,7 @@ import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.StoreImageBoxColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
-import com.store_me.storeme.utils.composition_locals.signup.LocalStoreDataViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalStoreSignupDataViewModel
 
 @Composable
 fun StoreImageSection(onFinish: () -> Unit) {
@@ -55,9 +55,9 @@ fun StoreImageSection(onFinish: () -> Unit) {
 
     val snackbarHostState = LocalSnackbarHostState.current
 
-    val storeDataViewModel = LocalStoreDataViewModel.current
+    val storeSignupDataViewModel = LocalStoreSignupDataViewModel.current
 
-    val storeImages by storeDataViewModel.storeImages.collectAsState()
+    val storeImages by storeSignupDataViewModel.storeImages.collectAsState()
 
     val annotatedString = buildAnnotatedString {
         append("손님들이 사진을 보고 어떤 스토어인지 알 수 있도록\n")
@@ -81,7 +81,7 @@ fun StoreImageSection(onFinish: () -> Unit) {
     val multipleImagesPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) {uris: List<Uri> ->
-        storeDataViewModel.addStoreImage(uris)
+        storeSignupDataViewModel.addStoreImage(uris)
     }
 
     LaunchedEffect(isExceedingLimit) {
@@ -128,7 +128,7 @@ fun StoreImageSection(onFinish: () -> Unit) {
 
             items(storeImages) {
                 StoreImageBox(uri = it) {
-                    storeDataViewModel.removeStoreImage(it)
+                    storeSignupDataViewModel.removeStoreImage(it)
                 }
             }
         }

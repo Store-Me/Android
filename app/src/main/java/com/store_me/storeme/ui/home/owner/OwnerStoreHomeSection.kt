@@ -28,10 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -41,11 +43,8 @@ import com.naver.maps.map.compose.Marker
 import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.DailyHoursData
-import com.store_me.storeme.data.StoreDetailData
 import com.store_me.storeme.data.StoreHomeItem
-import com.store_me.storeme.data.StoreHomeItemData
 import com.store_me.storeme.data.StoreNormalItem
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
@@ -60,21 +59,18 @@ import com.store_me.storeme.utils.NavigationUtils
 @Composable
 fun OwnerStoreHomeSection(navController: NavController) {
 
-    val storeHomeItems by Auth.storeHomeItemList.collectAsState()
-
     Column {
         InfoSection(navController)
 
-        storeHomeItems
-            .sortedBy { it.order }
+        StoreHomeItem.entries
             .forEach { item ->
-                if(!item.isHidden) {
-                    Spacer(modifier = Modifier.padding(top = 20.dp))
+                Spacer(modifier = Modifier.padding(top = 20.dp))
 
-                    StoreHomeItemSection(item, navController)
-
-                    DefaultHorizontalDivider(modifier = Modifier.padding(top = 20.dp))
+                StoreHomeItemSection(item) {
+                    NavigationUtils().navigateOwnerNav(navController, it)
                 }
+
+                DefaultHorizontalDivider(modifier = Modifier.padding(top = 20.dp))
             }
 
         Spacer(modifier = Modifier.height(200.dp))
@@ -84,7 +80,11 @@ fun OwnerStoreHomeSection(navController: NavController) {
 @Composable
 fun InfoSection(navController: NavController) {
     val context = LocalContext.current
-    val ownerHomeViewModel = LocalOwnerHomeViewModel.current
+
+    val ownerHomeViewModel = LocalStoreDataViewModel.current
+    val storeData by ownerHomeViewModel.storeData.collectAsState()
+
+    val storePhoneNumber = storeData?.storePhoneNumber
 
     Column {
 
@@ -96,13 +96,22 @@ fun InfoSection(navController: NavController) {
             NavigationUtils().navigateOwnerNav(navController = navController, screenName = StoreNormalItem.CLOSED_DAY)
         }
 
-        PhoneNumberSection {
-            val intent = Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:${ownerHomeViewModel.storeData.storePhoneNumber}")
-            }
-            if (intent.resolveActivity(context.packageManager) != null) {
-                context.startActivity(intent)
-            }
+
+        if(!storePhoneNumber.isNullOrEmpty()) {
+            PhoneNumberSection (
+                storePhoneNumber = storePhoneNumber,
+                onClick = {
+                    val intent = Intent(Intent.ACTION_DIAL).apply {
+                        data = Uri.parse("tel:$storePhoneNumber")
+                    }
+                    if (intent.resolveActivity(context.packageManager) != null) {
+                        context.startActivity(intent)
+                    }
+                },
+                onCopy = {
+                    ownerHomeViewModel.copyToClipboard(storePhoneNumber = storePhoneNumber)
+                }
+            )
         }
 
         LocationSection {
@@ -118,10 +127,10 @@ fun InfoSection(navController: NavController) {
  */
 @Composable
 fun OpeningHoursSection(onClick: () -> Unit) {
-    val ownerHomeViewModel = LocalOwnerHomeViewModel.current
+   /* val ownerHomeViewModel = LocalOwnerHomeViewModel.current
 
-    val openingHours = ownerHomeViewModel.storeData.storeHours.openingHours
-    val closedDay = ownerHomeViewModel.storeData.storeHours.closedDay
+    val openingHours =
+    val closedDay =
 
     Column(
         modifier = Modifier
@@ -142,7 +151,7 @@ fun OpeningHoursSection(onClick: () -> Unit) {
                 Spacer(modifier = Modifier.height(5.dp))
             }
         }
-    }
+    }*/
 }
 
 /**
@@ -187,7 +196,7 @@ fun OpeningHoursForDay(index: Int, hoursData: DailyHoursData, isClosed: Boolean)
  */
 @Composable
 fun ClosedDaySection(onClick: () -> Unit) {
-    val ownerHomeViewModel = LocalOwnerHomeViewModel.current
+    /*val ownerHomeViewModel = LocalOwnerHomeViewModel.current
 
     val closedDay = ownerHomeViewModel.storeData.storeHours.closedDay
 
@@ -235,15 +244,11 @@ fun ClosedDaySection(onClick: () -> Unit) {
         }
 
         Spacer(modifier = Modifier.height(10.dp))
-    }
+    }*/
 }
 
 @Composable
-fun PhoneNumberSection(onClick: () -> Unit) {
-    val ownerHomeViewModel = LocalOwnerHomeViewModel.current
-
-    val phoneNumber = ownerHomeViewModel.storeData.storePhoneNumber
-
+fun PhoneNumberSection(storePhoneNumber: String, onClick: () -> Unit, onCopy: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -258,12 +263,12 @@ fun PhoneNumberSection(onClick: () -> Unit) {
 
             Spacer(modifier = Modifier.width(10.dp))
 
-            Text(text = phoneNumber, style = storeMeTextStyle(FontWeight.Bold, 1), modifier = Modifier.padding(vertical = 10.dp))
+            Text(text = storePhoneNumber, style = storeMeTextStyle(FontWeight.Bold, 1), modifier = Modifier.padding(vertical = 10.dp))
 
             Spacer(modifier = Modifier.width(5.dp))
 
             CopyButton {
-                ownerHomeViewModel.copyToClipboard()
+                onCopy()
             }
         }
     }
@@ -271,8 +276,9 @@ fun PhoneNumberSection(onClick: () -> Unit) {
 
 @Composable
 fun LocationSection(onClick: () -> Unit) {
-    val ownerHomeViewModel = LocalOwnerHomeViewModel.current
-    val locationInfo = ownerHomeViewModel.storeData.locationInfo
+    val ownerHomeViewModel = LocalStoreDataViewModel.current
+
+    val storeData by ownerHomeViewModel.storeData.collectAsState()
 
     Column(
         modifier = Modifier
@@ -292,22 +298,23 @@ fun LocationSection(onClick: () -> Unit) {
             Spacer(modifier = Modifier.width(10.dp))
 
             Text(
-                text = locationInfo.locationDetail.ifEmpty { "위치 정보를 입력해주세요." },
+                text = storeData?.storeLocationAddress ?: "",
                 style = storeMeTextStyle(FontWeight.Bold, 1),
-                color = if(locationInfo.locationDetail.isEmpty()) UndefinedTextColor else Color.Black
+                color = Color.Black
             )
         }
 
         Spacer(modifier = Modifier.height(10.dp))
     }
 
-    ownerHomeViewModel.storeData.locationInfo.latLng.let { OwnerHomeNaverMapSection() }
+    if(storeData?.storeLat != null && storeData?.storeLng != null) {
+        OwnerHomeNaverMapSection(LatLng(storeData?.storeLat!!, storeData?.storeLng!!))
+    }
 }
 
 @Composable
-fun OwnerHomeNaverMapSection() {
-    val ownerHomeViewModel = LocalOwnerHomeViewModel.current
-    val cameraPosition = CameraPosition(ownerHomeViewModel.storeData.locationInfo.latLng!!, 15.0)
+fun OwnerHomeNaverMapSection(latLng: LatLng) {
+    val cameraPosition = CameraPosition(latLng, 15.0)
 
     NaverMap(
         modifier = Modifier
@@ -331,29 +338,29 @@ fun OwnerHomeNaverMapSection() {
     ) {
 
         Marker(
-            state = MarkerState(position = ownerHomeViewModel.storeData.locationInfo.latLng)
+            state = MarkerState(latLng)
         )
     }
 }
 
 @Composable
-fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavController) {
-    val ownerHomeViewModel = LocalOwnerHomeViewModel.current
-    val storeData = ownerHomeViewModel.storeData
+fun StoreHomeItemSection(storeHomeItem: StoreHomeItem, onClick: (StoreHomeItem) -> Unit) {
+    val ownerHomeViewModel = LocalStoreDataViewModel.current
+    val storeData by ownerHomeViewModel.storeData.collectAsState()
 
     Column(
         modifier = Modifier.padding(horizontal = 20.dp)
     ) {
-        Text(text = storeHomeItem.item.displayName, style = storeMeTextStyle(FontWeight.ExtraBold, 2))
+        Text(text = storeHomeItem.displayName, style = storeMeTextStyle(FontWeight.ExtraBold, 2))
 
         Spacer(modifier = Modifier.height(15.dp))
 
-        when(storeHomeItem.item) {
+        when(storeHomeItem) {
             StoreHomeItem.NOTICE -> {
                 when {
-                    storeData.notice.isNullOrEmpty() -> {
+                    storeData?.storeNotice.isNullOrEmpty() -> {
                         Text(
-                            text = ownerHomeViewModel.getEmptySectionText(storeHomeItem.item),
+                            text = stringResource(id = R.string.owner_home_notice_none),
                             style = storeMeTextStyle(FontWeight.Normal, 0),
                             color = UndefinedTextColor
                         )
@@ -366,24 +373,24 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
             }
             StoreHomeItem.INTRO -> {
                 when {
-                    storeData.storeInfo.storeDescription.isEmpty() -> {
+                    storeData?.storeIntro.isNullOrEmpty() -> {
                         Text(
-                            text = ownerHomeViewModel.getEmptySectionText(storeHomeItem.item),
+                            text = stringResource(id = R.string.owner_home_intro_none),
                             style = storeMeTextStyle(FontWeight.Normal, 0),
                             color = UndefinedTextColor
                         )
                     }
                     else -> {
-                        IntroSection(storeData)
+                        IntroSection()
                     }
                 }
 
             }
-            StoreHomeItem.PHOTO -> {
+            StoreHomeItem.IMAGE -> {
                 when {
-                    storeData.representPhoto.isEmpty() -> {
+                    storeData?.storeImageInfoList?.isEmpty() == true -> {
                         Text(
-                            text = ownerHomeViewModel.getEmptySectionText(storeHomeItem.item),
+                            text = stringResource(id = R.string.owner_home_photo_none),
                             style = storeMeTextStyle(FontWeight.Normal, 0),
                             color = UndefinedTextColor
                         )
@@ -394,10 +401,10 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                 }
             }
             StoreHomeItem.COUPON -> {
-                when {
+                /*when {
                     storeData.couponList.isEmpty() -> {
                         Text(
-                            text = ownerHomeViewModel.getEmptySectionText(storeHomeItem.item),
+                            text = stringResource(id = R.string.owner_home_coupon_none),
                             style = storeMeTextStyle(FontWeight.Normal, 0),
                             color = UndefinedTextColor
                         )
@@ -405,13 +412,13 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                     else -> {
                         CouponSection()
                     }
-                }
+                }*/
             }
             StoreHomeItem.MENU -> {
-                when {
+                /*when {
                     storeData.storeMenu.menus.isEmpty() -> {
                         Text(
-                            text = ownerHomeViewModel.getEmptySectionText(storeHomeItem.item),
+                            text = stringResource(id = R.string.owner_home_menu_none),
                             style = storeMeTextStyle(FontWeight.Normal, 0),
                             color = UndefinedTextColor
                         )
@@ -419,38 +426,38 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                     else -> {
                         MenuSection()
                     }
-                }
+                }*/
             }
             StoreHomeItem.STORY -> {
-                when {
+                /*when {
                     storeData.isStoryExist -> {
                         StorySection()
                     }
                     else -> {
                         Text(
-                            text = ownerHomeViewModel.getEmptySectionText(storeHomeItem.item),
+                            text = stringResource(id = R.string.owner_home_story_none),
                             style = storeMeTextStyle(FontWeight.Normal, 0),
                             color = UndefinedTextColor
                         )
                     }
-                }
+                }*/
             }
             StoreHomeItem.REVIEW -> {
-                when {
+                /*when {
                     storeData.isReviewExist -> {
                         ReviewSection()
                     }
                     else -> {
                         Text(
-                            text = ownerHomeViewModel.getEmptySectionText(storeHomeItem.item),
+                            text = stringResource(id = R.string.owner_home_review_none),
                             style = storeMeTextStyle(FontWeight.Normal, 0),
                             color = UndefinedTextColor
                         )
                     }
-                }
+                }*/
             }
             StoreHomeItem.NEWS -> {
-                when {
+                /*when {
                     storeData.customLabel.labelList.isEmpty() -> {
                         //커스텀 라벨이 없는 경우
                         Text(
@@ -471,16 +478,16 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                             }
                             else -> {
                                 //커스텀 라벨과 게시글 모두 있는 경우
-                                NewsSection(storeData)
+                                NewsSection()
                             }
                         }
                     }
-                }
+                }*/
             }
         }
 
         DefaultButton(
-            buttonText = ownerHomeViewModel.getEditButtonText(storeHomeItem.item),
+            buttonText = ownerHomeViewModel.getEditButtonText(storeHomeItem),
             modifier = Modifier
                 .padding(top = 12.dp),
             diffValue = 1,
@@ -489,7 +496,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItemData, navController: NavCon
                 contentColor = Color.Black
             )
         ) {
-            NavigationUtils().navigateOwnerNav(navController, storeHomeItem.item)
+            onClick(storeHomeItem)
         }
     }
 }
@@ -500,8 +507,7 @@ fun NoticeSection() {
 }
 
 @Composable
-fun IntroSection(storeData: StoreDetailData) {
-    Text(text = storeData.storeInfo.storeDescription, style = storeMeTextStyle(FontWeight.Normal, 0))
+fun IntroSection() {
 }
 
 @Composable
@@ -532,10 +538,7 @@ fun ReviewSection() {
 }
 
 @Composable
-fun NewsSection(storeData: StoreDetailData) {
-    storeData.customLabel.labelList.forEach {
-
-    }
+fun NewsSection() {
 }
 
 /**

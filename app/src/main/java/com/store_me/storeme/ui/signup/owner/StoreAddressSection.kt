@@ -59,11 +59,11 @@ import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.composition_locals.signup.LocalStoreDataViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalStoreSignupDataViewModel
 
 @Composable
 fun AddressSection(onFinish: () -> Unit) {
-    val storeDataViewModel = LocalStoreDataViewModel.current
+    val storeDataViewModel = LocalStoreSignupDataViewModel.current
 
     val storeLocationAddress by storeDataViewModel.storeLocationAddress.collectAsState()
     val storeLocationDetail by storeDataViewModel.storeLocationDetail.collectAsState()
@@ -396,7 +396,7 @@ fun AddressWebView(
                     WebAppInterface(onAddressSelected),
                     "StoreMe"  // JS에서 window.StoreMe 로 접근
                 )
-                loadUrl("https://storeme.shop/html/daum_postcode.html")
+                loadUrl("https://storeme-67dc6.web.app/daum_postcode.html")
             }
         },
         update = {  },

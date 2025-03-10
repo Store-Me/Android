@@ -24,11 +24,11 @@ import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.composition_locals.signup.LocalStoreDataViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalStoreSignupDataViewModel
 
 @Composable
 fun StoreIntroSection(onFinish: () -> Unit) {
-    val storeDataViewModel = LocalStoreDataViewModel.current
+    val storeDataViewModel = LocalStoreSignupDataViewModel.current
 
     val storeIntro by storeDataViewModel.storeIntro.collectAsState()
 

@@ -1,7 +1,4 @@
-@file:OptIn(
-    ExperimentalPagerApi::class,
-    ExperimentalFoundationApi::class
-)
+@file:OptIn(ExperimentalPagerApi::class, ExperimentalFoundationApi::class)
 
 package com.store_me.storeme.ui.home.owner
 
@@ -12,11 +9,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,29 +22,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
-import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.store_me.storeme.R
-import com.store_me.storeme.data.StoreDetailData
 import com.store_me.storeme.data.enums.tab_menu.OwnerHomeTabMenu
 import com.store_me.storeme.ui.component.StoreMeTabRow
-import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.ToastMessageUtils
 
-val LocalOwnerHomeViewModel = staticCompositionLocalOf<OwnerHomeViewModel> {
+val LocalStoreDataViewModel = staticCompositionLocalOf<StoreDataViewModel> {
     error("No OwnerHomeViewModel provided")
 }
 
 @Composable
 fun OwnerHomeScreen(
     navController: NavController,
-    ownerHomeViewModel: OwnerHomeViewModel = hiltViewModel()
+    storeDataViewModel: StoreDataViewModel
 ) {
     var backPressedTime by remember { mutableStateOf(0L) }
     val context = LocalContext.current
@@ -57,9 +48,9 @@ fun OwnerHomeScreen(
 
     val tabTitles = enumValues<OwnerHomeTabMenu>().map { it.displayName }
 
-    CompositionLocalProvider(LocalOwnerHomeViewModel provides ownerHomeViewModel) {
+    val storeData by storeDataViewModel.storeData.collectAsState()
 
-
+    CompositionLocalProvider(LocalStoreDataViewModel provides storeDataViewModel) {
         Scaffold(
             containerColor = White,
             content = { innerPadding -> // 컨텐츠 영역
@@ -69,7 +60,7 @@ fun OwnerHomeScreen(
                 ) {
                     LazyColumn {
                         item {
-                            BackgroundSection(ownerHomeViewModel.storeData.bannerImageUrl)
+                            BackgroundSection(storeData?.storeBannerImageUrl)
                         }
 
                         item {

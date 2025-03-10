@@ -34,7 +34,7 @@ import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.composition_locals.signup.LocalStoreDataViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalStoreSignupDataViewModel
 
 @Composable
 fun SearchStoreCategorySection(
@@ -42,7 +42,7 @@ fun SearchStoreCategorySection(
     sharedTransitionScope: SharedTransitionScope,
     onClick: () -> Unit
 ) {
-    val storeDataViewModel = LocalStoreDataViewModel.current
+    val storeDataViewModel = LocalStoreSignupDataViewModel.current
 
     val storeCategory by storeDataViewModel.storeCategory.collectAsState()
 
