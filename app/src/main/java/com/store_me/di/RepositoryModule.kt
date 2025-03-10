@@ -4,6 +4,8 @@ import com.store_me.storeme.repository.storeme.AuthRepository
 import com.store_me.storeme.repository.storeme.AuthRepositoryImpl
 import com.store_me.storeme.repository.storeme.CustomerRepository
 import com.store_me.storeme.repository.storeme.CustomerRepositoryImpl
+import com.store_me.storeme.repository.storeme.ImageRepository
+import com.store_me.storeme.repository.storeme.ImageRepositoryImpl
 import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.repository.storeme.OwnerRepositoryImpl
 import com.store_me.storeme.repository.storeme.UserRepository
@@ -40,4 +42,10 @@ abstract class RepositoryModule {
     abstract fun bindAuthRepository(
         authRepositoryImpl: AuthRepositoryImpl
     ): AuthRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindImageRepository(
+        imageRepositoryImpl: ImageRepositoryImpl
+    ): ImageRepository
 }
