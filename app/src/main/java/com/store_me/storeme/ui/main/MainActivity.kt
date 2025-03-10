@@ -52,6 +52,7 @@ import com.store_me.storeme.ui.banner.BannerDetailScreen
 import com.store_me.storeme.ui.banner.BannerListScreen
 import com.store_me.storeme.ui.home.customer.CustomerHomeScreen
 import com.store_me.storeme.ui.home.owner.OwnerHomeScreen
+import com.store_me.storeme.ui.home.owner.StoreDataViewModel
 import com.store_me.storeme.ui.link.LinkSettingScreen
 import com.store_me.storeme.ui.loading.LoadingScreen
 import com.store_me.storeme.ui.loading.LoadingViewModel
@@ -64,6 +65,7 @@ import com.store_me.storeme.ui.notification.NotificationScreen
 import com.store_me.storeme.ui.onboarding.OnboardingActivity
 import com.store_me.storeme.ui.post.SelectPostTypeScreen
 import com.store_me.storeme.ui.store_detail.StoreDetailScreen
+import com.store_me.storeme.ui.store_info.StoreInfoScreen
 import com.store_me.storeme.ui.store_setting.closed_day.ClosedDaySettingScreen
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponSettingScreen
 import com.store_me.storeme.ui.store_setting.IntroSettingScreen
@@ -72,7 +74,7 @@ import com.store_me.storeme.ui.store_setting.menu.MenuSettingScreen
 import com.store_me.storeme.ui.store_setting.NewsSettingScreen
 import com.store_me.storeme.ui.store_setting.NoticeSettingScreen
 import com.store_me.storeme.ui.store_setting.opening_hours.OpeningHoursSettingScreen
-import com.store_me.storeme.ui.store_setting.PhotoSettingScreen
+import com.store_me.storeme.ui.store_setting.image.ImageSettingScreen
 import com.store_me.storeme.ui.store_setting.review.ReviewSettingScreen
 import com.store_me.storeme.ui.store_setting.StoreSettingScreen
 import com.store_me.storeme.ui.store_setting.story.StorySettingScreen
@@ -94,7 +96,6 @@ import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewMod
 import com.store_me.storeme.utils.preference.SettingPreferencesHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -117,12 +118,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
+            val loadingViewModel: LoadingViewModel = viewModel()
+            val isLoading by loadingViewModel.isLoading.collectAsState()
+
             keyboardHeightObserver.startObserving()
 
             StoreMeTheme {
-                val loadingViewModel: LoadingViewModel = viewModel()
-                val isLoading by loadingViewModel.isLoading.collectAsState()
-
                 val snackBarHostState = remember { SnackbarHostState() }
 
                 CompositionLocalProvider(
@@ -187,12 +188,13 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun OwnerScreen() {
         val navController = rememberNavController()
+        val storeDataViewModel: StoreDataViewModel = hiltViewModel()
 
         Scaffold(
             bottomBar = { BottomNavigationBar(navController) }
         ) {
             Box(Modifier.padding(it)) {
-                OwnerNavigationGraph(navController)
+                OwnerNavigationGraph(navController, storeDataViewModel = storeDataViewModel)
             }
         }
     }
@@ -251,14 +253,25 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun OwnerNavigationGraph(navController: NavHostController) {
+    fun OwnerNavigationGraph(navController: NavHostController, storeDataViewModel: StoreDataViewModel) {
+
         NavHost(navController, startDestination = OwnerBottomNavItem.OwnerHome.screenRoute){
             //기본 Bottom Item
-            composable(OwnerBottomNavItem.OwnerHome.screenRoute) { OwnerHomeScreen(navController) }
-            composable(OwnerBottomNavItem.CustomerManagement.screenRoute) {  }
-            composable(OwnerBottomNavItem.OwnerAdd.screenRoute) { SelectPostTypeScreen(navController) }
-            composable(OwnerBottomNavItem.StoreTalk.screenRoute) {  }
-            composable(OwnerBottomNavItem.StoreInfo.screenRoute) {  }
+            composable(OwnerBottomNavItem.OwnerHome.screenRoute) {
+                OwnerHomeScreen(navController, storeDataViewModel = storeDataViewModel)
+            }
+            composable(OwnerBottomNavItem.CustomerManagement.screenRoute) {
+
+            }
+            composable(OwnerBottomNavItem.OwnerAdd.screenRoute) {
+                SelectPostTypeScreen(navController)
+            }
+            composable(OwnerBottomNavItem.StoreTalk.screenRoute) {
+
+            }
+            composable(OwnerBottomNavItem.StoreInfo.screenRoute) {
+                StoreInfoScreen(navController)
+            }
 
             /*
              * Start Screen 이 OWNER_HOME
@@ -275,7 +288,7 @@ class MainActivity : ComponentActivity() {
             //HOME > HOME ITEM
             composable(OWNER_HOME + StoreHomeItem.NOTICE) { NoticeSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.INTRO) { IntroSettingScreen(navController) }
-            composable(OWNER_HOME + StoreHomeItem.PHOTO) { PhotoSettingScreen(navController) }
+            composable(OWNER_HOME + StoreHomeItem.IMAGE) { ImageSettingScreen(navController, storeDataViewModel) }
             composable(OWNER_HOME + StoreHomeItem.COUPON) { CouponSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.MENU) { MenuSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.MENU + "/{selectedMenuName}") { backStackEntry ->
