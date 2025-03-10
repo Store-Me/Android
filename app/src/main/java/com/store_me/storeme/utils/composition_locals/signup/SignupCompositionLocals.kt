@@ -6,7 +6,7 @@ import com.store_me.storeme.ui.signup.SignupViewModel
 import com.store_me.storeme.ui.signup.account_data.AccountDataViewModel
 import com.store_me.storeme.ui.signup.customer.CustomerDataViewModel
 import com.store_me.storeme.ui.signup.onboarding.SignupOnboardingViewModel
-import com.store_me.storeme.ui.signup.owner.StoreDataViewModel
+import com.store_me.storeme.ui.signup.owner.StoreSignupDataViewModel
 import com.store_me.storeme.ui.signup.phone_authentication.PhoneNumberViewModel
 import com.store_me.storeme.ui.signup.terms.TermsViewModel
 
@@ -30,7 +30,7 @@ val LocalAccountDataViewModel = staticCompositionLocalOf<AccountDataViewModel> {
     error("No AccountDataViewModel Provided")
 }
 
-val LocalStoreDataViewModel = staticCompositionLocalOf<StoreDataViewModel> {
+val LocalStoreSignupDataViewModel = staticCompositionLocalOf<StoreSignupDataViewModel> {
     error("No StoreDataViewModel Provided")
 }
 
