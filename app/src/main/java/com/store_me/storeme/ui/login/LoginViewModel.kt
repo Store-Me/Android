@@ -7,6 +7,7 @@ import com.store_me.auth.Auth
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
+import com.store_me.storeme.data.request.login.LoginRequest
 import com.store_me.storeme.data.response.StoreListResponse
 import com.store_me.storeme.repository.storeme.CustomerRepository
 import com.store_me.storeme.repository.storeme.OwnerRepository
@@ -74,7 +75,7 @@ class LoginViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            val response = userRepository.loginWithKakao(kakaoId)
+            val response = userRepository.login(loginRequest = LoginRequest(accountId = null, password = null, kakaoId = kakaoId))
 
             response.onSuccess {
                 //로그인 성공 시
@@ -86,7 +87,7 @@ class LoginViewModel @Inject constructor(
                     _errorMessage.value = it.message
 
                     when(it.code) {
-                        LOGIN_FAIL -> {
+                        401 -> {
                             _isKakaoLoginFailed.value = true
                         }
                     }
@@ -99,7 +100,7 @@ class LoginViewModel @Inject constructor(
 
     fun loginWithApp() {
         viewModelScope.launch {
-            val response = userRepository.loginWithApp(accountId = accountId.value, accountPw = accountPw.value)
+            val response = userRepository.login(loginRequest = LoginRequest(accountId = accountId.value, password = accountPw.value, kakaoId = null))
 
             response.onSuccess {
                 //로그인 성공 시
@@ -145,6 +146,25 @@ class LoginViewModel @Inject constructor(
         auth.updateSelectedStoreId(selectedStoreId)
 
         auth.updateIsLoggedIn(true)
+
+
+        /*viewModelScope.launch {
+            val response = ownerRepository.getStoreData(selectedStoreId)
+
+            response.onSuccess {
+                auth.updateStoreData(it)
+
+
+            }.onFailure {
+                _storeListResponse.value = null
+
+                if(it is ApiException) {
+                    _errorMessage.value = it.message
+                } else {
+                    _errorMessage.value = context.getString(R.string.unknown_error_message)
+                }
+            }
+        }*/
     }
 
     /**
