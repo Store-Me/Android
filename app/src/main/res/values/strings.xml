@@ -14,6 +14,16 @@
     <string name="owner_add">추가하기</string>
     <string name="store_info">스토어 정보</string>
 
+    <!--StoreHomeItem None Text-->
+    <string name="owner_home_notice_none">가게의 공지사항을 입력해주세요.</string>
+    <string name="owner_home_intro_none">가게의 소개를 입력해주세요.</string>
+    <string name="owner_home_photo_none">대표 사진을 업로드하여 메뉴나 서비스를 홍보하세요.</string>
+    <string name="owner_home_coupon_none">쿠폰을 만들어 가게 홍보를 진행하세요.</string>
+    <string name="owner_home_menu_none">가게의 서비스나 메뉴 가격을 등록해 보세요.</string>
+    <string name="owner_home_story_none">가게와 관련된 짧은 영상을 올려 보세요.</string>
+    <string name="owner_home_review_none">아직 가게 후기가 없어요.</string>
+    <string name="owner_home_news_none">가게의 소식을 작성하여 홍보를 진행하세요.</string>
+
     <!--ToastMessage Text-->
     <string name="backpress_message">뒤로 가기를 한 번 더 누르면 종료됩니다.</string>
     <string name="network_fail">서버와의 연결에 실패하였습니다. 작업을 다시 시도해 주세요.</string>
@@ -36,6 +46,8 @@
     <string name="signup_finish">회원가입이 완료되었어요. 로그인을 진행해 주세요.</string>
 
     <string name="fail_convert_multipart">이미지 파일 변환중 오류가 발생했습니다. 다시 시도해주세요.</string>
+
+    <string name="wrong_store_id">잘못된 스토어 아이디 입니다. 앱을 재실행 해주세요.</string>
 
     <!--Error Message-->
     <string name="json_error_message">서버가 예상하지 못한 응답을 보냈습니다. 관리자에게 문의하세요.</string>
