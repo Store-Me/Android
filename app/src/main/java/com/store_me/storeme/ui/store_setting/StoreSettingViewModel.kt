@@ -31,14 +31,6 @@ class StoreSettingViewModel: ViewModel() {
     private val _hiddenItems = MutableStateFlow<List<StoreHomeItemData>>(emptyList())
     val hiddenItems: StateFlow<List<StoreHomeItemData>> = _hiddenItems
 
-    init {
-        viewModelScope.launch {
-            Auth.storeHomeItemList.collectLatest {
-                sortStoreHomeItems(it)
-            }
-        }
-    }
-
     private fun sortStoreHomeItems(items: List<StoreHomeItemData>) {
         _visibleItems.value = items
             .filter { !it.isHidden }
