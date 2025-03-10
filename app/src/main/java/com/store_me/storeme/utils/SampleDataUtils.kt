@@ -21,8 +21,6 @@ import com.store_me.storeme.data.NotificationWithStoreInfoData
 import com.store_me.storeme.data.PreviewPostData
 import com.store_me.storeme.data.SocialMediaAccountData
 import com.store_me.storeme.data.StoreDetailData
-import com.store_me.storeme.data.StoreHomeItem
-import com.store_me.storeme.data.StoreHomeItemData
 import com.store_me.storeme.data.StoreHoursData
 import com.store_me.storeme.data.StoreInfoData
 import com.store_me.storeme.data.StoreMenuData
@@ -301,19 +299,6 @@ class SampleDataUtils {
                         "추첨을 통해 10분께 선물을 드립니다.\n" +
                         "· 발표일 : 2099년 7월 1일"),
                 BannerContent.ImageContent("https://drdiary.hgodo.com/muhwadang/godo/join1.jpg")
-            )
-        }
-
-        fun sampleStoreHomeItemData(): List<StoreHomeItemData> {
-            return listOf(
-                StoreHomeItemData(StoreHomeItem.NOTICE, false, 0),
-                StoreHomeItemData(StoreHomeItem.INTRO, false, 1),
-                StoreHomeItemData(StoreHomeItem.PHOTO, false, 2),
-                StoreHomeItemData(StoreHomeItem.COUPON, false, 3),
-                StoreHomeItemData(StoreHomeItem.MENU, false, 4),
-                StoreHomeItemData(StoreHomeItem.STORY, false, 5),
-                StoreHomeItemData(StoreHomeItem.REVIEW, false, 6),
-                StoreHomeItemData(StoreHomeItem.NEWS, false, 7),
             )
         }
     }
