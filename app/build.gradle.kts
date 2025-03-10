@@ -148,8 +148,14 @@ dependencies {
     //Map
     implementation("io.github.fornewid:naver-map-compose:1.7.2")
 
-    //FCM
+    //Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage-ktx")
+    implementation("com.google.firebase:firebase-appcheck-playintegrity")
+    implementation("com.google.firebase:firebase-appcheck-debug")
+
 
     //Local Data Storage
     implementation("androidx.datastore:datastore-preferences:1.1.1")
