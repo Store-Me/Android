@@ -1,8 +1,9 @@
 {
   "project_info": {
     "project_number": "736734338375",
+    "firebase_url": "https://storeme-67dc6-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "storeme-67dc6",
-    "storage_bucket": "storeme-67dc6.appspot.com"
+    "storage_bucket": "storeme-67dc6.firebasestorage.app"
   },
   "client": [
     {
