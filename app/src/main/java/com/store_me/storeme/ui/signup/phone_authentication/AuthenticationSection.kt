@@ -199,7 +199,7 @@ fun AuthenticationSection(onBack: () -> Unit, onFinish: () -> Unit) {
                         color = UndefinedTextColor
                     )
                 },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = HighlightTextFieldColor,
                     errorBorderColor = ErrorTextFieldColor,
@@ -224,7 +224,8 @@ fun AuthenticationSection(onBack: () -> Unit, onFinish: () -> Unit) {
 
         item {
             DefaultButton(
-                buttonText = "확인"
+                buttonText = "확인",
+                enabled = verificationCode.isNotEmpty()
             ) {
                 loadingViewModel.showLoading()
 
