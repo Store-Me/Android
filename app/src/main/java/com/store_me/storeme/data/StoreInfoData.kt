@@ -208,7 +208,7 @@ enum class StoreNormalItem(val displayName: String) {
 enum class StoreHomeItem(val displayName: String) {
     NOTICE("공지사항"),
     INTRO("소개"),
-    PHOTO("대표 사진"),
+    IMAGE("대표 사진"),
     COUPON("스토어 쿠폰"),
     MENU("메뉴"),
     STORY("스토어 스토리"),
