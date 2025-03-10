@@ -34,13 +34,13 @@ class CustomerRepositoryImpl @Inject constructor(
                     false -> {
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody.code, message = responseBody.message
+                                code = response.code() , message = responseBody.message
                             ))
                     }
                     else -> {
                         Result.failure(
                             ApiExceptionHandler.apiException(
-                                code = responseBody?.code, message = responseBody?.message
+                                code = response.code(), message = responseBody?.message
                             ))
                     }
                 }
