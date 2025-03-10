@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,18 +31,48 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.component.CircleBorderWithIcon
 import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.ui.component.LoadingProgress
 import com.store_me.storeme.ui.component.ProfileImage
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.CropUtils
-import com.store_me.storeme.utils.composition_locals.signup.LocalStoreDataViewModel
+import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalAccountDataViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalStoreSignupDataViewModel
 import com.yalantis.ucrop.UCrop
 
 @Composable
 fun StoreProfileImageSection(onFinish: () -> Unit) {
-    val storeDataViewModel = LocalStoreDataViewModel.current
+    val accountDataViewModel = LocalAccountDataViewModel.current
+    val storeDataViewModel = LocalStoreSignupDataViewModel.current
+    val loadingViewModel = LocalLoadingViewModel.current
+    val snackbarHostState = LocalSnackbarHostState.current
+
     val storeProfileImage by storeDataViewModel.storeProfileImage.collectAsState()
+    val storeProfileImageUrl by storeDataViewModel.storeProfileImageUrl.collectAsState()
+    val progress by storeDataViewModel.storeProfileImageProgress.collectAsState()
+
+    val errorMessage by storeDataViewModel.errorMessage.collectAsState()
+
+    LaunchedEffect(storeProfileImage) {
+        if(storeProfileImage != null) {
+            storeDataViewModel.uploadStoreProfileImage(accountId = accountDataViewModel.accountId.value)
+        }
+    }
+
+    LaunchedEffect(errorMessage) {
+        if(errorMessage != null) {
+            loadingViewModel.hideLoading()
+
+            storeDataViewModel.updateStoreProfileImage(null)
+
+            snackbarHostState.showSnackbar(errorMessage.toString())
+
+            storeDataViewModel.updateErrorMessage(null)
+        }
+    }
     
     Column(
         modifier = Modifier
@@ -62,6 +93,8 @@ fun StoreProfileImageSection(onFinish: () -> Unit) {
         ProfileImageSection(
             accountType = AccountType.OWNER,
             uri = storeProfileImage,
+            isLoading = storeProfileImage != null && storeProfileImageUrl == null,
+            progress = progress,
             onDelete = { storeDataViewModel.updateStoreProfileImage(null) },
             onCropResult = { storeDataViewModel.updateStoreProfileImage(it) }
         )
@@ -79,6 +112,8 @@ fun ProfileImageSection(
     accountType: AccountType,
     uri: Uri?,
     onDelete: () -> Unit,
+    isLoading: Boolean = false,
+    progress: Float = 0.0f,
     onCropResult: (Uri) -> Unit
 ) {
     val context = LocalContext.current
@@ -121,6 +156,16 @@ fun ProfileImageSection(
                     .clip(shape = RoundedCornerShape(18.dp))
             )
 
+            if(isLoading) {
+                LoadingProgress(
+                    progress = progress,
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(shape = RoundedCornerShape(18.dp))
+                )
+            }
+
+
             if(uri != null) {
                 CircleBorderWithIcon(
                     modifier = Modifier
@@ -135,18 +180,20 @@ fun ProfileImageSection(
                 }
             }
 
-
-            CircleBorderWithIcon(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd),
-                borderColor = White,
-                circleColor = Black,
-                iconResource = R.drawable.ic_camera,
-                iconColor = White,
-                size = 36
-            ) {
-                galleryLauncher.launch("image/*")
+            if(uri == null) {
+                CircleBorderWithIcon(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd),
+                    borderColor = White,
+                    circleColor = Black,
+                    iconResource = R.drawable.ic_camera,
+                    iconColor = White,
+                    size = 36
+                ) {
+                    galleryLauncher.launch("image/*")
+                }
             }
+
         }
     }
 }
