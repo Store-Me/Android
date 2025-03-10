@@ -23,7 +23,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object StoreMeModule {
     @Provides
-    fun provideBaseUrl() = "https://storeme.shop/"
+    fun provideBaseUrl() = "https://us-central1-storeme-67dc6.cloudfunctions.net/"
 
     @Provides
     @Singleton
