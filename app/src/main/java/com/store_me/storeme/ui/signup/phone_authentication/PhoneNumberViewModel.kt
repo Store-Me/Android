@@ -1,5 +1,6 @@
 package com.store_me.storeme.ui.signup.phone_authentication
 
+import android.app.Activity
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,6 +23,9 @@ class PhoneNumberViewModel @Inject constructor(
 ): ViewModel() {
     private val _phoneNumber = MutableStateFlow("")
     val phoneNumber: StateFlow<String> = _phoneNumber
+
+    private val _verificationId = MutableStateFlow("")
+    val verificationId: StateFlow<String> = _verificationId
 
     private val _smsSentSuccess = MutableStateFlow(false)
     val smsSentSuccess: StateFlow<Boolean> = _smsSentSuccess
@@ -47,11 +51,17 @@ class PhoneNumberViewModel @Inject constructor(
         _errorMessage.value = errorMessage
     }
 
-    fun sendSmsMessage(phoneNumber: String) {
+    fun sendSmsMessage(phoneNumber: String, activity: Activity) {
+        val phoneNumberWithCountryCode = "+82" + phoneNumber.substring(1)
+
         viewModelScope.launch {
-            val result = userRepository.sendSmsMessage(phoneNumber = phoneNumber)
+            val result = userRepository.sendSmsMessage(phoneNumber = phoneNumberWithCountryCode, activity = activity)
 
             result.onSuccess {
+                if(it != null) {
+                    _verificationId.value = it
+                }
+
                 _smsSentSuccess.value = true
             }.onFailure {
                 if(it is ApiException) {
@@ -65,13 +75,14 @@ class PhoneNumberViewModel @Inject constructor(
 
     fun confirmCode() {
         viewModelScope.launch {
-            val result = userRepository.confirmVerificationCode(
-                confirmCode = ConfirmCode(
-                    phoneNumber = _phoneNumber.value, verificationCode = _verificationCode.value)
-            )
+            val result = userRepository.confirmVerificationCode(verificationId = verificationId.value, verificationCode = verificationCode.value)
 
             result.onSuccess {
-                _verificationSuccess.value = true
+                _verificationSuccess.value = it
+
+                if(!it) {
+                    _errorMessage.value = "인증번호가 올바르지 않습니다."
+                }
             }.onFailure {
                 _verificationSuccess.value = false
 
