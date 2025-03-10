@@ -13,6 +13,7 @@ data class OwnerSignupApp(
     val storeCategory: String,
     val storeDetailCategory: String?,
     val storeLocation: String,
+    val storeLocationAddress: String,
     val storeLocationCode: Long,
     val storeLocationDetail: String?,
     val storeLat: Double?,
