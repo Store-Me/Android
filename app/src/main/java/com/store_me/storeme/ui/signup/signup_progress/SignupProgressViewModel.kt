@@ -50,16 +50,7 @@ class SignupProgressViewModel: ViewModel() {
         val nextProgress = when((_signupState.value as SignupState.Signup).progress) {
             SignupProgress.TERMS -> SignupProgress.NUMBER
             SignupProgress.NUMBER -> SignupProgress.CERTIFICATION
-            SignupProgress.CERTIFICATION -> {
-                when(loginType){
-                    LoginType.KAKAO -> {
-                        SignupProgress.ACCOUNT_TYPE
-                    }
-                    LoginType.APP -> {
-                        SignupProgress.ACCOUNT_DATA
-                    }
-                }
-            }
+            SignupProgress.CERTIFICATION -> SignupProgress.ACCOUNT_DATA
             SignupProgress.ACCOUNT_DATA -> SignupProgress.ACCOUNT_TYPE
             SignupProgress.ACCOUNT_TYPE -> {
                 when(accountType){
@@ -84,16 +75,7 @@ class SignupProgressViewModel: ViewModel() {
             SignupProgress.NUMBER -> SignupProgress.TERMS
             SignupProgress.CERTIFICATION -> SignupProgress.NUMBER
             SignupProgress.ACCOUNT_DATA -> SignupProgress.CERTIFICATION
-            SignupProgress.ACCOUNT_TYPE -> {
-                when(loginType){
-                    LoginType.KAKAO -> {
-                        SignupProgress.CERTIFICATION
-                    }
-                    LoginType.APP -> {
-                        SignupProgress.ACCOUNT_DATA
-                    }
-                }
-            }
+            SignupProgress.ACCOUNT_TYPE -> SignupProgress.ACCOUNT_DATA
         }
 
         _signupState.value = SignupState.Signup(nextProgress)

@@ -50,8 +50,7 @@ import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
-import com.store_me.storeme.data.model.signup.CustomerSignupApp
-import com.store_me.storeme.data.model.signup.CustomerSignupKakao
+import com.store_me.storeme.data.model.signup.CustomerSignupRequest
 import com.store_me.storeme.data.model.signup.OwnerSignupApp
 import com.store_me.storeme.data.model.signup.OwnerSignupKakao
 import com.store_me.storeme.ui.component.BackWarningDialog
@@ -72,7 +71,7 @@ import com.store_me.storeme.ui.signup.onboarding.SignupOnboardingViewModel
 import com.store_me.storeme.ui.signup.owner.AddressSection
 import com.store_me.storeme.ui.signup.owner.StoreCategorySection
 import com.store_me.storeme.ui.signup.owner.StoreCustomCategorySection
-import com.store_me.storeme.ui.signup.owner.StoreDataViewModel
+import com.store_me.storeme.ui.signup.owner.StoreSignupDataViewModel
 import com.store_me.storeme.ui.signup.owner.StoreImageSection
 import com.store_me.storeme.ui.signup.owner.StoreIntroSection
 import com.store_me.storeme.ui.signup.owner.StoreNameSection
@@ -97,7 +96,7 @@ import com.store_me.storeme.utils.composition_locals.signup.LocalPhoneNumberView
 import com.store_me.storeme.utils.composition_locals.signup.LocalSignupOnboardingViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalSignupProgressViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalSignupViewModel
-import com.store_me.storeme.utils.composition_locals.signup.LocalStoreDataViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalStoreSignupDataViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalTermsViewModel
 
 @Composable
@@ -111,8 +110,8 @@ fun SignupScreen(
     termsViewModel: TermsViewModel = viewModel(),
     signupOnboardingViewModel: SignupOnboardingViewModel = viewModel(),
     accountDataViewModel: AccountDataViewModel = hiltViewModel(),
-    storeDataViewModel: StoreDataViewModel = hiltViewModel(),
-    customerDataViewModel: CustomerDataViewModel = viewModel()
+    storeSignupDataViewModel: StoreSignupDataViewModel = hiltViewModel(),
+    customerDataViewModel: CustomerDataViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
 
@@ -216,7 +215,7 @@ fun SignupScreen(
         LocalPhoneNumberViewModel provides phoneNumberViewModel,
         LocalAccountDataViewModel provides accountDataViewModel,
         LocalSignupOnboardingViewModel provides signupOnboardingViewModel,
-        LocalStoreDataViewModel provides storeDataViewModel,
+        LocalStoreSignupDataViewModel provides storeSignupDataViewModel,
         LocalCustomerDataViewModel provides customerDataViewModel
     ) {
         Scaffold(
@@ -326,33 +325,32 @@ fun SignupScreen(
 
                                                 when {
                                                     accountType == AccountType.CUSTOMER && loginType == LoginType.KAKAO-> {
-                                                        signupViewModel.customerSignupKakao(
-                                                            customerSignupKakao = CustomerSignupKakao(
+                                                        signupViewModel.customerSignup(
+                                                            customerSignupRequest = CustomerSignupRequest(
+                                                                accountId = accountDataViewModel.accountId.value,
+                                                                password = accountDataViewModel.accountPw.value,
                                                                 kakaoId = additionalData,
                                                                 phoneNumber = phoneNumberViewModel.phoneNumber.value,
                                                                 privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
                                                                 marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
-                                                                verificationCode = phoneNumberViewModel.verificationCode.value,
-
-                                                                nickname = customerDataViewModel.nickName.value
-                                                            ),
-                                                            profileImage = customerDataViewModel.profileImage.value
+                                                                nickname = customerDataViewModel.nickName.value,
+                                                                profileImage = customerDataViewModel.profileImageUrl.value
+                                                            )
                                                         )
                                                     }
 
                                                     accountType == AccountType.CUSTOMER && loginType == LoginType.APP-> {
-                                                        signupViewModel.customerSignupApp(
-                                                            customerSignupApp = CustomerSignupApp(
+                                                        signupViewModel.customerSignup(
+                                                            customerSignupRequest = CustomerSignupRequest(
                                                                 accountId = accountDataViewModel.accountId.value,
                                                                 password = accountDataViewModel.accountPw.value,
+                                                                kakaoId = null,
                                                                 phoneNumber = phoneNumberViewModel.phoneNumber.value,
                                                                 privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
                                                                 marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
-                                                                verificationCode = phoneNumberViewModel.verificationCode.value,
-
-                                                                nickname = customerDataViewModel.nickName.value
-                                                            ),
-                                                            profileImage = customerDataViewModel.profileImage.value
+                                                                nickname = customerDataViewModel.nickName.value,
+                                                                profileImage = customerDataViewModel.profileImageUrl.value
+                                                            )
                                                         )
                                                     }
                                                 }
@@ -419,20 +417,21 @@ fun SignupScreen(
                                                             marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
                                                             verificationCode = phoneNumberViewModel.verificationCode.value,
 
-                                                            storeName = storeDataViewModel.storeName.value,
+                                                            storeName = storeSignupDataViewModel.storeName.value,
                                                             storeDescription = "",
-                                                            storeCategory = storeDataViewModel.storeCategory.value!!.name,
-                                                            storeDetailCategory = storeDataViewModel.storeDetailCategory.value,
-                                                            storeLocation = storeDataViewModel.storeLocation.value,
-                                                            storeLocationCode = storeDataViewModel.storeLocationCode.value!!,
-                                                            storeLocationDetail = storeDataViewModel.storeLocationDetail.value,
-                                                            storeLat = storeDataViewModel.storeLatLng.value?.latitude,
-                                                            storeLng = storeDataViewModel.storeLatLng.value?.longitude,
-                                                            storePhoneNumber = storeDataViewModel.storeNumber.value,
-                                                            storeIntro = storeDataViewModel.storeIntro.value
+                                                            storeCategory = storeSignupDataViewModel.storeCategory.value!!.name,
+                                                            storeDetailCategory = storeSignupDataViewModel.storeDetailCategory.value,
+                                                            storeLocation = storeSignupDataViewModel.storeLocation.value,
+                                                            storeLocationAddress= storeSignupDataViewModel.storeLocationAddress.value,
+                                                            storeLocationCode = storeSignupDataViewModel.storeLocationCode.value!!,
+                                                            storeLocationDetail = storeSignupDataViewModel.storeLocationDetail.value,
+                                                            storeLat = storeSignupDataViewModel.storeLatLng.value?.latitude,
+                                                            storeLng = storeSignupDataViewModel.storeLatLng.value?.longitude,
+                                                            storePhoneNumber = storeSignupDataViewModel.storeNumber.value,
+                                                            storeIntro = storeSignupDataViewModel.storeIntro.value
                                                         ),
-                                                        storeProfileImage = storeDataViewModel.storeProfileImage.value,
-                                                        storeImages = storeDataViewModel.storeImages.value
+                                                        storeProfileImage = storeSignupDataViewModel.storeProfileImage.value,
+                                                        storeImages = storeSignupDataViewModel.storeImages.value
                                                     )
                                                 }
 
@@ -445,21 +444,21 @@ fun SignupScreen(
                                                             privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
                                                             marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
                                                             verificationCode = phoneNumberViewModel.verificationCode.value,
-
-                                                            storeName = storeDataViewModel.storeName.value,
+                                                            storeName = storeSignupDataViewModel.storeName.value,
                                                             storeDescription = "",
-                                                            storeCategory = storeDataViewModel.storeCategory.value!!.name,
-                                                            storeDetailCategory = storeDataViewModel.storeDetailCategory.value,
-                                                            storeLocation = storeDataViewModel.storeLocation.value,
-                                                            storeLocationCode = storeDataViewModel.storeLocationCode.value!!,
-                                                            storeLocationDetail = storeDataViewModel.storeLocationDetail.value,
-                                                            storeLat = storeDataViewModel.storeLatLng.value?.latitude,
-                                                            storeLng = storeDataViewModel.storeLatLng.value?.longitude,
-                                                            storePhoneNumber = storeDataViewModel.storeNumber.value,
-                                                            storeIntro = storeDataViewModel.storeIntro.value
+                                                            storeCategory = storeSignupDataViewModel.storeCategory.value!!.name,
+                                                            storeDetailCategory = storeSignupDataViewModel.storeDetailCategory.value,
+                                                            storeLocation = storeSignupDataViewModel.storeLocation.value,
+                                                            storeLocationAddress= storeSignupDataViewModel.storeLocationAddress.value,
+                                                            storeLocationCode = storeSignupDataViewModel.storeLocationCode.value!!,
+                                                            storeLocationDetail = storeSignupDataViewModel.storeLocationDetail.value,
+                                                            storeLat = storeSignupDataViewModel.storeLatLng.value?.latitude,
+                                                            storeLng = storeSignupDataViewModel.storeLatLng.value?.longitude,
+                                                            storePhoneNumber = storeSignupDataViewModel.storeNumber.value,
+                                                            storeIntro = storeSignupDataViewModel.storeIntro.value
                                                         ),
-                                                        storeProfileImage = storeDataViewModel.storeProfileImage.value,
-                                                        storeImages = storeDataViewModel.storeImages.value
+                                                        storeProfileImage = storeSignupDataViewModel.storeProfileImage.value,
+                                                        storeImages = storeSignupDataViewModel.storeImages.value
                                                     )
                                                 }
                                             }

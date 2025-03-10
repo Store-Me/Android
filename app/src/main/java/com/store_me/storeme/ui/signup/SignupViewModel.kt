@@ -7,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
-import com.store_me.storeme.data.model.signup.CustomerSignupApp
 import com.store_me.storeme.data.model.signup.CustomerSignupKakao
+import com.store_me.storeme.data.model.signup.CustomerSignupRequest
 import com.store_me.storeme.data.model.signup.OwnerSignupApp
 import com.store_me.storeme.data.model.signup.OwnerSignupKakao
 import com.store_me.storeme.repository.storeme.UserRepository
@@ -52,46 +52,10 @@ class SignupViewModel @Inject constructor(
         _errorMessage.value = errorMessage
     }
 
-    fun customerSignupApp(customerSignupApp: CustomerSignupApp, profileImage: Uri?) {
-        val profileImageFile =
-            if(profileImage != null)
-                FileUtils.createMultipart(context, profileImage, "profileImageFile")
-            else
-                null
-
-        if(profileImage != null && profileImageFile == null) {
-            onErrorImageFile()
-
-            return
-        }
-
+    fun customerSignup(customerSignupRequest: CustomerSignupRequest) {
         viewModelScope.launch {
-            val response = userRepository.customerSignupApp(
-                customerSignupApp = customerSignupApp,
-                profileImage = profileImageFile
-            )
-
-            signupResponse(response)
-        }
-    }
-
-    fun customerSignupKakao(customerSignupKakao: CustomerSignupKakao, profileImage: Uri?) {
-        val profileImageFile =
-            if(profileImage != null)
-                FileUtils.createMultipart(context, profileImage, "profileImageFile")
-            else
-                null
-
-        if(profileImage != null && profileImageFile == null) {
-            onErrorImageFile()
-
-            return
-        }
-
-        viewModelScope.launch {
-            val response = userRepository.customerSignupKakao(
-                customerSignupKakao = customerSignupKakao,
-                profileImage = profileImageFile
+            val response = userRepository.customerSignup(
+                customerSignupRequest = customerSignupRequest
             )
 
             signupResponse(response)
