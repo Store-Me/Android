@@ -8,8 +8,6 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.store_me.storeme.data.model.signup.CustomerSignupRequest
-import com.store_me.storeme.data.model.signup.OwnerSignupApp
-import com.store_me.storeme.data.model.signup.OwnerSignupKakao
 import com.store_me.storeme.data.model.signup.OwnerSignupRequest
 import com.store_me.storeme.data.request.login.LoginRequest
 import com.store_me.storeme.network.storeme.UserApiService
