@@ -45,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.PwOutlinedTextField
@@ -64,7 +63,6 @@ import com.store_me.storeme.utils.KakaoLoginHelper
 import com.store_me.storeme.utils.ValidationUtils
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -90,10 +88,8 @@ fun LoginScreen(
     val isIdError = remember { mutableStateOf(false) }
     val isPwError = remember { mutableStateOf(false) }
 
-    val storeListResponse by loginViewModel.storeListResponse.collectAsState()
+    val storeList by loginViewModel.myStoresResponse.collectAsState()
     val customerLoginSuccess by loginViewModel.customerLoginSuccess.collectAsState()
-
-    val loginErrorMessage by loginViewModel.errorMessage.collectAsState()
 
     val showSelectStoreDialog = remember { mutableStateOf(false) }
 
@@ -116,10 +112,8 @@ fun LoginScreen(
         }
     }
 
-    LaunchedEffect(storeListResponse) {
-        Timber.d("storeListResponse: $storeListResponse")
-
-        if(storeListResponse == null){
+    LaunchedEffect(storeList) {
+        if(storeList == null){
             return@LaunchedEffect
         }
 
@@ -127,16 +121,6 @@ fun LoginScreen(
 
         showSelectStoreDialog.value = true
         Timber.d("showSelectStoreDialog: ${showSelectStoreDialog.value}")
-    }
-
-    LaunchedEffect(loginErrorMessage) {
-        if(loginErrorMessage != null) {
-            loadingViewModel.hideLoading()
-
-            snackbarHostState.showSnackbar(loginErrorMessage.toString())
-
-            loginViewModel.updateErrorMessage(null)
-        }
     }
 
     LaunchedEffect(customerLoginSuccess) {
@@ -219,8 +203,6 @@ fun LoginScreen(
                             when (val kakaoId = KakaoLoginHelper.getKakaoId(context)) {
                                 null -> {
                                     loadingViewModel.hideLoading()
-
-                                    loginViewModel.updateErrorMessage(context.getString(R.string.kakao_account_error_message))
                                 }
                                 else -> {
                                     loginViewModel.loginWithKakao(kakaoId)
@@ -322,9 +304,9 @@ fun LoginScreen(
 
     if(showSelectStoreDialog.value) {
         Timber.d("showDialog")
-        storeListResponse?.let {
+        storeList?.let {
             SelectStoreDialog(
-                storeListResponse = it,
+                myStoresResponse = it,
                 onAction = { selectedStoreId ->
                     showSelectStoreDialog.value = false
                     loginViewModel.selectStoreFinish(selectedStoreId)

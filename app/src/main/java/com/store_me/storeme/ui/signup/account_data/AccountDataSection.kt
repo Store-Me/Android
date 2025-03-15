@@ -39,20 +39,18 @@ import com.store_me.storeme.ui.component.PwOutlinedTextField
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
+import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.ValidIconColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.utils.ValidationUtils
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
-import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalAccountDataViewModel
 
 @Composable
 fun AccountDataSection(onFinish: () -> Unit) {
     val context = LocalContext.current
 
-    val loadingViewModel = LocalLoadingViewModel.current
     val accountDataViewModel = LocalAccountDataViewModel.current
 
     val snackbarHostState = LocalSnackbarHostState.current

@@ -15,8 +15,6 @@ import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.signup.owner.ProfileImageSection
-import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
-import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalAccountDataViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalCustomerDataViewModel
 

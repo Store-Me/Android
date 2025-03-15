@@ -35,18 +35,15 @@ import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.composition_locals.signup.LocalPhoneNumberViewModel
 import com.store_me.storeme.utils.PhoneNumberUtils
 import com.store_me.storeme.utils.PhoneNumberVisualTransformation
-import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
+import com.store_me.storeme.utils.composition_locals.signup.LocalPhoneNumberViewModel
 
 @Composable
 fun PhoneNumberSection(onFinish: () -> Unit) {
     val loadingViewModel = LocalLoadingViewModel.current
     val phoneNumberViewModel = LocalPhoneNumberViewModel.current
-
-    val snackbarHostState = LocalSnackbarHostState.current
 
     val phoneNumber by phoneNumberViewModel.phoneNumber.collectAsState()
     val smsSentSuccess by phoneNumberViewModel.smsSentSuccess.collectAsState()

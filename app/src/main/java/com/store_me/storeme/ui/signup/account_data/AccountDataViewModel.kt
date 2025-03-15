@@ -1,14 +1,11 @@
 package com.store_me.storeme.ui.signup.account_data
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.store_me.storeme.R
 import com.store_me.storeme.repository.storeme.UserRepository
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine

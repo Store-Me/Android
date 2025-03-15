@@ -1,21 +1,18 @@
 package com.store_me.storeme.ui.login
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.store_me.auth.Auth
-import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.data.request.login.LoginRequest
-import com.store_me.storeme.data.response.StoreListResponse
+import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.repository.storeme.CustomerRepository
 import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.repository.storeme.UserRepository
-import com.store_me.storeme.ui.main.LOGIN_FAIL
+import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,7 +20,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val auth: Auth,
     private val userRepository: UserRepository,
     private val ownerRepository: OwnerRepository,
@@ -41,14 +37,11 @@ class LoginViewModel @Inject constructor(
     private val _accountPw = MutableStateFlow("")
     val accountPw: StateFlow<String> = _accountPw
 
-    private val _storeListResponse = MutableStateFlow<StoreListResponse?>(null)
-    val storeListResponse: StateFlow<StoreListResponse?> = _storeListResponse
+    private val _myStoresResponse = MutableStateFlow<MyStoresResponse?>(null)
+    val myStoresResponse: StateFlow<MyStoresResponse?> = _myStoresResponse
 
     private val _customerLoginSuccess = MutableStateFlow(false)
     val customerLoginSuccess: StateFlow<Boolean> = _customerLoginSuccess
-
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage
 
     fun clearKakaoLoginFailedState() {
         _isKakaoLoginFailed.value = false
@@ -66,10 +59,6 @@ class LoginViewModel @Inject constructor(
         _accountPw.value = newAccountPw
     }
 
-    fun updateErrorMessage(errorMessage: String?) {
-        _errorMessage.value = errorMessage
-    }
-
     fun loginWithKakao(kakaoId: String) {
         updateKakaoId(kakaoId)
 
@@ -84,7 +73,7 @@ class LoginViewModel @Inject constructor(
             }.onFailure {
                 //로그인 실패 시
                 if(it is ApiException){
-                    _errorMessage.value = it.message
+                    ErrorEventBus.errorFlow.emit(it.message)
 
                     when(it.code) {
                         401 -> {
@@ -92,7 +81,7 @@ class LoginViewModel @Inject constructor(
                         }
                     }
                 } else {
-                    _errorMessage.value = context.getString(R.string.unknown_error_message)
+                    ErrorEventBus.errorFlow.emit(null)
                 }
             }
         }
@@ -109,62 +98,49 @@ class LoginViewModel @Inject constructor(
             }.onFailure {
                 //로그인 실패 시
                 if(it is ApiException) {
-                    _errorMessage.value = it.message
+                    ErrorEventBus.errorFlow.emit(it.message)
                 } else {
-                    _errorMessage.value = context.getString(R.string.unknown_error_message)
+                    ErrorEventBus.errorFlow.emit(null)
                 }
             }
         }
     }
 
     private suspend fun loginSuccess() {
-        getStoreList()
+        getMyStores()
     }
 
-    private suspend fun getStoreList() {
-        val response = ownerRepository.getStoreList()
+    private suspend fun getMyStores() {
+        val response = ownerRepository.getMyStores()
 
         response.onSuccess {
-            if(it.storeInfoList.isEmpty()) {
+            if(it.stores.isEmpty()) {
+                loginByCustomerAccount()
+            } else {
+                auth.updateAccountType(AccountType.OWNER)
+                _myStoresResponse.value = it   //사장님은 가게 선택 후 로그인 완료
+            }
+
+            if(it.stores.isEmpty()) {
                 //Customer
                 loginByCustomerAccount()
             } else {
                 //Owner
-                auth.updateAccountType(AccountType.OWNER)
-                _storeListResponse.value = it   //사장님은 가게 선택 후 로그인 완료
+
             }
         }.onFailure {
             if(it is ApiException) {
-                _errorMessage.value = it.message
+                ErrorEventBus.errorFlow.emit(it.message)
             } else {
-                _errorMessage.value = context.getString(R.string.unknown_error_message)
+                ErrorEventBus.errorFlow.emit(null)
             }
         }
     }
 
-    fun selectStoreFinish(selectedStoreId: Long) {
+    fun selectStoreFinish(selectedStoreId: String) {
         auth.updateSelectedStoreId(selectedStoreId)
 
         auth.updateIsLoggedIn(true)
-
-
-        /*viewModelScope.launch {
-            val response = ownerRepository.getStoreData(selectedStoreId)
-
-            response.onSuccess {
-                auth.updateStoreData(it)
-
-
-            }.onFailure {
-                _storeListResponse.value = null
-
-                if(it is ApiException) {
-                    _errorMessage.value = it.message
-                } else {
-                    _errorMessage.value = context.getString(R.string.unknown_error_message)
-                }
-            }
-        }*/
     }
 
     /**
@@ -179,12 +155,12 @@ class LoginViewModel @Inject constructor(
                 auth.updateAccountType(AccountType.CUSTOMER)
                 auth.updateIsLoggedIn(true)
             }.onFailure {
-                _storeListResponse.value = null
+                _myStoresResponse.value = null
 
                 if(it is ApiException) {
-                    _errorMessage.value = it.message
+                    ErrorEventBus.errorFlow.emit(it.message)
                 } else {
-                    _errorMessage.value = context.getString(R.string.unknown_error_message)
+                    ErrorEventBus.errorFlow.emit(null)
                 }
             }
         }

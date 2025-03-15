@@ -3,17 +3,14 @@ package com.store_me.storeme.ui.store_setting.image
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.store_me.auth.Auth
 import com.store_me.storeme.R
 import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.utils.FileUtils
-import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
