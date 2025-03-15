@@ -15,8 +15,14 @@ plugins {
 }
 
 fun getApiKey(propertyKey: String): String {
-    val localProps = gradleLocalProperties(rootDir)
-    return localProps.getProperty(propertyKey, "") ?: ""
+    val properties = Properties()
+    val localPropertiesFile = File(rootDir, "local.properties")
+
+    if (localPropertiesFile.exists()) {
+        properties.load(localPropertiesFile.inputStream())
+    }
+
+    return properties.getProperty(propertyKey, "") ?: ""
 }
 
 android {
@@ -38,7 +44,7 @@ android {
 
         buildConfigField("String", "NAVER_CLIENT_SECRET", getApiKey("naver_client_secret"))
         buildConfigField("String", "NAVER_CLIENT_ID", getApiKey("naver_client_id"))
-        val kakaoKey = gradleLocalProperties(rootDir).getProperty("kakao_key")
+        val kakaoKey = getApiKey("kakao_key")
         buildConfigField("String", "KAKAO_KEY", "\"${kakaoKey}\"")
     }
 
@@ -100,7 +106,6 @@ dependencies {
     implementation("androidx.compose.animation:animation:1.7.0-rc01")
     implementation("androidx.compose.foundation:foundation:1.7.0-rc01")
     implementation("androidx.compose.ui:ui:1.7.0-rc01")
-
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
