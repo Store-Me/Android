@@ -35,6 +35,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
+import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.data.response.StoreListResponse
 import com.store_me.storeme.ui.theme.CancelButtonColor
 import com.store_me.storeme.ui.theme.SelectedCheckBoxColorPink
@@ -177,11 +178,11 @@ fun BackWarningDialog(
 
 @Composable
 fun SelectStoreDialog(
-    storeListResponse: StoreListResponse,
-    onAction: (Long) -> Unit,
+    myStoresResponse: MyStoresResponse,
+    onAction: (String) -> Unit,
     onCustomer: () -> Unit
 ) {
-    val selectedStoreId = remember { mutableStateOf<Long?>(null) }
+    val selectedStoreId = remember { mutableStateOf<String?>(null) }
 
     val localDensity = LocalDensity.current
 
@@ -210,7 +211,7 @@ fun SelectStoreDialog(
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(storeListResponse.storeInfoList) {
+                items(myStoresResponse.storeList) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -221,7 +222,7 @@ fun SelectStoreDialog(
                     ) {
                         ProfileImage(
                             accountType = AccountType.OWNER,
-                            url = it.storeProfileImageUrl,
+                            url = it.profileImage,
                             modifier = Modifier
                                 .clip(CircleShape)
                                 .size(SizeUtils.textSizeToDp(localDensity, 2, 16))
