@@ -6,8 +6,7 @@ enum class OwnerProgress(val order: Int) {
     CUSTOM_CATEGORY(2),
     ADDRESS(3),
     STORE_PROFILE_IMAGE(4),
-    STORE_IMAGE(5),
-    INTRO(6),
-    NUMBER(7),
-    FINISH(8)
+    INTRO(5),
+    NUMBER(6),
+    FINISH(7)
 }

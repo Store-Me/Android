@@ -119,8 +119,7 @@ class SignupProgressViewModel: ViewModel() {
             OwnerProgress.CATEGORY -> OwnerProgress.CUSTOM_CATEGORY
             OwnerProgress.CUSTOM_CATEGORY -> OwnerProgress.ADDRESS
             OwnerProgress.ADDRESS -> OwnerProgress.STORE_PROFILE_IMAGE
-            OwnerProgress.STORE_PROFILE_IMAGE -> OwnerProgress.STORE_IMAGE
-            OwnerProgress.STORE_IMAGE -> OwnerProgress.INTRO
+            OwnerProgress.STORE_PROFILE_IMAGE -> OwnerProgress.INTRO
             OwnerProgress.INTRO -> OwnerProgress.NUMBER
             OwnerProgress.NUMBER -> OwnerProgress.FINISH
             OwnerProgress.FINISH -> {
@@ -141,8 +140,7 @@ class SignupProgressViewModel: ViewModel() {
             OwnerProgress.CUSTOM_CATEGORY -> OwnerProgress.CATEGORY
             OwnerProgress.ADDRESS -> OwnerProgress.CUSTOM_CATEGORY
             OwnerProgress.STORE_PROFILE_IMAGE -> OwnerProgress.ADDRESS
-            OwnerProgress.STORE_IMAGE -> OwnerProgress.STORE_PROFILE_IMAGE
-            OwnerProgress.INTRO -> OwnerProgress.STORE_IMAGE
+            OwnerProgress.INTRO -> OwnerProgress.STORE_PROFILE_IMAGE
             OwnerProgress.NUMBER -> OwnerProgress.INTRO
             OwnerProgress.FINISH -> return
         }
