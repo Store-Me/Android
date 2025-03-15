@@ -89,6 +89,7 @@ import com.store_me.storeme.ui.store_talk.StoreTalkScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.storeMeTypography
+import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.KeyboardHeightObserver
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
@@ -125,6 +126,14 @@ class MainActivity : ComponentActivity() {
 
             StoreMeTheme {
                 val snackBarHostState = remember { SnackbarHostState() }
+
+                //오류 메시지 처리
+                LaunchedEffect(Unit) {
+                    ErrorEventBus.errorFlow.collect { errorMessage ->
+                        loadingViewModel.hideLoading()
+                        snackBarHostState.showSnackbar(message = errorMessage ?: getString(R.string.unknown_error_message))
+                    }
+                }
 
                 CompositionLocalProvider(
                     LocalAuth provides auth,

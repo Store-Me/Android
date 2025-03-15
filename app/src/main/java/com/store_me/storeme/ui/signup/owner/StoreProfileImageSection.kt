@@ -37,8 +37,6 @@ import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.CropUtils
-import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
-import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalAccountDataViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalStoreSignupDataViewModel
 import com.yalantis.ucrop.UCrop
@@ -47,30 +45,15 @@ import com.yalantis.ucrop.UCrop
 fun StoreProfileImageSection(onFinish: () -> Unit) {
     val accountDataViewModel = LocalAccountDataViewModel.current
     val storeDataViewModel = LocalStoreSignupDataViewModel.current
-    val loadingViewModel = LocalLoadingViewModel.current
-    val snackbarHostState = LocalSnackbarHostState.current
 
     val storeProfileImage by storeDataViewModel.storeProfileImage.collectAsState()
     val storeProfileImageUrl by storeDataViewModel.storeProfileImageUrl.collectAsState()
     val progress by storeDataViewModel.storeProfileImageProgress.collectAsState()
 
-    val errorMessage by storeDataViewModel.errorMessage.collectAsState()
 
     LaunchedEffect(storeProfileImage) {
         if(storeProfileImage != null) {
             storeDataViewModel.uploadStoreProfileImage(accountId = accountDataViewModel.accountId.value)
-        }
-    }
-
-    LaunchedEffect(errorMessage) {
-        if(errorMessage != null) {
-            loadingViewModel.hideLoading()
-
-            storeDataViewModel.updateStoreProfileImage(null)
-
-            snackbarHostState.showSnackbar(errorMessage.toString())
-
-            storeDataViewModel.updateErrorMessage(null)
         }
     }
     

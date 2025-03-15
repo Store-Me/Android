@@ -40,21 +40,17 @@ import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.composition_locals.signup.LocalPhoneNumberViewModel
 import com.store_me.storeme.utils.PhoneNumberUtils
-import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 
 @Composable
 fun AuthenticationSection(onBack: () -> Unit, onFinish: () -> Unit) {
     val loadingViewModel = LocalLoadingViewModel.current
     val phoneNumberViewModel = LocalPhoneNumberViewModel.current
-    val snackbarHostState = LocalSnackbarHostState.current
 
     val phoneNumber by phoneNumberViewModel.phoneNumber.collectAsState()
     val verificationCode by phoneNumberViewModel.verificationCode.collectAsState()
 
     val verificationSuccess by phoneNumberViewModel.verificationSuccess.collectAsState()
-
-    val errorMessage by phoneNumberViewModel.errorMessage.collectAsState()
 
     val isError = remember { mutableStateOf(false) }
 
@@ -78,16 +74,6 @@ fun AuthenticationSection(onBack: () -> Unit, onFinish: () -> Unit) {
     LaunchedEffect(verificationCode) {
         if(isError.value) {
             isError.value = false
-        }
-    }
-
-    LaunchedEffect(errorMessage) {
-        if (errorMessage != null) {
-            loadingViewModel.hideLoading()
-
-            snackbarHostState.showSnackbar(errorMessage.toString())
-
-            phoneNumberViewModel.updateErrorMessage(null)
         }
     }
 

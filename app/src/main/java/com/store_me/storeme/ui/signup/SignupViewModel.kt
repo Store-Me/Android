@@ -9,6 +9,7 @@ import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.data.model.signup.CustomerSignupRequest
 import com.store_me.storeme.data.model.signup.OwnerSignupRequest
 import com.store_me.storeme.repository.storeme.UserRepository
+import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -19,7 +20,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SignupViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val userRepository: UserRepository
 ): ViewModel() {
     //계정 타입
@@ -32,20 +32,12 @@ class SignupViewModel @Inject constructor(
     private val _isSignupFinish = MutableStateFlow(false)
     val isSignupFinish: StateFlow<Boolean> = _isSignupFinish
 
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage
-
-
     fun setLoginType(loginType: LoginType) {
         _loginType.value = loginType
     }
 
     fun setAccountType(accountType: AccountType) {
         _accountType.value = accountType
-    }
-
-    fun updateErrorMessage(errorMessage: String?) {
-        _errorMessage.value = errorMessage
     }
 
     fun customerSignup(customerSignupRequest: CustomerSignupRequest) {
@@ -68,14 +60,14 @@ class SignupViewModel @Inject constructor(
         }
     }
 
-    private fun signupResponse(response: Result<Unit>) {
+    private suspend fun signupResponse(response: Result<Unit>) {
         response.onSuccess {
             _isSignupFinish.value = true
         }.onFailure {
             if(it is ApiException) {
-                _errorMessage.value = it.message
+                ErrorEventBus.errorFlow.emit(it.message)
             } else {
-                _errorMessage.value = context.getString(R.string.unknown_error_message)
+                ErrorEventBus.errorFlow.emit(null)
             }
         }
     }

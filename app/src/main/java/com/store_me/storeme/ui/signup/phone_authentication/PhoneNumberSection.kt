@@ -50,7 +50,6 @@ fun PhoneNumberSection(onFinish: () -> Unit) {
 
     val phoneNumber by phoneNumberViewModel.phoneNumber.collectAsState()
     val smsSentSuccess by phoneNumberViewModel.smsSentSuccess.collectAsState()
-    val errorMessage by phoneNumberViewModel.errorMessage.collectAsState()
 
     val isError = remember { mutableStateOf(false) }
 
@@ -61,16 +60,6 @@ fun PhoneNumberSection(onFinish: () -> Unit) {
             phoneNumberViewModel.clearSmsSentSuccess()
             loadingViewModel.hideLoading()
             onFinish()
-        }
-    }
-
-    LaunchedEffect(errorMessage) {
-        if(errorMessage != null) {
-            loadingViewModel.hideLoading()
-
-            snackbarHostState.showSnackbar(errorMessage.toString())
-
-            phoneNumberViewModel.updateErrorMessage(null)
         }
     }
 

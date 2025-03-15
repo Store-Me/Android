@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.store_me.storeme.R
 import com.store_me.storeme.repository.storeme.UserRepository
+import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -16,7 +17,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AccountDataViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val userRepository: UserRepository
 ): ViewModel() {
     private val _accountId = MutableStateFlow("")
@@ -33,9 +33,6 @@ class AccountDataViewModel @Inject constructor(
 
     private val _isPasswordMatching = MutableStateFlow(false)
     val isPasswordMatching: StateFlow<Boolean> = _isPasswordMatching
-
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage
 
     init {
         viewModelScope.launch {
@@ -62,10 +59,6 @@ class AccountDataViewModel @Inject constructor(
         _accountPwConfirm.value = newAccountPwConfirm
     }
 
-    fun updateErrorMessage(errorMessage: String?) {
-        _errorMessage.value = errorMessage
-    }
-
     fun checkDuplicate() {
         viewModelScope.launch {
             val result = userRepository.checkAccountIdDuplicate(accountId = _accountId.value)
@@ -74,9 +67,9 @@ class AccountDataViewModel @Inject constructor(
                 _accountIdDuplicate.value = it
             }.onFailure {
                 if(it is ApiException) {
-                    _errorMessage.value = it.message
+                    ErrorEventBus.errorFlow.emit(it.message)
                 } else {
-                    _errorMessage.value = context.getString(R.string.unknown_error_message)
+                    ErrorEventBus.errorFlow.emit(null)
                 }
             }
         }

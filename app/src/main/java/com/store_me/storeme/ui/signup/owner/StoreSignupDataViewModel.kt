@@ -1,21 +1,19 @@
 package com.store_me.storeme.ui.signup.owner
 
-import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
-import com.store_me.storeme.R
-import com.store_me.storeme.data.response.DaumPostcodeResponse
 import com.store_me.storeme.data.database.location.LocationDataBaseHelper
+import com.store_me.storeme.data.response.DaumPostcodeResponse
 import com.store_me.storeme.repository.naver.NaverRepository
 import com.store_me.storeme.repository.storeme.ImageRepository
 import com.store_me.storeme.ui.component.filterNonNumeric
+import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.StoragePaths
 import com.store_me.storeme.utils.StoreCategory
 import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,7 +21,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StoreSignupDataViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val dbHelper: LocationDataBaseHelper,
     private val naverRepository: NaverRepository,
     private val imageRepository: ImageRepository
@@ -94,11 +91,6 @@ class StoreSignupDataViewModel @Inject constructor(
     private val _storeNumber = MutableStateFlow("")
     val storeNumber: StateFlow<String> = _storeNumber
 
-    //에러 메시지
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage
-
-
     fun updateStoreName(newStoreName: String) {
         _storeName.value = newStoreName
     }
@@ -133,10 +125,6 @@ class StoreSignupDataViewModel @Inject constructor(
 
     fun updateStoreLatLng(newStoreLatLng: LatLng?) {
         _storeLatLng.value = newStoreLatLng
-    }
-
-    fun updateErrorMessage(errorMessage: String?) {
-        _errorMessage.value = errorMessage
     }
 
     fun updateDaumPostcodeResponse(newDaumPostcodeResponse: DaumPostcodeResponse) {
@@ -188,10 +176,12 @@ class StoreSignupDataViewModel @Inject constructor(
             response.onSuccess {
                 _storeProfileImageUrl.value = it
             }.onFailure {
+                updateStoreProfileImage(null)
+
                 if(it is ApiException) {
-                    _errorMessage.value = it.message
+                    ErrorEventBus.errorFlow.emit(it.message)
                 } else {
-                    _errorMessage.value = context.getString(R.string.unknown_error_message)
+                    ErrorEventBus.errorFlow.emit(null)
                 }
             }
         }
@@ -210,11 +200,11 @@ class StoreSignupDataViewModel @Inject constructor(
     }
 
     fun addStoreImage(uris: List<Uri>) {
-        _storeImages.value = _storeImages.value + uris
+        _storeImages.value += uris
     }
 
     fun removeStoreImage(uri: Uri) {
-        _storeImages.value = _storeImages.value - uri
+        _storeImages.value -= uri
     }
 
     fun updateStoreIntro(newStoreIntro: String) {

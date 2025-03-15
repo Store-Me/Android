@@ -24,30 +24,14 @@ import com.store_me.storeme.utils.composition_locals.signup.LocalCustomerDataVie
 fun CustomerProfileImageSection(onFinish: () -> Unit) {
     val accountDataViewModel = LocalAccountDataViewModel.current
     val customerDataViewModel = LocalCustomerDataViewModel.current
-    val loadingViewModel = LocalLoadingViewModel.current
-    val snackbarHostState = LocalSnackbarHostState.current
 
     val profileImage by customerDataViewModel.profileImage.collectAsState()
     val profileImageUrl by customerDataViewModel.profileImageUrl.collectAsState()
     val progress by customerDataViewModel.progress.collectAsState()
 
-    val errorMessage by customerDataViewModel.errorMessage.collectAsState()
-
     LaunchedEffect(profileImage) {
         if(profileImage != null) {
             customerDataViewModel.uploadImage(accountId = accountDataViewModel.accountId.value)
-        }
-    }
-
-    LaunchedEffect(errorMessage) {
-        if(errorMessage != null) {
-            loadingViewModel.hideLoading()
-
-            customerDataViewModel.updateProfileImage(null)
-
-            snackbarHostState.showSnackbar(errorMessage.toString())
-
-            customerDataViewModel.updateErrorMessage(null)
         }
     }
 

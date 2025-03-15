@@ -121,7 +121,6 @@ fun SignupScreen(
     val accountType by signupViewModel.accountType.collectAsState()
 
     val isSignupFinish by signupViewModel.isSignupFinish.collectAsState()
-    val errorMessage by signupViewModel.errorMessage.collectAsState()
 
     val focusManager = LocalFocusManager.current
 
@@ -130,16 +129,6 @@ fun SignupScreen(
 
     LaunchedEffect(loginType) {
         signupViewModel.setLoginType(loginType)
-    }
-
-    LaunchedEffect(errorMessage) {
-        if(errorMessage != null) {
-            loadingViewModel.hideLoading()
-
-            snackbarHostState.showSnackbar(errorMessage.toString())
-
-            signupViewModel.updateErrorMessage(null)
-        }
     }
 
     fun onClickBackButton() {

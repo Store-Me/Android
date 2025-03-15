@@ -65,8 +65,6 @@ fun AccountDataSection(onFinish: () -> Unit) {
     val isPwError = remember { mutableStateOf(false) }
     val isPwConfirmError = remember { mutableStateOf(false) }
 
-    val errorMessage by accountDataViewModel.errorMessage.collectAsState()
-
     val isHidePw = remember { mutableStateOf(true) }
     val isHidePwConfirm = remember { mutableStateOf(true) }
 
@@ -89,16 +87,6 @@ fun AccountDataSection(onFinish: () -> Unit) {
             accountDataViewModel.clearAccountIdDuplicate()
         } else if(accountIdDuplicate == false) {
             snackbarHostState.showSnackbar(context.getString(R.string.account_id_not_duplicate))
-        }
-    }
-
-    LaunchedEffect(errorMessage) {
-        if(errorMessage != null) {
-            loadingViewModel.hideLoading()
-
-            snackbarHostState.showSnackbar(errorMessage.toString())
-
-            accountDataViewModel.updateErrorMessage(null)
         }
     }
 

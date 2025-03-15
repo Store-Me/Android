@@ -8,6 +8,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.model.verification.ConfirmCode
 import com.store_me.storeme.repository.storeme.UserRepository
 import com.store_me.storeme.ui.component.filterNonNumeric
+import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -18,7 +19,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PhoneNumberViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val userRepository: UserRepository
 ): ViewModel() {
     private val _phoneNumber = MutableStateFlow("")
@@ -36,19 +36,12 @@ class PhoneNumberViewModel @Inject constructor(
     private val _verificationSuccess = MutableStateFlow<Boolean?>(false)
     val verificationSuccess: StateFlow<Boolean?> = _verificationSuccess
 
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage
-
     fun updatePhoneNumber(newPhoneNumber: String) {
         _phoneNumber.value = filterNonNumeric(newPhoneNumber)
     }
 
     fun updateVerificationCode(newVerificationCode: String) {
         _verificationCode.value = newVerificationCode
-    }
-
-    fun updateErrorMessage(errorMessage: String?) {
-        _errorMessage.value = errorMessage
     }
 
     fun sendSmsMessage(phoneNumber: String, activity: Activity) {
@@ -65,9 +58,9 @@ class PhoneNumberViewModel @Inject constructor(
                 _smsSentSuccess.value = true
             }.onFailure {
                 if(it is ApiException) {
-                    _errorMessage.value = it.message
+                    ErrorEventBus.errorFlow.emit(it.message)
                 } else {
-                    _errorMessage.value = context.getString(R.string.unknown_error_message)
+                    ErrorEventBus.errorFlow.emit(null)
                 }
             }
         }
@@ -81,15 +74,15 @@ class PhoneNumberViewModel @Inject constructor(
                 _verificationSuccess.value = it
 
                 if(!it) {
-                    _errorMessage.value = "인증번호가 올바르지 않습니다."
+                    ErrorEventBus.errorFlow.emit("인증번호가 올바르지 않습니다.")
                 }
             }.onFailure {
                 _verificationSuccess.value = false
 
                 if(it is ApiException) {
-                    _errorMessage.value = it.message
+                    ErrorEventBus.errorFlow.emit(it.message)
                 } else {
-                    _errorMessage.value = context.getString(R.string.unknown_error_message)
+                    ErrorEventBus.errorFlow.emit(null)
                 }
             }
         }

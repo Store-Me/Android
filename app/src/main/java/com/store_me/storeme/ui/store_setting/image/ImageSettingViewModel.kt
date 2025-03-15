@@ -53,7 +53,7 @@ class ImageSettingViewModel @Inject constructor(
             return
         }
 
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             val response = ownerRepository.addStoreImages(storeId = storeId, storeImageList = storeImages)
 
             response.onSuccess {
@@ -65,7 +65,7 @@ class ImageSettingViewModel @Inject constructor(
                     updateErrorMessage(context.getString(R.string.unknown_error_message))
                 }
             }
-        }
+        }*/
 
     }
 
