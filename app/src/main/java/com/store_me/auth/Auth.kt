@@ -27,8 +27,8 @@ class Auth @Inject constructor(
     val accountType: StateFlow<AccountType> = _accountType
 
     //Owner 계정에서 선택된 StoreId
-    private val _storeId = MutableStateFlow<Long?>(null)
-    val storeId: StateFlow<Long?> = _storeId
+    private val _storeId = MutableStateFlow<String?>(null)
+    val storeId: StateFlow<String?> = _storeId
 
     //초기화
     fun init() {
@@ -78,7 +78,7 @@ class Auth @Inject constructor(
     /**
      * OWNER 계정에서 선택된 StoreId 변경 함수
      */
-    fun updateSelectedStoreId(storeId: Long) {
+    fun updateSelectedStoreId(storeId: String) {
         _storeId.value = storeId
     }
 }
