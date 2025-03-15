@@ -46,8 +46,8 @@ class StoreDataViewModel @Inject constructor(
     /**
      * StoreData 조회 함수
      */
-    fun getStoreData(storeId: Long) {
-        viewModelScope.launch {
+    fun getStoreData(storeId: String) {
+        /*viewModelScope.launch {
             val response = ownerRepository.getStoreData(storeId = storeId)
 
             response.onSuccess {
@@ -61,7 +61,7 @@ class StoreDataViewModel @Inject constructor(
                     _errorMessage.value = context.getString(R.string.unknown_error_message)
                 }
             }
-        }
+        }*/
     }
 
     /**
