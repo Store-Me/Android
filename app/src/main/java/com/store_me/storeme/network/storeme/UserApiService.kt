@@ -2,14 +2,9 @@ package com.store_me.storeme.network.storeme
 
 import com.store_me.storeme.data.response.CheckAccountIdDuplicateResponse
 import com.store_me.storeme.data.response.StoreMeResponse
-import com.store_me.storeme.data.request.login.AppLoginRequest
-import com.store_me.storeme.data.request.login.KakaoLoginRequest
 import com.store_me.storeme.data.response.LoginResponse
 import com.store_me.storeme.data.model.signup.CustomerSignupRequest
 import com.store_me.storeme.data.model.signup.OwnerSignupRequest
-import com.store_me.storeme.data.model.verification.ConfirmCode
-import com.store_me.storeme.data.model.verification.PhoneNumber
-import com.store_me.storeme.data.model.verification.PhoneNumberResponse
 import com.store_me.storeme.data.request.login.LoginRequest
 import retrofit2.Response
 import retrofit2.http.Body
