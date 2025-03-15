@@ -51,8 +51,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.data.model.signup.CustomerSignupRequest
-import com.store_me.storeme.data.model.signup.OwnerSignupApp
-import com.store_me.storeme.data.model.signup.OwnerSignupKakao
+import com.store_me.storeme.data.model.signup.OwnerSignupRequest
 import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.StoreMeSnackbar
 import com.store_me.storeme.ui.component.WarningDialog
@@ -72,7 +71,6 @@ import com.store_me.storeme.ui.signup.owner.AddressSection
 import com.store_me.storeme.ui.signup.owner.StoreCategorySection
 import com.store_me.storeme.ui.signup.owner.StoreCustomCategorySection
 import com.store_me.storeme.ui.signup.owner.StoreSignupDataViewModel
-import com.store_me.storeme.ui.signup.owner.StoreImageSection
 import com.store_me.storeme.ui.signup.owner.StoreIntroSection
 import com.store_me.storeme.ui.signup.owner.StoreNameSection
 import com.store_me.storeme.ui.signup.owner.StoreNumberSection
@@ -393,11 +391,6 @@ fun SignupScreen(
                                             moveToNextProgress()
                                         }
                                     }
-                                    OwnerProgress.STORE_IMAGE -> {
-                                        StoreImageSection {
-                                            moveToNextProgress()
-                                        }
-                                    }
                                     OwnerProgress.INTRO -> {
                                         StoreIntroSection {
                                             moveToNextProgress()
@@ -409,15 +402,16 @@ fun SignupScreen(
 
                                             when {
                                                 accountType == AccountType.OWNER && signupViewModel.loginType.value == LoginType.KAKAO-> {
-                                                    signupViewModel.ownerSignupKakao(
-                                                        ownerSignupKakao = OwnerSignupKakao(
+                                                    signupViewModel.ownerSignup(
+                                                        OwnerSignupRequest(
+                                                            accountId = accountDataViewModel.accountId.value,
+                                                            password = accountDataViewModel.accountPw.value,
                                                             kakaoId = additionalData,
                                                             phoneNumber = phoneNumberViewModel.phoneNumber.value,
                                                             privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
                                                             marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
-                                                            verificationCode = phoneNumberViewModel.verificationCode.value,
-
                                                             storeName = storeSignupDataViewModel.storeName.value,
+                                                            storeProfileImage = storeSignupDataViewModel.storeProfileImageUrl.value,
                                                             storeDescription = "",
                                                             storeCategory = storeSignupDataViewModel.storeCategory.value!!.name,
                                                             storeDetailCategory = storeSignupDataViewModel.storeDetailCategory.value,
@@ -429,22 +423,21 @@ fun SignupScreen(
                                                             storeLng = storeSignupDataViewModel.storeLatLng.value?.longitude,
                                                             storePhoneNumber = storeSignupDataViewModel.storeNumber.value,
                                                             storeIntro = storeSignupDataViewModel.storeIntro.value
-                                                        ),
-                                                        storeProfileImage = storeSignupDataViewModel.storeProfileImage.value,
-                                                        storeImages = storeSignupDataViewModel.storeImages.value
+                                                        )
                                                     )
                                                 }
 
                                                 accountType == AccountType.OWNER && loginType == LoginType.APP-> {
-                                                    signupViewModel.ownerSignupApp(
-                                                        ownerSignupApp = OwnerSignupApp(
+                                                    signupViewModel.ownerSignup(
+                                                        OwnerSignupRequest(
                                                             accountId = accountDataViewModel.accountId.value,
                                                             password = accountDataViewModel.accountPw.value,
+                                                            kakaoId = null,
                                                             phoneNumber = phoneNumberViewModel.phoneNumber.value,
                                                             privacyConsent = termsViewModel.isAllRequiredTermsAgreed(),
                                                             marketingConsent = termsViewModel.optionalTermsState.value[OptionalTerms.MARKETING] ?: false,
-                                                            verificationCode = phoneNumberViewModel.verificationCode.value,
                                                             storeName = storeSignupDataViewModel.storeName.value,
+                                                            storeProfileImage = storeSignupDataViewModel.storeProfileImageUrl.value,
                                                             storeDescription = "",
                                                             storeCategory = storeSignupDataViewModel.storeCategory.value!!.name,
                                                             storeDetailCategory = storeSignupDataViewModel.storeDetailCategory.value,
@@ -456,9 +449,7 @@ fun SignupScreen(
                                                             storeLng = storeSignupDataViewModel.storeLatLng.value?.longitude,
                                                             storePhoneNumber = storeSignupDataViewModel.storeNumber.value,
                                                             storeIntro = storeSignupDataViewModel.storeIntro.value
-                                                        ),
-                                                        storeProfileImage = storeSignupDataViewModel.storeProfileImage.value,
-                                                        storeImages = storeSignupDataViewModel.storeImages.value
+                                                        )
                                                     )
                                                 }
                                             }

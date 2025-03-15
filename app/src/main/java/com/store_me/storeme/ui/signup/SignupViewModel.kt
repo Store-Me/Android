@@ -1,18 +1,14 @@
 package com.store_me.storeme.ui.signup
 
 import android.content.Context
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
-import com.store_me.storeme.data.model.signup.CustomerSignupKakao
 import com.store_me.storeme.data.model.signup.CustomerSignupRequest
-import com.store_me.storeme.data.model.signup.OwnerSignupApp
-import com.store_me.storeme.data.model.signup.OwnerSignupKakao
+import com.store_me.storeme.data.model.signup.OwnerSignupRequest
 import com.store_me.storeme.repository.storeme.UserRepository
-import com.store_me.storeme.utils.FileUtils
 import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -62,60 +58,10 @@ class SignupViewModel @Inject constructor(
         }
     }
 
-    fun ownerSignupApp(ownerSignupApp: OwnerSignupApp, storeProfileImage: Uri?, storeImages: List<Uri>) {
-        val storeProfileImageFile =
-            if(storeProfileImage != null)
-                FileUtils.createMultipart(context, storeProfileImage, "storeProfileImageFile")
-            else
-                null
-
-        val storeImageFiles =
-            if(storeImages.isNotEmpty())
-                FileUtils.createMultipart(context, storeImages, "storeImageFileList")
-            else
-                null
-
-        if((storeProfileImage != null && storeProfileImageFile == null) || (storeImages.isNotEmpty() && storeImageFiles == null)) {
-            onErrorImageFile()
-
-            return
-        }
-
+    fun ownerSignup(ownerSignupRequest: OwnerSignupRequest) {
         viewModelScope.launch {
-            val response = userRepository.ownerSignupApp(
-                ownerSignupApp = ownerSignupApp,
-                storeProfileImage = storeProfileImageFile,
-                storeImageList = storeImageFiles
-            )
-
-            signupResponse(response)
-        }
-    }
-
-    fun ownerSignupKakao(ownerSignupKakao: OwnerSignupKakao, storeProfileImage: Uri?, storeImages: List<Uri>) {
-        val storeProfileImageFile =
-            if(storeProfileImage != null)
-                FileUtils.createMultipart(context, storeProfileImage, "storeProfileImageFile")
-            else
-                null
-
-        val storeImageFiles =
-            if(storeImages.isNotEmpty())
-            FileUtils.createMultipart(context, storeImages, "storeImageFileList")
-        else
-            null
-
-        if((storeProfileImage != null && storeProfileImageFile == null) || (storeImages.isNotEmpty() && storeImageFiles == null)) {
-            onErrorImageFile()
-
-            return
-        }
-
-        viewModelScope.launch {
-            val response = userRepository.ownerSignupKakao(
-                ownerSignupKakao = ownerSignupKakao,
-                storeProfileImage = storeProfileImageFile,
-                storeImageList = storeImageFiles
+            val response = userRepository.ownerSignup(
+                ownerSignupRequest = ownerSignupRequest
             )
 
             signupResponse(response)
@@ -132,9 +78,5 @@ class SignupViewModel @Inject constructor(
                 _errorMessage.value = context.getString(R.string.unknown_error_message)
             }
         }
-    }
-
-    private fun onErrorImageFile() {
-        _errorMessage.value = context.getString(R.string.fail_convert_multipart)
     }
 }

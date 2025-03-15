@@ -7,21 +7,10 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import com.google.gson.Gson
-import com.store_me.storeme.R
-import com.store_me.storeme.data.model.check_duplicate.CheckAccountIdDuplicate
-import com.store_me.storeme.data.response.StoreMeResponse
-import com.store_me.storeme.data.request.login.AppLoginRequest
-import com.store_me.storeme.data.request.login.KakaoLoginRequest
-import com.store_me.storeme.data.response.LoginResponse
-import com.store_me.storeme.data.model.signup.CustomerSignupApp
-import com.store_me.storeme.data.model.signup.CustomerSignupKakao
 import com.store_me.storeme.data.model.signup.CustomerSignupRequest
 import com.store_me.storeme.data.model.signup.OwnerSignupApp
 import com.store_me.storeme.data.model.signup.OwnerSignupKakao
-import com.store_me.storeme.data.model.verification.ConfirmCode
-import com.store_me.storeme.data.model.verification.PhoneNumber
-import com.store_me.storeme.data.model.verification.PhoneNumberResponse
+import com.store_me.storeme.data.model.signup.OwnerSignupRequest
 import com.store_me.storeme.data.request.login.LoginRequest
 import com.store_me.storeme.network.storeme.UserApiService
 import com.store_me.storeme.utils.preference.TokenPreferencesHelper
@@ -44,9 +33,7 @@ interface UserRepository {
     //회원가입
     suspend fun customerSignup(customerSignupRequest: CustomerSignupRequest): Result<Unit>
 
-    suspend fun ownerSignupApp(ownerSignupApp: OwnerSignupApp, storeProfileImage: MultipartBody.Part?, storeImageList: List<MultipartBody.Part>?): Result<Unit>
-
-    suspend fun ownerSignupKakao(ownerSignupKakao: OwnerSignupKakao, storeProfileImage: MultipartBody.Part?, storeImageList: List<MultipartBody.Part>?): Result<Unit>
+    suspend fun ownerSignup(ownerSignupRequest: OwnerSignupRequest): Result<Unit>
 
     //로그인
     suspend fun login(loginRequest: LoginRequest): Result<Unit>
@@ -89,80 +76,19 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun ownerSignupApp(ownerSignupApp: OwnerSignupApp, storeProfileImage: MultipartBody.Part?, storeImageList: List<MultipartBody.Part>?): Result<Unit> {
+    override suspend fun ownerSignup(ownerSignupRequest: OwnerSignupRequest): Result<Unit> {
         return try {
-            val response = userApiServiceWithoutAuth.ownerSignupApp(
-                appOwnerSignupRequestDto = ownerSignupApp,
-                storeProfileImageFile = storeProfileImage,
-                storeImageFileList = storeImageList,
-                storeFeaturedImageFile = null
+            val response = userApiServiceWithoutAuth.ownerSignup(
+                ownerSignupRequest = ownerSignupRequest
             )
 
             if(response.isSuccessful) {
-                val responseBody = response.body()
+                Timber.d("가입 성공")
 
-                Timber.i(responseBody.toString())
-
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        Result.success(Unit)
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody?.message
-                            ))
-                    }
-                }
+                Result.success(Unit)
             } else {
-                ResponseHandler.handleErrorResponse(response, context)
-            }
-        } catch (e: Exception) {
-            e.toResult(context)
-        }
-    }
+                Timber.d("가입 실패")
 
-    /**
-     * 사장님 Kakao 계정 가입
-     */
-    override suspend fun ownerSignupKakao(ownerSignupKakao: OwnerSignupKakao, storeProfileImage: MultipartBody.Part?, storeImageList: List<MultipartBody.Part>?): Result<Unit> {
-        return try {
-            val response = userApiServiceWithoutAuth.ownerSignupKakao(
-                kakaoOwnerSignupRequestDto = ownerSignupKakao,
-                storeProfileImageFile = storeProfileImage,
-                storeImageFileList = storeImageList,
-                storeFeaturedImageFile = null
-            )
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.i(responseBody.toString())
-
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        Result.success(Unit)
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody?.message
-                            ))
-                    }
-                }
-            } else {
                 ResponseHandler.handleErrorResponse(response, context)
             }
         } catch (e: Exception) {
