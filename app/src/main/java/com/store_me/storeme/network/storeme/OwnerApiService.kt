@@ -4,6 +4,7 @@ import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
 import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
 import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
+import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.response.BusinessHoursResponse
 import com.store_me.storeme.data.response.LinksResponse
@@ -93,4 +94,12 @@ interface OwnerApiService {
         @Body patchLinksRequest: PatchLinksRequest
     ): Response<PatchResponse<LinksResponse>>
 
+    /**
+     * 가게 전화번호 수정 API
+     */
+    @PATCH("auth/store/{storeId}/phone-number")
+    suspend fun patchStorePhoneNumber(
+        @Path("storeId") storeId: String,
+        @Body patchStorePhoneNumberRequest: PatchStorePhoneNumberRequest
+    ): Response<PatchResponse<StoreInfoData>>
 }
