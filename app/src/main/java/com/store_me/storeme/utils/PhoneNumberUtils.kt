@@ -32,6 +32,42 @@ class PhoneNumberUtils {
             else -> false
         }
     }
+
+    fun getStorePhoneNumberAddDashes(storePhoneNumber: String): String {
+        val areaCodes = setOf(
+            "02", "032", "042", "051", "052", "053", "062", "064", "031", "033", "041", "043", "054", "055", "061", "063"
+        )
+
+        return when {
+            storePhoneNumber.startsWith("050") -> formatCustom(storePhoneNumber, 4, 4, 4)
+            storePhoneNumber.startsWith("010") || storePhoneNumber.startsWith("070") -> formatCustom(storePhoneNumber, 3, 4, 4)
+            areaCodes.any { storePhoneNumber.startsWith(it) } -> {
+                val areaCode = areaCodes.first { storePhoneNumber.startsWith(it) }
+                formatCustom(storePhoneNumber, areaCode.length, 3, 4)
+            }
+            else -> storePhoneNumber
+        }
+    }
+
+    /**
+     * 일반적인 전화번호 포맷팅을 처리하는 함수
+     * - first: 첫 번째 그룹 길이
+     * - second: 두 번째 그룹 길이
+     * - third: 세 번째 그룹 길이
+     */
+    private fun formatCustom(number: String, first: Int, second: Int, third: Int): String {
+        if(first + second + third != number.length) {
+            return number
+        }
+
+        val parts = mutableListOf<String>()
+
+        if (number.length >= first) parts.add(number.substring(0, first))
+        if (number.length > first) parts.add(number.substring(first, (first + second).coerceAtMost(number.length)))
+        if (number.length > first + second) parts.add(number.substring(first + second, (first + second + third).coerceAtMost(number.length)))
+
+        return parts.joinToString("-")
+    }
 }
 class PhoneNumberVisualTransformation : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
