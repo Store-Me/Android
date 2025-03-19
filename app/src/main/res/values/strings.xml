@@ -49,6 +49,8 @@
 
     <string name="wrong_store_id">잘못된 스토어 아이디 입니다. 앱을 재실행 해주세요.</string>
 
+    <string name="default_success_message">요청에 성공하였습니다.</string>
+
     <!--Error Message-->
     <string name="json_error_message">서버가 예상하지 못한 응답을 보냈습니다. 관리자에게 문의하세요.</string>
     <string name="network_error_message">데이터 또는 와이파이 연결이 원활하지 않습니다. 연결을 확인 후 다시 시도해 주세요.</string>
