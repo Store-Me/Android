@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.ui.component.EditableProfileImage
 import com.store_me.storeme.ui.signup.SignupTitleText
-import com.store_me.storeme.ui.signup.owner.ProfileImageSection
 import com.store_me.storeme.utils.composition_locals.signup.LocalAccountDataViewModel
 import com.store_me.storeme.utils.composition_locals.signup.LocalCustomerDataViewModel
 
@@ -42,7 +42,7 @@ fun CustomerProfileImageSection(onFinish: () -> Unit) {
 
         Spacer(modifier = Modifier.height(36.dp))
 
-        ProfileImageSection(
+        EditableProfileImage(
             accountType = AccountType.CUSTOMER,
             uri = profileImage,
             isLoading = profileImage != null && profileImageUrl == null,
