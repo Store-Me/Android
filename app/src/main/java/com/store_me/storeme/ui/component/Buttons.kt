@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
@@ -35,10 +34,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.main.MainActivity
+import com.store_me.storeme.ui.theme.CopyButtonColor
 import com.store_me.storeme.ui.theme.EditButtonColor
 import com.store_me.storeme.ui.theme.SelectedCheckBoxColor
 import com.store_me.storeme.ui.theme.TextClearIconColor
@@ -57,7 +56,7 @@ private fun defaultButtonPadding(diffValue: Int): Int {
     return when {
         diffValue > 0 -> 12
 
-        else -> 6
+        else -> 0
     }
 }
 
@@ -465,5 +464,37 @@ fun DefaultCheckButton(
                 color = contentColor
             )
         }
+    }
+}
+
+/**
+ * 복사 Text Button
+ */
+@Composable
+fun CopyButton(onClick: () -> Unit){
+    Row(
+        modifier = Modifier
+            .clickable(
+                onClick = onClick,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = ripple(bounded = false, color = CopyButtonColor)
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = R.drawable.ic_copy),
+            contentDescription = "복사 아이콘",
+            modifier = Modifier
+                .size(12.dp),
+            tint = CopyButtonColor
+        )
+
+        Spacer(modifier = Modifier.width(5.dp))
+
+        Text(
+            text = "복사",
+            style = storeMeTextStyle(FontWeight.Bold, -1), color = CopyButtonColor,
+            modifier = Modifier.padding(vertical = 5.dp)
+        )
     }
 }
