@@ -38,11 +38,13 @@ import com.store_me.storeme.ui.login.LoginScreen
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.utils.ErrorEventBus
+import com.store_me.storeme.utils.SuccessEventBus
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.onboarding.LocalOnboardingComposition
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -78,11 +80,18 @@ class OnboardingActivity : ComponentActivity() {
 
                 val snackbarHostState = remember { SnackbarHostState() }
 
-                //오류 메시지 처리
+                //메시지 처리
                 LaunchedEffect(Unit) {
                     ErrorEventBus.errorFlow.collect { errorMessage ->
                         loadingViewModel.hideLoading()
                         snackbarHostState.showSnackbar(message = errorMessage ?: getString(R.string.unknown_error_message))
+                    }
+                }
+
+                LaunchedEffect(Unit) {
+                    SuccessEventBus.successFlow.collect { message ->
+                        loadingViewModel.hideLoading()
+                        snackbarHostState.showSnackbar(message = message ?: getString(R.string.default_success_message))
                     }
                 }
 

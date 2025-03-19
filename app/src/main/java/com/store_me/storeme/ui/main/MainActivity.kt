@@ -19,6 +19,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,8 +47,8 @@ import androidx.navigation.compose.rememberNavController
 import com.store_me.auth.Auth
 import com.store_me.storeme.R
 import com.store_me.storeme.data.StoreHomeItem
-import com.store_me.storeme.data.StoreNormalItem
 import com.store_me.storeme.data.enums.AccountType
+import com.store_me.storeme.data.enums.StoreProfileItems
 import com.store_me.storeme.ui.banner.BannerDetailScreen
 import com.store_me.storeme.ui.banner.BannerListScreen
 import com.store_me.storeme.ui.home.customer.CustomerHomeScreen
@@ -91,6 +92,7 @@ import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.storeMeTypography
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.KeyboardHeightObserver
+import com.store_me.storeme.utils.SuccessEventBus
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
@@ -127,11 +129,18 @@ class MainActivity : ComponentActivity() {
             StoreMeTheme {
                 val snackBarHostState = remember { SnackbarHostState() }
 
-                //오류 메시지 처리
+                //메시지 처리
                 LaunchedEffect(Unit) {
                     ErrorEventBus.errorFlow.collect { errorMessage ->
                         loadingViewModel.hideLoading()
                         snackBarHostState.showSnackbar(message = errorMessage ?: getString(R.string.unknown_error_message))
+                    }
+                }
+
+                LaunchedEffect(Unit) {
+                    SuccessEventBus.successFlow.collect { message ->
+                        loadingViewModel.hideLoading()
+                        snackBarHostState.showSnackbar(message = message ?: getString(R.string.default_success_message))
                     }
                 }
 
@@ -184,8 +193,10 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun CustomerScreen() {
         val navController = rememberNavController()
+        val snackbarHostState = LocalSnackbarHostState.current
 
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             bottomBar = { BottomNavigationBar(navController) }
         ) {
             Box(Modifier.padding(it)) {
@@ -197,9 +208,11 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun OwnerScreen() {
         val navController = rememberNavController()
+        val snackbarHostState = LocalSnackbarHostState.current
         val storeDataViewModel: StoreDataViewModel = hiltViewModel()
 
         Scaffold(
+            snackbarHost = { SnackbarHost(snackbarHostState) },
             bottomBar = { BottomNavigationBar(navController) }
         ) {
             Box(Modifier.padding(it)) {
@@ -286,17 +299,23 @@ class MainActivity : ComponentActivity() {
              * Start Screen 이 OWNER_HOME
              */
             //HOME > LINK_SETTING
-            composable(OWNER_HOME + OwnerNavItem.LINK_SETTING) { LinkSettingScreen(navController) }
-            //HOME > STORE_SETTING
-            composable(OWNER_HOME + OwnerNavItem.STORE_SETTING) { StoreSettingScreen(navController) }
+            composable(OWNER_HOME + OwnerNavItem.LINK_SETTING) {
+                LinkSettingScreen(navController, storeDataViewModel = storeDataViewModel)
+            }
+            //HOME > MANAGEMENT
+            composable(OWNER_HOME + StoreProfileItems.MANAGEMENT) { StoreSettingScreen(navController) }
+            //HOME > EDIT_PROFILE
+            composable(OWNER_HOME + StoreProfileItems.EDIT_PROFILE) {
+                ProfileSettingScreen(navController, storeDataViewModel = storeDataViewModel)
+            }
+            composable(OWNER_HOME + StoreProfileItems.INTRO) { IntroSettingScreen(navController) }
 
             //HOME > NORMAL
-            composable(OWNER_HOME + StoreNormalItem.OPENING_HOURS) { OpeningHoursSettingScreen(navController) }
-            composable(OWNER_HOME + StoreNormalItem.CLOSED_DAY) { ClosedDaySettingScreen(navController) }
-            composable(OWNER_HOME + StoreNormalItem.LOCATION) { LocationSettingScreen(navController) }
+            composable(OWNER_HOME + StoreProfileItems.BUSINESS_HOURS) { OpeningHoursSettingScreen(navController) }
+            composable(OWNER_HOME + StoreProfileItems.HOLIDAY) { ClosedDaySettingScreen(navController) }
+            composable(OWNER_HOME + StoreProfileItems.LOCATION) { LocationSettingScreen(navController) }
             //HOME > HOME ITEM
             composable(OWNER_HOME + StoreHomeItem.NOTICE) { NoticeSettingScreen(navController) }
-            composable(OWNER_HOME + StoreHomeItem.INTRO) { IntroSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.IMAGE) { ImageSettingScreen(navController, storeDataViewModel) }
             composable(OWNER_HOME + StoreHomeItem.COUPON) { CouponSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.MENU) { MenuSettingScreen(navController) }
@@ -331,7 +350,7 @@ class MainActivity : ComponentActivity() {
                 EditMenuCategoryScreen(navController, selectedCategoryName = selectedCategoryName ?: "")
             }
 
-            composable(OWNER_HOME + OwnerNavItem.EDIT_PROFILE) { ProfileSettingScreen(navController) }
+
         }
     }
 
@@ -465,7 +484,7 @@ class MainActivity : ComponentActivity() {
     }
 
     enum class OwnerNavItem {
-        LINK_SETTING, STORE_SETTING, CREATE_COUPON, EDIT_COUPON, ADD_MENU, EDIT_MENU, MENU_CATEGORY_SETTING, EDIT_MENU_CATEGORY, EDIT_PROFILE
+        LINK_SETTING, CREATE_COUPON, EDIT_COUPON, ADD_MENU, EDIT_MENU, MENU_CATEGORY_SETTING, EDIT_MENU_CATEGORY
     }
 
     override fun onDestroy() {
