@@ -1,8 +1,6 @@
 package com.store_me.storeme.data.response
 
-data class StoreMeResponse<T>(
-    val isSuccess: Boolean,
-    val code: String,
+data class PatchResponse<T>(
     val message: String,
     val result: T
 )
