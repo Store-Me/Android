@@ -3,324 +3,580 @@
 package com.store_me.storeme.ui.link
 
 import android.view.HapticFeedbackConstants
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.snapTo
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
-import com.store_me.storeme.data.SocialMediaAccountData
+import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultBottomSheet
-import com.store_me.storeme.ui.component.DefaultOutlineTextField
-import com.store_me.storeme.ui.component.EditAddSection
-import com.store_me.storeme.ui.component.LargeButton
-import com.store_me.storeme.ui.component.SocialMediaIcon
-import com.store_me.storeme.ui.component.TextFieldErrorType
-import com.store_me.storeme.ui.component.TitleWithDeleteButton
+import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.ui.component.LinkIcon
+import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
+import com.store_me.storeme.ui.component.addFocusCleaner
+import com.store_me.storeme.ui.home.owner.StoreDataViewModel
+import com.store_me.storeme.ui.store_setting.menu.DragValue
 import com.store_me.storeme.ui.theme.DefaultDividerColor
-import com.store_me.storeme.ui.theme.DeleteTextColor
+import com.store_me.storeme.ui.theme.ErrorColor
+import com.store_me.storeme.ui.theme.GuideColor
+import com.store_me.storeme.ui.theme.HighlightColor
+import com.store_me.storeme.ui.theme.SwipeDeleteColor
+import com.store_me.storeme.ui.theme.SwipeEditColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.ToastMessageUtils
+import com.store_me.storeme.utils.SizeUtils
+import com.store_me.storeme.utils.composition_locals.LocalAuth
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-
-val LocalLinkSettingViewModel = staticCompositionLocalOf<LinkSettingViewModel> {
-    error("No LinkSettingViewModel provided")
-}
+import timber.log.Timber
+import kotlin.math.roundToInt
 
 @Composable
 fun LinkSettingScreen(
     navController: NavController,
+    storeDataViewModel: StoreDataViewModel,
     linkSettingViewModel: LinkSettingViewModel = viewModel()
 ) {
-    val linkListData by Auth.linkListData.collectAsState()
-    val list = linkListData.urlList
+    val originalLink by storeDataViewModel.links.collectAsState()
+    val links by linkSettingViewModel.links.collectAsState()
 
-    val editState by linkSettingViewModel.editState.collectAsState()
+    val auth = LocalAuth.current
+    val loadingViewModel = LocalLoadingViewModel.current
+
+    val focusManager = LocalFocusManager.current
 
     val sheetState = rememberModalBottomSheetState()
-    var showBottomSheet by remember { mutableStateOf(false) }
+    val showBottomSheet = remember { mutableStateOf(false) }
+    val showEditBottomSheet = remember { mutableStateOf(-1) }
 
-    var isError by remember { mutableStateOf(false) }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    CompositionLocalProvider(LocalLinkSettingViewModel provides linkSettingViewModel) {
+    val hasDifference = remember { mutableStateOf(false) }
 
-        Scaffold(
-            containerColor = White,
-            topBar = {
-                TitleWithDeleteButton(
-                    navController = navController,
-                    title = "외부링크 관리"
-                )
-            },
-            content = { innerPadding ->
-                if(showBottomSheet) {
-                    var text by remember { mutableStateOf("") }
+    val showBackWarningDialog = remember { mutableStateOf(false) }
 
-                    DefaultBottomSheet(sheetState = sheetState, onDismiss = { showBottomSheet = false }) {
-                        Text(text = "링크", style = storeMeTextStyle(FontWeight.ExtraBold, 4), modifier = Modifier.padding(horizontal = 20.dp))
+    LaunchedEffect(originalLink, links) {
+        if (originalLink != null) {
+            hasDifference.value = originalLink != links
+        }
+    }
 
-                        Spacer(modifier = Modifier.height(10.dp))
+    fun onClose() {
+        if(hasDifference.value)
+            showBackWarningDialog.value = true
+        else
+            navController.popBackStack()
+    }
 
-                        Row(
-                            modifier = Modifier.padding(horizontal = 20.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ){
-                            if(text.isNotEmpty()){
-                                SocialMediaIcon(url = text, size = 24)
+    LaunchedEffect(originalLink) {
+        linkSettingViewModel.updateLinks(originalLink ?: emptyList())
+    }
 
-                                Spacer(modifier = Modifier.width(10.dp))
-                            }
+    BackHandler {
+        onClose()
+    }
 
-                            DefaultOutlineTextField(
-                                text = text,
-                                placeholderText = "링크를 입력해주세요.",
-                                errorType = TextFieldErrorType.LINK,
-                                onErrorChange = { isError = it },
-                                onValueChange = { text = it },
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(100.dp))
-
-                        LargeButton(
-                            text = "추가",
-                            enabled = !isError && text.isNotEmpty(),
-                            modifier = Modifier.padding(horizontal = 20.dp),
+    Scaffold(
+        containerColor = White,
+        modifier = Modifier
+            .addFocusCleaner(focusManager),
+        topBar = {
+            TitleWithDeleteButtonAndRow(
+                title = "외부링크 관리",
+                scrollBehavior = scrollBehavior,
+                onClose = { onClose() }
+            ) {
+                AnimatedVisibility(
+                    hasDifference.value,
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    DefaultButton(
+                        buttonText = "저장",
+                        colors = ButtonDefaults.buttonColors(
                             containerColor = Black,
                             contentColor = White
-                        ) {
-                            Auth.addLinkListData(text)
+                        )
+                    ) {
+                        loadingViewModel.showLoading()
 
-                            showBottomSheet = false
-                        }
-
-                        Spacer(modifier = Modifier.height(50.dp))
+                        //변경 저장
+                        storeDataViewModel.patchStoreLinks(storeId = auth.storeId.value!!, links = links)
                     }
                 }
 
-                Column(
+                DefaultButton(
+                    buttonText = "링크 추가",
+                    leftIconResource = R.drawable.ic_circle_plus,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = HighlightColor,
+                        contentColor = White
+                    ),
+                    leftIconTint = White,
                     modifier = Modifier
-                        .padding(innerPadding)
+                        .weight(1f)
                 ) {
-                    LinkEditButtonSection(linkListData) {
-                        showBottomSheet = true
-                    }
-
-                    when(editState) {
-                        true -> {
-                            LinkReorderList()
-                        }
-                        false -> {
-                            LazyColumn {
-                                items(list) { url ->
-                                    LinkItem(url)
-                                }
-                            }
-                        }
-                    }
+                    //링크 추가
+                    showBottomSheet.value = true
                 }
+            }
+        },
+        content = { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+            ) {
+                LinkReorderList(
+                    links = links,
+                    scrollBehavior = scrollBehavior,
+                    onMoved = { fromIndex, toIndex ->
+                        linkSettingViewModel.reorderLinks(fromIndex, toIndex)
+                    },
+                    onDelete = { index ->
+                        linkSettingViewModel.deleteLink(index)
+                    },
+                   onEdit = { index ->
+                       showEditBottomSheet.value = index
+                   }
+                )
+            }
+        }
+    )
+
+    if(showBottomSheet.value) {
+        DefaultBottomSheet(sheetState = sheetState, onDismiss = { showBottomSheet.value = false }) {
+            LinkSettingBottomSheetContent(links = links) {
+                linkSettingViewModel.addLink(it)
+                showBottomSheet.value = false
+            }
+        }
+    }
+
+    if(showEditBottomSheet.value >= 0) {
+        DefaultBottomSheet(sheetState = sheetState, onDismiss = { showEditBottomSheet.value = -1 }) {
+            LinkSettingBottomSheetContent(links = links, editIndex = showEditBottomSheet.value) {
+                linkSettingViewModel.editLink(showEditBottomSheet.value, it)
+                showEditBottomSheet.value = -1
+            }
+        }
+    }
+
+    if(showBackWarningDialog.value) {
+        BackWarningDialog(
+            onDismiss = { showBackWarningDialog.value = false },
+            onAction = {
+                showBackWarningDialog.value = false
+                navController.popBackStack()
             }
         )
     }
 }
 
 @Composable
-fun LinkReorderList() {
+fun LinkSettingBottomSheetContent(links: List<String>, editIndex: Int = -1, onAdd: (String) -> Unit) {
+    val text = remember { mutableStateOf(if(editIndex != -1) links[editIndex] else "") }
+    val errorText = remember { mutableStateOf<String?>(null) }
+    val isError by remember { derivedStateOf { errorText.value != null } }
+
+    LaunchedEffect(text.value) {
+        errorText.value = when {
+            links.contains(text.value) -> {
+                if(editIndex == -1 || links[editIndex] != text.value)
+                    "이미 존재하는 링크입니다."
+                else
+                    "변경사항이 없습니다."
+            }
+            text.value.isNotEmpty() && !text.value.startsWith("http://") && !text.value.startsWith("https://") -> {
+                "링크는 https:// 혹은 http:// 로 시작해야 합니다."
+            }
+            else -> {
+                null
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 20.dp)
+    ) {
+        Text(text = "링크", style = storeMeTextStyle(FontWeight.ExtraBold, 4))
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .height(IntrinsicSize.Min)
+        ){
+            OutlinedTextField(
+                value = text.value,
+                onValueChange = {
+                    text.value = it
+                },
+                maxLines = 1,
+                textStyle = storeMeTextStyle(FontWeight.Normal, 1),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                shape = RoundedCornerShape(14.dp),
+                leadingIcon = {
+                    if(text.value.isNotEmpty() && !isError){
+                        LinkIcon(
+                            modifier = Modifier
+                                .size(24.dp),
+                            url = text.value
+                        )
+                    }
+                },
+                trailingIcon = {
+                    if(text.value.isNotEmpty()) {
+                        IconButton(onClick = { text.value = "" }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_text_clear),
+                                contentDescription = "삭제",
+                                modifier = Modifier
+                                    .size(24.dp),
+                                tint = Color.Unspecified
+                            )
+                        }
+                    }
+                },
+                placeholder = {
+                    Text(
+                        text = "링크를 입력해주세요.",
+                        style = storeMeTextStyle(FontWeight.Normal, 1),
+                        color = GuideColor
+                    )
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = HighlightColor,
+                    errorBorderColor = ErrorColor,
+                    errorLabelColor = ErrorColor,
+                ),
+                isError = isError,
+                supportingText = {
+                    if(isError){
+                        Text(
+                            text = errorText.value ?: "",
+                            style = storeMeTextStyle(FontWeight.Normal, 0),
+                            color = ErrorColor
+                        )
+                    }
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(100.dp))
+
+        DefaultButton(
+            buttonText = "추가",
+            enabled = !isError && text.value.isNotEmpty()
+        ) {
+            onAdd(text.value)
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+    }
+}
+
+
+@Composable
+fun LinkReorderList(
+    links: List<String>,
+    scrollBehavior: TopAppBarScrollBehavior,
+    onMoved: (Int, Int) -> Unit,
+    onDelete: (Int) -> Unit,
+    onEdit: (Int) -> Unit
+) {
     val view = LocalView.current
-    val linkListData by Auth.linkListData.collectAsState()
-    var list = linkListData.urlList
 
     val lazyListState = rememberLazyListState()
     val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
-        list = list.toMutableList().apply {
-            add(to.index, removeAt(from.index))
-        }
-
-        Auth.setLinkListData(SocialMediaAccountData(list))
-        view.performHapticFeedback(HapticFeedbackConstants.SEGMENT_FREQUENT_TICK)
+        onMoved(from.index, to.index)
+        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
     }
 
     LazyColumn(
         state = lazyListState,
         modifier = Modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
             .fillMaxSize()
     ) {
-        itemsIndexed(list, key = { _, item -> item }) { index, url ->
-            ReorderableItem(reorderableLazyListState, key = url) { isDragging ->
+        itemsIndexed(links, key = { _, item -> item }) { index, url ->
+            ReorderableItem(state = reorderableLazyListState, key = url) { isDragging ->
                 val interactionSource = remember { MutableInteractionSource() }
 
-                LinkItem(
-                    url = url,
-                    editable = true,
-                    isDragging = isDragging,
-                    onDelete = {
-                        val newList = list.toMutableList().apply {
-                            removeAt(index)
-                        }
-                        Auth.setLinkListData(SocialMediaAccountData(newList))
-                    },
-                    columnModifier = Modifier
-                        .background(if (isDragging) Black.copy(0.2f) else White)
-                        .fillMaxWidth(),
-                    handelModifier = Modifier
-                        .draggableHandle(
-                            interactionSource = interactionSource,
-                            onDragStarted = {
-                                view.performHapticFeedback(HapticFeedbackConstants.DRAG_START)
-                            },
-                            onDragStopped = {
-                                view.performHapticFeedback(HapticFeedbackConstants.GESTURE_END)
-                            }
-                        )
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun LinkEditButtonSection(linkListData: SocialMediaAccountData, onAddLink:() -> Unit) {
-    val linkSettingViewModel = LocalLinkSettingViewModel.current
-    val editState by linkSettingViewModel.editState.collectAsState()
-
-    val context = LocalContext.current
-
-    fun addButtonClick() {
-        if(editState) {
-            ToastMessageUtils.showToast(context, R.string.alert_edit_already)
-            return
-        }
-
-        if(linkListData.urlList.size > 6) {
-            ToastMessageUtils.showToast(context, R.string.alert_max_link)
-            return
-        }
-
-        onAddLink()
-    }
-
-    EditAddSection(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .padding(bottom = 20.dp),
-        dataListSize = linkListData.urlList.size,
-        editState = editState,
-        addText = "링크 추가",
-        editText = "순서 편집/삭제",
-        onAdd = { addButtonClick() },
-        onChangeEditState = { linkSettingViewModel.setEditState(it) }
-    )
-}
-
-
-@Composable
-fun LinkItem(url: String, editable: Boolean = false, columnModifier: Modifier = Modifier, handelModifier: Modifier = Modifier, isDragging: Boolean = false, onDelete: () -> Unit = {}) {
-    var showDialog by remember { mutableStateOf(false) }
-
-    val lineColor = if(isDragging) Transparent else DefaultDividerColor
-
-    Column(
-        modifier = columnModifier
-            .fillMaxWidth()
-    ) {
-        Spacer(modifier= Modifier.height(20.dp))
-
-        Row(
-            modifier = Modifier.padding(horizontal = 20.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Row(
-                modifier = Modifier.weight(1f),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SocialMediaIcon(url)
-
-                Spacer(modifier = Modifier.width(10.dp))
-
-                Text(text = url, style = storeMeTextStyle(FontWeight.ExtraBold, 0))
-            }
-
-            if(editable) {
-                Row(
-                    modifier = Modifier
-                        .padding(start = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        Modifier
-                            .background(Transparent)
-                            .clickable(
-                                onClick = { showDialog = true },
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = ripple(bounded = false)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("삭제", style = storeMeTextStyle(FontWeight.ExtraBold, 2), color = DeleteTextColor)
-                    }
-
-                    Spacer(modifier = Modifier.width(10.dp))
-
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_drag),
-                        contentDescription = "드래그 아이콘",
-                        modifier = handelModifier
-                            .size(24.dp),
-                        tint = DeleteTextColor
+                Box {
+                    LinkItem(
+                        url = url,
+                        isDragging = isDragging,
+                        onDelete = { onDelete(index) },
+                        onEdit = { onEdit(index) },
+                        modifier = Modifier
+                            .combinedClickable(
+                                interactionSource = interactionSource,
+                                indication = ripple(bounded = true),
+                                onClick = { },
+                                onLongClick = { }
+                            )
+                            .longPressDraggableHandle(
+                                interactionSource = interactionSource,
+                                onDragStarted = {
+                                    Timber.d("dragStarted")
+                                    view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                                }
+                            )
                     )
+
+                    if(isDragging)
+                        Canvas(modifier = Modifier.matchParentSize()) {
+                            drawRect(color = White.copy(alpha = 0.7f))
+                        }
                 }
             }
         }
+    }
+}
 
-        HorizontalDivider(
-            color = lineColor,
-            thickness = 1.dp,
-            modifier = Modifier.padding(top = 20.dp)
+@Composable
+fun LinkItem(
+    modifier: Modifier = Modifier,
+    url: String,
+    isDragging: Boolean = false,
+    onDelete: () -> Unit,
+    onEdit: () -> Unit
+) {
+    val view = LocalView.current
+    val density = LocalDensity.current
+    val configuration = LocalConfiguration.current
+
+    val screenWidth = with(density) { (configuration.screenWidthDp.dp).toPx() }
+    val halfScreen = with(density) { (configuration.screenWidthDp.dp / 2).toPx() } // 절반 크기 계산
+
+    val oldValue = remember { mutableStateOf(DragValue.Center) }
+
+    var showDialog by remember { mutableStateOf(false) }
+
+    val state = remember {
+        AnchoredDraggableState(
+            initialValue = DragValue.Center,
+            anchors = DraggableAnchors {
+                DragValue.Start at -screenWidth //Delete
+                DragValue.Center at 0f
+                DragValue.End at screenWidth
+            },
+            positionalThreshold = { halfScreen },
+            velocityThreshold = { with(density) { 1000.dp.toPx() } },
+            snapAnimationSpec = tween(),
+            decayAnimationSpec = exponentialDecay(),
+            confirmValueChange = { newValue ->
+                if(newValue != oldValue.value) {
+                    oldValue.value = newValue
+
+                    when(newValue) {
+                        DragValue.End -> {  }
+                        DragValue.Start -> {  }
+                        DragValue.Center -> {  }
+                    }
+                }
+                true
+            }
         )
+    }
+
+    LaunchedEffect(state.settledValue) {
+        when (state.currentValue) {
+            DragValue.End -> {
+                view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                onEdit()
+                state.snapTo(DragValue.Center)
+            }
+            DragValue.Start -> {
+                view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                showDialog = true
+                state.snapTo(DragValue.Center)
+            }
+            else -> {  }
+        }
+    }
+
+    val editAlpha = (state.progress(DragValue.Center, DragValue.End) * 2).coerceIn(0f, 1f)
+    val deleteAlpha = (state.progress(DragValue.Center, DragValue.Start) * 2).coerceIn(0f, 1f)
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .drawWithContent {
+                drawRect(
+                    color = SwipeEditColor.copy(alpha = editAlpha)
+                )
+
+                drawRect(
+                    color = SwipeDeleteColor.copy(alpha = deleteAlpha)
+                )
+
+                // 기존 콘텐츠 그리기
+                drawContent()
+            }
+    ) {
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_edit),
+                contentDescription = "수정 아이콘",
+                tint = White.copy(alpha = editAlpha),
+                modifier = Modifier.size(SizeUtils.textSizeToDp(density, 6))
+            )
+
+            Text(
+                text = "수정",
+                style = storeMeTextStyle(FontWeight.ExtraBold, 6),
+                color = White.copy(alpha = editAlpha)
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "삭제",
+                style = storeMeTextStyle(FontWeight.ExtraBold, 6),
+                color = White.copy(alpha = deleteAlpha)
+            )
+
+            Icon(
+                painter = painterResource(id = R.drawable.ic_delete_trashcan),
+                contentDescription = "삭제 아이콘",
+                tint = White.copy(alpha = deleteAlpha),
+                modifier = Modifier.size(SizeUtils.textSizeToDp(density, 6))
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .anchoredDraggable(
+                    state = state,
+                    orientation = Orientation.Horizontal
+                )
+                .offset {
+                    IntOffset(
+                        state
+                            .requireOffset()
+                            .roundToInt(), 0
+                    )
+                }
+                .background(White)
+        ) {
+            Spacer(modifier= Modifier.height(20.dp))
+
+            Row(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    LinkIcon(
+                        modifier = Modifier
+                            .size(40.dp),
+                        url
+                    )
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Text(text = url, style = storeMeTextStyle(FontWeight.ExtraBold, 0))
+                }
+            }
+
+            if(!isDragging) {
+                HorizontalDivider(
+                    color = DefaultDividerColor,
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(top = 20.dp)
+                )
+            } else {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+        }
     }
 
     if (showDialog) {
