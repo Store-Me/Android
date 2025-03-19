@@ -1,18 +1,18 @@
 package com.store_me.storeme.repository.storeme
 
-import android.content.Context
-import com.store_me.storeme.data.StoreData
-import com.store_me.storeme.data.request.menu.MenuCategoryRequest
-import com.store_me.storeme.data.request.menu.UpdateStoreMenuCategoryNameRequestDto
-import com.store_me.storeme.data.request.store_image.StoreImageOrderRequest
-import com.store_me.storeme.data.response.MenuCategoryList
-import com.store_me.storeme.data.response.StoreListResponse
+import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
+import com.store_me.storeme.data.request.store.PatchLinksRequest
+import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
+import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
+import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
+import com.store_me.storeme.data.response.BusinessHoursResponse
+import com.store_me.storeme.data.response.LinksResponse
+import com.store_me.storeme.data.response.MyStoresResponse
+import com.store_me.storeme.data.response.PatchResponse
+import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.network.storeme.OwnerApiService
-import com.store_me.storeme.utils.exception.ApiExceptionHandler
 import com.store_me.storeme.utils.exception.ApiExceptionHandler.toResult
 import com.store_me.storeme.utils.response.ResponseHandler
-import dagger.hilt.android.qualifiers.ApplicationContext
-import okhttp3.MultipartBody
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -20,388 +20,242 @@ import javax.inject.Inject
  * 사장님 관련 Repository
  */
 interface OwnerRepository {
-    suspend fun getStoreList(): Result<StoreListResponse>
+    suspend fun getMyStores(): Result<MyStoresResponse>
 
-    suspend fun getStoreData(storeId: Long): Result<StoreData>
+    suspend fun getStoreData(storeId: String): Result<StoreInfoData>
 
-    suspend fun addStoreImages(storeId: Long, storeImageList: List<MultipartBody.Part>): Result<Unit>
+    suspend fun patchStoreProfileImages(storeId: String, patchStoreProfileImagesRequest: PatchStoreProfileImagesRequest): Result<PatchResponse<StoreInfoData>>
 
-    suspend fun patchStoreImageOrder(storeImageOrderRequest: StoreImageOrderRequest): Result<Unit>
+    suspend fun patchStoreIntro(storeId: String, patchStoreIntroRequest: PatchStoreIntroRequest): Result<PatchResponse<StoreInfoData>>
 
-    suspend fun deleteStoreImage(storeId: Long, storeImageId: Long): Result<Unit>
+    suspend fun patchStoreDescription(storeId: String, patchStoreDescriptionRequest: PatchStoreDescriptionRequest): Result<PatchResponse<StoreInfoData>>
 
-    suspend fun getMenuCategory(storeId: Long): Result<MenuCategoryList>
+    suspend fun getBusinessHours(storeId: String): Result<BusinessHoursResponse>
 
-    suspend fun addMenuCategory(menuCategoryRequest: MenuCategoryRequest): Result<Unit>
-    suspend fun patchMenuCategoryOrder(menuCategoryList: MenuCategoryList): Result<Unit>
-    suspend fun updateStoreMenuCategoryName(updateStoreMenuCategoryNameRequestDto: UpdateStoreMenuCategoryNameRequestDto): Result<Unit>
-    suspend fun deleteMenuCategory(storeId: Long, storeMenuCategoryId: Int): Result<Unit>
+    suspend fun patchBusinessHours(storeId: String, patchBusinessHoursRequest: PatchBusinessHoursRequest): Result<PatchResponse<BusinessHoursResponse>>
+
+    suspend fun getStoreLinks(storeId: String): Result<LinksResponse>
+
+    suspend fun patchStoreLinks(storeId: String, patchLinksRequest: PatchLinksRequest): Result<PatchResponse<LinksResponse>>
 }
 
 class OwnerRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val ownerApiService: OwnerApiService
 ): OwnerRepository {
-    override suspend fun getStoreList(): Result<StoreListResponse> {
+    override suspend fun getMyStores(): Result<MyStoresResponse> {
         return try {
-            val response = ownerApiService.getStoreList()
+            val response = ownerApiService.getMyStores()
 
             if(response.isSuccessful) {
                 val responseBody = response.body()
 
-                Timber.i(responseBody.toString())
+                Timber.d(responseBody.toString())
 
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        Result.success(responseBody.result)
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody?.message
-                            ))
-                    }
-                }
-
+                Result.success(responseBody ?: MyStoresResponse(stores = emptyList()))
             } else {
-                ResponseHandler.handleErrorResponse(response, context)
+                ResponseHandler.handleErrorResponse(response)
             }
         } catch (e: Exception) {
-            e.toResult(context)
+            e.toResult()
         }
     }
 
-    override suspend fun getStoreData(storeId: Long): Result<StoreData> {
+    override suspend fun getStoreData(storeId: String): Result<StoreInfoData> {
         return try {
             val response = ownerApiService.getStoreData(storeId = storeId)
 
             if(response.isSuccessful) {
                 val responseBody = response.body()
 
-                Timber.i(responseBody.toString())
+                Timber.d(responseBody.toString())
 
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        Result.success(responseBody.result)
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody?.message
-                            ))
-                    }
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
                 }
-
             } else {
-                ResponseHandler.handleErrorResponse(response, context)
+                ResponseHandler.handleErrorResponse(response)
             }
         } catch (e: Exception) {
-            e.toResult(context)
+            e.toResult()
         }
     }
 
-    override suspend fun addStoreImages(storeId: Long, storeImageList: List<MultipartBody.Part>): Result<Unit> {
+    override suspend fun patchStoreProfileImages(
+        storeId: String,
+        patchStoreProfileImagesRequest: PatchStoreProfileImagesRequest
+    ): Result<PatchResponse<StoreInfoData>> {
         return try {
-            val response = ownerApiService.addStoreImages(
+            val response = ownerApiService.patchStoreProfileImages(
                 storeId = storeId,
-                storeImageFileList = storeImageList
+                patchStoreProfileImagesRequest = patchStoreProfileImagesRequest
             )
 
             if(response.isSuccessful) {
                 val responseBody = response.body()
 
-                Timber.i(responseBody.toString())
+                Timber.d(responseBody.toString())
 
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        Result.success(Unit)
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody?.message
-                            ))
-                    }
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
                 }
             } else {
-                ResponseHandler.handleErrorResponse(response, context)
+                ResponseHandler.handleErrorResponse(response)
             }
         } catch (e: Exception) {
-            e.toResult(context)
+            e.toResult()
         }
     }
 
-    override suspend fun patchStoreImageOrder(storeImageOrderRequest: StoreImageOrderRequest): Result<Unit> {
+    override suspend fun patchStoreIntro(
+        storeId: String,
+        patchStoreIntroRequest: PatchStoreIntroRequest
+    ): Result<PatchResponse<StoreInfoData>> {
         return try {
-            val response = ownerApiService.patchStoreImageOrder(
-                storeImageOrderRequest = storeImageOrderRequest
-            )
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.i(responseBody.toString())
-
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        Result.success(Unit)
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody?.message
-                            ))
-                    }
-                }
-            } else {
-                ResponseHandler.handleErrorResponse(response, context)
-            }
-        } catch (e: Exception) {
-            e.toResult(context)
-        }
-    }
-
-    override suspend fun deleteStoreImage(storeId: Long, storeImageId: Long): Result<Unit> {
-        return try {
-            val response = ownerApiService.deleteStoreImage(
+            val response = ownerApiService.patchStoreIntro(
                 storeId = storeId,
-                storeImageId = storeImageId
+                patchStoreIntroRequest = patchStoreIntroRequest
             )
 
             if(response.isSuccessful) {
                 val responseBody = response.body()
 
-                Timber.i(responseBody.toString())
+                Timber.d(responseBody.toString())
 
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        Result.success(Unit)
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody?.message
-                            ))
-                    }
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
                 }
             } else {
-                ResponseHandler.handleErrorResponse(response, context)
+                ResponseHandler.handleErrorResponse(response)
             }
         } catch (e: Exception) {
-            e.toResult(context)
+            e.toResult()
         }
     }
 
-    override suspend fun getMenuCategory(storeId: Long): Result<MenuCategoryList> {
+    override suspend fun patchStoreDescription(
+        storeId: String,
+        patchStoreDescriptionRequest: PatchStoreDescriptionRequest
+    ): Result<PatchResponse<StoreInfoData>> {
         return try {
-            val response = ownerApiService.getMenuCategory(
+            val response = ownerApiService.patchStoreDescription(
+                storeId = storeId,
+                patchStoreDescriptionRequest = patchStoreDescriptionRequest
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun getBusinessHours(storeId: String): Result<BusinessHoursResponse> {
+        return try {
+            val response = ownerApiService.getBusinessHours(
                 storeId = storeId
             )
 
             if(response.isSuccessful) {
                 val responseBody = response.body()
 
-                Timber.i(responseBody.toString())
+                Timber.d(responseBody.toString())
 
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        Result.success(responseBody.result)
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody?.message
-                            ))
-                    }
-                }
+                Result.success(responseBody ?: BusinessHoursResponse(businessHours = emptyList()))
             } else {
-                ResponseHandler.handleErrorResponse(response, context)
+                ResponseHandler.handleErrorResponse(response)
             }
         } catch (e: Exception) {
-            e.toResult(context)
+            e.toResult()
         }
     }
 
-    override suspend fun addMenuCategory(menuCategoryRequest: MenuCategoryRequest): Result<Unit> {
+    override suspend fun patchBusinessHours(storeId: String, patchBusinessHoursRequest: PatchBusinessHoursRequest): Result<PatchResponse<BusinessHoursResponse>> {
         return try {
-            val response = ownerApiService.addMenuCategory(
-                menuCategoryRequest
-            )
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.i(responseBody.toString())
-
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        Result.success(Unit)
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody?.message
-                            ))
-                    }
-                }
-            } else {
-                ResponseHandler.handleErrorResponse(response, context)
-            }
-        } catch (e: Exception) {
-            e.toResult(context)
-        }
-    }
-
-    override suspend fun patchMenuCategoryOrder(menuCategoryList: MenuCategoryList): Result<Unit> {
-        return try {
-            val response = ownerApiService.patchMenuCategoryOrder(
-                menuCategoryList
-            )
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.i(responseBody.toString())
-
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        Result.success(Unit)
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody?.message
-                            ))
-                    }
-                }
-            } else {
-                ResponseHandler.handleErrorResponse(response, context)
-            }
-        } catch (e: Exception) {
-            e.toResult(context)
-        }
-    }
-
-    override suspend fun updateStoreMenuCategoryName(updateStoreMenuCategoryNameRequestDto: UpdateStoreMenuCategoryNameRequestDto): Result<Unit> {
-        return try {
-            val response = ownerApiService.updateStoreMenuCategoryName(
-                updateStoreMenuCategoryNameRequestDto
-            )
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.i(responseBody.toString())
-
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        Result.success(Unit)
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody?.message
-                            ))
-                    }
-                }
-            } else {
-                ResponseHandler.handleErrorResponse(response, context)
-            }
-        } catch (e: Exception) {
-            e.toResult(context)
-        }
-    }
-
-    override suspend fun deleteMenuCategory(storeId: Long, storeMenuCategoryId: Int): Result<Unit> {
-        return try {
-            val response = ownerApiService.deleteMenuCategory(
+            val response = ownerApiService.patchBusinessHours(
                 storeId = storeId,
-                storeMenuCategoryId = storeMenuCategoryId
+                patchBusinessHoursRequest = patchBusinessHoursRequest
             )
 
             if(response.isSuccessful) {
                 val responseBody = response.body()
 
-                Timber.i(responseBody.toString())
+                Timber.d(responseBody.toString())
 
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        Result.success(Unit)
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody?.message
-                            ))
-                    }
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
                 }
             } else {
-                ResponseHandler.handleErrorResponse(response, context)
+                ResponseHandler.handleErrorResponse(response)
             }
         } catch (e: Exception) {
-            e.toResult(context)
+            e.toResult()
         }
     }
 
+    override suspend fun getStoreLinks(storeId: String): Result<LinksResponse> {
+        return try {
+            val response = ownerApiService.getStoreLinks(
+                storeId = storeId
+            )
 
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                Result.success(responseBody ?: LinksResponse(links = emptyList()))
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun patchStoreLinks(
+        storeId: String,
+        patchLinksRequest: PatchLinksRequest
+    ): Result<PatchResponse<LinksResponse>> {
+        return try {
+            val response = ownerApiService.patchStoreLinks(
+                storeId = storeId,
+                patchLinksRequest = patchLinksRequest
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
 }
