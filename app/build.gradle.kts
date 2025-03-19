@@ -150,7 +150,7 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-scalars:2.6.4")
 
     //Map
-    implementation("io.github.fornewid:naver-map-compose:1.7.2")
+    implementation("io.github.fornewid:naver-map-compose:1.7.3")
 
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
