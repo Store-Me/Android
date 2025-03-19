@@ -5,15 +5,23 @@ package com.store_me.storeme.ui.home.owner
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -21,16 +29,28 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraPosition
+import com.naver.maps.map.compose.CameraPositionState
 import com.store_me.storeme.R
-import com.store_me.storeme.data.enums.tab_menu.OwnerHomeTabMenu
-import com.store_me.storeme.ui.component.StoreMeTabRow
+import com.store_me.storeme.data.enums.AccountType
+import com.store_me.storeme.data.enums.tab_menu.StoreTabMenu
+import com.store_me.storeme.ui.component.LinkSection
+import com.store_me.storeme.ui.component.ProfileImageWithBorder
+import com.store_me.storeme.ui.component.StoreMeScrollableTabRow
+import com.store_me.storeme.ui.main.MainActivity
+import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.ToastMessageUtils
+import com.store_me.storeme.utils.composition_locals.LocalAuth
 
 val LocalStoreDataViewModel = staticCompositionLocalOf<StoreDataViewModel> {
     error("No OwnerHomeViewModel provided")
@@ -41,38 +61,132 @@ fun OwnerHomeScreen(
     navController: NavController,
     storeDataViewModel: StoreDataViewModel
 ) {
-    var backPressedTime by remember { mutableStateOf(0L) }
+    val auth = LocalAuth.current
+
+    var backPressedTime by remember { mutableLongStateOf(0L) }
     val context = LocalContext.current
 
     val pagerState = rememberPagerState()
 
-    val tabTitles = enumValues<OwnerHomeTabMenu>().map { it.displayName }
+    val tabTitles = enumValues<StoreTabMenu>().map { it.displayName }
 
-    val storeData by storeDataViewModel.storeData.collectAsState()
+    val storeId by auth.storeId.collectAsState()
+
+    val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
+    val businessHours by storeDataViewModel.businessHours.collectAsState()
+    val links by storeDataViewModel.links.collectAsState()
+
+    val cameraPositionState = remember(storeInfoData) {
+        CameraPositionState(
+            CameraPosition(LatLng(storeInfoData?.storeLat ?: 0.0, storeInfoData?.storeLng ?: 0.0), 15.0)
+        )
+    }
+
+    val backgroundSectionHeight = remember { mutableStateOf(0) } //픽셀 단위
+    val profileSectionHeight = remember { mutableStateOf(0) } //픽셀 단위
+
+
+    LaunchedEffect(storeId) {
+        if(storeId != null) {
+            storeDataViewModel.getStoreData(storeId = storeId!!)
+            storeDataViewModel.getStoreBusinessHours(storeId = storeId!!)
+            storeDataViewModel.getStoreLinks(storeId = storeId!!)
+        }
+    }
 
     CompositionLocalProvider(LocalStoreDataViewModel provides storeDataViewModel) {
         Scaffold(
             containerColor = White,
             content = { innerPadding -> // 컨텐츠 영역
-                Column(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                ) {
-                    LazyColumn {
-                        item {
-                            BackgroundSection(storeData?.storeBannerImageUrl)
-                        }
+                when(storeInfoData) {
+                    null -> {
 
-                        item {
-                            StoreHomeProfileSection(navController = navController)
-                        }
+                    }
 
-                        stickyHeader {
-                            StoreMeTabRow(pagerState = pagerState, tabTitles = tabTitles)
-                        }
+                    else -> {
+                        Column(
+                            modifier = Modifier
+                                .padding(innerPadding)
+                        ) {
+                            LazyColumn {
+                                item {
+                                    Box(
+                                        modifier = Modifier
+                                            .background(color = White)
+                                            .fillMaxWidth(),
+                                        contentAlignment = Alignment.TopCenter
+                                    ) {
+                                        BackgroundSection(
+                                            imageUrl = storeInfoData!!.backgroundImage,
+                                            modifier = Modifier
+                                                .onGloballyPositioned {
+                                                    backgroundSectionHeight.value = it.size.height
+                                                },
+                                            showCanvas = storeInfoData!!.backgroundImage != null
+                                        )
 
-                        item {
-                            OwnerHomeContentSection(navController = navController, pagerState)
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxWidth(),
+                                        ) {
+                                            Spacer(modifier = Modifier.height(with(LocalDensity.current) { (backgroundSectionHeight.value).toDp() - 64.dp }))
+
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(horizontal = 20.dp)
+                                                    .onGloballyPositioned {
+                                                        profileSectionHeight.value = it.size.height
+                                                    },
+                                                verticalAlignment = Alignment.Bottom
+                                            ) {
+                                                //프로필 이미지
+                                                ProfileImageWithBorder(
+                                                    accountType = AccountType.OWNER,
+                                                    url = storeInfoData!!.storeProfileImage,
+                                                    modifier = Modifier
+                                                )
+
+                                                Spacer(modifier = Modifier.weight(1f))
+                                                Column (
+                                                    modifier = Modifier
+                                                        .padding(bottom = 16.dp)
+                                                ) {
+                                                    //링크 정보
+                                                    LinkSection(
+                                                        storeLink = links ?: emptyList(),
+                                                        onShareClick = {  },
+                                                        onEditClick = {
+                                                            NavigationUtils().navigateOwnerNav(
+                                                                navController,
+                                                                MainActivity.OwnerNavItem.LINK_SETTING
+                                                            )
+                                                        },
+                                                        accountType = AccountType.OWNER
+                                                    )
+                                                }
+
+                                            }
+
+                                            StoreHomeInfoSection(
+                                                storeInfoData = storeInfoData!!,
+                                                cameraPositionState = cameraPositionState,
+                                                businessHours = businessHours ?: emptyList(),
+                                            ) {
+                                                NavigationUtils().navigateOwnerNav(navController = navController, screenName = it)
+                                            }
+                                        }
+                                    }
+                                }
+
+                                stickyHeader {
+                                    StoreMeScrollableTabRow(pagerState = pagerState, tabTitles = tabTitles)
+                                }
+
+                                item {
+                                    OwnerHomeContentSection(navController = navController, pagerState)
+                                }
+                            }
                         }
                     }
                 }
@@ -95,18 +209,33 @@ fun OwnerHomeScreen(
 @Composable
 fun OwnerHomeContentSection(navController: NavController, pagerState: PagerState) {
     HorizontalPager(
-        count = OwnerHomeTabMenu.entries.size,
+        count = StoreTabMenu.entries.size,
         state = pagerState,
         modifier = Modifier
             .fillMaxSize(),
         verticalAlignment = Alignment.Top
     ) { page ->
-        when(OwnerHomeTabMenu.entries[page]) {
-            OwnerHomeTabMenu.HOME -> {
+        when(StoreTabMenu.entries[page]) {
+            StoreTabMenu.HOME -> {
                 OwnerStoreHomeSection(navController)
             }
-            OwnerHomeTabMenu.NEWS -> {
+            StoreTabMenu.NEWS -> {
                 NewsScreen(navController)
+            }
+            StoreTabMenu.MENU -> {
+
+            }
+            StoreTabMenu.COUPON -> {
+
+            }
+            StoreTabMenu.PHOTO -> {
+
+            }
+            StoreTabMenu.STORY -> {
+
+            }
+            StoreTabMenu.REVIEW -> {
+
             }
         }
     }
