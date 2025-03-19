@@ -2,11 +2,14 @@ package com.store_me.storeme.utils
 
 import com.store_me.storeme.data.DateData
 import com.store_me.storeme.data.UserCouponWithStoreInfoData
+import com.store_me.storeme.data.store.BusinessHourData
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.Calendar
 
 class DateTimeUtils {
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
@@ -126,7 +129,7 @@ class DateTimeUtils {
     }
 
     fun getClosedDayText(closedDay: List<Int>): String {
-        val days = closedDay.map { DayOfWeek.values()[it].displayName }
+        val days = closedDay.map { DayOfWeek.entries[it].displayName }
 
         return when(closedDay.size) {
             1 -> "${days[0]}요일 휴무"
@@ -165,5 +168,65 @@ class DateTimeUtils {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val localDateTime = LocalDateTime.parse(dateTime, formatter)
         return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    }
+
+    /**
+     * 오늘 요일을 반환하는 함수
+     */
+    fun getTodayWeekday(): Int {
+        val calendar = Calendar.getInstance()
+        return (calendar.get(Calendar.DAY_OF_WEEK) - 1)
+    }
+
+    /**
+     * 현재 시간을 "HH:mm" 형식으로 가져오는 함수
+     */
+    fun getCurrentTime(): String {
+        return LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
+    }
+
+    fun getBusinessHoursText(currentTime: String, businessHourData: BusinessHourData): String {
+        if (businessHourData.isHoliday) {
+            return "휴무일"
+        }
+
+        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+
+        val current = LocalTime.parse(currentTime, formatter)
+        val opening = businessHourData.openingTime?.let { LocalTime.parse(it, formatter) }
+        val closing = businessHourData.closingTime?.let { LocalTime.parse(it, formatter) }
+        val breakStart = businessHourData.startBreak?.let { LocalTime.parse(it, formatter) }
+        val breakEnd = businessHourData.endBreak?.let { LocalTime.parse(it, formatter) }
+
+        // 영업 시간이 설정되지 않은 경우
+        if (opening == null || closing == null) {
+            return "영업 종료"
+        }
+
+        // 영업 시작 전이거나 영업 종료 후인 경우
+        if (current.isBefore(opening) || current.isAfter(closing)) {
+            return "영업 종료"
+        }
+
+        return when(breakEnd != null && breakStart != null) {
+            true -> {
+                //Break time 있는 경우
+                when {
+                    current.isBefore(breakStart) -> {
+                        "영업 중" + " · " + businessHourData.startBreak + "에 브레이크타임"
+                    }
+                    current.isAfter(breakEnd) -> {
+                        "영업 중" + " · " + businessHourData.closingTime + "에 영업 종료"
+                    }
+                    else -> {
+                        "브레이크타임" + " · " + businessHourData.endBreak + "에 영업 시작"
+                    }
+                }
+            }
+            false -> {
+                //Break time 없는 경우
+                "영업 중" + " · " + businessHourData.closingTime + "에 영업 종료"
+            }
+        }
     }
 }
