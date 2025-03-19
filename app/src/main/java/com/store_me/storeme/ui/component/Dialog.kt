@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.response.MyStoresResponse
-import com.store_me.storeme.data.response.StoreListResponse
 import com.store_me.storeme.ui.theme.CancelButtonColor
 import com.store_me.storeme.ui.theme.SelectedCheckBoxColorPink
 import com.store_me.storeme.ui.theme.UndefinedTextColor
@@ -47,7 +46,7 @@ import com.store_me.storeme.utils.SizeUtils
 @Composable
 fun WarningDialog(
     title: String,
-    warningContent: String?,
+    warningContent: String? = null,
     content: String?,
     actionText: String,
     onDismiss: () -> Unit,
@@ -211,7 +210,7 @@ fun SelectStoreDialog(
                     .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(myStoresResponse.storeList) {
+                items(myStoresResponse.stores) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -222,7 +221,7 @@ fun SelectStoreDialog(
                     ) {
                         ProfileImage(
                             accountType = AccountType.OWNER,
-                            url = it.profileImage,
+                            url = it.storeProfileImage,
                             modifier = Modifier
                                 .clip(CircleShape)
                                 .size(SizeUtils.textSizeToDp(localDensity, 2, 16))
