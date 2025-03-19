@@ -2,7 +2,7 @@ package com.store_me.storeme.utils
 
 import androidx.navigation.NavController
 import com.store_me.storeme.data.StoreHomeItem
-import com.store_me.storeme.data.StoreNormalItem
+import com.store_me.storeme.data.enums.StoreProfileItems
 import com.store_me.storeme.ui.main.CUSTOMER_BOTTOM_ITEM_LIST
 import com.store_me.storeme.ui.main.FAVORITE
 import com.store_me.storeme.ui.main.MainActivity
@@ -51,7 +51,7 @@ class NavigationUtils {
         navController.navigate(NavigationUtils().createScreenRoute(OWNER_BOTTOM_ITEM_LIST[index], screenName.name, additionalData))
     }
 
-    fun navigateOwnerNav(navController: NavController, screenName: StoreNormalItem, additionalData: String? = null) {
+    fun navigateOwnerNav(navController: NavController, screenName: StoreProfileItems, additionalData: String? = null) {
         val index = getCurrentBottomNavIndex(navController)
 
         navController.navigate(NavigationUtils().createScreenRoute(OWNER_BOTTOM_ITEM_LIST[index], screenName.name, additionalData))
