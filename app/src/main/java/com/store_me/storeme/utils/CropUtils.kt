@@ -1,13 +1,9 @@
 package com.store_me.storeme.utils
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.FileProvider
@@ -17,9 +13,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
+/**
+ * UCrop을 사용하기 위한 유틸
+ */
 object CropUtils {
+    /**
+     * UCrop을 사용하기 위한 Intent를 반환합니다.
+     * @param context Context
+     * @param aspectRatio 자르기 비율
+     * @param sourceUri 자르기 전의 이미지 Uri
+     * @return UCrop을 사용하기 위한 Intent
+     */
     fun getCropIntent(
         context: Context,
+        aspectRatio: Pair<Float, Float> = Pair(1f, 1f),
         sourceUri: Uri
     ): Intent {
         val options = UCrop.Options().apply {
@@ -51,8 +58,8 @@ object CropUtils {
         )
 
         return UCrop.of(sourceUri, contentUri)
-            .withAspectRatio(1f, 1f)
-            .withMaxResultSize(512, 512)
+            .withAspectRatio(aspectRatio.first, aspectRatio.second)
+            .withMaxResultSize(1024, 1024)
             .withOptions(options)
             .getIntent(context)
     }
