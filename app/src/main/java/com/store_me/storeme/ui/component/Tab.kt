@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -52,6 +53,54 @@ fun StoreMeTabRow(
                 thickness = 2.dp
             )
         }
+    ) {
+        tabTitles.forEachIndexed { index, title ->
+            Tab(
+                selected = pagerState.currentPage == index,
+                onClick = {
+                    coroutineScope.launch {
+                        pagerState.scrollToPage(index)
+                    }
+                },
+                text = {
+                    Text(
+                        text = title,
+                        style = storeMeTextStyle(FontWeight.Bold, 0),
+                        color = if(index == pagerState.currentPage) Black else TabDividerLineColor
+                    )
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun StoreMeScrollableTabRow(
+    pagerState: PagerState,
+    tabTitles: List<String>
+){
+    val coroutineScope = rememberCoroutineScope()
+
+    ScrollableTabRow (
+        selectedTabIndex = pagerState.currentPage,
+        containerColor = White,
+        contentColor = Black,
+        indicator = { tabPositions ->
+            TabRowDefaults.SecondaryIndicator(
+                modifier = Modifier
+                    .tabIndicatorOffset(tabPositions[pagerState.currentPage])
+                    .height(2.dp)
+                    .fillMaxWidth(0.9f),
+                color = Black
+            )
+        },
+        divider = {
+            HorizontalDivider(
+                color = TabDividerLineColor,
+                thickness = 2.dp
+            )
+        },
+        edgePadding = 0.dp
     ) {
         tabTitles.forEachIndexed { index, title ->
             Tab(
