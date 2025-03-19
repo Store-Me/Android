@@ -50,8 +50,8 @@ import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
-import com.store_me.storeme.data.model.signup.CustomerSignupRequest
-import com.store_me.storeme.data.model.signup.OwnerSignupRequest
+import com.store_me.storeme.data.request.signup.CustomerSignupRequest
+import com.store_me.storeme.data.request.signup.OwnerSignupRequest
 import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.StoreMeSnackbar
 import com.store_me.storeme.ui.component.WarningDialog

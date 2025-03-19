@@ -1,4 +1,4 @@
-package com.store_me.storeme.data.model.signup
+package com.store_me.storeme.data.request.signup
 
 data class OwnerSignupRequest(
     val accountId: String?,
