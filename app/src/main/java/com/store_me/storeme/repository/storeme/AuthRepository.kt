@@ -29,42 +29,22 @@ class AuthRepositoryImpl @Inject constructor(
 
                 Timber.i(responseBody.toString())
 
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        if(responseBody.result != null) {
-                            val result = responseBody.result
+                if(responseBody != null) {
 
-                            TokenPreferencesHelper.saveTokens(
-                                accessToken = result.accessToken,
-                                refreshToken = result.refreshToken
-                            )
+                    TokenPreferencesHelper.saveTokens(
+                        accessToken = responseBody.accessToken,
+                        refreshToken = responseBody.refreshToken
+                    )
 
-                            Result.success(result)
-                        }
-                        else
-                            Result.failure(
-                                ApiExceptionHandler.apiException(
-                                    code = 1 /*responseBody.code*/, message = context.getString(R.string.token_expired_message)
-                                ))
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = 1 /*responseBody.code*/, message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = 1 /*responseBody?.code*/, message = responseBody?.message
-                            ))
-                    }
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
                 }
             } else {
-                ResponseHandler.handleErrorResponse(response, context)
+                ResponseHandler.handleErrorResponse(response)
             }
         } catch (e: Exception) {
-            e.toResult(context)
+            e.toResult()
         }
     }
 }
