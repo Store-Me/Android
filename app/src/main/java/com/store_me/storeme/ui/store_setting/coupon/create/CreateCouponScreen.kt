@@ -116,8 +116,11 @@ fun CreateCouponScreen(
             containerColor = White,
             topBar = {
                 ProgressBar(currentProgress)
-                TitleWithDeleteButton(navController = navController, title = "${couponType.displayName} 쿠폰 만들기")
-                     },
+                TitleWithDeleteButton(
+                    title = "${couponType.displayName} 쿠폰 만들기"
+                ) {
+                    navController.popBackStack()
+                }},
             content = { innerPadding ->
                 Column(
                     modifier = Modifier

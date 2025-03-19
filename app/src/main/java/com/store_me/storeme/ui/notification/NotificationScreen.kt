@@ -9,7 +9,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -74,7 +73,9 @@ fun NotificationScreen(navController: NavController, notificationViewModel: Noti
 
         Scaffold(
             containerColor = White,
-            topBar = { TitleWithDeleteButton(navController = navController, title = "알림 목록") },
+            topBar = { TitleWithDeleteButton(title = "알림 목록"){
+                navController.popBackStack()
+            } },
             content = { innerPadding ->
                 Column(
                     modifier = Modifier
@@ -171,7 +172,7 @@ fun NotificationsList(notifications: List<NotificationWithStoreInfoData>){
 fun NotificationItem(notification: NotificationWithStoreInfoData) {
     val notificationViewModel = LocalNotificationViewModel.current
 
-    var backgroundColor by remember { mutableStateOf(if (notification.isRead) Transparent else HighlightColor) }
+    var backgroundColor by remember { mutableStateOf(if (notification.isRead) Transparent else HighlightColor.copy(alpha = 0.1f)) }
 
     Column(
         modifier = Modifier

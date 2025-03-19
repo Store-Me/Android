@@ -39,7 +39,9 @@ fun BannerListScreen(navController: NavController) {
 
     Scaffold(
         containerColor = White,
-        topBar = { TitleWithDeleteButton(navController = navController, title = "전체 보기") },
+        topBar = { TitleWithDeleteButton(title = "전체 보기") {
+            navController.popBackStack()
+        } },
         content = { innerPadding ->
             Column(
                 modifier = Modifier

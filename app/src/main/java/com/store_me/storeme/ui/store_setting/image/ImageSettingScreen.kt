@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +39,7 @@ fun ImageSettingScreen(
 ) {
     val snackbarHostState = LocalSnackbarHostState.current
 
-    val storeData by storeDataViewModel.storeData.collectAsState()
+    val storeData by storeDataViewModel.storeInfoData.collectAsState()
 
     val errorMessage by imageSettingViewModel.errorMessage.collectAsState()
     val selectedImages by imageSettingViewModel.selectedImages.collectAsState()
@@ -50,7 +49,7 @@ fun ImageSettingScreen(
     ) { uris: List<Uri> ->
         imageSettingViewModel.updateSelectedImages(uris)
     }
-    
+
     LaunchedEffect(errorMessage) {
         if(errorMessage != null) {
             snackbarHostState.showSnackbar(errorMessage.toString())
@@ -72,7 +71,11 @@ fun ImageSettingScreen(
             .fillMaxSize(),
         containerColor = Color.White,
         topBar = {
-            TitleWithDeleteButton(navController = navController, title = StoreHomeItem.IMAGE.displayName)
+            TitleWithDeleteButton(
+                title = StoreHomeItem.IMAGE.displayName
+            ) {
+                navController.popBackStack()
+            }
         },
         content = { innerPadding ->
             Column(
@@ -87,7 +90,7 @@ fun ImageSettingScreen(
                     leftIconResource = R.drawable.ic_circle_plus
                 ) { multipleImagesPickerLauncher.launch("image/*") }
 
-                if(storeData?.storeImageInfoList?.isEmpty() == true) {
+                if(/*storeData?.storeImageInfoList?.isEmpty() == */true) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -107,9 +110,9 @@ fun ImageSettingScreen(
                             .weight(1f)
                     ) {
                         storeData?.let {
-                            itemsIndexed(it.storeImageInfoList) { item, index ->
+                            /*itemsIndexed(it.storeImageInfoList) { item, index ->
 
-                            }
+                            }*/
                         }
                     }
                 }

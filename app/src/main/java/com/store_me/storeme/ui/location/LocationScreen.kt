@@ -66,7 +66,9 @@ fun LocationScreen(navController: NavController, locationViewModel: LocationView
 
     Scaffold(
         containerColor = Color.White,
-        topBar = { TitleWithDeleteButton(navController = navController, title = "동네 설정") },
+        topBar = { TitleWithDeleteButton(title = "동네 설정") {
+            navController.popBackStack()
+        } },
         content = { innerPadding ->
             Column(
                 modifier = Modifier

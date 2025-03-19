@@ -36,7 +36,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -115,7 +114,11 @@ fun CouponSettingScreen(
                     Scaffold(
                         modifier = Modifier.fillMaxSize(),
                         containerColor = White,
-                        topBar = { TitleWithDeleteButton(navController = navController, title = "쿠폰 관리") },
+                        topBar = { TitleWithDeleteButton(
+                            title = "쿠폰 관리"
+                        ) {
+                            navController.popBackStack()
+                        } },
                         content = { innerPadding ->
                             Column(
                                 modifier = Modifier

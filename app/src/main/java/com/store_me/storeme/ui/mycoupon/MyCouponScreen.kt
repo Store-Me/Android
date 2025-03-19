@@ -106,7 +106,9 @@ fun MyCouponScreenWithBottomSheet(navController: NavController, myCouponViewMode
 
         Scaffold(
             containerColor = White,
-            topBar = { TitleWithDeleteButton(navController = navController, title = "받은 쿠폰함") },
+            topBar = { TitleWithDeleteButton(title = "받은 쿠폰함") {
+                navController.popBackStack()
+            } },
             content = { innerPadding ->
                 Column(
                     modifier = Modifier

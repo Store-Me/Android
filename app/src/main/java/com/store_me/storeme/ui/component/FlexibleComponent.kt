@@ -4,10 +4,8 @@ package com.store_me.storeme.ui.component
 
 import android.Manifest
 import android.content.Intent
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,8 +16,8 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -59,7 +57,6 @@ import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -69,6 +66,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -78,19 +76,16 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.BannerData
-import com.store_me.storeme.data.SocialMediaAccountData
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.location.LocationViewModel
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.mystore.CategoryViewModel
+import com.store_me.storeme.ui.store_setting.menu.EditButtonsSection
 import com.store_me.storeme.ui.theme.DefaultDividerColor
-import com.store_me.storeme.ui.theme.DefaultIconColor
-import com.store_me.storeme.ui.theme.EditButtonColor
+import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.HomeSearchBoxColor
 import com.store_me.storeme.ui.theme.NormalCategoryColor
-import com.store_me.storeme.ui.theme.SaveButtonColor
 import com.store_me.storeme.ui.theme.SelectedCategoryColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTextStyle
@@ -107,18 +102,12 @@ import kotlinx.coroutines.launch
  * 여러 곳에서 사용되는 Composable 함수 모음
  */
 @Composable
-fun TitleWithDeleteButton(navController: NavController, title: String, isInTopAppBar: Boolean = false){
+fun TitleWithDeleteButton(title: String, isInTopAppBar: Boolean = false, onClose: () -> Unit){
     val modifier =
         if(isInTopAppBar)
             Modifier.padding(start = 4.dp, end = 20.dp)
         else
             Modifier.padding(start = 20.dp, end = 20.dp)
-
-    fun returnBackScreen(){
-        if (navController.currentBackStackEntry?.destination?.id != navController.graph.startDestinationId) {
-            navController.popBackStack()
-        }
-    }
 
     Row(
         modifier = modifier
@@ -136,13 +125,13 @@ fun TitleWithDeleteButton(navController: NavController, title: String, isInTopAp
         Spacer(modifier = Modifier.weight(1f))
 
         DeleteButton {
-            returnBackScreen()
+            onClose()
         }
     }
 }
 
 @Composable
-fun TitleWithDeleteButtonAtDetail(title: String, isInTopAppBar: Boolean = false, onBack: () -> Unit){
+fun TitleWithDeleteButtonAtDetail(title: String, isInTopAppBar: Boolean = false, onClose: () -> Unit){
     val modifier =
         if(isInTopAppBar)
             Modifier.padding(start = 4.dp, end = 20.dp)
@@ -165,8 +154,40 @@ fun TitleWithDeleteButtonAtDetail(title: String, isInTopAppBar: Boolean = false,
         Spacer(modifier = Modifier.weight(1f))
 
         DeleteButton {
-            onBack()
+            onClose()
         }
+    }
+}
+
+@Composable
+fun TitleWithDeleteButtonAndRow(
+    title: String,
+    scrollBehavior: TopAppBarScrollBehavior,
+    onClose: () -> Unit,
+    row: @Composable RowScope.() -> Unit
+){
+    Column {
+        TopAppBar(title = {
+            TitleWithDeleteButton(
+                title = title,
+                isInTopAppBar = true
+            ) {
+                onClose()
+            } },
+            scrollBehavior = scrollBehavior,
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = White,
+                scrolledContainerColor = White
+            )
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            content = row
+        )
     }
 }
 
@@ -181,7 +202,9 @@ fun TitleWithSaveButton(
     Column {
         TopAppBar(
             title = {
-                TitleWithDeleteButton(navController = navController, title = title, isInTopAppBar = true)
+                TitleWithDeleteButton(title = title, isInTopAppBar = true) {
+                    navController.popBackStack()
+                }
             },
             scrollBehavior = scrollBehavior,
             colors = TopAppBarDefaults.topAppBarColors(
@@ -212,62 +235,6 @@ fun SubTitleSection(text: String, modifier:Modifier = Modifier) {
         style = storeMeTextStyle(FontWeight.ExtraBold, 6),
         modifier = modifier
     )
-}
-
-@Composable
-fun EditAddSection(
-    modifier: Modifier = Modifier,
-    dataListSize: Int,
-    editState: Boolean,
-    addText: String,
-    editText: String,
-    onChangeEditState: (Boolean) -> Unit,
-    onAdd: () -> Unit
-) {
-    Row(
-        modifier = modifier,
-    ) {
-        when(dataListSize){
-            0 -> {
-                onChangeEditState(false)
-
-                LargeButton(
-                    text = addText,
-                    iconResource = R.drawable.ic_circle_plus,
-                    containerColor = Black,
-                    contentColor = White,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    onAdd()
-                }
-            }
-            else -> {
-                when(editState) {
-                    true -> {
-                        LargeButton(text = "저장", modifier = Modifier.weight(1f), containerColor = SaveButtonColor, contentColor = White) {
-                            onChangeEditState(false)
-                        }
-                    }
-                    false -> {
-                        LargeButton(text = editText, modifier = Modifier.weight(1f), containerColor = EditButtonColor, contentColor = Black) {
-                            onChangeEditState(true)
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.width(10.dp))
-                LargeButton(
-                    text = addText,
-                    iconResource = R.drawable.ic_circle_plus,
-                    containerColor = Black,
-                    contentColor = White,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    onAdd()
-                }
-            }
-        }
-    }
 }
 
 /**
@@ -610,20 +577,18 @@ fun CategoryItem(category: StoreCategory, isSelected: Boolean, onClick: () -> Un
  */
 @Composable
 fun LinkSection(
-    socialMediaAccountData: SocialMediaAccountData?,
-    modifier: Modifier = Modifier,
+    storeLink: List<String>,
     onShareClick: () -> Unit,
     onEditClick: () -> Unit,
     accountType: AccountType
 ) {
-
     @Composable
     fun ShareIcon(onClick: () -> Unit) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(DefaultIconColor)
+                .background(HighlightColor)
                 .clickable(
                     onClick = onClick,
                     interactionSource = remember { MutableInteractionSource() },
@@ -636,7 +601,7 @@ fun LinkSection(
                 contentDescription = "공유하기",
                 modifier = Modifier
                     .size(20.dp),
-                tint = Black
+                tint = White
             )
         }
     }
@@ -644,7 +609,7 @@ fun LinkSection(
     @Composable
     fun EditLinkIcon(onClick: () -> Unit) {
         Box(
-            modifier = modifier
+            modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
                 .background(Black)
@@ -666,15 +631,17 @@ fun LinkSection(
     }
 
     LazyRow(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-        contentPadding = PaddingValues(horizontal = 20.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        reverseLayout = true
     ) {
         item { ShareIcon { onShareClick() } }
 
-        if(socialMediaAccountData != null && socialMediaAccountData.urlList.isNotEmpty()) {
-            items(socialMediaAccountData.urlList) {
-                SocialMediaIcon(it)
+        if(storeLink.isNotEmpty()) {
+            items(storeLink) {
+                LinkIcon(
+                    modifier = Modifier.size(40.dp),
+                    it
+                )
             }
         }
 
@@ -689,7 +656,7 @@ fun LinkSection(
  * @param size 크기
  */
 @Composable
-fun SocialMediaIcon(url: String, size: Int = 40) {
+fun LinkIcon(modifier: Modifier = Modifier, url: String) {
     val context = LocalContext.current
 
     val type = SocialMediaAccountUtils().getType(url)
@@ -697,16 +664,15 @@ fun SocialMediaIcon(url: String, size: Int = 40) {
     Icon(
         imageVector = ImageVector.vectorResource(id = SocialMediaAccountUtils().getIcon(type)),
         contentDescription = "프로필 링크",
-        modifier = Modifier
-            .size(size.dp)
+        modifier = modifier
             .clickable(
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+                    val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
                     }
                     if (intent.resolveActivity(context.packageManager) != null) {
                         context.startActivity(intent)
                     } else {
-                        val webIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        val webIntent = Intent(Intent.ACTION_VIEW, url.toUri())
                         context.startActivity(webIntent)
                     }
                 },

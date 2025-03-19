@@ -69,7 +69,9 @@ fun BannerDetailScreen(
     if(dataFetched){
         Scaffold(
             containerColor = White,
-            topBar = { TitleWithDeleteButton(navController = navController, title = "배너 상세 보기") },
+            topBar = { TitleWithDeleteButton(title = "배너 상세 보기") {
+                navController.popBackStack()
+            } },
             content = { innerPadding ->
                 LazyColumn(
                     modifier = Modifier

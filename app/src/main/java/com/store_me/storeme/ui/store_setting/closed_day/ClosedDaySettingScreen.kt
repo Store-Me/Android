@@ -97,7 +97,9 @@ fun ClosedDaySettingScreen(
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = White,
-            topBar = { TitleWithDeleteButton(navController = navController, title = "휴무일 설정") },
+            topBar = { TitleWithDeleteButton(title = "휴무일 설정") {
+                navController.popBackStack()
+            } },
             content = { innerPadding ->
                 if(showBottomSheet) {
 

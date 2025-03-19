@@ -91,7 +91,9 @@ fun StoreSettingTopLayout(navController: NavController, scrollBehavior: TopAppBa
     Column {
         TopAppBar(
             title ={
-                TitleWithDeleteButton(navController = navController, title = "가게정보 관리", isInTopAppBar = true)
+                TitleWithDeleteButton(title = "가게정보 관리", isInTopAppBar = true) {
+                    navController.popBackStack()
+                }
             },
             scrollBehavior = scrollBehavior,
             colors = TopAppBarDefaults.topAppBarColors(

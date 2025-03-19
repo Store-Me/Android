@@ -672,7 +672,12 @@ fun TopReviewSection() {
 fun ReviewSettingTopLayout(navController: NavController, scrollBehavior: TopAppBarScrollBehavior) {
     TopAppBar(
         title = {
-            TitleWithDeleteButton(navController = navController, title = "스토어 리뷰", isInTopAppBar = true)
+            TitleWithDeleteButton(
+                title = "스토어 리뷰",
+                isInTopAppBar = true
+            ) {
+                navController.popBackStack()
+            }
         },
         scrollBehavior = scrollBehavior,
         colors = TopAppBarDefaults.topAppBarColors(

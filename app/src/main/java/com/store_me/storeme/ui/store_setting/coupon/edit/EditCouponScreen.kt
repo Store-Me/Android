@@ -90,7 +90,11 @@ fun EditCouponScreen(
             containerColor = Color.White,
             topBar = {
                 ProgressBar(currentProgress)
-                TitleWithDeleteButton(navController = navController, title = "쿠폰 수정")
+                TitleWithDeleteButton(
+                    title = "쿠폰 수정"
+                ) {
+                    navController.popBackStack()
+                }
             },
             content = { innerPadding ->
                 Column(
