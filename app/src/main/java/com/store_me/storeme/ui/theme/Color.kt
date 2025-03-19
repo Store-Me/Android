@@ -34,7 +34,6 @@ val TabDividerLineColor = Color(0xFFAAADB4)
 val DateTimeTextColor = Color(0xFF55555C)
 
 //App Highlight Color
-val HighlightColor = Color(0xFFFAECFB)
 val HighlightTextColor = Color(0xFFD440D6)
 
 
@@ -160,6 +159,11 @@ val AddCommentButtonColor = Color(0xFFD449DA)
 val EditCommentStrokeColor = Color(0xFFEFF0F5)
 
 /**
+ * Undefined Color
+ */
+val UndefinedColor = Color(0xFF898C93)
+
+/**
  * My Menu 관련 Color
  */
 //My Menu Icon Color
@@ -263,7 +267,6 @@ val SelectedToolbarTextStyleBackgroundColor = Color(0xFFFEEBFE)
  */
 val DefaultDividerColor = Color(0xFFEFF0F5)
 
-val DefaultIconColor = Color(0xFFEBF3FE)
 
 val UndefinedTextColor = Color(0xFF898C93)
 
@@ -273,4 +276,17 @@ val UndefinedBorderColor = Color(0xFF898C93)
 
 val TextClearIconColor = Color(0xFF545A68)
 
+/**
+ * Default Color
+ */
 val DisabledColor = Color(0xFFAAADB4)
+
+val FinishedColor = Color(0xFF545A68)
+
+val HighlightColor = Color(0xFFD449DA)
+
+val DividerColor = Color(0xFFEFF0F5)
+
+val GuideColor = Color(0xFF898C93)
+
+val ErrorColor = Color(0xFFFE4343)
