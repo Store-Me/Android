@@ -13,7 +13,7 @@ import kotlin.coroutines.suspendCoroutine
  * 이미지 관련 Repository
  */
 interface ImageRepository {
-    suspend fun uploadImage(folderName: String, accountId: String, uri: Uri, onProgress: (Float) -> Unit): Result<String>
+    suspend fun uploadImage(folderName: String, uniqueName: String, uri: Uri, onProgress: (Float) -> Unit): Result<String>
 
     suspend fun uploadImages(folderName: String, accountId: String, uris: List<Uri>, onProgress: (Float) -> Unit): Result<List<String>>
 }
@@ -21,12 +21,12 @@ interface ImageRepository {
 class ImageRepositoryImpl @Inject constructor(
 
 ): ImageRepository {
-    override suspend fun uploadImage(folderName: String, accountId: String, uri: Uri, onProgress: (Float) -> Unit): Result<String> {
+    override suspend fun uploadImage(folderName: String, uniqueName: String, uri: Uri, onProgress: (Float) -> Unit): Result<String> {
         return suspendCoroutine { continuation ->
             val storage = Firebase.storage
             val storageRef = storage.getReference(folderName)
 
-            val fileName = "${accountId}_${System.currentTimeMillis()}"
+            val fileName = "${uniqueName}_${System.currentTimeMillis()}"
 
             val imageRef = storageRef.child("${fileName}.jpeg")
 
