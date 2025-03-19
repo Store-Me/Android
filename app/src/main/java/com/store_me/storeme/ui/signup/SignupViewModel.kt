@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
-import com.store_me.storeme.data.model.signup.CustomerSignupRequest
-import com.store_me.storeme.data.model.signup.OwnerSignupRequest
+import com.store_me.storeme.data.request.signup.CustomerSignupRequest
+import com.store_me.storeme.data.request.signup.OwnerSignupRequest
 import com.store_me.storeme.repository.storeme.UserRepository
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.exception.ApiException
