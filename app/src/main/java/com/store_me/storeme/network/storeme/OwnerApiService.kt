@@ -2,6 +2,7 @@ package com.store_me.storeme.network.storeme
 
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
+import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
 import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
@@ -9,6 +10,7 @@ import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.response.BusinessHoursResponse
 import com.store_me.storeme.data.response.LinksResponse
 import com.store_me.storeme.data.response.MyStoresResponse
+import com.store_me.storeme.data.response.NoticeResponse
 import com.store_me.storeme.data.response.PatchResponse
 import com.store_me.storeme.data.store.StoreInfoData
 import retrofit2.Response
@@ -102,4 +104,21 @@ interface OwnerApiService {
         @Path("storeId") storeId: String,
         @Body patchStorePhoneNumberRequest: PatchStorePhoneNumberRequest
     ): Response<PatchResponse<StoreInfoData>>
+
+    /**
+     * 공지사항 조회 API
+     */
+    @GET("auth/store/{storeId}/notice")
+    suspend fun getStoreNotice(
+        @Path("storeId") storeId: String
+    ): Response<NoticeResponse>
+
+    /**
+     * 공지사항 수정 API
+     */
+    @PATCH("auth/store/{storeId}/notice")
+    suspend fun patchStoreNotice(
+        @Path("storeId") storeId: String,
+        @Body patchStoreNoticeRequest: PatchStoreNoticeRequest
+    ): Response<PatchResponse<NoticeResponse>>
 }
