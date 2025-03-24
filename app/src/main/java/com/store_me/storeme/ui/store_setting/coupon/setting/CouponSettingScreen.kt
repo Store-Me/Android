@@ -78,7 +78,7 @@ import com.store_me.storeme.ui.theme.CouponCardColor
 import com.store_me.storeme.ui.theme.CouponExpiredAvailableBoxColor
 import com.store_me.storeme.ui.theme.CouponExpiredTextColor
 import com.store_me.storeme.ui.theme.CreateCouponArrowColor
-import com.store_me.storeme.ui.theme.EditButtonColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.SelectedSortTypeColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.NavigationUtils
@@ -273,7 +273,7 @@ fun CreateCouponButton(couponType: CouponType, onClick: () -> Unit) {
             .padding(horizontal = 20.dp),
         shape = RoundedCornerShape(10.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = EditButtonColor,
+            containerColor = SubHighlightColor,
             contentColor = Black
         ),
         contentPadding = PaddingValues(20.dp)

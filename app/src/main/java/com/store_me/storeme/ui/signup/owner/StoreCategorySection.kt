@@ -39,7 +39,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.component.DefaultButton
-import com.store_me.storeme.ui.signup.GuidTextBoxItem
+import com.store_me.storeme.ui.signup.GuideTextBoxItem
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.DeleteTextColor
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
@@ -159,7 +159,7 @@ fun StoreCategorySection(onFinish: () -> Unit) {
                     }
 
                     item {
-                        GuidTextBoxItem(
+                        GuideTextBoxItem(
                             title = "업종 입력 가이드",
                             content = "스토어에서 제공하는 서비스를 등록해 주세요.\n스토어를 대표할 수 있는 서비스를 등록해보세요."
                         )

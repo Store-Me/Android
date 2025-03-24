@@ -74,7 +74,7 @@ import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.component.ProfileImage
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
-import com.store_me.storeme.ui.theme.EditButtonColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.OwnerReplyBoxColor
 import com.store_me.storeme.ui.theme.ReviewCountTextColor
 import com.store_me.storeme.ui.theme.ReviewMenuBorderColor
@@ -347,7 +347,7 @@ fun ReviewItem(reviewComment: ReviewComment, onClickMenu: (String) -> Unit, onWr
                     style = storeMeTextStyle(FontWeight.Normal, -2),
                     modifier = Modifier
                         .background(
-                            color = EditButtonColor,
+                            color = SubHighlightColor,
                             shape = RoundedCornerShape(3.dp)
                         )
                         .padding(5.dp)
@@ -362,7 +362,7 @@ fun ReviewItem(reviewComment: ReviewComment, onClickMenu: (String) -> Unit, onWr
                     style = storeMeTextStyle(FontWeight.Normal, -2),
                     modifier = Modifier
                         .background(
-                            color = EditButtonColor,
+                            color = SubHighlightColor,
                             shape = RoundedCornerShape(3.dp)
                         )
                         .padding(5.dp)
@@ -583,7 +583,7 @@ fun TopReviewSection() {
                         .fillMaxWidth()
                         .height(SizeUtils.textSizeToDp(density, 4, 24))
                         .background(
-                            color = EditButtonColor.copy(alpha = 0.4f),
+                            color = SubHighlightColor.copy(alpha = 0.4f),
                             shape = RoundedCornerShape(6.dp)
                         ),
                 ) {
@@ -592,7 +592,7 @@ fun TopReviewSection() {
                             .fillMaxWidth(ratio)
                             .fillMaxHeight()
                             .background(
-                                color = EditButtonColor,
+                                color = SubHighlightColor,
                                 shape = RoundedCornerShape(6.dp)
                             )
                             .align(Alignment.CenterStart)

@@ -13,9 +13,6 @@ val Pink40 = Color(0xFF7D5260)
 //Bottom Navigation Color
 val UnselectedItemColor = Color(0xFF898C93)
 
-//Home Search Box Color
-val HomeSearchBoxColor = Color(0xFFEBF3FE)
-
 //Home Coupon Title Text Color
 val HomeCouponTitleTextColor = Color(0xFFD44ADA)
 
@@ -61,9 +58,6 @@ val PostTimeTextColor = Color(0xFF66727E)
 //Toggle Button
 val ToggleButtonBorderColor = Color(0xFFD9D9D9)
 
-//Edit Button
-val EditButtonColor = Color(0xFFEBF3FE)
-
 //Management Button
 val ManagementButtonColor = Color(0xFFD449DA)
 
@@ -101,8 +95,6 @@ val SwipeEditColor = Color(0xFF508EFA)
 /**
  * Coupon 관련 Color
  */
-//Valid Box Color
-val ValidBoxColor = Color(0xFFEBF3FE)
 
 //Valid Icon Color
 val ValidIconColor = Color(0xFFF393F6)
@@ -284,9 +276,13 @@ val DisabledColor = Color(0xFFAAADB4)
 val FinishedColor = Color(0xFF545A68)
 
 val HighlightColor = Color(0xFFD449DA)
+val LighterHighlightColor = Color(0xFFFEEBFE)
+val SubHighlightColor = Color(0xFFEBF3FE)
 
 val DividerColor = Color(0xFFEFF0F5)
 
 val GuideColor = Color(0xFF898C93)
 
 val ErrorColor = Color(0xFFFE4343)
+
+val ExpiredColor = Color(0xFFD9D9D9)

@@ -35,7 +35,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.PostType
-import com.store_me.storeme.ui.post.SelectPostTypeViewModel.*
 import com.store_me.storeme.ui.post.add.AddPostActivity
 import com.store_me.storeme.ui.theme.AddPostCouponIconColor
 import com.store_me.storeme.ui.theme.AddPostEditIconColor
@@ -43,7 +42,7 @@ import com.store_me.storeme.ui.theme.AddPostEventIconColor
 import com.store_me.storeme.ui.theme.AddPostNoticeIconColor
 import com.store_me.storeme.ui.theme.AddPostStoryIconColor
 import com.store_me.storeme.ui.theme.AddPostSurveyIconColor
-import com.store_me.storeme.ui.theme.EditButtonColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.SizeUtils
@@ -187,7 +186,7 @@ fun PostTypeLargeItem(postType: PostType, iconResource: Int, iconTint: Color, on
         shape = RoundedCornerShape(14.dp),
         colors = ButtonDefaults.buttonColors(
             contentColor = Color.Black,
-            containerColor = EditButtonColor
+            containerColor = SubHighlightColor
         )
     ) {
         val density = LocalDensity.current
@@ -233,7 +232,7 @@ fun PostTypeSmallItem(modifier: Modifier, postType: PostType, iconResource: Int,
         shape = RoundedCornerShape(14.dp),
         colors = ButtonDefaults.buttonColors(
             contentColor = Color.Black,
-            containerColor = EditButtonColor
+            containerColor = SubHighlightColor
         )
     ) {
         val density = LocalDensity.current

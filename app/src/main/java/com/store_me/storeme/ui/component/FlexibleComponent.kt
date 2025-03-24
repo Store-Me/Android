@@ -64,6 +64,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -81,12 +82,11 @@ import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.location.LocationViewModel
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.mystore.CategoryViewModel
-import com.store_me.storeme.ui.store_setting.menu.EditButtonsSection
-import com.store_me.storeme.ui.theme.DefaultDividerColor
+import com.store_me.storeme.ui.theme.DividerColor
 import com.store_me.storeme.ui.theme.HighlightColor
-import com.store_me.storeme.ui.theme.HomeSearchBoxColor
 import com.store_me.storeme.ui.theme.NormalCategoryColor
 import com.store_me.storeme.ui.theme.SelectedCategoryColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.storeMeTypography
@@ -301,7 +301,7 @@ fun SearchField(modifier: Modifier = Modifier, observeText: String? = null, hint
     Box(
         modifier = modifier
             .height(40.dp)
-            .background(HomeSearchBoxColor, shape = RoundedCornerShape(10.dp)),
+            .background(SubHighlightColor, shape = RoundedCornerShape(10.dp)),
         contentAlignment = Alignment.CenterStart
     ) {
         BasicTextField(
@@ -805,6 +805,6 @@ fun AlphaBackgroundText(text: String, diffValue: Int, modifier: Modifier = Modif
  * 기본 HorizontalDivider
  */
 @Composable
-fun DefaultHorizontalDivider(modifier: Modifier = Modifier){
-    HorizontalDivider(modifier = modifier, color = DefaultDividerColor, thickness = 1.dp)
+fun DefaultHorizontalDivider(modifier: Modifier = Modifier, thickness: Dp = 1.dp){
+    HorizontalDivider(modifier = modifier, color = DividerColor, thickness = thickness)
 }

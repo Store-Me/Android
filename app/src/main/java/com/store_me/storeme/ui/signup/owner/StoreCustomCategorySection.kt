@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.TextLengthRow
-import com.store_me.storeme.ui.signup.GuidTextBoxItem
+import com.store_me.storeme.ui.signup.GuideTextBoxItem
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
@@ -152,7 +152,7 @@ fun StoreCustomCategorySection(onFinish: () -> Unit) {
         }
 
         item {
-            GuidTextBoxItem(
+            GuideTextBoxItem(
                 title = "세부 업종 예시",
                 content = "스토어 업종이 \'${StoreCategory.CAFE.displayName}\'인 경우\n세부 업종은 \'케이크 전문점\' 혹은 \'수제 쿠키 전문점\'과 같이 조금 더 자세하게 설명할 수 있어요."
             )

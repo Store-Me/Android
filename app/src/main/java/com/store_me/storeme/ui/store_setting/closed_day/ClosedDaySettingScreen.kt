@@ -62,7 +62,7 @@ import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.store_setting.closed_day.ClosedDaySettingViewModel.*
 import com.store_me.storeme.ui.store_setting.opening_hours.OpeningHoursSettingViewModel.*
 import com.store_me.storeme.ui.theme.DefaultDividerColor
-import com.store_me.storeme.ui.theme.EditButtonColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextColor
 import com.store_me.storeme.ui.theme.NextButtonColor
@@ -250,11 +250,11 @@ fun SetTypeSection() {
         modifier = Modifier.padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        DefaultToggleButton(text = "있음", isSelected = selectType == ClosedDayType.EXIST) {
+        DefaultToggleButton(buttonText = "있음", isSelected = selectType == ClosedDayType.EXIST) {
             closedDaySettingViewModel.setSelectedType(ClosedDayType.EXIST)
         }
 
-        DefaultToggleButton(text = "없음", isSelected = selectType == ClosedDayType.NONE) {
+        DefaultToggleButton(buttonText = "없음", isSelected = selectType == ClosedDayType.NONE) {
             closedDaySettingViewModel.setSelectedType(ClosedDayType.NONE)
         }
     }
@@ -281,7 +281,7 @@ fun SelectWeeksSection() {
             horizontalArrangement = Arrangement.spacedBy(5.dp)
         ) {
             items(DateTimeUtils.DayOfWeek.entries) {
-                DefaultToggleButton(text = it.displayName, isSelected = it in selectedWeeks) {
+                DefaultToggleButton(buttonText = it.displayName, isSelected = it in selectedWeeks) {
                     closedDaySettingViewModel.setSelectedWeeks(it)
                 }
             }
@@ -478,8 +478,8 @@ fun SelectTemporalTimeSection(onFinished: () -> Unit) {
 
     val closedTimeType by remember { closedDaySettingViewModel.closedTimeType }.collectAsState()
 
-    val startDate = closedDaySettingViewModel.selectedStartDate.value!!
-    val endDate = closedDaySettingViewModel.selectedEndDate.value!!
+    val startDate = closedDaySettingViewModel.selectedStartDate
+    val endDate = closedDaySettingViewModel.selectedEndDate
 
     Column(
         modifier = Modifier
@@ -488,21 +488,21 @@ fun SelectTemporalTimeSection(onFinished: () -> Unit) {
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         Row {
-            Text(
+            /*Text(
                 text = "${startDate.month.value}월 ${startDate.dayOfMonth}일 (${DateTimeUtils.DayOfWeek.entries[startDate.dayOfWeek.value % 7].displayName}) ~ " +
                         "${endDate.month.value}월 ${endDate.dayOfMonth}일 (${DateTimeUtils.DayOfWeek.entries[endDate.dayOfWeek.value % 7].displayName})",
                 style = storeMeTextStyle(FontWeight.Bold, 6)
-            )
+            )*/
         }
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            DefaultToggleButton(text = "영업시간 조정", isSelected = closedTimeType == ClosedTimeType.ADJUSTED) {
+            DefaultToggleButton(buttonText = "영업시간 조정", isSelected = closedTimeType == ClosedTimeType.ADJUSTED) {
                 closedDaySettingViewModel.updateClosedTimeType(ClosedTimeType.ADJUSTED)
             }
 
-            DefaultToggleButton(text = "휴무일로 설정", isSelected = closedTimeType == ClosedTimeType.CLOSED) {
+            DefaultToggleButton(buttonText = "휴무일로 설정", isSelected = closedTimeType == ClosedTimeType.CLOSED) {
                 closedDaySettingViewModel.updateClosedTimeType(ClosedTimeType.CLOSED)
             }
         }
@@ -518,7 +518,7 @@ fun SelectTemporalTimeSection(onFinished: () -> Unit) {
             LargeButton(
                 text = "이전",
                 modifier = Modifier.weight(1f),
-                containerColor = EditButtonColor,
+                containerColor = SubHighlightColor,
                 contentColor = Black
             ) {
                 closedDaySettingViewModel.updateCurrentBottomProgress(BottomProgress.DATE)
@@ -528,7 +528,7 @@ fun SelectTemporalTimeSection(onFinished: () -> Unit) {
                 modifier = Modifier.weight(1f),
                 containerColor = SaveButtonColor,
                 contentColor = White,
-                enabled = closedDaySettingViewModel.closedTimeType.value != null
+                enabled = true
             ) {
                 closedDaySettingViewModel.addTemporalOpeningHoursData()
 
@@ -597,7 +597,7 @@ fun SelectTimeSection(thisType: EditTimeType) {
 
 
     if(!isInitialized){
-        when(thisType) {
+    /*    when(thisType) {
             EditTimeType.OPENING_HOURS -> {
                 selectedStartHour.value = if(closedDaySettingViewModel.openingStartHours.value != -1) closedDaySettingViewModel.openingStartHours.value else 9
                 selectedStartMinute.value = if(closedDaySettingViewModel.openingStartMinutes.value != -1) closedDaySettingViewModel.openingStartMinutes.value else 0
@@ -612,7 +612,7 @@ fun SelectTimeSection(thisType: EditTimeType) {
                 selectedEndHour.value = if(closedDaySettingViewModel.endBreakHours.value != -1) closedDaySettingViewModel.endBreakHours.value else 21
                 selectedEndMinute.value = if(closedDaySettingViewModel.endBreakMinutes.value != -1) closedDaySettingViewModel.endBreakMinutes.value else 0
             }
-        }
+        }*/
 
         isInitialized = true
     }
@@ -653,7 +653,7 @@ fun SelectTimeSection(thisType: EditTimeType) {
                         hours = selectedStartHour.value,
                         minutes = selectedStartMinute.value
                     ),
-                    containerColor = if (selected) TimePickerSelectLineColor else EditButtonColor,
+                    containerColor = if (selected) TimePickerSelectLineColor else SubHighlightColor,
                     contentColor = if(selected) HighlightTextColor else Black,
                     modifier = Modifier
                         .weight(1f)
@@ -680,7 +680,7 @@ fun SelectTimeSection(thisType: EditTimeType) {
                         hours = selectedEndHour.value,
                         minutes = selectedEndMinute.value
                     ),
-                    containerColor = if (selected) TimePickerSelectLineColor else EditButtonColor,
+                    containerColor = if (selected) TimePickerSelectLineColor else SubHighlightColor,
                     contentColor = if(selected) HighlightTextColor else Black,
                     modifier = Modifier
                         .weight(1f)

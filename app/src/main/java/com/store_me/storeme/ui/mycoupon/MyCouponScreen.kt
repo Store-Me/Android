@@ -77,7 +77,7 @@ import com.store_me.storeme.ui.theme.ExpiredIconColor
 import com.store_me.storeme.ui.theme.ExpiredTextColor
 import com.store_me.storeme.ui.theme.PostTimeTextColor
 import com.store_me.storeme.ui.theme.SelectedSortTypeColor
-import com.store_me.storeme.ui.theme.ValidBoxColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.ValidIconColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTypography
@@ -400,7 +400,7 @@ fun CouponItem(isValid: Boolean, coupon: UserCouponWithStoreInfoData) {
 
 @Composable
 fun CouponContentSection(isValid: Boolean, coupon: UserCouponWithStoreInfoData) {
-    val boxColor = if(isValid) ValidBoxColor else ExpiredBoxColor
+    val boxColor = if(isValid) SubHighlightColor else ExpiredBoxColor
     val contentColor = if(isValid) Black else ExpiredTextColor
 
     Row(
