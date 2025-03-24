@@ -62,7 +62,7 @@ import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.store_setting.opening_hours.OpeningHoursSettingViewModel.*
 import com.store_me.storeme.ui.theme.DefaultDividerColor
-import com.store_me.storeme.ui.theme.EditButtonColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.HighlightTextColor
 import com.store_me.storeme.ui.theme.TimePickerSelectLineColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
@@ -98,7 +98,9 @@ fun OpeningHoursSettingScreen(
                 .fillMaxSize()
                 .addFocusCleaner(focusManager),
             containerColor = White,
-            topBar = { TitleWithDeleteButton(navController = navController, title = "영업 시간 설정") },
+            topBar = { TitleWithDeleteButton(title = "영업 시간 설정") {
+                navController.popBackStack()
+            } },
             content = { innerPadding ->
                 if(showBottomSheet) {
 
@@ -460,7 +462,7 @@ fun SelectTimeSection(thisType: EditTimeType, selectedWeek: DateTimeUtils.DayOfW
                         hours = selectedStartHour.value,
                         minutes = selectedStartMinute.value
                     ),
-                    containerColor = if (selected) TimePickerSelectLineColor else EditButtonColor,
+                    containerColor = if (selected) TimePickerSelectLineColor else SubHighlightColor,
                     contentColor = if(selected) HighlightTextColor else Black,
                     modifier = Modifier
                         .weight(1f)
@@ -487,7 +489,7 @@ fun SelectTimeSection(thisType: EditTimeType, selectedWeek: DateTimeUtils.DayOfW
                         hours = selectedEndHour.value,
                         minutes = selectedEndMinute.value
                     ),
-                    containerColor = if (selected) TimePickerSelectLineColor else EditButtonColor,
+                    containerColor = if (selected) TimePickerSelectLineColor else SubHighlightColor,
                     contentColor = if(selected) HighlightTextColor else Black,
                     modifier = Modifier
                         .weight(1f)
@@ -538,11 +540,11 @@ fun SetTypeSection() {
         modifier = Modifier.padding(horizontal = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        DefaultToggleButton(text = "매일 같음", isSelected = selectType == OpeningHoursType.SAME) {
+        DefaultToggleButton(buttonText = "매일 같음", isSelected = selectType == OpeningHoursType.SAME) {
             openingHoursSettingViewModel.setSelectedType(OpeningHoursType.SAME)
         }
 
-        DefaultToggleButton(text = "요일마다 설정", isSelected = selectType == OpeningHoursType.DIFFERENT) {
+        DefaultToggleButton(buttonText = "요일마다 설정", isSelected = selectType == OpeningHoursType.DIFFERENT) {
             openingHoursSettingViewModel.setSelectedType(OpeningHoursType.DIFFERENT)
 
         }
