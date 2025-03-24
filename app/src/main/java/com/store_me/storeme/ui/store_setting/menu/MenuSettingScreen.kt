@@ -84,7 +84,7 @@ import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.store_setting.menu.add.AddMenuViewModel.MenuHighLightType.*
-import com.store_me.storeme.ui.theme.EditButtonColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.MenuPriceDescriptionColor
 import com.store_me.storeme.ui.theme.PopularBoxColor
 import com.store_me.storeme.ui.theme.PopularTextColor
@@ -674,10 +674,11 @@ fun MenuSettingTopLayout(
     Column {
         TopAppBar(title = {
             TitleWithDeleteButton(
-                navController = navController,
                 title = "메뉴 관리",
                 isInTopAppBar = true
-            ) },
+            ) {
+                navController.popBackStack()
+            } },
             scrollBehavior = scrollBehavior,
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = White,
@@ -709,7 +710,7 @@ fun EditButtonsSection(
     ) {
         LargeButton(
             text = "카테고리 관리",
-            containerColor = EditButtonColor,
+            containerColor = SubHighlightColor,
             contentColor = Black,
             modifier = Modifier.weight(1f)
         ) {
