@@ -78,7 +78,7 @@ import com.store_me.storeme.ui.signup.owner.StoreProfileImageSection
 import com.store_me.storeme.ui.signup.phone_authentication.AuthenticationSection
 import com.store_me.storeme.ui.signup.signup_progress.CustomerProgress
 import com.store_me.storeme.ui.signup.signup_progress.OwnerProgress
-import com.store_me.storeme.ui.signup.signup_progress.SignupProgress
+import com.store_me.storeme.data.enums.progress.SignupProgress
 import com.store_me.storeme.ui.signup.signup_progress.SignupProgressViewModel
 import com.store_me.storeme.ui.signup.signup_progress.SignupState
 import com.store_me.storeme.ui.signup.terms.OptionalTerms
@@ -476,9 +476,9 @@ fun SignupTitleText(title: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun GuidTextBoxItem(title: String, content: String) {
+fun GuideTextBoxItem(modifier: Modifier = Modifier, title: String, content: String) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .background(color = SignupTextBoxColor, shape = RoundedCornerShape(14.dp))
             .padding(horizontal = 24.dp, vertical = 20.dp)
             .fillMaxWidth()

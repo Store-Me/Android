@@ -1,4 +1,4 @@
-package com.store_me.storeme.ui.signup.signup_progress
+package com.store_me.storeme.data.enums.progress
 
 enum class SignupProgress(val order: Int) {
     TERMS(0),

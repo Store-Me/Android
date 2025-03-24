@@ -3,6 +3,7 @@ package com.store_me.storeme.ui.signup.signup_progress
 import androidx.lifecycle.ViewModel
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
+import com.store_me.storeme.data.enums.progress.SignupProgress
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

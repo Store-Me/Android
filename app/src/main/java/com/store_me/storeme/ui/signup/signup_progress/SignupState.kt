@@ -1,5 +1,7 @@
 package com.store_me.storeme.ui.signup.signup_progress
 
+import com.store_me.storeme.data.enums.progress.SignupProgress
+
 sealed class SignupState: Comparable<SignupState> {
     data class Signup(val progress: SignupProgress) : SignupState()
     data class Customer(val progress: CustomerProgress) : SignupState()
