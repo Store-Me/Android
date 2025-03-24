@@ -41,7 +41,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
@@ -61,7 +60,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.data.Auth
-import com.store_me.storeme.data.DEFAULT_MENU_CATEGORY
 import com.store_me.storeme.data.MenuCategory
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.DefaultOutlineTextField
@@ -74,7 +72,7 @@ import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.store_setting.menu.DragValue
-import com.store_me.storeme.ui.theme.EditButtonColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.SwipeDeleteColor
 import com.store_me.storeme.ui.theme.SwipeEditColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
@@ -351,7 +349,7 @@ fun AddCategorySection() {
                 .padding(vertical = 10.dp)
         )
         LargeButton(text = "추가하기",
-            containerColor = EditButtonColor,
+            containerColor = SubHighlightColor,
             contentColor = Black,
             enabled = !isError && name.isNotEmpty(),
             modifier = Modifier
