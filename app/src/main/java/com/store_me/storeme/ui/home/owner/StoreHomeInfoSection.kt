@@ -7,6 +7,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -20,8 +21,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,13 +44,13 @@ import com.naver.maps.map.compose.MarkerState
 import com.naver.maps.map.compose.NaverMap
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.StoreProfileItems
-import com.store_me.storeme.data.store.BusinessHourData
+import com.store_me.storeme.data.response.BusinessHoursResponse
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.ui.component.CopyButton
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
-import com.store_me.storeme.ui.theme.EditButtonColor
 import com.store_me.storeme.ui.theme.ManagementButtonColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.UndefinedColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.DateTimeUtils
@@ -62,7 +63,7 @@ import com.store_me.storeme.utils.StoreCategory
 @Composable
 fun StoreHomeInfoSection(
     storeInfoData: StoreInfoData,
-    businessHours: List<BusinessHourData>,
+    businessHours: BusinessHoursResponse,
     cameraPositionState: CameraPositionState,
     onClick: (StoreProfileItems) -> Unit
 ) {
@@ -135,7 +136,7 @@ fun StoreHomeInfoSection(
 
             //휴무일
             StoreHolidaySection(businessHours) {
-                onClick(StoreProfileItems.HOLIDAY)
+                onClick(StoreProfileItems.BUSINESS_HOURS)
             }
 
             //가게 전화번호
@@ -172,7 +173,8 @@ fun StoreHomeInfoButtonsSection(
 ) {
     Column(
         modifier = Modifier
-            .width(IntrinsicSize.Max)
+            .width(IntrinsicSize.Max),
+        verticalArrangement = Arrangement.SpaceEvenly
     ) {
         DefaultButton(
             buttonText = "가게정보 관리",
@@ -189,7 +191,7 @@ fun StoreHomeInfoButtonsSection(
             buttonText = "프로필 수정",
             colors = ButtonDefaults.buttonColors(
                 contentColor = Color.Black,
-                containerColor = EditButtonColor
+                containerColor = SubHighlightColor
             ),
             diffValue = 0
         ) {
@@ -247,7 +249,7 @@ fun StoreHomeIcon(id: Int) {
 }
 
 @Composable
-fun StoreBusinessHoursSection(businessHours: List<BusinessHourData>, onClick: () -> Unit) {
+fun StoreBusinessHoursSection(businessHours: BusinessHoursResponse, onClick: () -> Unit) {
     val showAll = remember { mutableStateOf(false) }
     val todayWeekDay = remember { mutableStateOf(DateTimeUtils().getTodayWeekday()) }
     val currentTime = remember { mutableStateOf(DateTimeUtils().getCurrentTime()) }
@@ -266,39 +268,44 @@ fun StoreBusinessHoursSection(businessHours: List<BusinessHourData>, onClick: ()
         StoreHomeIcon(R.drawable.ic_clock)
 
         when {
-            businessHours.isEmpty() -> {
+            businessHours.businessHours.isNullOrEmpty() -> {
                 Text(
-                    text = "영업시간을 입력해주세요.",
+                    text = "영업 시간을 설정해주세요.",
                     style = storeMeTextStyle(FontWeight.Bold, 0),
                     color = UndefinedColor,
                 )
             }
             else -> {
                 Text(
-                    text = DateTimeUtils().getBusinessHoursText(currentTime = currentTime.value, businessHourData = businessHours[todayWeekDay.value]),
+                    text = DateTimeUtils().getBusinessHoursText(currentTime = currentTime.value, businessHourData = businessHours.businessHours[todayWeekDay.value]),
                     style = storeMeTextStyle(FontWeight.Bold, 0),
                     color = Color.Black
                 )
 
-                IconButton(onClick = { showAll.value = !showAll.value }) {
-                    Icon(
-                        painter = painterResource(id = if(showAll.value) R.drawable.ic_arrow_down else R.drawable.ic_arrow_up),
-                        contentDescription = "영업시간 확대/축소",
-                        modifier = Modifier
-                            .size(16.dp),
-                        tint = Color.Black
-                    )
-                }
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Icon(
+                    painter = painterResource(id = if(!showAll.value) R.drawable.ic_arrow_down else R.drawable.ic_arrow_up),
+                    contentDescription = "영업시간 확대/축소",
+                    modifier = Modifier
+                        .size(16.dp)
+                        .clickable(
+                            onClick = { showAll.value = !showAll.value },
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = ripple(bounded = false)
+                        ),
+                    tint = Color.Black
+                )
             }
         }
     }
 
-    AnimatedVisibility(showAll.value && businessHours.isNotEmpty()) {
+    AnimatedVisibility(showAll.value && !businessHours.businessHours.isNullOrEmpty()) {
         Column(
-            modifier = Modifier.padding(32.dp),
+            modifier = Modifier.padding(start = 32.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            businessHours.forEachIndexed { index, it ->
+            businessHours.businessHours?.forEachIndexed { index, it ->
                 val isToday = index == todayWeekDay.value
                 val fontWeight = if(isToday) FontWeight.ExtraBold else FontWeight.Bold
 
@@ -344,15 +351,25 @@ fun StoreBusinessHoursSection(businessHours: List<BusinessHourData>, onClick: ()
                     }
                 }
             }
+
+            if(!businessHours.extraInfo.isNullOrEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = businessHours.extraInfo,
+                    style = storeMeTextStyle(FontWeight.Bold, 1),
+                    color = Color.Black
+                )
+            }
         }
     }
 }
 
 @Composable
-fun StoreHolidaySection(businessHours: List<BusinessHourData>, onClick: () -> Unit) {
+fun StoreHolidaySection(businessHours: BusinessHoursResponse, onClick: () -> Unit) {
     val holidays = remember {
-        businessHours
-            .mapIndexedNotNull { index, it -> if (it.isHoliday) DateTimeUtils.DayOfWeek.entries[index].displayName else null }
+        businessHours.businessHours
+            ?.mapIndexedNotNull { index, it -> if (it.isHoliday) DateTimeUtils.DayOfWeek.entries[index].displayName else null }
     }
 
     Row(
@@ -369,7 +386,7 @@ fun StoreHolidaySection(businessHours: List<BusinessHourData>, onClick: () -> Un
         StoreHomeIcon(R.drawable.ic_calendar)
 
         when {
-            businessHours.isEmpty() -> {
+            businessHours.businessHours.isNullOrEmpty() -> {
                 Text(
                     text = "휴무일을 설정해주세요.",
                     style = storeMeTextStyle(FontWeight.Bold, 0),
@@ -378,7 +395,7 @@ fun StoreHolidaySection(businessHours: List<BusinessHourData>, onClick: () -> Un
             }
             else -> {
                 Text(
-                    text = if(holidays.isEmpty()) "휴무일 없음" else "매주 " + holidays.joinToString(", ") + " 휴무",
+                    text = if(holidays?.isEmpty() == true) "휴무일 없음" else "매주 " + holidays?.joinToString(", ") + " 휴무",
                     style = storeMeTextStyle(FontWeight.Bold, 0),
                     color = Color.Black
                 )
