@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.TextLengthRow
-import com.store_me.storeme.ui.signup.GuidTextBoxItem
+import com.store_me.storeme.ui.signup.GuideTextBoxItem
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
@@ -154,7 +154,7 @@ fun StoreNameSection(onFinish: () -> Unit) {
         }
 
         item {
-            GuidTextBoxItem(
+            GuideTextBoxItem(
                 title = "스토어 이름 가이드",
                 content = "업체명 또는 간판명으로 입력하거나\n스토어를 대표할 수 있는 이름으로 입력해주세요.\n\n스토어 이름은 운영정책에 따라 임의로 수정되거나 제재될 수 있어요."
             )
