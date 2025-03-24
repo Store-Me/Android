@@ -79,17 +79,8 @@ fun DefaultOutlineTextField(
     enabled: Boolean = true,
     exceptText: String = ""
 ) {
-    val urlList = Auth.linkListData.value.urlList
 
     val errorMessage = when (errorType) {
-        TextFieldErrorType.LINK -> {
-            if (urlList.contains(text))
-                "이미 존재하는 링크입니다."
-            else if (text.isNotEmpty() && !text.startsWith("http://") && !text.startsWith("https://"))
-                "링크는 https:// 혹은 http:// 로 시작해야 합니다."
-            else
-                null
-        }
         TextFieldErrorType.DESCRIPTION -> {
             if(text.length > 100) {
                 "100자 이내로 작성해야 합니다."
@@ -113,13 +104,13 @@ fun DefaultOutlineTextField(
                 text.length > 15 -> {
                     "15자 이내로 작성해야 합니다."
                 }
-                Auth.menuCategoryList.value.any { category ->
+                /*Auth.menuCategoryList.value.any { category ->
                     category.menuList.any { menu ->
                         menu.name == text && exceptText != menu.name
                     }
                 } -> {
                     "같은 이름의 메뉴가 존재합니다."
-                }
+                }*/
                 else -> {
                     null
                 }
@@ -130,11 +121,11 @@ fun DefaultOutlineTextField(
                 text.length > 20 -> {
                     "20자 이내로 작성해야 합니다."
                 }
-                Auth.menuCategoryList.value.any { category ->
+                /*Auth.menuCategoryList.value.any { category ->
                     category.categoryName == text && exceptText != category.categoryName
                 } -> {
                     "같은 이름의 카테고리가 존재합니다."
-                }
+                }*/
                 else -> {
                     null
                 }
@@ -143,12 +134,6 @@ fun DefaultOutlineTextField(
         TextFieldErrorType.COUPON_CONTENT -> {
             if(text.length > 15) {
                 "15자 이내로 작성해야 합니다."
-            } else
-                null
-        }
-        TextFieldErrorType.STORE_NAME -> {
-            if(text.length > 30) {
-                "30자 이내로 작성해야 합니다."
             } else
                 null
         }

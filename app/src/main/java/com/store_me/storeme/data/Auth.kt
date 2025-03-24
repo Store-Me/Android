@@ -1,6 +1,5 @@
 package com.store_me.storeme.data
 
-import com.store_me.storeme.data.enums.AccountType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -11,36 +10,6 @@ object Auth {
     private val _userData = MutableStateFlow(UserData("도구리", "도구리야", "https://i.namu.wiki/i/vJ_iVx2uAFkYUmfaxSwP0QSDbPjRz-OzilacQpDBLQmls9oOM0pV4qUk8mCbgL41v4_wGV-kdotau0LIpZu261XmIpWq0qLg3gKfSSBg78Px_EGRyNlmZk6d5N6KKx6zgsZArniJ3t2cwmB4IvS-0A.webp"))
     val userData: StateFlow<UserData> = _userData
 
-    /**
-     * 사용자 계정 정보 설정
-     */
-    fun setUserData(userData: UserData) {
-        _userData.value = userData
-    }
-
-    fun updateProfileImage(newProfileImage: String) {
-        _userData.update {
-            it.copy(profileImage = newProfileImage)
-        }
-    }
-
-    /**
-     * 사장님 계정 정보 설정
-     */
-
-    /*   Link 관리   */
-    private val _linkListData = MutableStateFlow(SocialMediaAccountData(emptyList()))
-    val linkListData: StateFlow<SocialMediaAccountData> = _linkListData
-
-    fun setLinkListData(socialMediaAccountData: SocialMediaAccountData) {
-        _linkListData.value = socialMediaAccountData
-    }
-
-    fun addLinkListData(url: String) {
-        val currentList = _linkListData.value.urlList.toMutableList()
-        currentList.add(url)
-        _linkListData.value = SocialMediaAccountData(currentList)
-    }
 
     /*   영업 시간 정보 및 휴무일 설정   */
     private val _storeHoursData = MutableStateFlow(StoreHoursData(emptyList(), emptyList(), emptyList(),""))
@@ -148,7 +117,6 @@ object Auth {
             )
         ))
     ))
-    //private val _menuCategoryList =  MutableStateFlow<List<MenuCategory>>(emptyList())
     val menuCategoryList: StateFlow<List<MenuCategory>> = _menuCategoryList
 
     fun updateCategory(menuCategoryList: List<MenuCategory>) {
@@ -241,18 +209,6 @@ object Auth {
         _menuCategoryList.value = currentList
     }
 
-    fun updateMenuData(menuList: List<MenuData>, categoryName: String) {
-        val currentList = _menuCategoryList.value.toMutableList()
-
-        val targetCategory = _menuCategoryList.value.find {
-            it.categoryName == categoryName
-        } ?: return
-
-        val updatedMenuCategory = targetCategory.copy(menuList = menuList)
-        currentList[currentList.indexOf(targetCategory)] = updatedMenuCategory
-
-        _menuCategoryList.value = currentList
-    }
 
     fun updateMenuData(menuList: List<MenuData>, categoryIndex: Int) {
         val currentList = _menuCategoryList.value.toMutableList()
