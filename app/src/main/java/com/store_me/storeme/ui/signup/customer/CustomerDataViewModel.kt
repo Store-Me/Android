@@ -49,7 +49,7 @@ class CustomerDataViewModel @Inject constructor(
             val response = imageRepository.uploadImage(
                 folderName = StoragePaths.PROFILE_IMAGE,
                 uri = profileImage.value!!,
-                accountId = accountId
+                uniqueName = accountId
             ) {
                 _progress.value = it
             }
