@@ -51,6 +51,7 @@ import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.StoreProfileItems
 import com.store_me.storeme.ui.banner.BannerDetailScreen
 import com.store_me.storeme.ui.banner.BannerListScreen
+import com.store_me.storeme.ui.component.StoreMeSnackbar
 import com.store_me.storeme.ui.home.customer.CustomerHomeScreen
 import com.store_me.storeme.ui.home.owner.OwnerHomeScreen
 import com.store_me.storeme.ui.home.owner.StoreDataViewModel
@@ -69,7 +70,7 @@ import com.store_me.storeme.ui.store_detail.StoreDetailScreen
 import com.store_me.storeme.ui.store_info.StoreInfoScreen
 import com.store_me.storeme.ui.store_setting.closed_day.ClosedDaySettingScreen
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponSettingScreen
-import com.store_me.storeme.ui.store_setting.IntroSettingScreen
+import com.store_me.storeme.ui.store_setting.intro.IntroSettingScreen
 import com.store_me.storeme.ui.store_setting.LocationSettingScreen
 import com.store_me.storeme.ui.store_setting.menu.MenuSettingScreen
 import com.store_me.storeme.ui.store_setting.NewsSettingScreen
@@ -78,6 +79,7 @@ import com.store_me.storeme.ui.store_setting.opening_hours.OpeningHoursSettingSc
 import com.store_me.storeme.ui.store_setting.image.ImageSettingScreen
 import com.store_me.storeme.ui.store_setting.review.ReviewSettingScreen
 import com.store_me.storeme.ui.store_setting.StoreSettingScreen
+import com.store_me.storeme.ui.store_setting.business_hours.BusinessHoursSettingScreen
 import com.store_me.storeme.ui.store_setting.story.StorySettingScreen
 import com.store_me.storeme.ui.store_setting.coupon.create.CreateCouponScreen
 import com.store_me.storeme.ui.store_setting.coupon.edit.EditCouponScreen
@@ -85,6 +87,7 @@ import com.store_me.storeme.ui.store_setting.menu.add.AddMenuScreen
 import com.store_me.storeme.ui.store_setting.menu.category.EditMenuCategoryScreen
 import com.store_me.storeme.ui.store_setting.menu.category.MenuCategorySettingScreen
 import com.store_me.storeme.ui.store_setting.menu.edit.EditMenuScreen
+import com.store_me.storeme.ui.store_setting.phone_number.PhoneNumberSettingScreen
 import com.store_me.storeme.ui.store_setting.profile.ProfileSettingScreen
 import com.store_me.storeme.ui.store_talk.StoreTalkScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
@@ -96,6 +99,7 @@ import com.store_me.storeme.utils.SuccessEventBus
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
+import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import com.store_me.storeme.utils.preference.SettingPreferencesHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -124,6 +128,8 @@ class MainActivity : ComponentActivity() {
             val loadingViewModel: LoadingViewModel = viewModel()
             val isLoading by loadingViewModel.isLoading.collectAsState()
 
+            val storeDataViewModel: StoreDataViewModel = hiltViewModel()
+
             keyboardHeightObserver.startObserving()
 
             StoreMeTheme {
@@ -147,7 +153,8 @@ class MainActivity : ComponentActivity() {
                 CompositionLocalProvider(
                     LocalAuth provides auth,
                     LocalSnackbarHostState provides snackBarHostState,
-                    LocalLoadingViewModel provides loadingViewModel
+                    LocalLoadingViewModel provides loadingViewModel,
+                    LocalStoreDataViewModel provides storeDataViewModel
                 ) {
                     Surface(
                         modifier = Modifier
@@ -196,7 +203,10 @@ class MainActivity : ComponentActivity() {
         val snackbarHostState = LocalSnackbarHostState.current
 
         Scaffold(
-            snackbarHost = { SnackbarHost(snackbarHostState) },
+            snackbarHost = { SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { StoreMeSnackbar(snackbarData = it) }
+            ) },
             bottomBar = { BottomNavigationBar(navController) }
         ) {
             Box(Modifier.padding(it)) {
@@ -209,14 +219,16 @@ class MainActivity : ComponentActivity() {
     private fun OwnerScreen() {
         val navController = rememberNavController()
         val snackbarHostState = LocalSnackbarHostState.current
-        val storeDataViewModel: StoreDataViewModel = hiltViewModel()
 
         Scaffold(
-            snackbarHost = { SnackbarHost(snackbarHostState) },
+            snackbarHost = { SnackbarHost(
+                hostState = snackbarHostState,
+                snackbar = { StoreMeSnackbar(snackbarData = it) }
+            ) },
             bottomBar = { BottomNavigationBar(navController) }
         ) {
             Box(Modifier.padding(it)) {
-                OwnerNavigationGraph(navController, storeDataViewModel = storeDataViewModel)
+                OwnerNavigationGraph(navController)
             }
         }
     }
@@ -275,12 +287,11 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun OwnerNavigationGraph(navController: NavHostController, storeDataViewModel: StoreDataViewModel) {
-
+    fun OwnerNavigationGraph(navController: NavHostController) {
         NavHost(navController, startDestination = OwnerBottomNavItem.OwnerHome.screenRoute){
             //기본 Bottom Item
             composable(OwnerBottomNavItem.OwnerHome.screenRoute) {
-                OwnerHomeScreen(navController, storeDataViewModel = storeDataViewModel)
+                OwnerHomeScreen(navController)
             }
             composable(OwnerBottomNavItem.CustomerManagement.screenRoute) {
 
@@ -295,28 +306,44 @@ class MainActivity : ComponentActivity() {
                 StoreInfoScreen(navController)
             }
 
-            /*
-             * Start Screen 이 OWNER_HOME
+            /**
+             * Start At Home
              */
-            //HOME > LINK_SETTING
-            composable(OWNER_HOME + OwnerNavItem.LINK_SETTING) {
-                LinkSettingScreen(navController, storeDataViewModel = storeDataViewModel)
+            /* Store Profile Items */
+            composable(OWNER_HOME + StoreProfileItems.INTRO) {
+                IntroSettingScreen(navController)
             }
-            //HOME > MANAGEMENT
-            composable(OWNER_HOME + StoreProfileItems.MANAGEMENT) { StoreSettingScreen(navController) }
-            //HOME > EDIT_PROFILE
+            composable(OWNER_HOME + StoreProfileItems.BUSINESS_HOURS) {
+                BusinessHoursSettingScreen(navController)
+            }
+            composable(OWNER_HOME + StoreProfileItems.HOLIDAY) {
+                BusinessHoursSettingScreen(navController)
+            }
+            composable(OWNER_HOME + StoreProfileItems.PHONE_NUMBER) {
+                PhoneNumberSettingScreen(navController)
+            }
+            composable(OWNER_HOME + StoreProfileItems.LOCATION) {
+                LocationSettingScreen(navController)
+            }
             composable(OWNER_HOME + StoreProfileItems.EDIT_PROFILE) {
-                ProfileSettingScreen(navController, storeDataViewModel = storeDataViewModel)
+                ProfileSettingScreen(navController)
             }
-            composable(OWNER_HOME + StoreProfileItems.INTRO) { IntroSettingScreen(navController) }
+            composable(OWNER_HOME + StoreProfileItems.MANAGEMENT) {
+                StoreSettingScreen(navController)
+            }
 
-            //HOME > NORMAL
-            composable(OWNER_HOME + StoreProfileItems.BUSINESS_HOURS) { OpeningHoursSettingScreen(navController) }
-            composable(OWNER_HOME + StoreProfileItems.HOLIDAY) { ClosedDaySettingScreen(navController) }
-            composable(OWNER_HOME + StoreProfileItems.LOCATION) { LocationSettingScreen(navController) }
+            /* Store Link Setting */
+            composable(OWNER_HOME + OwnerNavItem.LINK_SETTING) {
+                LinkSettingScreen(navController)
+            }
+
+
+
+
+
             //HOME > HOME ITEM
             composable(OWNER_HOME + StoreHomeItem.NOTICE) { NoticeSettingScreen(navController) }
-            composable(OWNER_HOME + StoreHomeItem.IMAGE) { ImageSettingScreen(navController, storeDataViewModel) }
+            composable(OWNER_HOME + StoreHomeItem.IMAGE) { ImageSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.COUPON) { CouponSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.MENU) { MenuSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.MENU + "/{selectedMenuName}") { backStackEntry ->

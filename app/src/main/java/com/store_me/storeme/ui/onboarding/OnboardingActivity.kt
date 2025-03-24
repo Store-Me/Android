@@ -8,6 +8,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -31,6 +34,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.store_me.auth.Auth
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.LoginType
+import com.store_me.storeme.ui.component.StoreMeSnackbar
 import com.store_me.storeme.ui.loading.LoadingScreen
 import com.store_me.storeme.ui.loading.LoadingViewModel
 import com.store_me.storeme.ui.signup.SignupScreen
@@ -117,14 +121,22 @@ class OnboardingActivity : ComponentActivity() {
                             }
                         }
 
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
+                        Scaffold(
+                            snackbarHost = { SnackbarHost(
+                                hostState = snackbarHostState,
+                                snackbar = { StoreMeSnackbar(snackbarData = it) }
+                            ) }
                         ) {
-                            NavGraph(navController = navController)
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(it)
+                            ) {
+                                NavGraph(navController = navController)
 
-                            if(isLoading) {
-                                LoadingScreen()
+                                if(isLoading) {
+                                    LoadingScreen()
+                                }
                             }
                         }
                     }
