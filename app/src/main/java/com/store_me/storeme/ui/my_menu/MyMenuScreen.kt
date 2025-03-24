@@ -153,7 +153,7 @@ fun MyProfileItem() {
         modifier = Modifier.padding(20.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ProfileImageSection()
+        UserProfileImageSection()
 
         Spacer(modifier = Modifier.width(20.dp))
 
@@ -168,7 +168,7 @@ fun MyProfileItem() {
 }
 
 @Composable
-fun ProfileImageSection() {
+fun UserProfileImageSection() {
     val myMenuViewModel = LocalMyCouponViewModel.current
     val userData by myMenuViewModel.userData.collectAsState()
 
@@ -390,7 +390,6 @@ fun MyMenuNormalItemSection(navController: NavController, myMenuViewModel: MyMen
 
     }
     MyMenuNormalItem(MyMenuViewModel.MyMenuNormalItem.QUIT) {
-        myMenuViewModel.deleteUser()
     }
 
 }
