@@ -1,6 +1,7 @@
 package com.store_me.storeme.utils
 
 import com.store_me.storeme.data.DateData
+import com.store_me.storeme.data.TimeData
 import com.store_me.storeme.data.UserCouponWithStoreInfoData
 import com.store_me.storeme.data.store.BusinessHourData
 import java.time.LocalDate
@@ -17,7 +18,7 @@ class DateTimeUtils {
     /**
      * 현재 시각 기준으로 이후인지 확인하는 함수
      * @param datetime 확인할 DateTime
-     * @sample "YYYY-MM-DDTHH:MM:SS"
+     * @sample "YYYY-MM-ddTHH:MM:SS"
      */
     fun isAfterDatetime(datetime: String): Boolean{
         val currentTime = LocalDateTime.now()
@@ -160,14 +161,57 @@ class DateTimeUtils {
 
         return DayOfWeek.entries[date.dayOfWeek.value % 7].displayName
     }
+    /**
+     * YYYY-MM-DD 데이터를 받아 YYYY년 MM월 DD일 형식으로 반환하는 함수
+     */
+    fun getDateString(dateString: String, showYear: Boolean = true, showMonth: Boolean = true, showDay: Boolean = true, withDayOfWeek: Boolean = false): String {
+        return try {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val localDate = LocalDate.parse(dateString, formatter)
+
+            listOfNotNull(
+                if (showYear) "${localDate.year}년" else null,
+                if (showMonth) "${localDate.monthValue}월" else null,
+                if (showDay) "${localDate.dayOfMonth}일" else null,
+                if (withDayOfWeek) DayOfWeek.entries[localDate.dayOfWeek.value % 7].displayName else null
+            ).joinToString(" ")
+
+        } catch (e: Exception) {
+            "잘못된 날짜 형식"
+        }
+    }
 
     /**
-     * DateTime 을 Long 으로 변환하는 함수
+     * 날짜 정보를 받아 무슨 요일인지 반환하는 함수
      */
-    fun dateTimeToLong(dateTime: String): Long {
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
-        val localDateTime = LocalDateTime.parse(dateTime, formatter)
-        return localDateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+    fun getDayOfWeek(dateData: DateData): DayOfWeek {
+        val date = LocalDate.of(dateData.year, dateData.month, dateData.day)
+
+        return DayOfWeek.entries[date.dayOfWeek.value % 7]
+    }
+
+    fun stringToDateData(dateString: String): DateData? {
+        return try {
+            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val localDate = LocalDate.parse(dateString, formatter)
+            DateData(localDate.year, localDate.monthValue, localDate.dayOfMonth)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun getTimeData(timeString: String?): TimeData? {
+        return try {
+            if(timeString == null) return null
+
+            val parts = timeString.split(":")
+            if (parts.size != 2) return null
+            val hour = parts[0].toInt()
+            val minute = parts[1].toInt()
+            TimeData(hour, minute)
+        } catch (e: Exception) {
+            null
+        }
     }
 
     /**
