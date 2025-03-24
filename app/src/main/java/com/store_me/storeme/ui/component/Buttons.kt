@@ -38,7 +38,8 @@ import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.theme.CopyButtonColor
-import com.store_me.storeme.ui.theme.EditButtonColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
+import com.store_me.storeme.ui.theme.ExpiredColor
 import com.store_me.storeme.ui.theme.SelectedCheckBoxColor
 import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.ToggleButtonBorderColor
@@ -52,11 +53,14 @@ import com.store_me.storeme.utils.SizeUtils
  * Button Composable 관리 파일
  */
 
+/**
+ * 기본 버튼 패딩 값 반환 함수
+ */
 private fun defaultButtonPadding(diffValue: Int): Int {
     return when {
-        diffValue > 0 -> 12
+        diffValue > 0 -> 20
 
-        else -> 0
+        else -> 10
     }
 }
 
@@ -76,19 +80,24 @@ fun DefaultButton(
     fontWeight: FontWeight = FontWeight.ExtraBold,
     onClick: () -> Unit
 ) {
+    val paddingValue = remember { defaultButtonPadding(diffValue).dp }
+
     Button(
         onClick = { onClick() },
         modifier = modifier
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
+            .fillMaxWidth()
+            .defaultMinSize(
+                minWidth = 20.dp,
+                minHeight = 20.dp
+            ),
+        shape = RoundedCornerShape(30),
         colors = colors,
-        enabled = enabled
+        enabled = enabled,
+        contentPadding = PaddingValues(vertical = paddingValue, horizontal = paddingValue + 4.dp),
     ) {
         Text(
             text = buttonText,
             style = storeMeTextStyle(fontWeight, diffValue),
-            modifier = Modifier
-                .padding(vertical = defaultButtonPadding(diffValue).dp)
         )
     }
 }
@@ -119,16 +128,22 @@ fun DefaultButton(
 ) {
     val density = LocalDensity.current
 
-    val iconSize = SizeUtils.textSizeToDp(density, diffValue, 4)
+    val iconSize = remember { SizeUtils.textSizeToDp(density, diffValue, 4) }
+    val paddingValue = remember { defaultButtonPadding(diffValue).dp }
 
     Button(
         onClick = { onClick() },
         modifier = modifier
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
+            .fillMaxWidth()
+            .defaultMinSize(
+                minWidth = 20.dp,
+                minHeight = 20.dp
+            ),
+        shape = RoundedCornerShape(30),
         colors = colors,
-        enabled = enabled
-    ) {
+        enabled = enabled,
+        contentPadding = PaddingValues(vertical = paddingValue, horizontal = paddingValue + 4.dp),
+        ) {
         if(leftIconResource != null) {
             Icon(
                 painter = painterResource(id = leftIconResource),
@@ -144,8 +159,6 @@ fun DefaultButton(
         Text(
             text = buttonText,
             style = storeMeTextStyle(fontWeight, diffValue),
-            modifier = Modifier
-                .padding(vertical = defaultButtonPadding(diffValue).dp)
         )
 
         if(rightIconResource != null) {
@@ -159,6 +172,46 @@ fun DefaultButton(
                 tint = rightIconTint
             )
         }
+    }
+}
+
+/**
+ * Default Toggle Button
+ */
+@Composable
+fun DefaultToggleButton(
+    buttonText: String,
+    modifier: Modifier = Modifier,
+    diffValue: Int = 0,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val borderStroke = if(!isSelected) BorderStroke(1.dp, ExpiredColor) else null
+    val contentColor = if(!isSelected) Color.Black else Color.White
+    val containerColor = if(!isSelected) Color.White else Color.Black
+
+    val paddingValue = remember { defaultButtonPadding(diffValue).dp }
+
+    Button(
+        onClick = { onClick() },
+        modifier = modifier
+            .wrapContentWidth()
+            .defaultMinSize(
+                minWidth = 20.dp,
+                minHeight = 20.dp
+            ),
+        shape = RoundedCornerShape(30),
+        border = borderStroke,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = containerColor,
+            contentColor = contentColor
+        ),
+        contentPadding = PaddingValues(vertical = paddingValue, horizontal = paddingValue + 4.dp),
+    ) {
+        Text(
+            text = buttonText,
+            style = storeMeTextStyle(FontWeight.Normal, diffValue)
+        )
     }
 }
 
@@ -219,7 +272,7 @@ fun SmallButton(
     modifier: Modifier = Modifier
         .height(40.dp)
         .fillMaxWidth(),
-    containerColor: Color = EditButtonColor,
+    containerColor: Color = SubHighlightColor,
     contentColor: Color = Color.Black,
     onClick: () -> Unit
 ) {
@@ -331,7 +384,7 @@ fun NotificationIcon(navController: NavController) {
  * @param isSelected 선택 여부
  */
 @Composable
-fun CircleToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
+fun CircleToggleButton(text: String, isSelected: Boolean, enabled: Boolean = true, onClick: () -> Unit) {
     val borderStroke = if(!isSelected) BorderStroke(1.dp, ToggleButtonBorderColor) else null
     val contentColor = if(!isSelected) Color.Black else Color.White
     val containerColor = if(!isSelected) Color.White else Color.Black
@@ -345,42 +398,11 @@ fun CircleToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
             containerColor = containerColor,
             contentColor = contentColor
         ),
+        enabled = enabled,
         onClick = onClick,
         contentPadding = PaddingValues(0.dp)
     ) {
         Text(text = text, style = storeMeTextStyle(FontWeight.Bold, 2), modifier = Modifier.padding(horizontal = 3.dp))
-    }
-}
-
-/**
- * 기본 Toggle 버튼
- * @param text Button Text
- * @param isSelected 선택 여부
- */
-@Composable
-fun DefaultToggleButton(text: String, isSelected: Boolean, onClick: () -> Unit) {
-    val borderStroke = if(!isSelected) BorderStroke(1.dp, ToggleButtonBorderColor) else null
-    val contentColor = if(!isSelected) Color.Black else Color.White
-    val containerColor = if(!isSelected) Color.White else Color.Black
-
-    Button(
-        modifier = Modifier
-            .wrapContentWidth()
-            .height(26.dp)
-            .defaultMinSize(
-                minWidth = 20.dp,
-                minHeight = ButtonDefaults.MinHeight
-            ),
-        shape = RoundedCornerShape(6.dp),
-        border = borderStroke,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = containerColor,
-            contentColor = contentColor
-        ),
-        contentPadding = PaddingValues(horizontal = 10.dp),
-        onClick = onClick
-    ) {
-        Text(text = text, style = storeMeTextStyle(FontWeight.Normal, 2), modifier = Modifier.padding(horizontal = 3.dp))
     }
 }
 
