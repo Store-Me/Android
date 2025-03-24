@@ -45,6 +45,7 @@ import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.component.AlphaBackgroundText
+import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.CircleBorderWithIcon
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.LoadingProgress
@@ -61,18 +62,19 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.CropUtils
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
+import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import com.yalantis.ucrop.UCrop
 
 
 @Composable
 fun ProfileSettingScreen(
     navController: NavController,
-    storeDataViewModel: StoreDataViewModel,
     profileSettingViewModel: ProfileSettingViewModel = hiltViewModel()
 ){
     val focusManager = LocalFocusManager.current
 
     val auth = LocalAuth.current
+    val storeDataViewModel = LocalStoreDataViewModel.current
     val loadingViewModel = LocalLoadingViewModel.current
     val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
 
@@ -182,7 +184,7 @@ fun ProfileSettingScreen(
                     loadingViewModel.showLoading()
 
                     storeDataViewModel.patchStoreProfileImages(
-                        storeId = auth.storeId.value!!,
+                        storeId = auth.storeId.value ?: "",
                         profileImage = profileImageUrl,
                         backgroundImage = backgroundImageUrl
                     )
@@ -192,10 +194,7 @@ fun ProfileSettingScreen(
     )
 
     if (showDialog.value) {
-        WarningDialog(
-            title = "프로필 수정을 종료할까요?",
-            content = "종료 시 변경 내용이 반영되지 않아요.",
-            actionText = "이동",
+        BackWarningDialog(
             onDismiss = {
                 showDialog.value = false
             },
