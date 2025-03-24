@@ -131,10 +131,6 @@ fun LoginScreen(
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(
-            hostState = snackbarHostState,
-            snackbar = { StoreMeSnackbar(snackbarData = it) }
-        ) },
         modifier = Modifier
             .fillMaxSize()
             .addFocusCleaner(focusManager)
