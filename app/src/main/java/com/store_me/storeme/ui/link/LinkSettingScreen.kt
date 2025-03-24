@@ -95,6 +95,7 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.SizeUtils
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
+import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import timber.log.Timber
@@ -103,14 +104,16 @@ import kotlin.math.roundToInt
 @Composable
 fun LinkSettingScreen(
     navController: NavController,
-    storeDataViewModel: StoreDataViewModel,
     linkSettingViewModel: LinkSettingViewModel = viewModel()
 ) {
+    val storeDataViewModel = LocalStoreDataViewModel.current
+    val auth = LocalAuth.current
+    val loadingViewModel = LocalLoadingViewModel.current
+
     val originalLink by storeDataViewModel.links.collectAsState()
     val links by linkSettingViewModel.links.collectAsState()
 
-    val auth = LocalAuth.current
-    val loadingViewModel = LocalLoadingViewModel.current
+
 
     val focusManager = LocalFocusManager.current
 

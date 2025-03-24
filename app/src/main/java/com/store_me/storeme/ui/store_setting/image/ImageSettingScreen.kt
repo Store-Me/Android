@@ -30,14 +30,15 @@ import com.store_me.storeme.ui.home.owner.StoreDataViewModel
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
+import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
 @Composable
 fun ImageSettingScreen(
     navController: NavController,
-    storeDataViewModel: StoreDataViewModel,
     imageSettingViewModel: ImageSettingViewModel = hiltViewModel()
 ) {
     val snackbarHostState = LocalSnackbarHostState.current
+    val storeDataViewModel = LocalStoreDataViewModel.current
 
     val storeData by storeDataViewModel.storeInfoData.collectAsState()
 
