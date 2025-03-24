@@ -3,8 +3,12 @@ package com.store_me.storeme.ui.home.owner
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.store_me.storeme.data.StoreHomeItem
+import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
+import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
+import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
+import com.store_me.storeme.data.response.BusinessHoursResponse
 import com.store_me.storeme.data.store.BusinessHourData
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.repository.storeme.OwnerRepository
@@ -15,7 +19,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,11 +28,14 @@ class StoreDataViewModel @Inject constructor(
     private val _storeInfoData = MutableStateFlow<StoreInfoData?>(null)
     val storeInfoData: StateFlow<StoreInfoData?> = _storeInfoData
 
-    private val _businessHours = MutableStateFlow<List<BusinessHourData>?>(emptyList())
-    val businessHours: StateFlow<List<BusinessHourData>?> = _businessHours
+    private val _businessHours = MutableStateFlow<BusinessHoursResponse?>(null)
+    val businessHours: StateFlow<BusinessHoursResponse?> = _businessHours
 
     private val _links = MutableStateFlow<List<String>?>(emptyList())
     val links: StateFlow<List<String>?> = _links
+
+    private val _notice = MutableStateFlow("")
+    val notice: StateFlow<String> = _notice
 
     /**
      * StoreData 조회 함수
@@ -58,7 +64,7 @@ class StoreDataViewModel @Inject constructor(
             val response = ownerRepository.getBusinessHours(storeId = storeId)
 
             response.onSuccess {
-                updateBusinessHours(it.businessHours)
+                updateBusinessHours(it)
             }.onFailure {
                 if(it is ApiException) {
                     ErrorEventBus.errorFlow.emit(it.message)
@@ -130,6 +136,74 @@ class StoreDataViewModel @Inject constructor(
         }
     }
 
+    fun patchStoreIntro(storeId: String, storeIntro: String) {
+        viewModelScope.launch {
+            val response = ownerRepository.patchStoreIntro(
+                storeId = storeId,
+                patchStoreIntroRequest = PatchStoreIntroRequest(
+                    storeIntro = storeIntro
+                )
+            )
+
+            response.onSuccess {
+                updateStoreInfoData(it.result)
+
+                SuccessEventBus.successFlow.emit(it.message)
+            }.onFailure {
+                if (it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
+
+    fun patchStorePhoneNumber(storeId: String, storePhoneNumber: String) {
+        viewModelScope.launch {
+            val response = ownerRepository.patchStorePhoneNumber(
+                storeId = storeId,
+                phoneNumber = storePhoneNumber.ifEmpty { null }
+            )
+
+            response.onSuccess {
+                updateStoreInfoData(it.result)
+
+                SuccessEventBus.successFlow.emit(it.message)
+            }.onFailure {
+                if (it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
+
+    fun patchBusinessHours(storeId: String, businessHours: List<BusinessHourData>, extraInfo: String?) {
+        viewModelScope.launch {
+            val response = ownerRepository.patchBusinessHours(
+                storeId = storeId,
+                patchBusinessHoursRequest = PatchBusinessHoursRequest(
+                    businessHours = businessHours,
+                    extraInfo = extraInfo
+                )
+            )
+
+            response.onSuccess {
+                updateBusinessHours(it.result)
+
+                SuccessEventBus.successFlow.emit(it.message)
+            }.onFailure {
+                if (it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
+
     /**
      * StoreData 갱신 함수
      */
@@ -140,7 +214,7 @@ class StoreDataViewModel @Inject constructor(
     /**
      * BusinessHours 갱신 함수
      */
-    fun updateBusinessHours(businessHours: List<BusinessHourData>?) {
+    fun updateBusinessHours(businessHours: BusinessHoursResponse?) {
         _businessHours.value = businessHours
     }
 
@@ -151,17 +225,53 @@ class StoreDataViewModel @Inject constructor(
         _links.value = links
     }
 
-    //편집 버튼 Text
-    fun getEditButtonText(storeHomeItem: StoreHomeItem, isEmpty: Boolean = true): String {
-        return when(storeHomeItem) {
-            StoreHomeItem.NOTICE -> { if (isEmpty) "공지사항 작성" else "공지사항 편집"}
-            //StoreHomeItem.INTRO -> { if (isEmpty) "소개 내용 작성" else "소개 내용 편집"}
-            StoreHomeItem.IMAGE -> { "사진 업로드"}
-            StoreHomeItem.COUPON -> { "쿠폰 관리" }
-            StoreHomeItem.MENU -> { "메뉴 관리" }
-            StoreHomeItem.STORY -> { "스토리 업로드" }
-            StoreHomeItem.REVIEW -> { "리뷰 관리"}
-            StoreHomeItem.NEWS -> { "소식 작성"}
+    /**
+     * Notice 갱신 함수
+     */
+    fun updateNotice(notice: String) {
+        _notice.value = notice
+    }
+
+    /**
+     * Notice 조회
+     */
+    fun getStoreNotice(storeId: String) {
+        viewModelScope.launch {
+            val response = ownerRepository.getStoreNotice(storeId = storeId)
+
+            response.onSuccess {
+                updateNotice(it.notice ?: "")
+            }.onFailure {
+                if(it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
+
+    /**
+     * Notice 변경
+     */
+    fun patchStoreNotice(storeId: String, notice: String) {
+        viewModelScope.launch {
+            val response = ownerRepository.patchStoreNotice(
+                storeId = storeId,
+                patchStoreNoticeRequest = PatchStoreNoticeRequest(notice = notice)
+            )
+
+            response.onSuccess {
+                updateNotice(it.result.notice ?: "")
+
+                SuccessEventBus.successFlow.emit(it.message)
+            }.onFailure {
+                if (it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
         }
     }
 }
