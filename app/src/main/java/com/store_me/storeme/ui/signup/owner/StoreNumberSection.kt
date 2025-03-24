@@ -34,7 +34,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.component.DefaultButton
-import com.store_me.storeme.ui.signup.GuidTextBoxItem
+import com.store_me.storeme.ui.signup.GuideTextBoxItem
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
@@ -158,7 +158,7 @@ fun StoreNumberSection(onFinish: () -> Unit) {
         }
 
         item {
-            GuidTextBoxItem(
+            GuideTextBoxItem(
                 title = "스토어 전화번호 가이드",
                 content = "다른 사람들에게 노출되는 번호이기 때문에, 개인 핸드폰 번호가 아닌 안심번호, 가게 유선 전화번호로 등록하는 것이 권장돼요."
             )
