@@ -2,12 +2,15 @@ package com.store_me.storeme.repository.storeme
 
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
+import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
 import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
+import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.response.BusinessHoursResponse
 import com.store_me.storeme.data.response.LinksResponse
 import com.store_me.storeme.data.response.MyStoresResponse
+import com.store_me.storeme.data.response.NoticeResponse
 import com.store_me.storeme.data.response.PatchResponse
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.network.storeme.OwnerApiService
@@ -37,6 +40,12 @@ interface OwnerRepository {
     suspend fun getStoreLinks(storeId: String): Result<LinksResponse>
 
     suspend fun patchStoreLinks(storeId: String, patchLinksRequest: PatchLinksRequest): Result<PatchResponse<LinksResponse>>
+
+    suspend fun patchStorePhoneNumber(storeId: String, phoneNumber: String?): Result<PatchResponse<StoreInfoData>>
+
+    suspend fun getStoreNotice(storeId: String): Result<NoticeResponse>
+
+    suspend fun patchStoreNotice(storeId: String, patchStoreNoticeRequest: PatchStoreNoticeRequest): Result<PatchResponse<NoticeResponse>>
 }
 
 class OwnerRepositoryImpl @Inject constructor(
@@ -241,6 +250,82 @@ class OwnerRepositoryImpl @Inject constructor(
                 patchLinksRequest = patchLinksRequest
             )
 
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun patchStorePhoneNumber(
+        storeId: String,
+        phoneNumber: String?
+    ): Result<PatchResponse<StoreInfoData>> {
+        return try {
+            val response = ownerApiService.patchStorePhoneNumber(
+                storeId = storeId,
+                patchStorePhoneNumberRequest = PatchStorePhoneNumberRequest(storePhoneNumber = phoneNumber)
+            )
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+
+    }
+
+    override suspend fun getStoreNotice(storeId: String): Result<NoticeResponse> {
+        return try {
+            val response = ownerApiService.getStoreNotice(
+                storeId = storeId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun patchStoreNotice(storeId: String, patchStoreNoticeRequest: PatchStoreNoticeRequest): Result<PatchResponse<NoticeResponse>> {
+        return try {
+            val response = ownerApiService.patchStoreNotice(
+                storeId = storeId,
+                patchStoreNoticeRequest = patchStoreNoticeRequest
+            )
             if(response.isSuccessful) {
                 val responseBody = response.body()
 
