@@ -64,7 +64,7 @@ import com.store_me.storeme.ui.location.LocationViewModel
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.theme.DownloadCouponColor
 import com.store_me.storeme.ui.theme.HomeCouponTitleTextColor
-import com.store_me.storeme.ui.theme.HomeSearchBoxColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTypography
@@ -317,7 +317,7 @@ fun CouponLayout(navController: NavController, couponList: MutableList<CouponWit
                         modifier = Modifier
                             .size(120.dp)
                             .background(
-                                color = HomeSearchBoxColor,
+                                color = SubHighlightColor,
                                 shape = RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp)
                             )
                             .padding(start = 12.dp, end = 12.dp)
