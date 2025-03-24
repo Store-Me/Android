@@ -75,7 +75,7 @@ import com.store_me.storeme.ui.store_setting.coupon.create.CreateCouponViewModel
 import com.store_me.storeme.ui.store_setting.coupon.create.CreateCouponViewModel.CreateCouponProgress.SET_NAME
 import com.store_me.storeme.ui.store_setting.coupon.create.CreateCouponViewModel.CreateCouponProgress.SET_QUANTITY
 import com.store_me.storeme.ui.store_setting.coupon.create.CreateCouponViewModel.CreateCouponProgress.SET_VALUE
-import com.store_me.storeme.ui.theme.EditButtonColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.HighlightTextColor
 import com.store_me.storeme.ui.theme.UndefinedBorderColor
 
@@ -292,7 +292,7 @@ fun SetValueSection(couponType: CouponType, isEdit: Boolean = false, onDelete: (
 
         Row {
             if(isEdit){
-                LargeButton(text = "쿠폰 삭제", containerColor = EditButtonColor, contentColor = Black, modifier = Modifier.weight(1f)) {
+                LargeButton(text = "쿠폰 삭제", containerColor = SubHighlightColor, contentColor = Black, modifier = Modifier.weight(1f)) {
                     onDelete()
                 }
             }
@@ -650,7 +650,7 @@ fun ProgressBar(currentProgress: CreateCouponViewModel.CreateCouponProgress) {
         modifier = Modifier
             .fillMaxWidth(),
         color = HighlightTextColor,
-        trackColor = EditButtonColor,
+        trackColor = SubHighlightColor,
         strokeCap = StrokeCap.Butt
     )
 }
