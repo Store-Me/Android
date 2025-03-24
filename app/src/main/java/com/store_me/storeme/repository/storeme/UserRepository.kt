@@ -7,8 +7,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
-import com.store_me.storeme.data.model.signup.CustomerSignupRequest
-import com.store_me.storeme.data.model.signup.OwnerSignupRequest
+import com.store_me.storeme.data.request.signup.CustomerSignupRequest
+import com.store_me.storeme.data.request.signup.OwnerSignupRequest
 import com.store_me.storeme.data.request.login.LoginRequest
 import com.store_me.storeme.network.storeme.UserApiService
 import com.store_me.storeme.utils.preference.TokenPreferencesHelper
@@ -16,7 +16,6 @@ import com.store_me.storeme.utils.exception.ApiExceptionHandler
 import com.store_me.storeme.utils.exception.ApiExceptionHandler.toResult
 import com.store_me.storeme.utils.response.ResponseHandler
 import dagger.hilt.android.qualifiers.ApplicationContext
-import okhttp3.MultipartBody
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -44,13 +43,9 @@ interface UserRepository {
 
     //아이디 중복 확인
     suspend fun checkAccountIdDuplicate(accountId: String): Result<Boolean>
-
-    //회원 탈퇴
-    suspend fun deleteUser(): Result<Unit>
 }
 
 class UserRepositoryImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
     @Named("UserApiServiceWithoutAuth") private val userApiServiceWithoutAuth: UserApiService,
     @Named("UserApiServiceWithAuth") private val userApiServiceWithAuth: UserApiService
 ): UserRepository {
@@ -67,10 +62,10 @@ class UserRepositoryImpl @Inject constructor(
             } else {
                 Timber.d("가입 실패")
 
-                ResponseHandler.handleErrorResponse(response, context)
+                ResponseHandler.handleErrorResponse(response)
             }
         } catch (e: Exception) {
-            e.toResult(context)
+            e.toResult()
         }
     }
 
@@ -87,10 +82,10 @@ class UserRepositoryImpl @Inject constructor(
             } else {
                 Timber.d("가입 실패")
 
-                ResponseHandler.handleErrorResponse(response, context)
+                ResponseHandler.handleErrorResponse(response)
             }
         } catch (e: Exception) {
-            e.toResult(context)
+            e.toResult()
         }
     }
 
@@ -113,13 +108,13 @@ class UserRepositoryImpl @Inject constructor(
 
                     Result.success(Unit)
                 } else {
-                    ResponseHandler.handleErrorResponse(response, context)
+                    ResponseHandler.handleErrorResponse(response)
                 }
             } else {
-                ResponseHandler.handleErrorResponse(response, context)
+                ResponseHandler.handleErrorResponse(response)
             }
         } catch (e: Exception) {
-            e.toResult(context)
+            e.toResult()
         }
     }
 
@@ -186,45 +181,10 @@ class UserRepositoryImpl @Inject constructor(
 
                 Result.success(responseBody?.isDuplicate ?: true)
             } else {
-                ResponseHandler.handleErrorResponse(response, context)
+                ResponseHandler.handleErrorResponse(response)
             }
         } catch (e: Exception) {
-            e.toResult(context)
-        }
-    }
-
-    override suspend fun deleteUser(): Result<Unit> {
-        return try {
-            // API 호출
-            val response = userApiServiceWithAuth.deleteUser()
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.i(responseBody.toString())
-
-                when(responseBody?.isSuccess) {
-                    true -> {
-                        Result.success(Unit)
-                    }
-                    false -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody.message
-                            ))
-                    }
-                    else -> {
-                        Result.failure(
-                            ApiExceptionHandler.apiException(
-                                code = response.code(), message = responseBody?.message
-                            ))
-                    }
-                }
-            } else {
-                ResponseHandler.handleErrorResponse(response, context)
-            }
-        } catch (e: Exception) {
-            e.toResult(context)
+            e.toResult()
         }
     }
 }
