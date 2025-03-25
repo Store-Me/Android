@@ -1,5 +1,6 @@
 package com.store_me.storeme.network.naver
 
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -16,6 +17,16 @@ interface NaverApiService {
     suspend fun geocode(
         @Query("query") query: String,
     ): Response<GeocodeResponse>
+
+    @GET("https://naveropenapi.apigw.ntruss.com/map-static/v2/raster")
+    suspend fun getStaticMap(
+        @Query("w") width: Int,
+        @Query("h") height: Int,
+        @Query("level") level: Int,
+        @Query("scale") scale: Int?,
+        @Query("lang") lang: String?,
+        @Query("markers") markers: String?
+    ): Response<ResponseBody>
 
     data class GeocodeResponse(
         val status: String,
