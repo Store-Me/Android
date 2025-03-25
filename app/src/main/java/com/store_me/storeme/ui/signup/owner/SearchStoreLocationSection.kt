@@ -39,10 +39,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.naver.maps.geometry.LatLng
 import com.store_me.storeme.R
+import com.store_me.storeme.data.database.location.LocationEntity
 import com.store_me.storeme.ui.location.HighlightedText
 import com.store_me.storeme.ui.location.LocationViewModel
-import com.store_me.storeme.ui.theme.ErrorTextFieldColor
+import com.store_me.storeme.ui.theme.ErrorColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
@@ -54,7 +56,8 @@ fun SearchStoreLocationSection(
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
     locationViewModel: LocationViewModel = hiltViewModel(),
-    onClick: () -> Unit
+    onFail: () -> Unit,
+    onSuccess: (String, String, Long, LatLng?) -> Unit  //LocationAddress, Location, LocationCode, LatLng 순서
 ) {
     val storeDataViewModel = LocalStoreSignupDataViewModel.current
 
@@ -63,22 +66,19 @@ fun SearchStoreLocationSection(
     val reverseGeoCodeCompleted by locationViewModel.reverseGeoCodeCompleted.collectAsState()
 
     BackHandler {
-        onClick()
+        onFail()
     }
     
     LaunchedEffect(reverseGeoCodeCompleted) {
         if(reverseGeoCodeCompleted) {
-            storeDataViewModel.updateStoreLocationAddress(locationViewModel.storeLocationAddress.value)
-            
-            storeDataViewModel.updateStoreLocation(locationViewModel.storeLocation.value)
-
-            storeDataViewModel.updateStoreLocationCode(locationViewModel.storeLocationCode.value ?: 1111000000)
-
-            storeDataViewModel.updateStoreLatLng(locationViewModel.storeLatLng.value)
+            onSuccess(
+                locationViewModel.storeLocationAddress.value,
+                locationViewModel.storeLocation.value,
+                locationViewModel.storeLocationCode.value ?: 1111000000,
+                locationViewModel.storeLatLng.value
+            )
 
             locationViewModel.setReverseGeocodeCompletedValue(false)
-
-            onClick()
         }
     }
 
@@ -122,27 +122,32 @@ fun SearchStoreLocationSection(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = HighlightTextFieldColor,
-                    errorBorderColor = ErrorTextFieldColor,
-                    errorLabelColor = ErrorTextFieldColor,
+                    errorBorderColor = ErrorColor,
+                    errorLabelColor = ErrorColor,
                     disabledBorderColor = Color.Black,
-                    disabledTextColor = if(storeLocationAddress.isNotEmpty()) Color.Black else Color.Unspecified
+                    disabledTextColor = Color.Black
                 ),
                 supportingText = {  }
             )
 
+            //현재 위치로 설정
             SetLocationButton(locationViewModel)
 
-            SearchResultListSection(locationViewModel) {
-                onClick()
-            }
+            SearchResultListSection(
+                locationViewModel,
+                onClick = {
+                    onSuccess("${it.first} ${it.second} ${it.third}", it.third.toString(), it.code, null)
+                }
+            )
         }
     }
 }
 
 @Composable
-fun SearchResultListSection(locationViewModel: LocationViewModel, onClick: () -> Unit) {
-    val storeDataViewModel = LocalStoreSignupDataViewModel.current
-
+fun SearchResultListSection(
+    locationViewModel: LocationViewModel,
+    onClick: (LocationEntity) -> Unit
+) {
     val searchQuery by locationViewModel.searchQuery.collectAsState()
     val searchResults by locationViewModel.searchResults.collectAsState()
 
@@ -153,12 +158,7 @@ fun SearchResultListSection(locationViewModel: LocationViewModel, onClick: () ->
         items(searchResults) {
             val displayName = "${it.first} ${it.second} ${it.third}"
             HighlightedText(text = displayName, query = searchQuery) {
-                storeDataViewModel.updateStoreLocation(it.third.toString())
-                storeDataViewModel.updateStoreLocationCode(it.code)
-                storeDataViewModel.updateStoreLatLng(null)
-                storeDataViewModel.updateStoreLocationAddress(displayName)
-
-                onClick()
+                onClick(it)
             }
         }
     }
