@@ -68,14 +68,12 @@ import com.store_me.storeme.ui.onboarding.OnboardingActivity
 import com.store_me.storeme.ui.post.SelectPostTypeScreen
 import com.store_me.storeme.ui.store_detail.StoreDetailScreen
 import com.store_me.storeme.ui.store_info.StoreInfoScreen
-import com.store_me.storeme.ui.store_setting.closed_day.ClosedDaySettingScreen
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponSettingScreen
 import com.store_me.storeme.ui.store_setting.intro.IntroSettingScreen
-import com.store_me.storeme.ui.store_setting.LocationSettingScreen
+import com.store_me.storeme.ui.store_setting.location.LocationSettingScreen
 import com.store_me.storeme.ui.store_setting.menu.MenuSettingScreen
 import com.store_me.storeme.ui.store_setting.NewsSettingScreen
-import com.store_me.storeme.ui.store_setting.NoticeSettingScreen
-import com.store_me.storeme.ui.store_setting.opening_hours.OpeningHoursSettingScreen
+import com.store_me.storeme.ui.store_setting.notice.NoticeSettingScreen
 import com.store_me.storeme.ui.store_setting.image.ImageSettingScreen
 import com.store_me.storeme.ui.store_setting.review.ReviewSettingScreen
 import com.store_me.storeme.ui.store_setting.StoreSettingScreen
