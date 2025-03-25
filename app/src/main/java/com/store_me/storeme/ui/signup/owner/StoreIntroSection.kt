@@ -12,8 +12,11 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -22,6 +25,7 @@ import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.signup.SignupTitleText
+import com.store_me.storeme.ui.theme.ErrorColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.composition_locals.signup.LocalStoreSignupDataViewModel
@@ -31,6 +35,12 @@ fun StoreIntroSection(onFinish: () -> Unit) {
     val storeDataViewModel = LocalStoreSignupDataViewModel.current
 
     val storeIntro by storeDataViewModel.storeIntro.collectAsState()
+
+    val isError = remember { mutableStateOf(false) }
+
+    LaunchedEffect(storeIntro) {
+        isError.value = storeIntro.length > 100
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -81,9 +91,20 @@ fun StoreIntroSection(onFinish: () -> Unit) {
                     unfocusedContainerColor = Color.White,
                     focusedIndicatorColor = Color.White,
                     unfocusedIndicatorColor = Color.White,
+                    errorTextColor = ErrorColor
                 ),
                 singleLine = false,
-                minLines = 2    //1 -> 2줄 변화시 글자 크기 문제 해결
+                minLines = 2,    //1 -> 2줄 변화시 글자 크기 문제 해결
+                isError = isError.value,
+                supportingText = {
+                    if(isError.value){
+                        Text(
+                            text = "스토어 소개글은 100자 이내로 작성되어야 합니다.",
+                            style = storeMeTextStyle(FontWeight.Normal, 0),
+                            color = ErrorColor
+                        )
+                    }
+                }
             )
         }
 
@@ -110,7 +131,10 @@ fun StoreIntroSection(onFinish: () -> Unit) {
             Column(
                 modifier = Modifier.padding(horizontal = 20.dp)
             ) {
-                DefaultButton(buttonText = "다음") {
+                DefaultButton(
+                    buttonText = "다음",
+                    enabled = !isError.value
+                ) {
                     onFinish()
                 }
             }

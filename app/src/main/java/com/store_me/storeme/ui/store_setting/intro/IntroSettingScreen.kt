@@ -31,6 +31,7 @@ import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
+import com.store_me.storeme.ui.theme.ErrorColor
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.composition_locals.LocalAuth
@@ -49,6 +50,12 @@ fun IntroSettingScreen(
     val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
 
     val intro by introSettingViewModel.intro.collectAsState()
+
+    val isError = remember { mutableStateOf(false) }
+
+    LaunchedEffect(intro) {
+        isError.value = intro.length > 100
+    }
 
     LaunchedEffect(storeInfoData) {
         introSettingViewModel.updateStoreIntro(storeInfoData?.storeIntro ?: "")
@@ -117,9 +124,20 @@ fun IntroSettingScreen(
                             unfocusedContainerColor = Color.White,
                             focusedIndicatorColor = Color.White,
                             unfocusedIndicatorColor = Color.White,
+                            errorTextColor = ErrorColor
                         ),
                         singleLine = false,
-                        minLines = 2    //1 -> 2줄 변화시 글자 크기 문제 해결
+                        minLines = 2,   //1 -> 2줄 변화시 글자 크기 문제 해결
+                        isError = isError.value,
+                        supportingText = {
+                            if(isError.value){
+                                Text(
+                                    text = "스토어 소개글은 100자 이내로 작성되어야 합니다.",
+                                    style = storeMeTextStyle(FontWeight.Normal, 0),
+                                    color = ErrorColor
+                                )
+                            }
+                        }
                     )
                 }
 
@@ -145,7 +163,7 @@ fun IntroSettingScreen(
                 item {
                     DefaultButton(
                         buttonText = "저장",
-                        enabled = hasDifference,
+                        enabled = hasDifference && !isError.value,
                         modifier = Modifier
                             .padding(20.dp)
                     ) {
