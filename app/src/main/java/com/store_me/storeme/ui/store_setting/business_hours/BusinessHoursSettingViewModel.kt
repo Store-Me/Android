@@ -15,8 +15,8 @@ class BusinessHoursSettingViewModel: ViewModel() {
     private val _hasHoliday = MutableStateFlow<Boolean?>(null)
     val hasHoliday: StateFlow<Boolean?> = _hasHoliday
 
-    private val _selectedWeeks = MutableStateFlow<Set<DateTimeUtils.DayOfWeek>>(emptySet())
-    val selectedWeeks: StateFlow<Set<DateTimeUtils.DayOfWeek>> = _selectedWeeks
+    private val _holidayWeeks = MutableStateFlow<Set<DateTimeUtils.DayOfWeek>>(emptySet())
+    val holidayWeeks: StateFlow<Set<DateTimeUtils.DayOfWeek>> = _holidayWeeks
 
     private val _hasSameBusinessHours = MutableStateFlow<Boolean?>(null)
     val hasSameBusinessHours: StateFlow<Boolean?> = _hasSameBusinessHours
@@ -49,10 +49,10 @@ class BusinessHoursSettingViewModel: ViewModel() {
         _hasHoliday.value = value
     }
 
-    fun updateSelectedWeeks(selectedWeek: DateTimeUtils.DayOfWeek) {
-        _selectedWeeks.value = _selectedWeeks.value.toMutableSet().apply {
-            if(!add(selectedWeek)) {
-                remove(selectedWeek)
+    fun updateHolidayWeeks(holidayWeek: DateTimeUtils.DayOfWeek) {
+        _holidayWeeks.value = _holidayWeeks.value.toMutableSet().apply {
+            if(!add(holidayWeek)) {
+                remove(holidayWeek)
             }
         }
     }
@@ -141,7 +141,7 @@ class BusinessHoursSettingViewModel: ViewModel() {
     }
 
     fun areAllBusinessSettingsSame(): Boolean {
-        val selected = selectedWeeks.value
+        val selected = holidayWeeks.value
 
         return allItemsEqual(isAlwaysOpen.value, selected) &&
                 allItemsEqual(hasBreakTime.value, selected) &&
@@ -175,7 +175,7 @@ class BusinessHoursSettingViewModel: ViewModel() {
     }
 
     fun areAllFinished(): Boolean {
-        val selected = selectedWeeks.value
+        val selected = holidayWeeks.value
 
         for (i in 0 until 7) {
             if (DateTimeUtils.DayOfWeek.entries[i] in selected) continue // 제외
@@ -204,7 +204,7 @@ class BusinessHoursSettingViewModel: ViewModel() {
         try {
             DateTimeUtils.DayOfWeek.entries.forEachIndexed { index, dayOfWeek ->
                 when {
-                    selectedWeeks.value.contains(dayOfWeek) -> {
+                    holidayWeeks.value.contains(dayOfWeek) -> {
                         result.add(BusinessHourData(openingTime = null, closingTime = null, startBreak = null, endBreak = null, isHoliday = true))
                     }
                     isAlwaysOpen.value[index] -> {
