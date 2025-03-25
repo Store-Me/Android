@@ -2,13 +2,20 @@ package com.store_me.storeme.repository.naver
 
 import com.naver.maps.geometry.LatLng
 import com.store_me.storeme.network.naver.NaverApiService
-import com.store_me.storeme.network.naver.NaverGeocodingApiService
 import com.store_me.storeme.utils.ServerResponse
 import timber.log.Timber
 import javax.inject.Inject
 
-class NaverRepository @Inject constructor(private val naverApiService: NaverApiService, private val naverGeocodingApiService: NaverGeocodingApiService) {
-    suspend fun reverseGeocode(latLng: LatLng): Result<NaverApiService.ReverseGeocodeResponse> {
+interface NaverRepository {
+    suspend fun reverseGeocode(latLng: LatLng): Result<NaverApiService.ReverseGeocodeResponse>
+
+    suspend fun geocode(roadAddress: String): Result<NaverApiService.GeocodeResponse>
+}
+
+class NaverRepositoryImpl @Inject constructor(
+    private val naverApiService: NaverApiService
+): NaverRepository {
+    override suspend fun reverseGeocode(latLng: LatLng): Result<NaverApiService.ReverseGeocodeResponse> {
         /*   Lat Lng 으로 지역 반환   */
 
         return try {
@@ -28,11 +35,11 @@ class NaverRepository @Inject constructor(private val naverApiService: NaverApiS
         }
     }
 
-    suspend fun geocode(roadAddress: String): Result<NaverGeocodingApiService.GeocodeResponse> {
+    override suspend fun geocode(roadAddress: String): Result<NaverApiService.GeocodeResponse> {
         /*   주소를 좌표로 변환   */
 
         return try {
-            val response = naverGeocodingApiService.geocode(roadAddress)
+            val response = naverApiService.geocode(roadAddress)
 
             if(response.isSuccessful) {
                 Timber.i("Geocode Success: ${response.body()}")

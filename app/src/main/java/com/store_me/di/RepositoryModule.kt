@@ -1,5 +1,7 @@
 package com.store_me.di
 
+import com.store_me.storeme.repository.naver.NaverRepository
+import com.store_me.storeme.repository.naver.NaverRepositoryImpl
 import com.store_me.storeme.repository.storeme.AuthRepository
 import com.store_me.storeme.repository.storeme.AuthRepositoryImpl
 import com.store_me.storeme.repository.storeme.CustomerRepository
@@ -19,6 +21,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class RepositoryModule {
+    @Binds
+    @Singleton
+    abstract fun bindNaverRepository(
+        naverRepository: NaverRepositoryImpl
+    ): NaverRepository
+
     @Binds
     @Singleton
     abstract fun bindUserRepository(

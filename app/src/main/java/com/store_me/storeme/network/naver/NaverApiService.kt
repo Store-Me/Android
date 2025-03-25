@@ -1,37 +1,21 @@
 package com.store_me.storeme.network.naver
 
-import com.store_me.storeme.BuildConfig
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
-import retrofit2.http.Headers
 import retrofit2.http.Query
 
-interface NaverGeocodingApiService {
-    @Headers("X-NCP-APIGW-API-KEY-ID: ${BuildConfig.NAVER_CLIENT_ID}", "X-NCP-APIGW-API-KEY: ${BuildConfig.NAVER_CLIENT_SECRET}")
-    @GET("geocode")
+interface NaverApiService {
+    @GET("map-reversegeocode/v2/gc")
+    suspend fun reverseGeocode(
+        @Query("coords") coords: String,
+        @Query("orders") orders: String,
+        @Query("output") output: String,
+    ): Response<ReverseGeocodeResponse>
+
+    @GET("map-geocode/v2/geocode")
     suspend fun geocode(
         @Query("query") query: String,
     ): Response<GeocodeResponse>
-
-    @Module
-    @InstallIn(SingletonComponent::class)
-    object NetworkModule {
-        @Provides
-        fun create(): NaverGeocodingApiService {
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://naveropenapi.apigw.ntruss.com/map-geocode/v2/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-
-            return retrofit.create(NaverGeocodingApiService::class.java)
-        }
-    }
 
     data class GeocodeResponse(
         val status: String,
@@ -43,30 +27,6 @@ interface NaverGeocodingApiService {
         val x: String, //longitude
         val y: String  //latitude
     )
-}
-
-interface NaverApiService {
-    @Headers("X-NCP-APIGW-API-KEY-ID: ${BuildConfig.NAVER_CLIENT_ID}", "X-NCP-APIGW-API-KEY: ${BuildConfig.NAVER_CLIENT_SECRET}")
-    @GET("gc")
-    suspend fun reverseGeocode(
-        @Query("coords") coords: String,
-        @Query("orders") orders: String,
-        @Query("output") output: String,
-    ): Response<ReverseGeocodeResponse>
-
-    @Module
-    @InstallIn(SingletonComponent::class)
-    object NetworkModule{
-        @Provides
-        fun create(): NaverApiService {
-            val retrofit = Retrofit.Builder()
-                .baseUrl("https://naveropenapi.apigw.ntruss.com/map-reversegeocode/v2/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build()
-
-            return retrofit.create(NaverApiService::class.java)
-        }
-    }
 
     data class ReverseGeocodeResponse(
         val status: Status,

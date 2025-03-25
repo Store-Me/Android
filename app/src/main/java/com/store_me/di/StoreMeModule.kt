@@ -23,6 +23,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object StoreMeModule {
     @Provides
+    @Named("StoreMeBaseUrl")
     fun provideBaseUrl() = "https://us-central1-storeme-67dc6.cloudfunctions.net/api/"
 
     @Provides
@@ -66,7 +67,7 @@ object StoreMeModule {
     @Named("AuthorizedRetrofit")
     fun provideAuthorizedRetrofit(
         @Named("Authorized") okHttpClient: OkHttpClient,
-        baseUrl: String
+        @Named("StoreMeBaseUrl") baseUrl: String
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -81,7 +82,7 @@ object StoreMeModule {
     @Named("UnauthorizedRetrofit")
     fun provideUnauthorizedRetrofit(
         @Named("Unauthorized") okHttpClient: OkHttpClient,
-        baseUrl: String
+        @Named("StoreMeBaseUrl") baseUrl: String
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
@@ -96,7 +97,7 @@ object StoreMeModule {
     @Named("ReissueRetrofit")
     fun provideReissueRetrofit(
         @Named("Reissue") okHttpClient: OkHttpClient,
-        baseUrl: String
+        @Named("StoreMeBaseUrl") baseUrl: String
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
