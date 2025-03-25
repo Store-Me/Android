@@ -9,7 +9,6 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import timber.log.Timber
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -30,8 +29,6 @@ object NaverModule {
                     .addHeader("x-ncp-apigw-api-key-id", BuildConfig.NAVER_CLIENT_ID)
                     .addHeader("x-ncp-apigw-api-key", BuildConfig.NAVER_CLIENT_SECRET)
                     .build()
-                Timber.d("🔍 Request URL: ${request.url}")
-                Timber.d("🔍 Headers: ${request.headers}")
 
                 it.proceed(request)
             }
