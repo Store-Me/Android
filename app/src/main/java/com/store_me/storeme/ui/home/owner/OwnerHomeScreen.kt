@@ -73,12 +73,6 @@ fun OwnerHomeScreen(
     val businessHours by storeDataViewModel.businessHours.collectAsState()
     val links by storeDataViewModel.links.collectAsState()
 
-    val cameraPositionState = remember(storeInfoData) {
-        CameraPositionState(
-            CameraPosition(LatLng(storeInfoData?.storeLat ?: 0.0, storeInfoData?.storeLng ?: 0.0), 15.0)
-        )
-    }
-
     val backgroundSectionHeight = remember { mutableStateOf(0) } //픽셀 단위
     val profileSectionHeight = remember { mutableStateOf(0) } //픽셀 단위
 
@@ -89,6 +83,12 @@ fun OwnerHomeScreen(
             storeDataViewModel.getStoreBusinessHours(storeId = storeId!!)
             storeDataViewModel.getStoreLinks(storeId = storeId!!)
             storeDataViewModel.getStoreNotice(storeId = storeId!!)
+        }
+    }
+
+    LaunchedEffect(storeInfoData?.storeLat, storeInfoData?.storeLng) {
+        if(storeInfoData?.storeLat != null && storeInfoData?.storeLng != null) {
+            storeDataViewModel.getStoreImage(LatLng(storeInfoData!!.storeLat!!, storeInfoData!!.storeLng!!))
         }
     }
 
@@ -168,7 +168,6 @@ fun OwnerHomeScreen(
 
                                         StoreHomeInfoSection(
                                             storeInfoData = storeInfoData!!,
-                                            cameraPositionState = cameraPositionState,
                                             businessHours = businessHours ?: BusinessHoursResponse(),
                                         ) {
                                             NavigationUtils().navigateOwnerNav(navController = navController, screenName = it)

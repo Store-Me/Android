@@ -24,6 +24,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
@@ -56,6 +59,7 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.PhoneNumberUtils
 import com.store_me.storeme.utils.StoreCategory
+import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
 /**
  * Owner Home 화면의 StoreProfile Composable
@@ -64,7 +68,6 @@ import com.store_me.storeme.utils.StoreCategory
 fun StoreHomeInfoSection(
     storeInfoData: StoreInfoData,
     businessHours: BusinessHoursResponse,
-    cameraPositionState: CameraPositionState,
     onClick: (StoreProfileItems) -> Unit
 ) {
     val context = LocalContext.current
@@ -156,9 +159,6 @@ fun StoreHomeInfoSection(
             StoreLocationSection(
                 storeInfoData.storeLocationAddress,
                 storeInfoData.storeLocationDetail,
-                storeInfoData.storeLat,
-                storeInfoData.storeLng,
-                cameraPositionState = cameraPositionState
             ) {
                 onClick(StoreProfileItems.LOCATION)
             }
@@ -448,9 +448,6 @@ fun StorePhoneNumberSection(phoneNumber: String?, onClick: () -> Unit, onCopy: (
 fun StoreLocationSection(
     storeLocationAddress: String,
     storeLocationDetail: String?,
-    storeLat: Double?,
-    storeLng: Double?,
-    cameraPositionState: CameraPositionState,
     onClick: () -> Unit
 ) {
     Row(
@@ -472,38 +469,23 @@ fun StoreLocationSection(
         )
     }
 
-    if(storeLat != null && storeLng != null) {
-        OwnerHomeNaverMapSection(latLng = LatLng(storeLat, storeLng), cameraPositionState = cameraPositionState)
-    }
+    OwnerHomeNaverMapSection()
 }
 
 @Composable
-fun OwnerHomeNaverMapSection(latLng: LatLng, cameraPositionState: CameraPositionState) {
-    val mapUiSettings = remember {
-        MapUiSettings(
-            isScrollGesturesEnabled = false,
-            isZoomGesturesEnabled = false,
-            isTiltGesturesEnabled = false,
-            isRotateGesturesEnabled = false,
-            isStopGesturesEnabled = false,
-            isZoomControlEnabled = false,
-            isIndoorLevelPickerEnabled = false,
-            isLogoClickEnabled = false,
+fun OwnerHomeNaverMapSection() {
+    val storeDataViewModel = LocalStoreDataViewModel.current
+
+    val storeMapImage by storeDataViewModel.storeMapImage.collectAsState()
+
+    if(storeMapImage != null) {
+        AsyncImage(
+            model = storeMapImage,
+            contentDescription = "가게 지도",
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(2f / 1f),
         )
     }
 
-    val markerState = remember { MarkerState(latLng) }
-
-    NaverMap(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(2f / 1f),
-        cameraPositionState = cameraPositionState,
-        uiSettings = mapUiSettings
-    ) {
-
-        Marker(
-            state = markerState
-        )
-    }
 }
