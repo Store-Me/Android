@@ -5,6 +5,7 @@ import com.store_me.storeme.data.request.store.PatchLinksRequest
 import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
 import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
+import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.response.BusinessHoursResponse
@@ -121,4 +122,13 @@ interface OwnerApiService {
         @Path("storeId") storeId: String,
         @Body patchStoreNoticeRequest: PatchStoreNoticeRequest
     ): Response<PatchResponse<NoticeResponse>>
+
+    /**
+     * 위치 수정 API
+     */
+    @PATCH("auth/store/{storeId}/location")
+    suspend fun patchStoreLocation(
+        @Path("storeId") storeId: String,
+        @Body patchStoreLocationRequest: PatchStoreLocationRequest
+    ): Response<PatchResponse<StoreInfoData>>
 }
