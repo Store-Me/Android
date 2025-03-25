@@ -250,8 +250,6 @@ fun AddressSection(onFinish: () -> Unit) {
                                 )
                             }
 
-                            //TextLengthRow(text = storeLocationDetail, limitSize = 100)
-
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
