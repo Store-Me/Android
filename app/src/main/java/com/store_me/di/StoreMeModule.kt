@@ -1,5 +1,7 @@
 package com.store_me.di
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.store_me.auth.AuthInterceptor
 import com.store_me.storeme.network.storeme.AuthApiService
 import com.store_me.storeme.network.storeme.CustomerApiService
@@ -47,6 +49,15 @@ object StoreMeModule {
 
     @Provides
     @Singleton
+    fun provideGson(): Gson {
+        return GsonBuilder()
+            .serializeNulls() //null도 직렬화해서 포함
+            .create()
+    }
+
+
+    @Provides
+    @Singleton
     @Named("Reissue")
     fun provideReissueOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
@@ -67,12 +78,13 @@ object StoreMeModule {
     @Named("AuthorizedRetrofit")
     fun provideAuthorizedRetrofit(
         @Named("Authorized") okHttpClient: OkHttpClient,
-        @Named("StoreMeBaseUrl") baseUrl: String
+        @Named("StoreMeBaseUrl") baseUrl: String,
+        gson: Gson
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 
@@ -82,12 +94,13 @@ object StoreMeModule {
     @Named("UnauthorizedRetrofit")
     fun provideUnauthorizedRetrofit(
         @Named("Unauthorized") okHttpClient: OkHttpClient,
-        @Named("StoreMeBaseUrl") baseUrl: String
+        @Named("StoreMeBaseUrl") baseUrl: String,
+        gson: Gson
     ): Retrofit {
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 
