@@ -5,6 +5,7 @@ import com.store_me.storeme.data.request.store.PatchLinksRequest
 import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
 import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
+import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.response.BusinessHoursResponse
@@ -46,6 +47,8 @@ interface OwnerRepository {
     suspend fun getStoreNotice(storeId: String): Result<NoticeResponse>
 
     suspend fun patchStoreNotice(storeId: String, patchStoreNoticeRequest: PatchStoreNoticeRequest): Result<PatchResponse<NoticeResponse>>
+
+    suspend fun patchStoreLocation(storeId: String, patchStoreLocationRequest: PatchStoreLocationRequest): Result<PatchResponse<StoreInfoData>>
 }
 
 class OwnerRepositoryImpl @Inject constructor(
@@ -325,6 +328,30 @@ class OwnerRepositoryImpl @Inject constructor(
             val response = ownerApiService.patchStoreNotice(
                 storeId = storeId,
                 patchStoreNoticeRequest = patchStoreNoticeRequest
+            )
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun patchStoreLocation(storeId: String, patchStoreLocationRequest: PatchStoreLocationRequest): Result<PatchResponse<StoreInfoData>> {
+        return try {
+            val response = ownerApiService.patchStoreLocation(
+                storeId = storeId,
+                patchStoreLocationRequest = patchStoreLocationRequest
             )
             if(response.isSuccessful) {
                 val responseBody = response.body()

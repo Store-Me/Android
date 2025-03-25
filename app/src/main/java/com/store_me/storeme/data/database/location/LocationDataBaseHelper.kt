@@ -97,6 +97,33 @@ class LocationDataBaseHelper(context: Context) : SQLiteOpenHelper(context, DATAB
         //일치 항목 없음
         return "${sigunguCode}00000".toLong()
     }
+
+    fun hasExactMatch(query: String): Boolean {
+        val db = readableDatabase
+
+        // query는 예: "서울 강남구 역삼동"
+        val searchTerms = query.split(" ")
+
+        // 단어가 3개가 아니면 정확 일치가 불가능하다고 판단
+        if (searchTerms.size != 3) return false
+
+        val first = searchTerms[0]
+        val second = searchTerms[1]
+        val third = searchTerms[2]
+
+        val sql = """
+        SELECT 1 FROM location_table 
+        WHERE first = ? AND second = ? AND third = ?
+        LIMIT 1
+        """.trimIndent()
+
+        val cursor = db.rawQuery(sql, arrayOf(first, second, third))
+        val matchExists = cursor.moveToFirst()
+        cursor.close()
+
+        return matchExists
+    }
+
 }
 
 data class LocationEntity(

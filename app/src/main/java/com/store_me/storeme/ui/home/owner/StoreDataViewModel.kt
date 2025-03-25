@@ -8,6 +8,7 @@ import com.naver.maps.geometry.LatLng
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
 import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
+import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
 import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.response.BusinessHoursResponse
@@ -298,6 +299,46 @@ class StoreDataViewModel @Inject constructor(
 
             response.onSuccess {
                 updateNotice(it.result.notice ?: "")
+
+                SuccessEventBus.successFlow.emit(it.message)
+            }.onFailure {
+                if (it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
+
+    /**
+     * Location 변경
+     */
+    fun patchStoreLocation(
+        storeId: String,
+        storeLocationAddress: String,
+        storeLocationDetail: String?,
+        storeLocationCode: Long,
+        storeLocation: String,
+        storeLat: Double?,
+        storeLng: Double?
+    ) {
+        viewModelScope.launch {
+            val response = ownerRepository.patchStoreLocation(
+                storeId = storeId,
+                patchStoreLocationRequest = PatchStoreLocationRequest(
+                    storeId = storeId,
+                    storeLocationAddress = storeLocationAddress,
+                    storeLocationDetail = storeLocationDetail,
+                    storeLocationCode = storeLocationCode,
+                    storeLocation = storeLocation,
+                    storeLat = storeLat,
+                    storeLng = storeLng
+                )
+            )
+
+            response.onSuccess {
+                updateStoreInfoData(it.result)
 
                 SuccessEventBus.successFlow.emit(it.message)
             }.onFailure {

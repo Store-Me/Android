@@ -49,7 +49,6 @@ import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.composition_locals.signup.LocalStoreSignupDataViewModel
 
 @Composable
 fun SearchStoreLocationSection(
@@ -59,11 +58,9 @@ fun SearchStoreLocationSection(
     onFail: () -> Unit,
     onSuccess: (String, String, Long, LatLng?) -> Unit  //LocationAddress, Location, LocationCode, LatLng 순서
 ) {
-    val storeDataViewModel = LocalStoreSignupDataViewModel.current
-
-    val storeLocationAddress by storeDataViewModel.storeLocationAddress.collectAsState()
-
     val reverseGeoCodeCompleted by locationViewModel.reverseGeoCodeCompleted.collectAsState()
+
+    val query by locationViewModel.query.collectAsState()
 
     BackHandler {
         onFail()
@@ -89,9 +86,9 @@ fun SearchStoreLocationSection(
     ) {
         with(sharedTransitionScope) {
             OutlinedTextField(
-                value = storeLocationAddress,
+                value = query,
                 onValueChange = {
-                    storeDataViewModel.updateStoreLocationAddress(it)
+                    locationViewModel.updateQuery(it)
                     if(it.length >= 2)
                         locationViewModel.getSearchResults(query = it)
                 },
