@@ -67,7 +67,7 @@ import com.store_me.storeme.ui.signup.phone_authentication.PhoneNumberSection
 import com.store_me.storeme.ui.signup.phone_authentication.PhoneNumberViewModel
 import com.store_me.storeme.ui.signup.onboarding.SignupOnboardingSection
 import com.store_me.storeme.ui.signup.onboarding.SignupOnboardingViewModel
-import com.store_me.storeme.ui.signup.owner.AddressSection
+import com.store_me.storeme.ui.signup.owner.StoreAddressSection
 import com.store_me.storeme.ui.signup.owner.StoreCategorySection
 import com.store_me.storeme.ui.signup.owner.StoreCustomCategorySection
 import com.store_me.storeme.ui.signup.owner.StoreSignupDataViewModel
@@ -371,7 +371,7 @@ fun SignupScreen(
                                         }
                                     }
                                     OwnerProgress.ADDRESS -> {
-                                        AddressSection {
+                                        StoreAddressSection {
                                             moveToNextProgress()
                                         }
                                     }
