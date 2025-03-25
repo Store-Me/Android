@@ -132,7 +132,7 @@ fun BusinessHoursSettingScreen(
             //휴일 요일 동기화
             originalBusinessHours!!.businessHours?.forEachIndexed { index, businessHourData ->
                 if(businessHourData.isHoliday) {
-                    businessHoursSettingViewModel.updateSelectedWeeks(DateTimeUtils.DayOfWeek.entries[index])
+                    businessHoursSettingViewModel.updateHolidayWeeks(DateTimeUtils.DayOfWeek.entries[index])
                 }
             }
         } else {
@@ -230,12 +230,12 @@ fun HolidaySettingSection(
     onFinish: () -> Unit
 ) {
     val hasHoliday by businessHoursSettingViewModel.hasHoliday.collectAsState()
-    val selectedWeeks by businessHoursSettingViewModel.selectedWeeks.collectAsState()
+    val holidayWeeks by businessHoursSettingViewModel.holidayWeeks.collectAsState()
 
     val temporaryBusinesses by temporaryBusinessSettingViewModel.temporaryBusinesses.collectAsState()
 
     val isFinished by remember {
-        derivedStateOf { (hasHoliday == true && selectedWeeks.isNotEmpty()) || (hasHoliday == false) }
+        derivedStateOf { (hasHoliday == true && holidayWeeks.isNotEmpty()) || (hasHoliday == false) }
     }
 
     Column(
@@ -260,8 +260,8 @@ fun HolidaySettingSection(
         Spacer(modifier = Modifier.height(20.dp))
 
         AnimatedVisibility(hasHoliday == true) {
-            SelectHolidaySection(selectedWeeks = selectedWeeks) {
-                businessHoursSettingViewModel.updateSelectedWeeks(it)
+            SelectHolidaySection(holidayWeeks = holidayWeeks) {
+                businessHoursSettingViewModel.updateHolidayWeeks(it)
             }
         }
 
@@ -337,7 +337,7 @@ fun CheckHolidayButtonSection(hasHoliday: Boolean?, onSelected: (Boolean) -> Uni
  * 휴무일 요일 선택 Composable
  */
 @Composable
-fun SelectHolidaySection(selectedWeeks: Set<DateTimeUtils. DayOfWeek>, onSelected: (DateTimeUtils.DayOfWeek) -> Unit) {
+fun SelectHolidaySection(holidayWeeks: Set<DateTimeUtils. DayOfWeek>, onSelected: (DateTimeUtils.DayOfWeek) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -356,7 +356,7 @@ fun SelectHolidaySection(selectedWeeks: Set<DateTimeUtils. DayOfWeek>, onSelecte
             items(DateTimeUtils.DayOfWeek.entries) {
                 DefaultToggleButton(
                     buttonText = it.displayName,
-                    isSelected = it in selectedWeeks
+                    isSelected = it in holidayWeeks
                 ) {
                     onSelected(it)
                 }
@@ -860,7 +860,7 @@ fun TimePickerWithStartToEnd(
 fun DifferentBusinessHoursSection(
     businessHoursSettingViewModel: BusinessHoursSettingViewModel
 ) {
-    val selectedWeeks by businessHoursSettingViewModel.selectedWeeks.collectAsState()
+    val holidayWeeks by businessHoursSettingViewModel.holidayWeeks.collectAsState()
 
     val isAlwaysOpen by businessHoursSettingViewModel.isAlwaysOpen.collectAsState()
     val hasBreakTime by businessHoursSettingViewModel.hasBreakTime.collectAsState()
@@ -871,16 +871,8 @@ fun DifferentBusinessHoursSection(
     val startBreakTimes by businessHoursSettingViewModel.startBreakTimes.collectAsState()
     val endBreakTimes by businessHoursSettingViewModel.endBreakTimes.collectAsState()
 
-    val selectedIsAlwaysOpen = remember { mutableStateOf(false) }
-    val selectedHasBreakTime = remember { mutableStateOf(false) }
-    val selectedStartBusinessTime = remember { mutableStateOf(TimeData(9, 0)) }
-    val selectedEndBusinessTime = remember { mutableStateOf(TimeData(21, 0)) }
-    val selectedStartBreakTime = remember { mutableStateOf(TimeData(15, 0)) }
-    val selectedEndBreakTime = remember { mutableStateOf(TimeData(17, 0)) }
-
     val selectedIndex = remember { mutableStateOf(-1) }
     val showBottomSheet = remember { mutableStateOf(false) }
-    val sameDayIndices = remember { mutableStateOf<Set<Int>>(emptySet()) }
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -892,15 +884,6 @@ fun DifferentBusinessHoursSection(
             return@LaunchedEffect
         }
 
-        sameDayIndices.value = businessHoursSettingViewModel.getSameBusinessHourIndices(selectedIndex.value)
-
-        selectedIsAlwaysOpen.value = isAlwaysOpen[selectedIndex.value]
-        selectedHasBreakTime.value = hasBreakTime[selectedIndex.value]
-        selectedStartBusinessTime.value = startBusinessTimes[selectedIndex.value] ?: TimeData(9, 0)
-        selectedEndBusinessTime.value = endBusinessTimes[selectedIndex.value] ?: TimeData(21, 0)
-        selectedStartBreakTime.value = startBusinessTimes[selectedIndex.value] ?: TimeData(15, 0)
-        selectedEndBreakTime.value = endBusinessTimes[selectedIndex.value] ?: TimeData(17, 0)
-
         showBottomSheet.value = true
     }
 
@@ -909,10 +892,9 @@ fun DifferentBusinessHoursSection(
             .fillMaxWidth()
     ) {
         DateTimeUtils.DayOfWeek.entries.forEachIndexed { index, dayOfWeek ->
-
             Row(
                 modifier = Modifier
-                    .clickable { if(!selectedWeeks.contains(DateTimeUtils.DayOfWeek.entries[index])) selectedIndex.value = index },
+                    .clickable { if(!holidayWeeks.contains(DateTimeUtils.DayOfWeek.entries[index])) selectedIndex.value = index },
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
@@ -929,7 +911,7 @@ fun DifferentBusinessHoursSection(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     when {
-                        selectedWeeks.contains(DateTimeUtils.DayOfWeek.entries[index]) -> {
+                        holidayWeeks.contains(DateTimeUtils.DayOfWeek.entries[index]) -> {
                             Text(
                                 text = "휴무",
                                 style = storeMeTextStyle(FontWeight.ExtraBold, -1),
@@ -953,7 +935,7 @@ fun DifferentBusinessHoursSection(
                     }
 
                     when {
-                        selectedWeeks.contains(DateTimeUtils.DayOfWeek.entries[index]) -> {
+                        holidayWeeks.contains(DateTimeUtils.DayOfWeek.entries[index]) -> {
 
                         }
                         !hasBreakTime[index] -> {
@@ -985,124 +967,145 @@ fun DifferentBusinessHoursSection(
     }
 
     if(showBottomSheet.value) {
-        val currentType = remember { mutableStateOf<BusinessHoursType?>(null) }
-
         DefaultBottomSheet(sheetState = sheetState, onDismiss = { selectedIndex.value = -1 }) {
-            Column(
-                modifier = Modifier
-                    .padding(20.dp)
+            DifferentBottomSheetContent(
+                selectedIndex = selectedIndex.value,
+                businessHoursSettingViewModel = businessHoursSettingViewModel
             ) {
-                Text(text = "영업시간 동일하게 설정", style = storeMeTextStyle(FontWeight.ExtraBold, 2))
+                selectedIndex.value = -1
+            }
+        }
+    }
+}
 
-                Spacer(modifier = Modifier.height(12.dp))
+@Composable
+fun DifferentBottomSheetContent(selectedIndex: Int, businessHoursSettingViewModel: BusinessHoursSettingViewModel, onFinish: () -> Unit) {
+    val currentType = remember { mutableStateOf<BusinessHoursType?>(null) }
 
-                LazyRow(
-                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+    val selectedIsAlwaysOpen = remember { mutableStateOf(businessHoursSettingViewModel.isAlwaysOpen.value[selectedIndex]) }
+    val selectedHasBreakTime = remember { mutableStateOf(businessHoursSettingViewModel.hasBreakTime.value[selectedIndex]) }
+    val selectedStartBusinessTime = remember { mutableStateOf(businessHoursSettingViewModel.startBusinessTimes.value[selectedIndex] ?: TimeData(9, 0)) }
+    val selectedEndBusinessTime = remember { mutableStateOf(businessHoursSettingViewModel.endBusinessTimes.value[selectedIndex] ?: TimeData(21, 0)) }
+    val selectedStartBreakTime = remember { mutableStateOf(businessHoursSettingViewModel.startBreakTimes.value[selectedIndex] ?: TimeData(15, 0)) }
+    val selectedEndBreakTime = remember { mutableStateOf(businessHoursSettingViewModel.endBreakTimes.value[selectedIndex] ?: TimeData(17, 0)) }
+
+    val sameDayIndices = remember { mutableStateOf(businessHoursSettingViewModel.getSameBusinessHourIndices(selectedIndex)) }
+
+    val holidayWeeks by businessHoursSettingViewModel.holidayWeeks.collectAsState()
+
+    Column(
+        modifier = Modifier
+            .padding(20.dp)
+    ) {
+        Text(text = "영업시간 동일하게 설정", style = storeMeTextStyle(FontWeight.ExtraBold, 2))
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(5.dp)
+        ) {
+            itemsIndexed(DateTimeUtils.DayOfWeek.entries) { index, dayOfWeek ->
+                CircleToggleButton(
+                    text = dayOfWeek.displayName,
+                    enabled = !holidayWeeks.contains(DateTimeUtils.DayOfWeek.entries[index]),
+                    isSelected = sameDayIndices.value.contains(index)
                 ) {
-                    itemsIndexed(DateTimeUtils.DayOfWeek.entries) { index, dayOfWeek ->
-                        CircleToggleButton(
-                            text = dayOfWeek.displayName,
-                            enabled = !selectedWeeks.contains(DateTimeUtils.DayOfWeek.entries[index]),
-                            isSelected = sameDayIndices.value.contains(index)
-                        ) {
-                            if(index == selectedIndex.value) {
-                                return@CircleToggleButton
-                            }
-
-                            if(sameDayIndices.value.contains(index)) {
-                                sameDayIndices.value -= index
-                            } else {
-                                sameDayIndices.value += index
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = "영업 시간",
-                        style = storeMeTextStyle(FontWeight.ExtraBold, 2),
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    DefaultCheckButton(text = "24시간 영업", isSelected = selectedIsAlwaysOpen.value) {
-                        selectedIsAlwaysOpen.value = !selectedIsAlwaysOpen.value
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                if(!selectedIsAlwaysOpen.value) {
-                    TimePickerWithStartToEnd(
-                        startTime = selectedStartBusinessTime.value,
-                        endTime = selectedEndBusinessTime.value,
-                        openType = BusinessHoursType.BUSINESS_HOURS,
-                        currentType = currentType.value,
-                        onStartTimeChange = { selectedStartBusinessTime.value = it },
-                        onEndTimeChange = { selectedEndBusinessTime.value = it },
-                        onTypeChange = { currentType.value = it }
-                    )
-                }
-
-                DefaultButton(
-                    buttonText = if(selectedHasBreakTime.value) "브레이크타임 제거" else "브레이크타임 추가",
-                    diffValue = 1,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = SubHighlightColor,
-                        contentColor = Color.Black
-                    )
-                ) {
-                    selectedHasBreakTime.value = !selectedHasBreakTime.value
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                AnimatedVisibility(selectedHasBreakTime.value) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = "브레이크타임",
-                            style = storeMeTextStyle(FontWeight.ExtraBold, 2),
-                            color = Color.Black
-                        )
-
-                        TimePickerWithStartToEnd(
-                            startTime = selectedStartBreakTime.value,
-                            endTime = selectedEndBreakTime.value,
-                            openType = BusinessHoursType.BREAK_TIME,
-                            currentType = currentType.value,
-                            onStartTimeChange = { selectedStartBreakTime.value = it },
-                            onEndTimeChange = { selectedEndBreakTime.value = it },
-                            onTypeChange = { currentType.value = it }
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                DefaultButton(buttonText = "저장") {
-                    sameDayIndices.value.forEach {
-                        businessHoursSettingViewModel.updateHasBreakTime(index = it, value = selectedHasBreakTime.value)
-                        businessHoursSettingViewModel.updateIsAlwaysOpen(index = it, value = selectedIsAlwaysOpen.value)
-                        businessHoursSettingViewModel.updateStartBusinessTime(index = it, newTime = selectedStartBusinessTime.value)
-                        businessHoursSettingViewModel.updateEndBusinessTime(index = it, newTime = selectedEndBusinessTime.value)
-                        businessHoursSettingViewModel.updateStartBreakTime(index = it, newTime = selectedStartBreakTime.value)
-                        businessHoursSettingViewModel.updateEndBreakTime(index = it, newTime = selectedEndBreakTime.value)
+                    if(index == selectedIndex) {
+                        return@CircleToggleButton
                     }
 
-                    selectedIndex.value = -1
+                    if(sameDayIndices.value.contains(index)) {
+                        sameDayIndices.value -= index
+                    } else {
+                        sameDayIndices.value += index
+                    }
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = "영업 시간",
+                style = storeMeTextStyle(FontWeight.ExtraBold, 2),
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            DefaultCheckButton(text = "24시간 영업", isSelected = selectedIsAlwaysOpen.value) {
+                selectedIsAlwaysOpen.value = !selectedIsAlwaysOpen.value
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        if(!selectedIsAlwaysOpen.value) {
+            TimePickerWithStartToEnd(
+                startTime = selectedStartBusinessTime.value,
+                endTime = selectedEndBusinessTime.value,
+                openType = BusinessHoursType.BUSINESS_HOURS,
+                currentType = currentType.value,
+                onStartTimeChange = { selectedStartBusinessTime.value = it },
+                onEndTimeChange = { selectedEndBusinessTime.value = it },
+                onTypeChange = { currentType.value = it }
+            )
+        }
+
+        DefaultButton(
+            buttonText = if(selectedHasBreakTime.value) "브레이크타임 제거" else "브레이크타임 추가",
+            diffValue = 1,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = SubHighlightColor,
+                contentColor = Color.Black
+            )
+        ) {
+            selectedHasBreakTime.value = !selectedHasBreakTime.value
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        AnimatedVisibility(selectedHasBreakTime.value) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "브레이크타임",
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
+                    color = Color.Black
+                )
+
+                TimePickerWithStartToEnd(
+                    startTime = selectedStartBreakTime.value,
+                    endTime = selectedEndBreakTime.value,
+                    openType = BusinessHoursType.BREAK_TIME,
+                    currentType = currentType.value,
+                    onStartTimeChange = { selectedStartBreakTime.value = it },
+                    onEndTimeChange = { selectedEndBreakTime.value = it },
+                    onTypeChange = { currentType.value = it }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        DefaultButton(buttonText = "저장") {
+            sameDayIndices.value.forEach {
+                businessHoursSettingViewModel.updateHasBreakTime(index = it, value = selectedHasBreakTime.value)
+                businessHoursSettingViewModel.updateIsAlwaysOpen(index = it, value = selectedIsAlwaysOpen.value)
+                businessHoursSettingViewModel.updateStartBusinessTime(index = it, newTime = selectedStartBusinessTime.value)
+                businessHoursSettingViewModel.updateEndBusinessTime(index = it, newTime = selectedEndBusinessTime.value)
+                businessHoursSettingViewModel.updateStartBreakTime(index = it, newTime = selectedStartBreakTime.value)
+                businessHoursSettingViewModel.updateEndBreakTime(index = it, newTime = selectedEndBreakTime.value)
+            }
+
+            onFinish()
         }
     }
 }
