@@ -8,6 +8,7 @@ import com.store_me.storeme.utils.response.ResponseHandler
 import timber.log.Timber
 import java.io.InputStream
 import javax.inject.Inject
+import javax.inject.Named
 
 interface NaverRepository {
     suspend fun reverseGeocode(latLng: LatLng): Result<NaverApiService.ReverseGeocodeResponse>
@@ -18,7 +19,7 @@ interface NaverRepository {
 }
 
 class NaverRepositoryImpl @Inject constructor(
-    private val naverApiService: NaverApiService
+    @Named("NaverApi") private val naverApiService: NaverApiService
 ): NaverRepository {
     override suspend fun reverseGeocode(latLng: LatLng): Result<NaverApiService.ReverseGeocodeResponse> {
         /*   Lat Lng 으로 지역 반환   */
@@ -63,15 +64,18 @@ class NaverRepositoryImpl @Inject constructor(
     override suspend fun getStaticMap(latLng: LatLng, storeName: String): Result<InputStream> {
         return try {
             val response = naverApiService.getStaticMap(
-                width = 1024,
-                height = 512,
-                level = 15, //Zoom
+                width = 512,
+                height = 256,
+                center = "${latLng.longitude} ${latLng.latitude}",
+                level = 16, //Zoom
                 scale = 2,
                 lang = "ko",
                 //d: 기본, e: 커스텀
                 //icon: iconURL
-                markers = "type:d|size:small|pos:${latLng.longitude},${latLng.latitude}|label:$storeName"
+                markers = "type:d|size:mid|pos:${latLng.longitude} ${latLng.latitude}"
             )
+
+            Timber.d("getStaticMap: $response")
 
             if(response.isSuccessful) {
                 val responseBody = response.body()

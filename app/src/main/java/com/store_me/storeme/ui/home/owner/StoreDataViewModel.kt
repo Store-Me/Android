@@ -1,8 +1,10 @@
 package com.store_me.storeme.ui.home.owner
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.store_me.storeme.data.StoreHomeItem
+import com.naver.maps.geometry.LatLng
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
 import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
@@ -11,6 +13,7 @@ import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.response.BusinessHoursResponse
 import com.store_me.storeme.data.store.BusinessHourData
 import com.store_me.storeme.data.store.StoreInfoData
+import com.store_me.storeme.repository.naver.NaverRepository
 import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.SuccessEventBus
@@ -23,10 +26,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StoreDataViewModel @Inject constructor(
-    private val ownerRepository: OwnerRepository
+    private val ownerRepository: OwnerRepository,
+    private val naverRepository: NaverRepository
 ): ViewModel() {
     private val _storeInfoData = MutableStateFlow<StoreInfoData?>(null)
     val storeInfoData: StateFlow<StoreInfoData?> = _storeInfoData
+
+    private val _storeMapImage = MutableStateFlow<Bitmap?>(null)
+    val storeMapImage: StateFlow<Bitmap?> = _storeMapImage
 
     private val _businessHours = MutableStateFlow<BusinessHoursResponse?>(null)
     val businessHours: StateFlow<BusinessHoursResponse?> = _businessHours
@@ -46,6 +53,27 @@ class StoreDataViewModel @Inject constructor(
 
             response.onSuccess {
                 updateStoreInfoData(it)
+            }.onFailure {
+                if(it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
+
+    /**
+     * 지도 이미지 조회 함수
+     */
+    fun getStoreImage(storeLatLng: LatLng) {
+        viewModelScope.launch {
+            val response = naverRepository.getStaticMap(latLng = storeLatLng, storeName = storeInfoData.value!!.storeName)
+
+            response.onSuccess {
+                val byteArray = it.readBytes()
+                val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                updateStoreMapImage(bitmap)
             }.onFailure {
                 if(it is ApiException) {
                     ErrorEventBus.errorFlow.emit(it.message)
@@ -230,6 +258,13 @@ class StoreDataViewModel @Inject constructor(
      */
     fun updateNotice(notice: String) {
         _notice.value = notice
+    }
+
+    /**
+     * 지도 이미지 갱신 함수
+     */
+    fun updateStoreMapImage(storeMapImage: Bitmap?) {
+        _storeMapImage.value = storeMapImage
     }
 
     /**

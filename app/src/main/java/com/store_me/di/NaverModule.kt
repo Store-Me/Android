@@ -9,6 +9,7 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import timber.log.Timber
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -17,17 +18,21 @@ import javax.inject.Singleton
 object NaverModule {
     @Provides
     @Named("NaverBaseUrl")
-    fun provideBaseUrl() = "https://naveropenapi.apigw.ntruss.com/"
+    fun provideBaseUrl() = "https://naveropenapi.apigw.ntruss.com"
 
     @Provides
     @Singleton
+    @Named("NaverClient")
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor() {
                 val request = it.request().newBuilder()
-                    .addHeader("X-NCP-APIGW-API-KEY-ID", BuildConfig.NAVER_CLIENT_ID)
-                    .addHeader("X-NCP-APIGW-API-KEY", BuildConfig.NAVER_CLIENT_SECRET)
+                    .addHeader("x-ncp-apigw-api-key-id", BuildConfig.NAVER_CLIENT_ID)
+                    .addHeader("x-ncp-apigw-api-key", BuildConfig.NAVER_CLIENT_SECRET)
                     .build()
+                Timber.d("🔍 Request URL: ${request.url}")
+                Timber.d("🔍 Headers: ${request.headers}")
+
                 it.proceed(request)
             }
             .build()
@@ -35,8 +40,9 @@ object NaverModule {
 
     @Provides
     @Singleton
+    @Named("NaverRetrofit")
     fun provideRetrofit(
-        okHttpClient: OkHttpClient,
+        @Named("NaverClient") okHttpClient: OkHttpClient,
         @Named("NaverBaseUrl") baseUrl: String
     ): Retrofit {
         return Retrofit.Builder()
@@ -48,8 +54,9 @@ object NaverModule {
 
     @Provides
     @Singleton
+    @Named("NaverApi")
     fun naverApiService(
-        retrofit: Retrofit
+        @Named("NaverRetrofit") retrofit: Retrofit
     ): NaverApiService {
         return retrofit.create(NaverApiService::class.java)
     }

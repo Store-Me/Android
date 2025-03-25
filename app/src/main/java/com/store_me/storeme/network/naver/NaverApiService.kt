@@ -18,14 +18,15 @@ interface NaverApiService {
         @Query("query") query: String,
     ): Response<GeocodeResponse>
 
-    @GET("https://naveropenapi.apigw.ntruss.com/map-static/v2/raster")
+    @GET("map-static/v2/raster")
     suspend fun getStaticMap(
         @Query("w") width: Int,
         @Query("h") height: Int,
+        @Query("center") center: String,
         @Query("level") level: Int,
         @Query("scale") scale: Int?,
         @Query("lang") lang: String?,
-        @Query("markers") markers: String?
+        @Query(encoded = true, value = "markers") markers: String?
     ): Response<ResponseBody>
 
     data class GeocodeResponse(
