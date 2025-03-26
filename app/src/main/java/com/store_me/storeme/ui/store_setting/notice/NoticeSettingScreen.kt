@@ -28,7 +28,6 @@ import androidx.navigation.NavController
 import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
-import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
