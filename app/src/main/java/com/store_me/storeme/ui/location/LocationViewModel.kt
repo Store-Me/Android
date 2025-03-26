@@ -36,6 +36,9 @@ class LocationViewModel @Inject constructor(
 ) : ViewModel() {
     private val fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
+    private val _query = MutableStateFlow("")
+    val query: StateFlow<String> = _query
+
     private val _reverseGeoCodeCompleted = MutableStateFlow(false)
     val reverseGeoCodeCompleted: StateFlow<Boolean> = _reverseGeoCodeCompleted
 
@@ -97,6 +100,10 @@ class LocationViewModel @Inject constructor(
                 fusedLocationClient.removeLocationUpdates(this)
             }
         }
+    }
+
+    fun updateQuery(query: String) {
+        _query.value = query
     }
 
     @SuppressLint("MissingPermission")
