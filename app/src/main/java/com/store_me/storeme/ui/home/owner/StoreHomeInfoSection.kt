@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalNaverMapApi::class)
-
 package com.store_me.storeme.ui.home.owner
 
 import android.content.ClipData
@@ -38,13 +36,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.compose.CameraPositionState
-import com.naver.maps.map.compose.ExperimentalNaverMapApi
-import com.naver.maps.map.compose.MapUiSettings
-import com.naver.maps.map.compose.Marker
-import com.naver.maps.map.compose.MarkerState
-import com.naver.maps.map.compose.NaverMap
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.StoreProfileItems
 import com.store_me.storeme.data.response.BusinessHoursResponse
