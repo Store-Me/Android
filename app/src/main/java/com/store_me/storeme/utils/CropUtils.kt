@@ -26,7 +26,7 @@ object CropUtils {
      */
     fun getCropIntent(
         context: Context,
-        aspectRatio: Pair<Float, Float> = Pair(1f, 1f),
+        aspectRatio: Pair<Float, Float>?,
         sourceUri: Uri
     ): Intent {
         val options = UCrop.Options().apply {
@@ -35,7 +35,6 @@ object CropUtils {
 
             setShowCropGrid(false)
             setHideBottomControls(true)
-
 
             // 툴바 색상 및 제목
             setToolbarColor(Color.Black.toArgb())
@@ -48,6 +47,10 @@ object CropUtils {
             setRootViewBackgroundColor(Color.Black.toArgb())
 
             setCompressionFormat(Bitmap.CompressFormat.JPEG)
+
+            if (aspectRatio == null) {
+                setFreeStyleCropEnabled(true)
+            }
         }
 
         val file = File(context.cacheDir, "cropped_image_${System.currentTimeMillis()}.jpg")
@@ -57,11 +60,16 @@ object CropUtils {
             file
         )
 
-        return UCrop.of(sourceUri, contentUri)
-            .withAspectRatio(aspectRatio.first, aspectRatio.second)
+        val uCrop = UCrop.of(sourceUri, contentUri)
             .withMaxResultSize(1024, 1024)
             .withOptions(options)
-            .getIntent(context)
+
+        //비율이 null이 아닐때만 설정
+        if (aspectRatio != null) {
+            uCrop.withAspectRatio(aspectRatio.first, aspectRatio.second)
+        }
+
+        return uCrop.getIntent(context)
     }
 
     fun deleteCashedImage(uri: Uri, coroutine: CoroutineScope) {
