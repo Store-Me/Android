@@ -4,7 +4,6 @@ package com.store_me.storeme.ui.link
 
 import android.view.HapticFeedbackConstants
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.exponentialDecay
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -20,7 +19,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,7 +33,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -60,7 +57,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
@@ -80,10 +76,10 @@ import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.LinkIcon
+import com.store_me.storeme.ui.component.SaveAndAddButton
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
-import com.store_me.storeme.ui.home.owner.StoreDataViewModel
 import com.store_me.storeme.ui.store_setting.menu.DragValue
 import com.store_me.storeme.ui.theme.DefaultDividerColor
 import com.store_me.storeme.ui.theme.ErrorColor
@@ -98,7 +94,6 @@ import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewMod
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import timber.log.Timber
 import kotlin.math.roundToInt
 
 @Composable
@@ -112,8 +107,6 @@ fun LinkSettingScreen(
 
     val originalLink by storeDataViewModel.links.collectAsState()
     val links by linkSettingViewModel.links.collectAsState()
-
-
 
     val focusManager = LocalFocusManager.current
 
@@ -158,39 +151,20 @@ fun LinkSettingScreen(
                 scrollBehavior = scrollBehavior,
                 onClose = { onClose() }
             ) {
-                AnimatedVisibility(
-                    hasDifference.value,
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    DefaultButton(
-                        buttonText = "저장",
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Black,
-                            contentColor = White
-                        )
-                    ) {
+                SaveAndAddButton(
+                    addButtonText = "링크 추가",
+                    hasDifference = hasDifference.value,
+                    onAddClick = {
+                        //링크 추가
+                        showBottomSheet.value = true
+                    },
+                    onSaveClick = {
                         loadingViewModel.showLoading()
 
                         //변경 저장
                         storeDataViewModel.patchStoreLinks(storeId = auth.storeId.value!!, links = links)
                     }
-                }
-
-                DefaultButton(
-                    buttonText = "링크 추가",
-                    leftIconResource = R.drawable.ic_circle_plus,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = HighlightColor,
-                        contentColor = White
-                    ),
-                    leftIconTint = White,
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    //링크 추가
-                    showBottomSheet.value = true
-                }
+                )
             }
         },
         content = { innerPadding ->
@@ -273,71 +247,64 @@ fun LinkSettingBottomSheetContent(links: List<String>, editIndex: Int = -1, onAd
     ) {
         Text(text = "링크", style = storeMeTextStyle(FontWeight.ExtraBold, 4))
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        OutlinedTextField(
+            value = text.value,
+            onValueChange = {
+                text.value = it
+            },
+            maxLines = 1,
+            textStyle = storeMeTextStyle(FontWeight.Normal, 1),
             modifier = Modifier
-                .height(IntrinsicSize.Min)
-        ){
-            OutlinedTextField(
-                value = text.value,
-                onValueChange = {
-                    text.value = it
-                },
-                maxLines = 1,
-                textStyle = storeMeTextStyle(FontWeight.Normal, 1),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                shape = RoundedCornerShape(14.dp),
-                leadingIcon = {
-                    if(text.value.isNotEmpty() && !isError){
-                        LinkIcon(
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(14.dp),
+            leadingIcon = {
+                if(text.value.isNotEmpty() && !isError){
+                    LinkIcon(
+                        modifier = Modifier
+                            .size(24.dp),
+                        url = text.value
+                    )
+                }
+            },
+            trailingIcon = {
+                if(text.value.isNotEmpty()) {
+                    IconButton(onClick = { text.value = "" }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_text_clear),
+                            contentDescription = "삭제",
                             modifier = Modifier
                                 .size(24.dp),
-                            url = text.value
-                        )
-                    }
-                },
-                trailingIcon = {
-                    if(text.value.isNotEmpty()) {
-                        IconButton(onClick = { text.value = "" }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_text_clear),
-                                contentDescription = "삭제",
-                                modifier = Modifier
-                                    .size(24.dp),
-                                tint = Color.Unspecified
-                            )
-                        }
-                    }
-                },
-                placeholder = {
-                    Text(
-                        text = "링크를 입력해주세요.",
-                        style = storeMeTextStyle(FontWeight.Normal, 1),
-                        color = GuideColor
-                    )
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = HighlightColor,
-                    errorBorderColor = ErrorColor,
-                    errorLabelColor = ErrorColor,
-                ),
-                isError = isError,
-                supportingText = {
-                    if(isError){
-                        Text(
-                            text = errorText.value ?: "",
-                            style = storeMeTextStyle(FontWeight.Normal, 0),
-                            color = ErrorColor
+                            tint = Color.Unspecified
                         )
                     }
                 }
-            )
-        }
+            },
+            placeholder = {
+                Text(
+                    text = "링크를 입력해주세요.",
+                    style = storeMeTextStyle(FontWeight.Normal, 1),
+                    color = GuideColor
+                )
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = HighlightColor,
+                errorBorderColor = ErrorColor,
+                errorLabelColor = ErrorColor,
+            ),
+            isError = isError,
+            supportingText = {
+                if(isError){
+                    Text(
+                        text = errorText.value ?: "",
+                        style = storeMeTextStyle(FontWeight.Normal, 0),
+                        color = ErrorColor
+                    )
+                }
+            }
+        )
 
         Spacer(modifier = Modifier.height(100.dp))
 
@@ -395,7 +362,6 @@ fun LinkReorderList(
                             .longPressDraggableHandle(
                                 interactionSource = interactionSource,
                                 onDragStarted = {
-                                    Timber.d("dragStarted")
                                     view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                                 }
                             )

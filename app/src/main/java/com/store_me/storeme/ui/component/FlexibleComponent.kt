@@ -1,14 +1,24 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
 package com.store_me.storeme.ui.component
 
 import android.Manifest
 import android.content.Intent
+import android.view.HapticFeedbackConstants
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.snapTo
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +31,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -32,6 +43,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -51,20 +63,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
@@ -82,11 +98,14 @@ import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.location.LocationViewModel
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.mystore.CategoryViewModel
+import com.store_me.storeme.ui.store_setting.menu.DragValue
 import com.store_me.storeme.ui.theme.DividerColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.NormalCategoryColor
 import com.store_me.storeme.ui.theme.SelectedCategoryColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
+import com.store_me.storeme.ui.theme.SwipeDeleteColor
+import com.store_me.storeme.ui.theme.SwipeEditColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.storeMeTypography
@@ -97,6 +116,7 @@ import com.store_me.storeme.utils.SocialMediaAccountUtils
 import com.store_me.storeme.utils.StoreCategory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 /*
  * 여러 곳에서 사용되는 Composable 함수 모음
@@ -185,7 +205,6 @@ fun TitleWithDeleteButtonAndRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
             content = row
         )
     }
@@ -227,6 +246,51 @@ fun TitleWithSaveButton(
     }
 }
 
+/**
+ * 저장 및 추가 버튼 Composable
+ */
+@Composable
+fun SaveAndAddButton(
+    addButtonText: String,
+    hasDifference: Boolean,
+    onSaveClick: () -> Unit,
+    onAddClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        AnimatedVisibility(
+            hasDifference,
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            DefaultButton(
+                buttonText = "저장",
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black,
+                    contentColor = Color.White
+                )
+            ) {
+                onSaveClick()
+            }
+        }
+
+        DefaultButton(
+            buttonText = addButtonText,
+            leftIconResource = R.drawable.ic_circle_plus,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = HighlightColor,
+                contentColor = Color.White
+            ),
+            leftIconTint = Color.White,
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            onAddClick()
+        }
+    }
+}
 
 @Composable
 fun SubTitleSection(text: String, modifier:Modifier = Modifier) {
@@ -238,54 +302,140 @@ fun SubTitleSection(text: String, modifier:Modifier = Modifier) {
 }
 
 /**
- * Swipe 시 보이는 Row Content
+ * Swipe 삭제 및 수정 기능을 제공하는 Composable
  */
 @Composable
 fun EditAndDeleteRow(
-    diffValue: Int,
-    editModifier: Modifier,
-    editAlpha: Float,
-    deleteModifier: Modifier,
-    deleteAlpha: Float,
+    modifier: Modifier = Modifier,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    content: @Composable () -> Unit
 ) {
+    val view = LocalView.current
     val density = LocalDensity.current
+    val configuration = LocalConfiguration.current
 
-    Row(
-        modifier = editModifier
-            .padding(start = 20.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_edit),
-            contentDescription = "수정 아이콘",
-            tint = White.copy(alpha = editAlpha),
-            modifier = Modifier.size(SizeUtils.textSizeToDp(density, diffValue))
-        )
+    val screenWidth = with(density) { (configuration.screenWidthDp.dp).toPx() }
+    val halfScreen = with(density) { (configuration.screenWidthDp.dp / 2).toPx() } // 절반 크기 계산
 
-        Text(
-            text = "수정",
-            style = storeMeTextStyle(FontWeight.ExtraBold, diffValue),
-            color = White.copy(alpha = editAlpha)
+    val oldValue = remember { mutableStateOf(DragValue.Center) }
+
+    val state = remember {
+        AnchoredDraggableState(
+            initialValue = DragValue.Center,
+            anchors = DraggableAnchors {
+                DragValue.Start at -screenWidth //Delete
+                DragValue.Center at 0f
+                DragValue.End at screenWidth
+            },
+            positionalThreshold = { halfScreen },
+            velocityThreshold = { with(density) { 1000.dp.toPx() } },
+            snapAnimationSpec = tween(),
+            decayAnimationSpec = exponentialDecay(),
+            confirmValueChange = { newValue ->
+                if(newValue != oldValue.value) {
+                    oldValue.value = newValue
+
+                    when(newValue) {
+                        DragValue.End -> {  }
+                        DragValue.Start -> {  }
+                        DragValue.Center -> {  }
+                    }
+                }
+                true
+            }
         )
     }
 
-    Row(
-        modifier = deleteModifier
-            .padding(end = 20.dp),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        Text(
-            text = "삭제",
-            style = storeMeTextStyle(FontWeight.ExtraBold, diffValue),
-            color = White.copy(alpha = deleteAlpha)
-        )
+    val editAlpha = (state.progress(DragValue.Center, DragValue.End) * 2).coerceIn(0f, 1f)
+    val deleteAlpha = (state.progress(DragValue.Center, DragValue.Start) * 2).coerceIn(0f, 1f)
 
-        Icon(
-            painter = painterResource(id = R.drawable.ic_delete_trashcan),
-            contentDescription = "삭제 아이콘",
-            tint = White.copy(alpha = deleteAlpha),
-            modifier = Modifier.size(SizeUtils.textSizeToDp(density, diffValue))
-        )
+    LaunchedEffect(state.settledValue) {
+        when (state.currentValue) {
+            DragValue.End -> {
+                view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                onEdit()
+                state.snapTo(DragValue.Center)
+            }
+            DragValue.Start -> {
+                view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                onDelete()
+                state.snapTo(DragValue.Center)
+            }
+            else -> {  }
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .drawWithContent {
+                drawRect(
+                    color = SwipeEditColor.copy(alpha = editAlpha)
+                )
+
+                drawRect(
+                    color = SwipeDeleteColor.copy(alpha = deleteAlpha)
+                )
+
+                drawContent()
+            }
+    ) {
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_edit),
+                contentDescription = "수정 아이콘",
+                tint = White.copy(alpha = editAlpha),
+                modifier = Modifier.size(SizeUtils.textSizeToDp(density, 6))
+            )
+
+            Text(
+                text = "수정",
+                style = storeMeTextStyle(FontWeight.ExtraBold, 6),
+                color = White.copy(alpha = editAlpha)
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "삭제",
+                style = storeMeTextStyle(FontWeight.ExtraBold, 6),
+                color = White.copy(alpha = deleteAlpha)
+            )
+
+            Icon(
+                painter = painterResource(id = R.drawable.ic_delete_trashcan),
+                contentDescription = "삭제 아이콘",
+                tint = White.copy(alpha = deleteAlpha),
+                modifier = Modifier.size(SizeUtils.textSizeToDp(density, 6))
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .anchoredDraggable(
+                    state = state,
+                    orientation = Orientation.Horizontal
+                )
+                .offset {
+                    IntOffset(
+                        state
+                            .requireOffset()
+                            .roundToInt(), 0
+                    )
+                }
+        ) { content() }
     }
 }
 
