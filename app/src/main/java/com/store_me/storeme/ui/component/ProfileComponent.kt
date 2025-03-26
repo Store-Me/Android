@@ -145,7 +145,7 @@ fun EditableProfileImage(
         contract = ActivityResultContracts.GetContent()
     ) {
         it?.let { sourceUri ->
-            val cropIntent = CropUtils.getCropIntent(context = context, sourceUri = sourceUri)
+            val cropIntent = CropUtils.getCropIntent(context = context, sourceUri = sourceUri, aspectRatio = Pair(1f, 1f))
             cropLauncher.launch(cropIntent)
         }
     }
