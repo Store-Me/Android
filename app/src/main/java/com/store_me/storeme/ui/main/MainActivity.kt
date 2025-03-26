@@ -74,7 +74,7 @@ import com.store_me.storeme.ui.store_setting.location.LocationSettingScreen
 import com.store_me.storeme.ui.store_setting.menu.MenuSettingScreen
 import com.store_me.storeme.ui.store_setting.NewsSettingScreen
 import com.store_me.storeme.ui.store_setting.notice.NoticeSettingScreen
-import com.store_me.storeme.ui.store_setting.image.ImageSettingScreen
+import com.store_me.storeme.ui.store_setting.image.FeaturedImageSettingScreen
 import com.store_me.storeme.ui.store_setting.review.ReviewSettingScreen
 import com.store_me.storeme.ui.store_setting.StoreSettingScreen
 import com.store_me.storeme.ui.store_setting.business_hours.BusinessHoursSettingScreen
@@ -341,7 +341,7 @@ class MainActivity : ComponentActivity() {
 
             //HOME > HOME ITEM
             composable(OWNER_HOME + StoreHomeItem.NOTICE) { NoticeSettingScreen(navController) }
-            composable(OWNER_HOME + StoreHomeItem.IMAGE) { ImageSettingScreen(navController) }
+            composable(OWNER_HOME + StoreHomeItem.FEATURED_IMAGES) { FeaturedImageSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.COUPON) { CouponSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.MENU) { MenuSettingScreen(navController) }
             composable(OWNER_HOME + StoreHomeItem.MENU + "/{selectedMenuName}") { backStackEntry ->
