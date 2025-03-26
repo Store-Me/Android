@@ -200,7 +200,7 @@ fun BusinessHoursSettingScreen(
                         BusinessHoursSettingSection(
                             businessHoursSettingViewModel = businessHoursSettingViewModel
                         ) {
-                            storeDataViewModel.patchBusinessHours(
+                            storeDataViewModel.patchStoreBusinessHours(
                                 storeId = auth.storeId.value!!,
                                 businessHours = businessHoursSettingViewModel.getBusinessHours(),
                                 extraInfo = businessHoursSettingViewModel.extraInfo.value
