@@ -1,6 +1,7 @@
 package com.store_me.storeme.network.storeme
 
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
+import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
 import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
@@ -9,6 +10,7 @@ import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.response.BusinessHoursResponse
+import com.store_me.storeme.data.response.FeaturedImagesResponse
 import com.store_me.storeme.data.response.LinksResponse
 import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.data.response.NoticeResponse
@@ -131,4 +133,21 @@ interface OwnerApiService {
         @Path("storeId") storeId: String,
         @Body patchStoreLocationRequest: PatchStoreLocationRequest
     ): Response<PatchResponse<StoreInfoData>>
+
+    /**
+     * 대표 이미지 조회 API
+     */
+    @GET("auth/store/{storeId}/featured-images")
+    suspend fun getStoreFeaturedImages(
+        @Path("storeId") storeId: String
+    ): Response<FeaturedImagesResponse>
+
+    /**
+     * 대표 이미지 수정 API
+     */
+    @PATCH("auth/store/{storeId}/featured-images")
+    suspend fun patchStoreFeaturedImages(
+        @Path("storeId") storeId: String,
+        @Body patchStoreFeaturedImagesRequest: PatchStoreFeaturedImagesRequest
+    ): Response<PatchResponse<FeaturedImagesResponse>>
 }
