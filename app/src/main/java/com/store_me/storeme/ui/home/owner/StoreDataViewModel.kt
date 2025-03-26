@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
+import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
 import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
 import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
@@ -13,6 +14,7 @@ import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.response.BusinessHoursResponse
 import com.store_me.storeme.data.store.BusinessHourData
+import com.store_me.storeme.data.store.FeaturedImageData
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.repository.naver.NaverRepository
 import com.store_me.storeme.repository.storeme.OwnerRepository
@@ -44,6 +46,9 @@ class StoreDataViewModel @Inject constructor(
 
     private val _notice = MutableStateFlow("")
     val notice: StateFlow<String> = _notice
+
+    private val _featuredImages = MutableStateFlow<List<FeaturedImageData>>(emptyList())
+    val featuredImages: StateFlow<List<FeaturedImageData>> = _featuredImages
 
     /**
      * StoreData 조회 함수
@@ -209,9 +214,9 @@ class StoreDataViewModel @Inject constructor(
         }
     }
 
-    fun patchBusinessHours(storeId: String, businessHours: List<BusinessHourData>, extraInfo: String?) {
+    fun patchStoreBusinessHours(storeId: String, businessHours: List<BusinessHourData>, extraInfo: String?) {
         viewModelScope.launch {
-            val response = ownerRepository.patchBusinessHours(
+            val response = ownerRepository.patchStoreBusinessHours(
                 storeId = storeId,
                 patchBusinessHoursRequest = PatchBusinessHoursRequest(
                     businessHours = businessHours,
@@ -266,6 +271,13 @@ class StoreDataViewModel @Inject constructor(
      */
     fun updateStoreMapImage(storeMapImage: Bitmap?) {
         _storeMapImage.value = storeMapImage
+    }
+
+    /**
+     * 대표 사진 갱신 함수
+     */
+    fun updateFeaturedImages(featuredImages: List<FeaturedImageData>) {
+        _featuredImages.value = featuredImages
     }
 
     /**
@@ -339,6 +351,49 @@ class StoreDataViewModel @Inject constructor(
 
             response.onSuccess {
                 updateStoreInfoData(it.result)
+
+                SuccessEventBus.successFlow.emit(it.message)
+            }.onFailure {
+                if (it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
+
+    /**
+     * FeaturedImages 조회
+     */
+    fun getStoreFeaturedImages(storeId: String) {
+        viewModelScope.launch {
+            val response = ownerRepository.getStoreFeaturedImages(storeId = storeId)
+
+            response.onSuccess {
+                updateFeaturedImages(it.images ?: emptyList())
+            }.onFailure {
+                if(it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
+
+    /**
+     * FeaturedImages 변경
+     */
+    fun patchStoreFeaturedImages(storeId: String, featuredImages: List<FeaturedImageData>) {
+        viewModelScope.launch {
+            val response = ownerRepository.patchFeaturedImages(
+                storeId = storeId,
+                patchStoreFeaturedImagesRequest = PatchStoreFeaturedImagesRequest(images = featuredImages)
+            )
+
+            response.onSuccess {
+                updateFeaturedImages(it.result.images ?: emptyList())
 
                 SuccessEventBus.successFlow.emit(it.message)
             }.onFailure {
