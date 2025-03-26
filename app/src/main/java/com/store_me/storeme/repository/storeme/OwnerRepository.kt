@@ -1,6 +1,7 @@
 package com.store_me.storeme.repository.storeme
 
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
+import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
 import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
@@ -9,6 +10,7 @@ import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.response.BusinessHoursResponse
+import com.store_me.storeme.data.response.FeaturedImagesResponse
 import com.store_me.storeme.data.response.LinksResponse
 import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.data.response.NoticeResponse
@@ -36,7 +38,7 @@ interface OwnerRepository {
 
     suspend fun getBusinessHours(storeId: String): Result<BusinessHoursResponse>
 
-    suspend fun patchBusinessHours(storeId: String, patchBusinessHoursRequest: PatchBusinessHoursRequest): Result<PatchResponse<BusinessHoursResponse>>
+    suspend fun patchStoreBusinessHours(storeId: String, patchBusinessHoursRequest: PatchBusinessHoursRequest): Result<PatchResponse<BusinessHoursResponse>>
 
     suspend fun getStoreLinks(storeId: String): Result<LinksResponse>
 
@@ -49,6 +51,10 @@ interface OwnerRepository {
     suspend fun patchStoreNotice(storeId: String, patchStoreNoticeRequest: PatchStoreNoticeRequest): Result<PatchResponse<NoticeResponse>>
 
     suspend fun patchStoreLocation(storeId: String, patchStoreLocationRequest: PatchStoreLocationRequest): Result<PatchResponse<StoreInfoData>>
+
+    suspend fun getStoreFeaturedImages(storeId: String): Result<FeaturedImagesResponse>
+
+    suspend fun patchFeaturedImages(storeId: String, patchStoreFeaturedImagesRequest: PatchStoreFeaturedImagesRequest): Result<PatchResponse<FeaturedImagesResponse>>
 }
 
 class OwnerRepositoryImpl @Inject constructor(
@@ -198,7 +204,7 @@ class OwnerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun patchBusinessHours(storeId: String, patchBusinessHoursRequest: PatchBusinessHoursRequest): Result<PatchResponse<BusinessHoursResponse>> {
+    override suspend fun patchStoreBusinessHours(storeId: String, patchBusinessHoursRequest: PatchBusinessHoursRequest): Result<PatchResponse<BusinessHoursResponse>> {
         return try {
             val response = ownerApiService.patchBusinessHours(
                 storeId = storeId,
@@ -352,6 +358,49 @@ class OwnerRepositoryImpl @Inject constructor(
             val response = ownerApiService.patchStoreLocation(
                 storeId = storeId,
                 patchStoreLocationRequest = patchStoreLocationRequest
+            )
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun getStoreFeaturedImages(storeId: String): Result<FeaturedImagesResponse> {
+        return try {
+            val response = ownerApiService.getStoreFeaturedImages(
+                storeId = storeId
+            )
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                Result.success(responseBody ?: FeaturedImagesResponse(images = emptyList()))
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun patchFeaturedImages(storeId: String, patchStoreFeaturedImagesRequest: PatchStoreFeaturedImagesRequest): Result<PatchResponse<FeaturedImagesResponse>> {
+        return try {
+            val response = ownerApiService.patchStoreFeaturedImages(
+                storeId = storeId,
+                patchStoreFeaturedImagesRequest = patchStoreFeaturedImagesRequest
             )
             if(response.isSuccessful) {
                 val responseBody = response.body()
