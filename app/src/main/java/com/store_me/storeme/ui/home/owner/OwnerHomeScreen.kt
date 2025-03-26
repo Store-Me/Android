@@ -81,6 +81,7 @@ fun OwnerHomeScreen(
             storeDataViewModel.getStoreBusinessHours(storeId = storeId!!)
             storeDataViewModel.getStoreLinks(storeId = storeId!!)
             storeDataViewModel.getStoreNotice(storeId = storeId!!)
+            storeDataViewModel.getStoreFeaturedImages(storeId = storeId!!)
         }
     }
 
