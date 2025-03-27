@@ -3,7 +3,6 @@ package com.store_me.storeme.ui.store_setting.closed_day
 import androidx.lifecycle.ViewModel
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.DailyHoursData
-import com.store_me.storeme.data.StoreHoursData
 import com.store_me.storeme.data.TemporaryOpeningHours
 import com.store_me.storeme.ui.store_setting.opening_hours.OpeningHoursSettingViewModel.*
 import com.store_me.storeme.utils.DateTimeUtils
