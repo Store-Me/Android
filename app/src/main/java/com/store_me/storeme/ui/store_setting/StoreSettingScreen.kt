@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.store_me.storeme.R
+import com.store_me.storeme.data.StoreHomeItem
 import com.store_me.storeme.data.enums.StoreProfileItems
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
@@ -60,8 +61,8 @@ fun StoreSettingScreen(
                         Row (
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(20.dp)
-                                .clickable { NavigationUtils().navigateOwnerNav(navController, it) },
+                                .clickable { NavigationUtils().navigateOwnerNav(navController, it) }
+                                .padding(20.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
@@ -83,6 +84,46 @@ fun StoreSettingScreen(
 
                         DefaultHorizontalDivider()
                     }
+                }
+
+                item {
+                    Text(
+                        text = "추가 정보",
+                        style = storeMeTextStyle(fontWeight = FontWeight.ExtraBold, changeSizeValue = 6),
+                        color = Color.Black,
+                        modifier = Modifier
+                            .padding(20.dp)
+                    )
+
+                    DefaultHorizontalDivider()
+                }
+
+                items(StoreHomeItem.entries) {
+                    Row (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { NavigationUtils().navigateOwnerNav(navController, it) }
+                            .padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = it.displayName,
+                            style = storeMeTextStyle(FontWeight.ExtraBold, 2),
+                            color = Color.Black
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_arrow_right),
+                            contentDescription = "이동 아이콘",
+                            modifier = Modifier
+                                .size(18.dp),
+                            tint = Color.Black
+                        )
+                    }
+
+                    DefaultHorizontalDivider()
                 }
             }
         }
