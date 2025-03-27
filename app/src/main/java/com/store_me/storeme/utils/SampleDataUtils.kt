@@ -1,29 +1,18 @@
 package com.store_me.storeme.utils
 
-import com.naver.maps.geometry.LatLng
 import com.store_me.storeme.data.BannerContent
 import com.store_me.storeme.data.BannerData
 import com.store_me.storeme.data.BannerDetailData
 import com.store_me.storeme.data.ChatRoomWithStoreInfoData
 import com.store_me.storeme.data.ContentType
 import com.store_me.storeme.data.CouponWithStoreInfoData
-import com.store_me.storeme.data.CustomLabelData
-import com.store_me.storeme.data.DailyHoursData
 import com.store_me.storeme.data.DetailCouponData
-import com.store_me.storeme.data.LabelWithPostData
-import com.store_me.storeme.data.LocationInfo
-import com.store_me.storeme.data.MenuDatas
-import com.store_me.storeme.data.NormalPostWithStoreInfoData
 import com.store_me.storeme.data.MyPickWithStoreInfoData
 import com.store_me.storeme.data.NearPlaceStoreWithStoreInfoData
+import com.store_me.storeme.data.NormalPostWithStoreInfoData
 import com.store_me.storeme.data.NotificationType
 import com.store_me.storeme.data.NotificationWithStoreInfoData
-import com.store_me.storeme.data.PreviewPostData
-import com.store_me.storeme.data.SocialMediaAccountData
-import com.store_me.storeme.data.StoreDetailData
-import com.store_me.storeme.data.StoreHoursData
 import com.store_me.storeme.data.StoreInfoData
-import com.store_me.storeme.data.StoreMenuData
 import com.store_me.storeme.data.StorePromotionData
 import com.store_me.storeme.data.UserCouponWithStoreInfoData
 import com.store_me.storeme.data.enums.PostType
@@ -119,51 +108,6 @@ class SampleDataUtils {
             StorePromotionData("33", isCouponExist = false, isEventExist = false),
             StorePromotionData("34", isCouponExist = false, isEventExist = false),
             StorePromotionData("35", isCouponExist = false, isEventExist = false),
-        )
-
-        val sampleDetailData = StoreDetailData(
-            sampleStoreInfo[0],
-            "https://via.placeholder.com/400x200",
-            SocialMediaAccountData(listOf(
-                "https://naver.me/FYImUXMi",
-                "https://www.instagram.com/ymcoffeeproject?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==",
-                "https://band.us/@byeonbanjangfruit",
-                "https://youtube.com/@ytnnews24?si=kwF4N9T8q9VOK4JL",
-                "https://www.google.com/",
-            )),
-            StoreHoursData(listOf(
-                DailyHoursData(9, 0, 21, 0, 13, 0, 15, 0, false, false),
-                DailyHoursData(9, 0, 21, 0, 13, 0, 15, 0, false, false),
-                DailyHoursData(9, 0, 21, 0, 13, 0, 15, 0, false, false),
-                DailyHoursData(9, 0, 21, 0, 13, 0, 15, 0, false, false),
-                DailyHoursData(9, 0, 21, 0, 13, 0, 15, 0, false, false),
-                DailyHoursData(9, 0, 21, 0, 13, 0, 15, 0, false, false),
-                DailyHoursData(9, 0, 21, 0, 13, 0, 15, 0, false, false),
-            ), temporaryOpeningHours = emptyList() ,closedDay = listOf()),
-            storePhoneNumber = "070-7767-0829",
-            locationInfo = LocationInfo("서울특별시 은평구 진관3로 43-9 래미안 909동 1층 101호", latLng = LatLng(37.6406673263033, 126.920399781789)),
-            StoreMenuData(
-                listOf(
-                    MenuDatas("에스프레소", true, "원두 선택 : 시그니처 홈 블렌드 / 에티오피아 내추럴 / 디카페인 / 게이샤 워시드", 5800),
-                    MenuDatas("아메리카노", true, "원두 선택 : 시그니처 홈 블렌드 / 에티오피아 내추럴 / 디카페인 / 게이샤 워시드", 5800),
-                    MenuDatas("카페 라떼", false, "원두 선택 : 시그니처 홈 블렌드 / 에티오피아 내추럴 / 디카페인 / 게이샤 워시드", 6300),
-                    MenuDatas("플랫 화이트", false, "원두 선택 : 시그니처 홈 블렌드 / 에티오피아 내추럴 / 디카페인 / 게이샤 워시드", 6300),
-                    MenuDatas("카푸치노", false, "에스프레소와 폭신한 스팀밀크. 시나몬 파우더와 코코아 파우더. YM’s pick!", 6300),
-                    MenuDatas("", false, "", 5000),
-                    MenuDatas("", false, "", 5000),
-                )
-            ),
-            CustomLabelData( listOf("로스팅 꿀팁", "일일 보고서")),
-            "",
-            listOf(
-                LabelWithPostData("로스팅 꿀팁", listOf(PreviewPostData("https://via.placeholder.com/200x200", "1:1 이미지 예시입니다!", "2024-07-02T13:06:39"),
-                    PreviewPostData("https://via.placeholder.com/400x200", "2:1 이미지 예시입니다!", "2024-07-02T13:06:39"),)),
-                LabelWithPostData("일일 보고서", listOf(PreviewPostData("https://via.placeholder.com/400x300", "4:3 이미지 예시입니다!", "2024-07-02T13:06:39"))),
-            ),
-            isStoryExist = false,
-            isReviewExist = false,
-            couponList = emptyList(),
-            representPhoto = emptyList()
         )
 
         val sampleCouponDetailData = listOf(
