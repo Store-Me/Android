@@ -1,14 +1,12 @@
 package com.store_me.storeme.network.storeme
 
 import com.store_me.storeme.data.response.CheckAccountIdDuplicateResponse
-import com.store_me.storeme.data.response.StoreMeResponse
 import com.store_me.storeme.data.response.LoginResponse
-import com.store_me.storeme.data.model.signup.CustomerSignupRequest
-import com.store_me.storeme.data.model.signup.OwnerSignupRequest
+import com.store_me.storeme.data.request.signup.CustomerSignupRequest
+import com.store_me.storeme.data.request.signup.OwnerSignupRequest
 import com.store_me.storeme.data.request.login.LoginRequest
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
@@ -33,8 +31,5 @@ interface UserApiService {
         @Query("accountId") accountId: String
     ): Response<CheckAccountIdDuplicateResponse>
 
-    @DELETE("user")
-    suspend fun deleteUser(
 
-    ): Response<StoreMeResponse<Unit>>
 }
