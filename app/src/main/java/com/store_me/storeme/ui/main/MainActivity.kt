@@ -81,7 +81,7 @@ import com.store_me.storeme.ui.store_setting.business_hours.BusinessHoursSetting
 import com.store_me.storeme.ui.store_setting.story.StorySettingScreen
 import com.store_me.storeme.ui.store_setting.coupon.create.CreateCouponScreen
 import com.store_me.storeme.ui.store_setting.coupon.edit.EditCouponScreen
-import com.store_me.storeme.ui.store_setting.menu.add.AddMenuScreen
+import com.store_me.storeme.ui.store_setting.menu.add.MenuManagementScreen
 import com.store_me.storeme.ui.store_setting.menu.category.EditMenuCategoryScreen
 import com.store_me.storeme.ui.store_setting.menu.category.MenuCategorySettingScreen
 import com.store_me.storeme.ui.store_setting.menu.edit.EditMenuScreen
@@ -363,7 +363,7 @@ class MainActivity : ComponentActivity() {
             }
 
             //HOME > MENU
-            composable(OWNER_HOME + OwnerNavItem.ADD_MENU) { AddMenuScreen(navController) }
+            composable(OWNER_HOME + OwnerNavItem.ADD_MENU) { MenuManagementScreen(navController) }
             composable(OWNER_HOME + OwnerNavItem.EDIT_MENU + "/{selectedMenuName}") { backStackEntry ->
                 val selectedMenuName = backStackEntry.arguments?.getString("selectedMenuName")
                 EditMenuScreen(navController, selectedMenuName = selectedMenuName ?: "")
