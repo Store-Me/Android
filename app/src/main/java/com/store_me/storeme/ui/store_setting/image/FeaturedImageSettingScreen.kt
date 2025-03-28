@@ -40,6 +40,7 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -105,7 +106,9 @@ fun FeaturedImageSettingScreen(
     var deleteIndex by remember { mutableStateOf<Int?>(null) }
 
     val focusManager = LocalFocusManager.current
-    val hasDifference = remember { mutableStateOf(false) }
+    val hasDifference = remember { derivedStateOf {
+        originalFeaturedImages != featuredImages
+    } }
     val showBackWarningDialog = remember { mutableStateOf(false) }
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -136,10 +139,6 @@ fun FeaturedImageSettingScreen(
 
     LaunchedEffect(originalFeaturedImages) {
         featuredImageSettingViewModel.updateFeaturedImages(originalFeaturedImages)
-    }
-
-    LaunchedEffect(originalFeaturedImages, featuredImages) {
-        hasDifference.value = originalFeaturedImages != featuredImages
     }
 
     LaunchedEffect(croppedImageUri) {
