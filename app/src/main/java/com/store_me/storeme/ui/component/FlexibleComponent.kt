@@ -95,10 +95,10 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.store_me.storeme.R
 import com.store_me.storeme.data.BannerData
 import com.store_me.storeme.data.enums.AccountType
+import com.store_me.storeme.data.enums.DragValue
 import com.store_me.storeme.ui.location.LocationViewModel
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.mystore.CategoryViewModel
-import com.store_me.storeme.ui.store_setting.menu.DragValue
 import com.store_me.storeme.ui.theme.DividerColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.NormalCategoryColor
