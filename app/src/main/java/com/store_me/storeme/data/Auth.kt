@@ -2,14 +2,12 @@ package com.store_me.storeme.data
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 
 object Auth {
 
     //계정 정보 관련
     private val _userData = MutableStateFlow(UserData("도구리", "도구리야", "https://i.namu.wiki/i/vJ_iVx2uAFkYUmfaxSwP0QSDbPjRz-OzilacQpDBLQmls9oOM0pV4qUk8mCbgL41v4_wGV-kdotau0LIpZu261XmIpWq0qLg3gKfSSBg78Px_EGRyNlmZk6d5N6KKx6zgsZArniJ3t2cwmB4IvS-0A.webp"))
     val userData: StateFlow<UserData> = _userData
-
 
     /*   영업 시간 정보 및 휴무일 설정   */
     private val _storeHoursData = MutableStateFlow(StoreHoursData(emptyList(), emptyList(), emptyList(),""))
@@ -76,40 +74,40 @@ object Auth {
     }
 
     private val _menuCategoryList = MutableStateFlow(listOf(
-        MenuCategory("테스트 카테고리 1", menuList = listOf(
-            MenuData(
+        OldMenuCategory("테스트 카테고리 1", menuList = listOf(
+            OldMenuData(
                 name = "이름3",
                 price = MenuPrice.Variable,
-                imageUrl = "",
+                image = "",
                 description = "",
                 isSignature = true,
                 isPopular = true,
                 isRecommend = true,
             ),
-            MenuData(
+            OldMenuData(
                 name = "이름4",
                 price = MenuPrice.Fixed(10000),
-                imageUrl = "",
+                image = "",
                 description = "",
                 isSignature = true,
                 isPopular = true,
                 isRecommend = true,
             )
         )),
-        MenuCategory(DEFAULT_MENU_CATEGORY, menuList = listOf(
-            MenuData(
+        OldMenuCategory(DEFAULT_MENU_CATEGORY, menuList = listOf(
+            OldMenuData(
                 name = "이름1",
                 price = MenuPrice.Variable,
-                imageUrl = "",
+                image = "",
                 description = "",
                 isSignature = true,
                 isPopular = true,
                 isRecommend = true,
             ),
-            MenuData(
+            OldMenuData(
                 name = "이름2",
                 price = MenuPrice.Fixed(10000),
-                imageUrl = "",
+                image = "",
                 description = "",
                 isSignature = true,
                 isPopular = true,
@@ -117,9 +115,9 @@ object Auth {
             )
         ))
     ))
-    val menuCategoryList: StateFlow<List<MenuCategory>> = _menuCategoryList
+    val menuCategoryList: StateFlow<List<OldMenuCategory>> = _menuCategoryList
 
-    fun updateCategory(menuCategoryList: List<MenuCategory>) {
+    fun updateCategory(menuCategoryList: List<OldMenuCategory>) {
         _menuCategoryList.value = menuCategoryList
     }
 
@@ -127,7 +125,7 @@ object Auth {
         val currentList = _menuCategoryList.value.toMutableList()
 
         currentList.add(
-            MenuCategory(
+            OldMenuCategory(
                 categoryName = categoryName,
                 menuList = emptyList()
             )
@@ -161,14 +159,14 @@ object Auth {
         _menuCategoryList.value = currentList
     }
 
-    fun addMenuData(menuData: MenuData, categoryName: String) {
+    fun addMenuData(menuData: OldMenuData, categoryName: String) {
         val currentList = _menuCategoryList.value.toMutableList()
 
         when(_menuCategoryList.value.isEmpty()) {
             true -> {
                 _menuCategoryList.value = currentList.apply {
                     add(
-                        MenuCategory(
+                        OldMenuCategory(
                             categoryName = DEFAULT_MENU_CATEGORY,
                             menuList = listOf(menuData)
                         )
@@ -192,7 +190,7 @@ object Auth {
         }
     }
 
-    fun deleteMenuData(menuData: MenuData) {
+    fun deleteMenuData(menuData: OldMenuData) {
         val currentList = _menuCategoryList.value.toMutableList()
 
         val categoryIndex = currentList.indexOfFirst { category ->
@@ -210,7 +208,7 @@ object Auth {
     }
 
 
-    fun updateMenuData(menuList: List<MenuData>, categoryIndex: Int) {
+    fun updateMenuData(menuList: List<OldMenuData>, categoryIndex: Int) {
         val currentList = _menuCategoryList.value.toMutableList()
 
         val updatedMenuCategory = _menuCategoryList.value[categoryIndex].copy(menuList = menuList)
@@ -219,7 +217,7 @@ object Auth {
         _menuCategoryList.value = currentList
     }
 
-    fun updateMenuData(originMenuData: MenuData, changedMenuData: MenuData, originCategoryName: String, changedCategoryName: String) {
+    fun updateMenuData(originMenuData: OldMenuData, changedMenuData: OldMenuData, originCategoryName: String, changedCategoryName: String) {
         val currentList = _menuCategoryList.value.toMutableList()
 
         val destination = currentList.find {

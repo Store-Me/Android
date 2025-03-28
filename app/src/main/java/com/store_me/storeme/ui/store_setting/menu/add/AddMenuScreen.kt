@@ -35,19 +35,17 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -57,82 +55,119 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
-import com.store_me.storeme.data.MenuPriceType.FIXED
-import com.store_me.storeme.data.MenuPriceType.RANGE
-import com.store_me.storeme.data.MenuPriceType.VARIABLE
+import com.store_me.storeme.data.MenuCategoryData
+import com.store_me.storeme.data.MenuData
+import com.store_me.storeme.data.enums.MenuPriceType
 import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultBottomSheet
+import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultCheckButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.DefaultOutlineTextField
-import com.store_me.storeme.ui.component.LargeButton
 import com.store_me.storeme.ui.component.NumberOutLineTextField
+import com.store_me.storeme.ui.component.SimpleNumberOutLinedTextField
+import com.store_me.storeme.ui.component.SimpleOutLinedTextField
 import com.store_me.storeme.ui.component.TextFieldErrorType
 import com.store_me.storeme.ui.component.TextLengthRow
+import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.component.TitleWithSaveButton
 import com.store_me.storeme.ui.component.addFocusCleaner
-import com.store_me.storeme.ui.store_setting.menu.add.AddMenuViewModel.MenuHighLightType
+import com.store_me.storeme.ui.store_setting.menu.MenuSettingViewModel
+import com.store_me.storeme.ui.store_setting.menu.add.MenuManagementViewModel.MenuHighLightType
+import com.store_me.storeme.ui.theme.GuideColor
+import com.store_me.storeme.ui.theme.HighlightColor
+import com.store_me.storeme.ui.theme.LighterHighlightColor
 import com.store_me.storeme.ui.theme.MenuPriceDescriptionColor
 import com.store_me.storeme.ui.theme.PopularBoxColor
 import com.store_me.storeme.ui.theme.PopularTextColor
 import com.store_me.storeme.ui.theme.RecommendBoxColor
 import com.store_me.storeme.ui.theme.RecommendTextColor
-import com.store_me.storeme.ui.theme.SelectedCheckBoxColorPink
-import com.store_me.storeme.ui.theme.SelectedMenuCategoryColor
-import com.store_me.storeme.ui.theme.SignatureBoxColor
-import com.store_me.storeme.ui.theme.SignatureTextColor
-import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.UnselectedHighLightMenuColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.SizeUtils
 
-val LocalAddMenuViewModel = staticCompositionLocalOf<AddMenuViewModel> {
-    error("No AddMenuViewModel")
-}
-
 @Composable
-fun AddMenuScreen(
+fun MenuManagementScreen(
     navController: NavController,
-    addMenuViewModel: AddMenuViewModel = viewModel()
+    menuSettingViewModel: MenuSettingViewModel, //TODO 기존 ViewModel 가져오기
+    menuManagementViewModel: MenuManagementViewModel = viewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val focusManager = LocalFocusManager.current
 
+    val menuCategories by menuSettingViewModel.menuCategories.collectAsState()
+
+    val selectedCategory by menuManagementViewModel.selectedCategory.collectAsState()
+
+    val menuData by menuManagementViewModel.menuData.collectAsState()
+
     var showDialog by remember { mutableStateOf(false) }
 
-    CompositionLocalProvider(LocalAddMenuViewModel provides addMenuViewModel) {
-        Scaffold (
-            modifier = Modifier
-                .fillMaxSize()
-                .addFocusCleaner(focusManager),
-            containerColor = White,
-            topBar = { AddMenuTopLayout(navController = navController, scrollBehavior = scrollBehavior){
-                addMenuViewModel.addMenuData()
-                navController.popBackStack()
-            } },
-            content = { innerPadding ->
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .nestedScroll(scrollBehavior.nestedScrollConnection)
-                        .fillMaxWidth()
-                ) {
-                    item { MenuCategorySection() }
-
-                    item { MenuNameSection() }
-
-                    item { MenuPriceSection() }
-
-                    item { MenuImageSection() }
-
-                    item { MenuDescriptionSection() }
-
-                    item { MenuHighlightSection() }
-                }
-            }
-        )
+    fun onClose() {
+        navController.popBackStack()
     }
+
+    Scaffold (
+        modifier = Modifier
+            .fillMaxSize()
+            .addFocusCleaner(focusManager),
+        containerColor = Color.White,
+        topBar = { TopAppBar(title = {
+            TitleWithDeleteButton(
+                title = "메뉴 추가",
+                isInTopAppBar = true
+            ) {
+                onClose()
+            } },
+            scrollBehavior = scrollBehavior,
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.White,
+                scrolledContainerColor = Color.White
+            )
+        ) },
+        content = { innerPadding ->
+            LazyColumn(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
+                    .fillMaxWidth()
+            ) {
+                item { MenuCategorySection(
+                    menuCategories = menuCategories,
+                    selectedCategory = selectedCategory
+                ) {
+                    menuManagementViewModel.updateSelectedCategory(it)
+                } }
+
+                item { MenuNameSection(
+                    menuName = menuData.name
+                ) {
+                    menuManagementViewModel.updateMenuName(it)
+                } }
+
+                item { MenuPriceSection(
+                    menuData = menuData,
+                    onPriceTypeChange = {
+                        menuManagementViewModel.updateMenuPriceType(it)
+                    },
+                    onPriceChange = { price, minPrice, maxPrice ->
+                        menuManagementViewModel.updateMenuPrice(
+                            price = price,
+                            minPrice = minPrice,
+                            maxPrice = maxPrice
+                        )
+                    }
+                ) }
+
+                item { MenuImageSection() }
+
+                item { MenuDescriptionSection() }
+
+                item { MenuHighlightSection() }
+            }
+        }
+    )
+
 
     if(showDialog) {
         BackWarningDialog(
@@ -142,10 +177,6 @@ fun AddMenuScreen(
             },
             onDismiss = { showDialog = false },
         )
-    }
-
-    BackHandler {
-        showDialog = true
     }
 }
 
@@ -192,25 +223,25 @@ fun MenuImageSection() {
 }
 
 @Composable
-fun MenuPriceSection() {
-    val addMenuViewModel = LocalAddMenuViewModel.current
-
-    val menuPriceType by addMenuViewModel.menuPriceType.collectAsState()
-
-    val fixedPrice by addMenuViewModel.fixedPrice.collectAsState()
-    val rangeMinPrice by addMenuViewModel.rangeMinPrice.collectAsState()
-    val rangeMaxPrice by addMenuViewModel.rangeMaxPrice.collectAsState()
+fun MenuPriceSection(
+    menuData: MenuData,
+    onPriceTypeChange: (MenuPriceType) -> Unit,
+    onPriceChange: (Int?, Int?, Int?) -> Unit
+) {
+    var priceText by remember { mutableStateOf("") }
+    var minPriceText by remember { mutableStateOf("") }
+    var maxPriceText by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
-            .padding(20.dp),
+            .padding(horizontal = 20.dp, vertical = 12.dp),
     ) {
         Text(
             text = "가격",
             style = storeMeTextStyle(FontWeight.ExtraBold, 2),
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         Row(
             modifier = Modifier
@@ -221,55 +252,50 @@ fun MenuPriceSection() {
                 isCheckIconOnLeft = true,
                 text = "정가",
                 fontWeight = FontWeight.ExtraBold,
-                selectedColor = SignatureTextColor,
-                isSelected = menuPriceType == FIXED,
+                selectedColor = HighlightColor,
+                isSelected = menuData.priceType == MenuPriceType.fixed.name,
             ) {
-                addMenuViewModel.updateMenuPriceType(FIXED)
+                onPriceTypeChange(MenuPriceType.fixed)
+                onPriceChange(0, null, null)
             }
 
             DefaultCheckButton(
                 isCheckIconOnLeft = true,
                 text = "범위 설정",
                 fontWeight = FontWeight.ExtraBold,
-                selectedColor = SignatureTextColor,
-                isSelected = menuPriceType == RANGE,
+                selectedColor = HighlightColor,
+                isSelected = menuData.priceType == MenuPriceType.ranged.name,
             ) {
-                addMenuViewModel.updateMenuPriceType(RANGE)
+                onPriceTypeChange(MenuPriceType.fixed)
+                onPriceChange(null, 0, 0)
             }
 
             DefaultCheckButton(
                 isCheckIconOnLeft = true,
                 text = "변동",
                 fontWeight = FontWeight.ExtraBold,
-                selectedColor = SignatureTextColor,
-                isSelected = menuPriceType == VARIABLE,
+                selectedColor = HighlightColor,
+                isSelected = menuData.priceType == MenuPriceType.variable.name
             ) {
-                addMenuViewModel.updateMenuPriceType(VARIABLE)
+                onPriceTypeChange(MenuPriceType.fixed)
+                onPriceChange(null, null, null)
             }
         }
 
-        AnimatedVisibility(menuPriceType == FIXED) {
-            Column {
-                Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-                NumberOutLineTextField(
-                    text = if(fixedPrice == null) "" else fixedPrice.toString(),
-                    placeholderText = "가격을 입력하세요.",
-                    suffixText = "원",
-                    errorType = TextFieldErrorType.PRICE,
-                    onValueChange = { addMenuViewModel.updateFixedPrice(it) },
-                    onErrorChange = { addMenuViewModel.updateFixedError(it) }
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text(
-                    text = "정해진 가격의 메뉴의 경우 선택해 주세요.",
-                    style = storeMeTextStyle(FontWeight.Bold, 0),
-                    color = MenuPriceDescriptionColor
-                )
-            }
+        AnimatedVisibility(menuData.priceType == MenuPriceType.fixed.name) {
+            SimpleNumberOutLinedTextField(
+                text = priceText,
+                onValueChange = { priceText = it },
+                placeholderText = "가격을 입력하세요.",
+                suffixText = "원",
+                isError = false,
+                errorText = ""
+            )
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         AnimatedVisibility(menuPriceType == RANGE) {
             Column {
@@ -362,7 +388,7 @@ fun MenuHighlightSection() {
             MenuHighLightType.RECOMMEND -> RecommendTextColor
         }
         val containerColor = if(!isSelected) White else when(type) {
-            MenuHighLightType.SIGNATURE -> SignatureBoxColor
+            MenuHighLightType.SIGNATURE -> LighterHighlightColor
             MenuHighLightType.POPULAR -> PopularBoxColor
             MenuHighLightType.RECOMMEND -> RecommendBoxColor
         }
@@ -454,43 +480,38 @@ fun MenuDescriptionSection() {
 }
 
 @Composable
-fun MenuNameSection(isEdit: Boolean = false) {
-    val addMenuViewModel = LocalAddMenuViewModel.current
-    val name by addMenuViewModel.name.collectAsState()
+fun MenuNameSection(menuName: String, onValueChange: (String) -> Unit) {
+    val isError by remember { derivedStateOf {
+        menuName.length > 30
+    } }
 
     Column(
         modifier = Modifier
-            .padding(20.dp)
+            .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
         Text(
             text = "메뉴 이름",
             style = storeMeTextStyle(FontWeight.ExtraBold, 2)
         )
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-        DefaultOutlineTextField(
-            text = name,
-            onValueChange = { addMenuViewModel.updateName(it) },
+        SimpleOutLinedTextField(
+            text = menuName,
             placeholderText = "메뉴 이름을 입력하세요.",
-            errorType = TextFieldErrorType.MENU_NAME,
-            onErrorChange = { addMenuViewModel.updateNameError(it) },
-            exceptText = if(isEdit) addMenuViewModel.originMenuData.name else ""
+            onValueChange = { onValueChange(it) },
+            isError = isError,
+            errorText = "메뉴 이름은 30자 이하여야 합니다.",
         )
 
-        Spacer(modifier = Modifier.height(5.dp))
-
-        TextLengthRow(text = name, limitSize = 15)
+        TextLengthRow(text = menuName, limitSize = 30)
     }
 
     DefaultHorizontalDivider()
 }
 
 @Composable
-fun MenuCategorySection() {
-    val addMenuViewModel = LocalAddMenuViewModel.current
-    val selectedCategory by remember { addMenuViewModel.selectedCategory }.collectAsState()
-
+fun MenuCategorySection(menuCategories: List<MenuCategoryData>, selectedCategory: String, onSelected: (String) -> Unit) {
     var showBottomSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -499,31 +520,30 @@ fun MenuCategorySection() {
     Row(
         modifier = Modifier
             .clickable { showBottomSheet = true }
-            .padding(20.dp)
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "카테고리 (선택)",
+            text = "카테고리",
             style = storeMeTextStyle(FontWeight.ExtraBold, 2)
         )
 
-        Row(
-            modifier = Modifier
-                .weight(1f),
-            horizontalArrangement = Arrangement.End
-        ) {
-            Text(
-                text = selectedCategory,
-                style = storeMeTextStyle(FontWeight.ExtraBold, 2),
-                color = SelectedMenuCategoryColor
-            )
-        }
+        Spacer(modifier = Modifier.weight(1f))
 
-        Spacer(modifier = Modifier.width(10.dp))
+        Text(
+            text = selectedCategory,
+            style = storeMeTextStyle(FontWeight.ExtraBold, 2),
+            color = GuideColor
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
 
         Icon(
             painter = painterResource(id = R.drawable.ic_arrow_right),
             contentDescription = "이동 아이콘",
-            modifier = Modifier.size(SizeUtils.textSizeToDp(LocalDensity.current, 2, 0))
+            modifier = Modifier
+                .size(18.dp),
+            tint = GuideColor
         )
     }
 
@@ -531,148 +551,61 @@ fun MenuCategorySection() {
 
     if(showBottomSheet) {
         DefaultBottomSheet(onDismiss = { showBottomSheet = false }, sheetState = sheetState) {
-            MenuCategoryListSection {
-                showBottomSheet = false
+            SelectCategoryBottomSheetContent(
+                menuCategories = menuCategories,
+                selectedCategory = selectedCategory
+            ) {
+                onSelected(it)
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
 
 @Composable
-fun MenuCategoryListSection(onFinish: () -> Unit) {
-    val addMenuViewModel = LocalAddMenuViewModel.current
-    //val selectedCategory by remember { addMenuViewModel.selectedCategory }.collectAsState()
-    var selectedCategory by remember { mutableStateOf(addMenuViewModel.selectedCategory.value) }
+fun SelectCategoryBottomSheetContent(menuCategories: List<MenuCategoryData>, selectedCategory: String, onSelected: (String) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        LazyColumn {
+            items(menuCategories) {
+                val isSelected by remember { derivedStateOf {
+                    selectedCategory == it.categoryName
+                } }
 
-    val categoryList = Auth.menuCategoryList.value
-
-    LazyColumn {
-        items(categoryList) {
-            val isSelected = selectedCategory == it.categoryName
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        selectedCategory = it.categoryName
-                    }
-                    .padding(horizontal = 20.dp, vertical = 15.dp)
-            ) {
                 Row(
                     modifier = Modifier
-                        .weight(1f),
-                    horizontalArrangement = Arrangement.Start
+                        .fillMaxWidth()
+                        .clickable { onSelected(it.categoryName) }
+                        .padding(horizontal = 20.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "${it.categoryName} (${it.menuList.size})",
+                        text = "${it.categoryName} (${it.menus.size})",
                         style = storeMeTextStyle(FontWeight.ExtraBold, 2)
                     )
-                }
 
-                Icon(
-                    painter = painterResource(id = if(!isSelected) R.drawable.ic_check_off else R.drawable.ic_check_on),
-                    contentDescription = "체크 아이콘",
-                    modifier = Modifier
-                        .size(SizeUtils.textSizeToDp(LocalDensity.current, 2, 4)),
-                    tint = if(!isSelected) UndefinedTextColor else SelectedCheckBoxColorPink
-                )
-            }
-        }
+                    Spacer(modifier = Modifier.weight(1f))
 
-        item {
-            LargeButton(
-                text = "저장",
-                modifier = Modifier
-                    .padding(horizontal = 20.dp),
-                containerColor = Color.Black,
-                contentColor = White
-            ) {
-                addMenuViewModel.updateSelectedCategory(selectedCategory)
-                onFinish()
-            }
-        }
-    }
-}
-
-@Composable
-fun AddMenuTopLayout(
-    navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
-    isEdit: Boolean = false,
-    onFinish: () -> Unit
-) {
-    val title = if(isEdit) "메뉴 수정" else "메뉴 추가"
-
-    val addMenuViewModel = LocalAddMenuViewModel.current
-
-    val name by addMenuViewModel.name.collectAsState()
-    val isNameError by addMenuViewModel.isNameError.collectAsState()
-    val menuPriceType by addMenuViewModel.menuPriceType.collectAsState()
-    val isFixedError by addMenuViewModel.isFixedError.collectAsState()
-    val fixedPrice by addMenuViewModel.fixedPrice.collectAsState()
-    val isMinRangeError by addMenuViewModel.isMinRangeError.collectAsState()
-    val isMaxRangeError by addMenuViewModel.isMaxRangeError.collectAsState()
-    val rangeMinPrice by addMenuViewModel.rangeMinPrice.collectAsState()
-    val rangeMaxPrice by addMenuViewModel.rangeMaxPrice.collectAsState()
-    val isDescriptionError by addMenuViewModel.isDescriptionError.collectAsState()
-
-    fun isEnable():Boolean {
-        //이름 유효성 검사
-        fun isNameEnable(): Boolean {
-            return when {
-                name.isEmpty() -> false
-                isNameError -> false
-                else -> true
-            }
-        }
-
-        //가격 관련
-        fun isPriceEnable(): Boolean {
-            return when(menuPriceType) {
-                FIXED -> {
-                    when {
-                        isFixedError -> false
-                        fixedPrice == 0 -> false
-                        fixedPrice == null -> false
-                        else -> true
-                    }
-                }
-                RANGE -> {
-                    when {
-                        isMinRangeError -> false
-                        isMaxRangeError -> false
-                        rangeMinPrice == 0 && rangeMaxPrice == 0 -> false
-                        rangeMinPrice == null && rangeMaxPrice == null -> false
-                        else -> true
-                    }
-                }
-                VARIABLE -> {
-                    true
-                }
-                else -> {
-                    false
+                    Icon(
+                        painter = painterResource(id = if(!isSelected) R.drawable.ic_check_off else R.drawable.ic_check_on),
+                        contentDescription = "체크 아이콘",
+                        modifier = Modifier
+                            .size(24.dp),
+                        tint = if(!isSelected) GuideColor else HighlightColor
+                    )
                 }
             }
         }
 
-        //추가 설명 관련
-        fun isDescriptionEnable(): Boolean {
-            return when {
-                isDescriptionError -> false
-                else -> true
-            }
+        Spacer(modifier = Modifier.height(40.dp))
+
+        DefaultButton(
+            buttonText = "저장",
+        ) {
+            onSelected(selectedCategory)
         }
 
-        return isNameEnable() && isPriceEnable() && isDescriptionEnable()
-    }
-    TitleWithSaveButton(
-        navController = navController,
-        title = title,
-        scrollBehavior = scrollBehavior,
-        finishButtonEnable = isEnable()
-    ) {
-        onFinish()
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }

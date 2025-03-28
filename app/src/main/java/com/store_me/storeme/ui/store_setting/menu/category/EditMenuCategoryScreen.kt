@@ -2,7 +2,6 @@
 
 package com.store_me.storeme.ui.store_setting.menu.category
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -32,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.data.Auth
-import com.store_me.storeme.data.MenuCategory
+import com.store_me.storeme.data.OldMenuCategory
 import com.store_me.storeme.ui.component.DefaultCheckButton
 import com.store_me.storeme.ui.component.TitleWithSaveButton
 import com.store_me.storeme.ui.theme.SelectedCheckBoxColor
@@ -83,7 +81,7 @@ fun EditMenuCategoryScreen(
 }
 
 @Composable
-fun CategoryWithMenuItem(menuCategory: MenuCategory, currentIndex: Int, selectedCategoryName: String) {
+fun CategoryWithMenuItem(menuCategory: OldMenuCategory, currentIndex: Int, selectedCategoryName: String) {
     val editMenuCategoryViewModel = LocalEditMenuCategoryViewModel.current
 
     val originCategoryList by Auth.menuCategoryList.collectAsState()

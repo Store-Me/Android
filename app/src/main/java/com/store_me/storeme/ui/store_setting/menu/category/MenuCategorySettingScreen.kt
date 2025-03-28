@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.data.Auth
-import com.store_me.storeme.data.MenuCategory
+import com.store_me.storeme.data.OldMenuCategory
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.DefaultOutlineTextField
 import com.store_me.storeme.ui.component.EditAndDeleteRow
@@ -162,7 +162,7 @@ fun MenuCategorySettingScreen(
 }
 
 @Composable
-fun MenuCategoryItem(menuCategory: MenuCategory, modifier: Modifier) {
+fun MenuCategoryItem(menuCategory: OldMenuCategory, modifier: Modifier) {
     var showDialog by remember { mutableStateOf(false) }
 
     EditAndDeleteRow(
