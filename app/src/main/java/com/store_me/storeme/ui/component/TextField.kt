@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
+import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
@@ -144,20 +145,6 @@ fun DefaultOutlineTextField(
     LaunchedEffect(errorMessage) {
         onErrorChange(errorMessage != null)
     }
-
-
-    /*DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_STOP) {
-                focusManager.clearFocus()
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }*/
 
     OutlinedTextField(
         value = text,
@@ -552,6 +539,128 @@ fun PwOutlinedTextField(
             if(isError){
                 Text(
                     text = "4 ~ 20 글자로 구성되어야 합니다.",
+                    style = storeMeTextStyle(FontWeight.Normal, 0),
+                    color = ErrorTextFieldColor
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun SimpleOutLinedTextField(
+    text: String,
+    placeholderText: String,
+    onValueChange: (String) -> Unit,
+    isError: Boolean,
+    errorText: String,
+) {
+    OutlinedTextField(
+        value = text,
+        onValueChange = { onValueChange(it) },
+        textStyle = storeMeTextStyle(FontWeight.Normal, 1),
+        modifier = Modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        trailingIcon = {
+            if(text.isNotEmpty()){
+                IconButton(onClick = { onValueChange("") }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_text_clear),
+                        contentDescription = "삭제",
+                        modifier = Modifier
+                            .size(24.dp),
+                        tint = Color.Unspecified
+                    )
+                }
+            }
+        },
+        placeholder = {
+            Text(
+                text = placeholderText,
+                style = storeMeTextStyle(FontWeight.Normal, 1),
+                color = UndefinedTextColor
+            )
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = HighlightTextFieldColor,
+            errorBorderColor = ErrorTextFieldColor,
+            errorLabelColor = ErrorTextFieldColor,
+        ),
+        isError = isError,
+        supportingText = {
+            if(isError){
+                Text(
+                    text = errorText,
+                    style = storeMeTextStyle(FontWeight.Normal, 0),
+                    color = ErrorTextFieldColor
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun SimpleNumberOutLinedTextField(
+    text: String,
+    placeholderText: String,
+    onValueChange: (String) -> Unit,
+    isError: Boolean,
+    errorText: String,
+    suffixText: String? = null,
+) {
+    OutlinedTextField(
+        value = text,
+        onValueChange = {
+            if(it.last().isDigit() && it.length <= 8)
+                onValueChange(it)
+        },
+        textStyle = storeMeTextStyle(FontWeight.Normal, 1),
+        modifier = Modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(14.dp),
+        trailingIcon = {
+            Row {
+                if(text.isNotEmpty()){
+                    IconButton(onClick = { onValueChange("") }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_text_clear),
+                            contentDescription = "삭제",
+                            modifier = Modifier
+                                .size(24.dp),
+                            tint = Color.Unspecified
+                        )
+                    }
+                }
+
+                if(!suffixText.isNullOrEmpty()) {
+                    Text(
+                        text = suffixText,
+                        style = storeMeTextStyle(FontWeight.Normal, 2),
+                        color = GuideColor
+                    )
+                }
+            }
+        },
+        placeholder = {
+            Text(
+                text = placeholderText,
+                style = storeMeTextStyle(FontWeight.Normal, 1),
+                color = UndefinedTextColor
+            )
+        },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = HighlightTextFieldColor,
+            errorBorderColor = ErrorTextFieldColor,
+            errorLabelColor = ErrorTextFieldColor,
+        ),
+        isError = isError,
+        supportingText = {
+            if(isError){
+                Text(
+                    text = errorText,
                     style = storeMeTextStyle(FontWeight.Normal, 0),
                     color = ErrorTextFieldColor
                 )
