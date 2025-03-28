@@ -204,7 +204,6 @@ val SelectedCheckBoxColorPink = Color(0xFFD449DA)
 val SelectedMenuCategoryColor = Color(0xFF898C93)
 
 val SignatureBoxColor = Color(0xFFFEEBFE)
-val SignatureTextColor = Color(0xFFD449DA)
 
 val PopularBoxColor = Color(0xFFDCE8FF)
 val PopularTextColor = Color(0xFF508EFA)
