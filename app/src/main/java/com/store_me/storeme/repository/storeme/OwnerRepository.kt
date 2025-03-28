@@ -1,5 +1,7 @@
 package com.store_me.storeme.repository.storeme
 
+import com.store_me.storeme.data.CouponData
+import com.store_me.storeme.data.request.CouponRequest
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
@@ -9,12 +11,16 @@ import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
 import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
+import com.store_me.storeme.data.response.AcceptCouponResponse
 import com.store_me.storeme.data.response.BusinessHoursResponse
+import com.store_me.storeme.data.response.CouponsResponse
 import com.store_me.storeme.data.response.FeaturedImagesResponse
 import com.store_me.storeme.data.response.LinksResponse
+import com.store_me.storeme.data.response.MenusResponse
 import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.data.response.NoticeResponse
 import com.store_me.storeme.data.response.PatchResponse
+import com.store_me.storeme.data.response.UseCouponResponse
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.network.storeme.OwnerApiService
 import com.store_me.storeme.utils.exception.ApiExceptionHandler.toResult
@@ -55,6 +61,22 @@ interface OwnerRepository {
     suspend fun getStoreFeaturedImages(storeId: String): Result<FeaturedImagesResponse>
 
     suspend fun patchFeaturedImages(storeId: String, patchStoreFeaturedImagesRequest: PatchStoreFeaturedImagesRequest): Result<PatchResponse<FeaturedImagesResponse>>
+
+    suspend fun getStoreCoupons(storeId: String): Result<CouponsResponse>
+
+    suspend fun postStoreCoupon(storeId: String, couponRequest: CouponRequest): Result<PatchResponse<CouponData>>
+
+    suspend fun patchStoreCoupon(storeId: String, couponRequest: CouponRequest): Result<PatchResponse<CouponData>>
+
+    suspend fun deleteStoreCoupon(storeId: String, couponId: String): Result<PatchResponse<Unit>>
+
+    suspend fun acceptStoreCoupon(storeId: String, couponId: String): Result<PatchResponse<AcceptCouponResponse>>
+
+    suspend fun useStoreCoupon(storeId: String, couponId: String): Result<PatchResponse<UseCouponResponse>>
+
+    suspend fun getStoreMenus(storeId: String): Result<MenusResponse>
+
+    suspend fun patchStoreMenus(storeId: String, patchStoreMenusRequest: MenusResponse): Result<PatchResponse<MenusResponse>>
 }
 
 class OwnerRepositoryImpl @Inject constructor(
@@ -406,6 +428,189 @@ class OwnerRepositoryImpl @Inject constructor(
                 val responseBody = response.body()
 
                 Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun getStoreCoupons(storeId: String): Result<CouponsResponse> {
+        return try {
+            val response = ownerApiService.getStoreCoupons(
+                storeId = storeId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Result.success(responseBody ?: CouponsResponse(coupons = emptyList()))
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun postStoreCoupon(storeId: String, couponRequest: CouponRequest): Result<PatchResponse<CouponData>> {
+        return try {
+            val response = ownerApiService.postStoreCoupon(
+                storeId = storeId,
+                couponRequest = couponRequest
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun patchStoreCoupon(storeId: String, couponRequest: CouponRequest): Result<PatchResponse<CouponData>> {
+        return try {
+            val response = ownerApiService.patchStoreCoupon(
+                storeId = storeId,
+                couponRequest = couponRequest
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun deleteStoreCoupon(storeId: String, couponId: String): Result<PatchResponse<Unit>> {
+        return try {
+            val response = ownerApiService.deleteStoreCoupon(
+                storeId = storeId,
+                couponId = couponId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun acceptStoreCoupon(
+        storeId: String,
+        couponId: String
+    ): Result<PatchResponse<AcceptCouponResponse>> {
+        return try {
+            val response = ownerApiService.acceptStoreCoupon(
+                storeId = storeId,
+                couponId = couponId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun useStoreCoupon(
+        storeId: String,
+        couponId: String
+    ): Result<PatchResponse<UseCouponResponse>> {
+        return try {
+            val response = ownerApiService.useStoreCoupon(
+                storeId = storeId,
+                couponId = couponId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun getStoreMenus(storeId: String): Result<MenusResponse> {
+        return try {
+            val response = ownerApiService.getStoreMenus(
+                storeId = storeId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Result.success(responseBody ?: MenusResponse(categories = emptyList()))
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun patchStoreMenus(
+        storeId: String,
+        patchStoreMenusRequest: MenusResponse
+    ): Result<PatchResponse<MenusResponse>> {
+        return try {
+            val response = ownerApiService.patchStoreMenus(
+                storeId = storeId,
+                patchStoreMenusRequest = patchStoreMenusRequest
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
 
                 if(responseBody != null) {
                     Result.success(responseBody)
