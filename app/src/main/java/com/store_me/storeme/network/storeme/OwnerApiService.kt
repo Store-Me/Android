@@ -1,5 +1,7 @@
 package com.store_me.storeme.network.storeme
 
+import com.store_me.storeme.data.CouponData
+import com.store_me.storeme.data.request.CouponRequest
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
@@ -9,17 +11,23 @@ import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
 import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
+import com.store_me.storeme.data.response.AcceptCouponResponse
 import com.store_me.storeme.data.response.BusinessHoursResponse
+import com.store_me.storeme.data.response.CouponsResponse
 import com.store_me.storeme.data.response.FeaturedImagesResponse
 import com.store_me.storeme.data.response.LinksResponse
+import com.store_me.storeme.data.response.MenusResponse
 import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.data.response.NoticeResponse
 import com.store_me.storeme.data.response.PatchResponse
+import com.store_me.storeme.data.response.UseCouponResponse
 import com.store_me.storeme.data.store.StoreInfoData
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
+import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface OwnerApiService {
@@ -150,4 +158,75 @@ interface OwnerApiService {
         @Path("storeId") storeId: String,
         @Body patchStoreFeaturedImagesRequest: PatchStoreFeaturedImagesRequest
     ): Response<PatchResponse<FeaturedImagesResponse>>
+
+    /**
+     * 쿠폰 목록 조회 API
+     */
+    @GET("auth/store/{storeId}/coupons")
+    suspend fun getStoreCoupons(
+        @Path("storeId") storeId: String
+    ): Response<CouponsResponse>
+
+    /**
+     * 쿠폰 생성 API
+     */
+    @POST("auth/store/{storeId}/coupons")
+    suspend fun postStoreCoupon(
+        @Path("storeId") storeId: String,
+        @Body couponRequest: CouponRequest
+    ): Response<PatchResponse<CouponData>>
+
+    /**
+     * 쿠폰 수정 API
+     */
+    @PATCH("auth/store/{storeId}/coupons/{couponId}")
+    suspend fun patchStoreCoupon(
+        @Path("storeId") storeId: String,
+        @Body couponRequest: CouponRequest
+    ): Response<PatchResponse<CouponData>>
+
+    /**
+     * 쿠폰 삭제 API
+     */
+    @DELETE("auth/store/{storeId}/coupons/{couponId}")
+    suspend fun deleteStoreCoupon(
+        @Path("storeId") storeId: String,
+        @Path("couponId") couponId: String
+    ): Response<PatchResponse<Unit>>
+
+    /**
+     * 쿠폰 수령 API
+     */
+    @POST("auth/store/{storeId}/coupons/{couponId}/accept")
+    suspend fun acceptStoreCoupon(
+        @Path("storeId") storeId: String,
+        @Path("couponId") couponId: String
+    ): Response<PatchResponse<AcceptCouponResponse>>
+
+    /**
+     * 쿠폰 사용 API
+     */
+    @POST("auth/store/{storeId}/coupons/{couponId}/use")
+    suspend fun useStoreCoupon(
+        @Path("storeId") storeId: String,
+        @Path("couponId") couponId: String
+    ): Response<PatchResponse<UseCouponResponse>>
+
+    /**
+     * 메뉴 조회 API
+     */
+    @GET("auth/store/{storeId}/menus")
+    suspend fun getStoreMenus(
+        @Path("storeId") storeId: String
+    ): Response<MenusResponse>
+
+    /**
+     * 메뉴 수정 API
+     */
+    @PATCH("auth/store/{storeId}/menus")
+    suspend fun patchStoreMenus(
+        @Path("storeId") storeId: String,
+        @Body patchStoreMenusRequest: MenusResponse
+    ): Response<PatchResponse<MenusResponse>>
+
 }

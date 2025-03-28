@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
+import com.store_me.storeme.data.MenuCategoryData
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
@@ -13,6 +14,7 @@ import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
 import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.response.BusinessHoursResponse
+import com.store_me.storeme.data.response.MenusResponse
 import com.store_me.storeme.data.store.BusinessHourData
 import com.store_me.storeme.data.store.FeaturedImageData
 import com.store_me.storeme.data.store.StoreInfoData
@@ -49,6 +51,9 @@ class StoreDataViewModel @Inject constructor(
 
     private val _featuredImages = MutableStateFlow<List<FeaturedImageData>>(emptyList())
     val featuredImages: StateFlow<List<FeaturedImageData>> = _featuredImages
+
+    private val _menuCategories = MutableStateFlow<List<MenuCategoryData>>(emptyList())
+    val menuCategories: StateFlow<List<MenuCategoryData>> = _menuCategories
 
     /**
      * StoreData 조회 함수
@@ -281,6 +286,13 @@ class StoreDataViewModel @Inject constructor(
     }
 
     /**
+     * 메뉴 갱신 함수
+     */
+    fun updateMenuCategories(menuCategories: List<MenuCategoryData>) {
+        _menuCategories.value = menuCategories
+    }
+
+    /**
      * Notice 조회
      */
     fun getStoreNotice(storeId: String) {
@@ -394,6 +406,49 @@ class StoreDataViewModel @Inject constructor(
 
             response.onSuccess {
                 updateFeaturedImages(it.result.images ?: emptyList())
+
+                SuccessEventBus.successFlow.emit(it.message)
+            }.onFailure {
+                if (it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
+
+    /**
+     * MenuCategories 조회
+     */
+    fun getStoreMenus(storeId: String, menuCategories: List<MenuCategoryData>) {
+        viewModelScope.launch {
+            val response = ownerRepository.getStoreMenus(storeId = storeId)
+
+            response.onSuccess {
+                updateMenuCategories(it.categories)
+            }.onFailure {
+                if (it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
+
+    /**
+     * MenuCategories 변경
+     */
+    fun patchStoreMenus(storeId: String, menuCategories: List<MenuCategoryData>) {
+        viewModelScope.launch {
+            val response = ownerRepository.patchStoreMenus(
+                storeId = storeId,
+                patchStoreMenusRequest = MenusResponse(categories = menuCategories)
+            )
+
+            response.onSuccess {
+                updateMenuCategories(it.result.categories)
 
                 SuccessEventBus.successFlow.emit(it.message)
             }.onFailure {
