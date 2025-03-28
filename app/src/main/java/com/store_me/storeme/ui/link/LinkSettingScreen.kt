@@ -72,6 +72,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
+import com.store_me.storeme.data.enums.DragValue
 import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultButton
@@ -80,7 +81,6 @@ import com.store_me.storeme.ui.component.SaveAndAddButton
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
-import com.store_me.storeme.ui.store_setting.menu.DragValue
 import com.store_me.storeme.ui.theme.DefaultDividerColor
 import com.store_me.storeme.ui.theme.ErrorColor
 import com.store_me.storeme.ui.theme.GuideColor
