@@ -42,7 +42,7 @@ val LocalEditMenuCategoryViewModel = staticCompositionLocalOf<EditMenuCategoryVi
 }
 
 @Composable
-fun EditMenuCategoryScreen(
+fun MenuCategoryEditScreen(
     navController: NavController,
     selectedCategoryName: String,
     editMenuCategoryViewModel: EditMenuCategoryViewModel = viewModel()

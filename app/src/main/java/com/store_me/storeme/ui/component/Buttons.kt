@@ -36,16 +36,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.store_me.storeme.R
-import com.store_me.storeme.ui.main.MainActivity
+import com.store_me.storeme.ui.main.navigation.customer.CustomerRoute
 import com.store_me.storeme.ui.theme.CopyButtonColor
-import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.ExpiredColor
 import com.store_me.storeme.ui.theme.SelectedCheckBoxColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.ToggleButtonBorderColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.SizeUtils
 
 
@@ -365,10 +364,7 @@ fun NotificationIcon(navController: NavController) {
             .size(26.dp)
             .clickable(
                 onClick = {
-                    NavigationUtils().navigateCustomerNav(
-                        navController,
-                        MainActivity.CustomerNavItem.NOTIFICATION
-                    )
+                    navController.navigate(CustomerRoute.Notification(CustomerRoute.Home).fullRoute)
                 },
                 interactionSource = remember { MutableInteractionSource() },
                 indication = ripple(bounded = false)

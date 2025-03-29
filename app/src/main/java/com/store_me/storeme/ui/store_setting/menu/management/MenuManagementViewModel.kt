@@ -1,4 +1,4 @@
-package com.store_me.storeme.ui.store_setting.menu.add
+package com.store_me.storeme.ui.store_setting.menu.management
 
 import androidx.lifecycle.ViewModel
 import com.store_me.storeme.data.DEFAULT_MENU_CATEGORY

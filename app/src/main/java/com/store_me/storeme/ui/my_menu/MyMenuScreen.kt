@@ -54,12 +54,10 @@ import coil.compose.AsyncImage
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.component.BannerLayout
 import com.store_me.storeme.ui.component.NotificationIcon
-import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.theme.DefaultDividerColor
 import com.store_me.storeme.ui.theme.MyMenuIconColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTypography
-import com.store_me.storeme.utils.NavigationUtils
 
 val LocalMyCouponViewModel = staticCompositionLocalOf<MyMenuViewModel> {
     error("No MyMenuViewModel provided")
@@ -254,7 +252,6 @@ fun MyProfileMenu(navController: NavController) {
         }
 
         MyProfileMenuItem(MyMenuViewModel.MyProfileMenuItem.MY_COUPON) {
-            NavigationUtils().navigateCustomerNav(navController, MainActivity.CustomerNavItem.MY_COUPON)
         }
 
         MyProfileMenuItem(MyMenuViewModel.MyProfileMenuItem.LIKE_LIST) {

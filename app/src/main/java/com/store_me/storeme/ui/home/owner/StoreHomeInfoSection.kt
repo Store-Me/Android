@@ -104,10 +104,10 @@ fun StoreHomeInfoSection(
              */
             StoreHomeInfoButtonsSection(
                 onEditClick = {
-                    onClick(StoreProfileItems.EDIT_PROFILE)
+                    onClick(StoreProfileItems.ProfileEdit)
                 },
                 onManagementClick = {
-                    onClick(StoreProfileItems.MANAGEMENT)
+                    onClick(StoreProfileItems.StoreManagement)
                 }
             )
         }
@@ -118,19 +118,19 @@ fun StoreHomeInfoSection(
         ) {
             //가게 설명
             StoreIntroSection(storeInfoData.storeIntro) {
-                onClick(StoreProfileItems.INTRO)
+                onClick(StoreProfileItems.IntroSetting)
             }
 
             DefaultHorizontalDivider()
 
             //영업시간
             StoreBusinessHoursSection(businessHours) {
-                onClick(StoreProfileItems.BUSINESS_HOURS)
+                onClick(StoreProfileItems.BusinessHoursSetting)
             }
 
             //휴무일
             StoreHolidaySection(businessHours) {
-                onClick(StoreProfileItems.BUSINESS_HOURS)
+                onClick(StoreProfileItems.BusinessHoursSetting)
             }
 
             //가게 전화번호
@@ -142,7 +142,7 @@ fun StoreHomeInfoSection(
                     clipboard.setPrimaryClip(clip)
                 },
                 onClick = {
-                    onClick(StoreProfileItems.PHONE_NUMBER)
+                    onClick(StoreProfileItems.PhoneNumberSetting)
                 }
             )
 
@@ -151,7 +151,7 @@ fun StoreHomeInfoSection(
                 storeInfoData.storeLocationAddress,
                 storeInfoData.storeLocationDetail,
             ) {
-                onClick(StoreProfileItems.LOCATION)
+                onClick(StoreProfileItems.LocationSetting)
             }
         }
     }

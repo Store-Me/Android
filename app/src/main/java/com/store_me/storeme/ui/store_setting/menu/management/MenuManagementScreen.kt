@@ -1,8 +1,7 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.store_me.storeme.ui.store_setting.menu.add
+package com.store_me.storeme.ui.store_setting.menu.management
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
@@ -32,7 +31,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -70,10 +68,9 @@ import com.store_me.storeme.ui.component.SimpleOutLinedTextField
 import com.store_me.storeme.ui.component.TextFieldErrorType
 import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
-import com.store_me.storeme.ui.component.TitleWithSaveButton
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.store_setting.menu.MenuSettingViewModel
-import com.store_me.storeme.ui.store_setting.menu.add.MenuManagementViewModel.MenuHighLightType
+import com.store_me.storeme.ui.store_setting.menu.management.MenuManagementViewModel.MenuHighLightType
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.LighterHighlightColor
@@ -89,7 +86,8 @@ import com.store_me.storeme.utils.SizeUtils
 @Composable
 fun MenuManagementScreen(
     navController: NavController,
-    menuSettingViewModel: MenuSettingViewModel, //TODO 기존 ViewModel 가져오기
+    selectedMenuName: String = "",
+    menuSettingViewModel: MenuSettingViewModel,
     menuManagementViewModel: MenuManagementViewModel = viewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -182,8 +180,7 @@ fun MenuManagementScreen(
 
 @Composable
 fun MenuImageSection() {
-    val addMenuViewModel = LocalAddMenuViewModel.current
-    val imageUrl by addMenuViewModel.imageUrl.collectAsState()
+    val imageUrl = ""
 
     Column(
         modifier = Modifier
@@ -297,7 +294,7 @@ fun MenuPriceSection(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        AnimatedVisibility(menuPriceType == RANGE) {
+        /*AnimatedVisibility(menuPriceType == RANGE) {
             Column {
                 Spacer(modifier = Modifier.height(10.dp))
 
@@ -365,7 +362,7 @@ fun MenuPriceSection(
                     color = MenuPriceDescriptionColor
                 )
             }
-        }
+        }*/
     }
 
     DefaultHorizontalDivider()
@@ -373,7 +370,7 @@ fun MenuPriceSection(
 
 @Composable
 fun MenuHighlightSection() {
-    val addMenuViewModel = LocalAddMenuViewModel.current
+    /*val addMenuViewModel = LocalAddMenuViewModel.current
 
     val isSignature by addMenuViewModel.isSignature.collectAsState()
     val isPopular by addMenuViewModel.isPopular.collectAsState()
@@ -443,12 +440,12 @@ fun MenuHighlightSection() {
         }
     }
 
-    DefaultHorizontalDivider()
+    DefaultHorizontalDivider()*/
 }
 
 @Composable
 fun MenuDescriptionSection() {
-    val addMenuViewModel = LocalAddMenuViewModel.current
+    /*val addMenuViewModel = LocalAddMenuViewModel.current
     val description by addMenuViewModel.description.collectAsState()
 
     Column(
@@ -476,7 +473,7 @@ fun MenuDescriptionSection() {
         TextLengthRow(text = description, limitSize = 50)
     }
 
-    DefaultHorizontalDivider()
+    DefaultHorizontalDivider()*/
 }
 
 @Composable

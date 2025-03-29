@@ -57,11 +57,10 @@ import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithSaveButton
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
-import com.store_me.storeme.ui.main.MainActivity
+import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.NavigationUtils
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -124,12 +123,7 @@ fun MenuCategorySettingScreen(
                                         .combinedClickable(
                                             interactionSource = interactionSource,
                                             indication = ripple(bounded = true),
-                                            onClick = {
-                                                NavigationUtils().navigateOwnerNav(
-                                                    navController,
-                                                    MainActivity.OwnerNavItem.EDIT_MENU_CATEGORY,
-                                                    additionalData = item.categoryName
-                                                ) },
+                                            onClick = { navController.navigate(OwnerRoute.MenuCategoryEdit(item.categoryName).fullRoute) },
                                             onLongClick = {  }
                                         )
                                         .longPressDraggableHandle (

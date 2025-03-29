@@ -21,12 +21,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.store_me.storeme.R
-import com.store_me.storeme.data.StoreHomeItem
+import com.store_me.storeme.data.enums.StoreHomeItem
 import com.store_me.storeme.data.enums.StoreProfileItems
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.NavigationUtils
 
 @Composable
 fun StoreSettingScreen(
@@ -57,11 +56,11 @@ fun StoreSettingScreen(
                 }
 
                 items(StoreProfileItems.entries) {
-                    if(it != StoreProfileItems.EDIT_PROFILE && it != StoreProfileItems.MANAGEMENT) {
+                    if(it != StoreProfileItems.ProfileEdit && it != StoreProfileItems.StoreManagement) {
                         Row (
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable { NavigationUtils().navigateOwnerNav(navController, it) }
+                                .clickable { navController.navigate(it.route.fullRoute) }
                                 .padding(20.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -98,11 +97,13 @@ fun StoreSettingScreen(
                     DefaultHorizontalDivider()
                 }
 
+                //TODO 외부 링크 관리
+
                 items(StoreHomeItem.entries) {
                     Row (
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { NavigationUtils().navigateOwnerNav(navController, it) }
+                            .clickable { navController.navigate(it.route.fullRoute) }
                             .padding(20.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {

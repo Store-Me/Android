@@ -45,8 +45,7 @@ import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.LinkSection
 import com.store_me.storeme.ui.component.ProfileImageWithBorder
 import com.store_me.storeme.ui.component.StoreMeScrollableTabRow
-import com.store_me.storeme.ui.main.MainActivity
-import com.store_me.storeme.utils.NavigationUtils
+import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.utils.ToastMessageUtils
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
@@ -154,10 +153,7 @@ fun OwnerHomeScreen(
                                                     storeLink = links ?: emptyList(),
                                                     onShareClick = {  },
                                                     onEditClick = {
-                                                        NavigationUtils().navigateOwnerNav(
-                                                            navController,
-                                                            MainActivity.OwnerNavItem.LINK_SETTING
-                                                        )
+                                                        navController.navigate(OwnerRoute.LinkSetting.fullRoute)
                                                     },
                                                     accountType = AccountType.OWNER
                                                 )
@@ -169,7 +165,7 @@ fun OwnerHomeScreen(
                                             storeInfoData = storeInfoData!!,
                                             businessHours = businessHours ?: BusinessHoursResponse(),
                                         ) {
-                                            NavigationUtils().navigateOwnerNav(navController = navController, screenName = it)
+                                            navController.navigate(it.route.fullRoute)
                                         }
                                     }
                                 }

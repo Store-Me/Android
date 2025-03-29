@@ -114,13 +114,3 @@ sealed class TemporaryOpeningHours {
         val dailyHoursData: DailyHoursData
     ) : TemporaryOpeningHours()
 }
-
-enum class StoreHomeItem(val displayName: String) {
-    NOTICE("공지사항"),
-    FEATURED_IMAGES("사진"),
-    COUPON("스토어 쿠폰"),
-    MENU("메뉴"),
-    STORY("스토어 스토리"),
-    REVIEW("스토어 리뷰"),
-    NEWS("소식")
-}

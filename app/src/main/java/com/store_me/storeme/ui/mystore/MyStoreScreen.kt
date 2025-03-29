@@ -64,7 +64,6 @@ import com.store_me.storeme.data.NormalPostWithStoreInfoData
 import com.store_me.storeme.data.MyPickWithStoreInfoData
 import com.store_me.storeme.ui.component.CategorySection
 import com.store_me.storeme.ui.component.StrokeButton
-import com.store_me.storeme.ui.main.FAVORITE
 import com.store_me.storeme.ui.theme.MyPickStrokeColor
 import com.store_me.storeme.ui.theme.NewNoticeColor
 import com.store_me.storeme.ui.theme.PostStrokeColor
@@ -165,7 +164,7 @@ fun MyStoreTitleSection() {
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo_mystore),
-            contentDescription = FAVORITE,
+            contentDescription = "Favorite",
             modifier = Modifier
                 .height(20.dp)
         )

@@ -49,7 +49,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.store_me.storeme.R
@@ -62,10 +62,10 @@ import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.EditAndDeleteRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
-import com.store_me.storeme.ui.main.MainActivity
-import com.store_me.storeme.ui.store_setting.menu.add.MenuManagementViewModel.MenuHighLightType.POPULAR
-import com.store_me.storeme.ui.store_setting.menu.add.MenuManagementViewModel.MenuHighLightType.RECOMMEND
-import com.store_me.storeme.ui.store_setting.menu.add.MenuManagementViewModel.MenuHighLightType.SIGNATURE
+import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
+import com.store_me.storeme.ui.store_setting.menu.management.MenuManagementViewModel.MenuHighLightType.POPULAR
+import com.store_me.storeme.ui.store_setting.menu.management.MenuManagementViewModel.MenuHighLightType.RECOMMEND
+import com.store_me.storeme.ui.store_setting.menu.management.MenuManagementViewModel.MenuHighLightType.SIGNATURE
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.LighterHighlightColor
@@ -76,7 +76,6 @@ import com.store_me.storeme.ui.theme.RecommendTextColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.PriceUtils
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
@@ -88,7 +87,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun MenuSettingScreen(
     navController: NavController,
     selectedMenuName: String = "",
-    menuSettingViewModel: MenuSettingViewModel = viewModel()
+    menuSettingViewModel: MenuSettingViewModel = hiltViewModel()
 ) {
     val auth = LocalAuth.current
     val loadingViewModel = LocalLoadingViewModel.current
@@ -155,10 +154,10 @@ fun MenuSettingScreen(
                         storeDataViewModel.patchStoreMenus(storeId = auth.storeId.value!!, menuCategories = menuCategories)
                     },
                     onManageCategory = {
-                        NavigationUtils().navigateOwnerNav(navController, MainActivity.OwnerNavItem.MENU_CATEGORY_SETTING)
+                        navController.navigate(OwnerRoute.MenuCategorySetting.fullRoute)
                     },
                     onAddMenu = {
-                        NavigationUtils().navigateOwnerNav(navController, MainActivity.OwnerNavItem.ADD_MENU)
+                        navController.navigate(OwnerRoute.MenuManagement(null).fullRoute)
                     }
                 )
             }

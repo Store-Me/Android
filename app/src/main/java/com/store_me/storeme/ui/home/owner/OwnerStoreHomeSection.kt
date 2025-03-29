@@ -25,14 +25,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.store_me.storeme.data.StoreHomeItem
+import com.store_me.storeme.data.enums.StoreHomeItem
 import com.store_me.storeme.data.store.FeaturedImageData
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
 @Composable
@@ -43,7 +42,7 @@ fun OwnerStoreHomeSection(navController: NavController) {
                 Spacer(modifier = Modifier.padding(top = 20.dp))
 
                 StoreHomeItemSection(item) {
-                    NavigationUtils().navigateOwnerNav(navController, it)
+                    navController.navigate(item.route.fullRoute)
                 }
             }
 

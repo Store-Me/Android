@@ -63,8 +63,8 @@ import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.ReviewComment
-import com.store_me.storeme.data.StoreHomeItem
 import com.store_me.storeme.data.enums.AccountType
+import com.store_me.storeme.data.enums.StoreHomeItem
 import com.store_me.storeme.data.hasMenu
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.KeyBoardInputField
@@ -74,6 +74,7 @@ import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.component.ProfileImage
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
+import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.OwnerReplyBoxColor
 import com.store_me.storeme.ui.theme.ReviewCountTextColor
@@ -82,7 +83,6 @@ import com.store_me.storeme.ui.theme.ReviewMenuContentColor
 import com.store_me.storeme.ui.theme.ReviewMenuTitleColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.DateTimeUtils
-import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.SizeUtils
 import kotlinx.coroutines.launch
 
@@ -227,7 +227,7 @@ fun AllReviewSection(navController: NavController, snackbarHostState: SnackbarHo
                             category.hasMenu(menuName) != -1
                         }
                         when (menuExist) {
-                            true -> { NavigationUtils().navigateOwnerNav(navController, StoreHomeItem.MENU, additionalData = menuName) }
+                            true -> { navController.navigate(OwnerRoute.MenuSetting(menuName).fullRoute) }
                             false -> { scope.launch {
                                 snackbarHostState.currentSnackbarData?.dismiss()
                                 snackbarHostState.showSnackbar(

@@ -97,7 +97,6 @@ import com.store_me.storeme.data.BannerData
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.DragValue
 import com.store_me.storeme.ui.location.LocationViewModel
-import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.mystore.CategoryViewModel
 import com.store_me.storeme.ui.theme.DividerColor
 import com.store_me.storeme.ui.theme.HighlightColor
@@ -109,7 +108,6 @@ import com.store_me.storeme.ui.theme.SwipeEditColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.storeMeTypography
-import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.SampleDataUtils
 import com.store_me.storeme.utils.SizeUtils
 import com.store_me.storeme.utils.SocialMediaAccountUtils
@@ -546,10 +544,8 @@ fun LocationLayout(navController: NavController, locationViewModel: LocationView
                     indication = ripple(bounded = false, radius = 15.dp),
 
                     onClick = {
-                        NavigationUtils().navigateCustomerNav(
-                            navController,
-                            MainActivity.CustomerNavItem.LOCATION
-                        )
+
+                        /*navController.navigate(CustomerRoute.LocationSetting())*/
                     }
                 ),
             verticalAlignment = Alignment.CenterVertically
@@ -609,7 +605,7 @@ fun BannerLayout(navController: NavController) {
                     .height(bannerHeight)
             ) { page ->
                 LoadBannerImages(bannerUrls[page], page) {
-                    NavigationUtils().navigateCustomerNav(navController, MainActivity.CustomerNavItem.BANNER_DETAIL, it)
+                    //Detail
                 }
             }
 
@@ -620,10 +616,7 @@ fun BannerLayout(navController: NavController) {
                     .background(Black.copy(alpha = 0.7f), shape = CircleShape)
                     .padding(horizontal = 8.dp, vertical = 2.dp)
                     .clickable {
-                        NavigationUtils().navigateCustomerNav(
-                            navController,
-                            MainActivity.CustomerNavItem.BANNER_LIST
-                        )
+                        //Banners
                     },
 
                 ) {

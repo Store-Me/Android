@@ -71,17 +71,16 @@ import com.store_me.storeme.data.OwnerCouponDetailData
 import com.store_me.storeme.ui.component.StoreMeTabContent
 import com.store_me.storeme.ui.component.StoreMeTabRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
-import com.store_me.storeme.ui.main.MainActivity
+import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.ui.store_setting.coupon.detail.OwnerCouponDetailScreen
 import com.store_me.storeme.ui.theme.CouponAvailableTextColor
 import com.store_me.storeme.ui.theme.CouponCardColor
 import com.store_me.storeme.ui.theme.CouponExpiredAvailableBoxColor
 import com.store_me.storeme.ui.theme.CouponExpiredTextColor
 import com.store_me.storeme.ui.theme.CreateCouponArrowColor
-import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.SelectedSortTypeColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.SizeUtils
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -171,33 +170,21 @@ fun CreateCouponSection(navController: NavController) {
 
         item {
             CreateCouponButton(CouponType.DISCOUNT) {
-                NavigationUtils().navigateOwnerNav(
-                    navController,
-                    MainActivity.OwnerNavItem.CREATE_COUPON,
-                    additionalData = CouponType.DISCOUNT.name
-                )
+                navController.navigate(OwnerRoute.CouponCreate(CouponType.DISCOUNT.name).fullRoute)
             }
 
             Spacer(modifier = Modifier.height(20.dp))
         }
         item {
             CreateCouponButton(CouponType.GIVEAWAY) {
-                NavigationUtils().navigateOwnerNav(
-                    navController,
-                    MainActivity.OwnerNavItem.CREATE_COUPON,
-                    additionalData = CouponType.GIVEAWAY.name
-                )
+                navController.navigate(OwnerRoute.CouponCreate(CouponType.GIVEAWAY.name).fullRoute)
             }
 
             Spacer(modifier = Modifier.height(20.dp))
         }
         item {
             CreateCouponButton(CouponType.OTHER) {
-                NavigationUtils().navigateOwnerNav(
-                    navController,
-                    MainActivity.OwnerNavItem.CREATE_COUPON,
-                    additionalData = CouponType.OTHER.name
-                )
+                navController.navigate(OwnerRoute.CouponCreate(CouponType.OTHER.name).fullRoute)
             }
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -317,7 +304,7 @@ fun CouponListSection(navController: NavController, animatedVisibilityScope: Ani
             CouponItem(
                 item = item,
                 onAddNews = {  },
-                onEditCoupon = {  NavigationUtils().navigateOwnerNav(navController, MainActivity.OwnerNavItem.EDIT_COUPON, additionalData = it) },
+                onEditCoupon = { /*NavigationUtils().navigateOwnerNav(navController, MainActivity.OwnerNavItem.EDIT_COUPON, additionalData = it)*/ },
                 onDetail = { onDetail(item.couponInfoData.couponId) },
                 animatedVisibilityScope = animatedVisibilityScope,
                 sharedTransitionScope = sharedTransitionScope

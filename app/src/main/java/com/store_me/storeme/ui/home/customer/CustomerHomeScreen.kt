@@ -61,14 +61,12 @@ import com.store_me.storeme.ui.component.NotificationIcon
 import com.store_me.storeme.ui.component.SearchButton
 import com.store_me.storeme.ui.component.TitleSearchSection
 import com.store_me.storeme.ui.location.LocationViewModel
-import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.theme.DownloadCouponColor
 import com.store_me.storeme.ui.theme.HomeCouponTitleTextColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTypography
-import com.store_me.storeme.utils.NavigationUtils
 import com.store_me.storeme.utils.SampleDataUtils
 import com.store_me.storeme.utils.ToastMessageUtils
 
@@ -207,11 +205,7 @@ fun BasicStoreListLayout(navController: NavController, storeList: MutableList<St
                         .padding(end = 7.dp)
                         .width(120.dp)
                         .clickable {
-                            NavigationUtils().navigateCustomerNav(
-                                navController,
-                                MainActivity.CustomerNavItem.STORE_DETAIL,
-                                store.storeId
-                            )
+
                         }
                 ) {
                     AsyncImage(
@@ -273,7 +267,6 @@ fun CouponLayout(navController: NavController, couponList: MutableList<CouponWit
             Spacer(modifier = Modifier.weight(1f))
 
             MyCouponIconText {
-                NavigationUtils().navigateCustomerNav(navController, MainActivity.CustomerNavItem.MY_COUPON)
             }
 
             Spacer(modifier = Modifier.width(20.dp))
@@ -299,11 +292,7 @@ fun CouponLayout(navController: NavController, couponList: MutableList<CouponWit
                         .width(120.dp)
                         .height(240.dp)
                         .clickable {
-                            NavigationUtils().navigateCustomerNav(
-                                navController,
-                                MainActivity.CustomerNavItem.STORE_DETAIL,
-                                coupon.storeInfo.storeId
-                            )
+
                         }
                 ) {
                     AsyncImage(
