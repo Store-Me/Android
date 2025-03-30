@@ -213,8 +213,26 @@ fun MenuCategoryReorderList(
             .nestedScroll(scrollBehavior.nestedScrollConnection)
             .fillMaxSize()
     ) {
+        if(menuCategories.isNotEmpty()) {
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = Color.White)
+                        .clickable { onClick(menuCategories[0].categoryName) }
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${menuCategories[0].categoryName} (${menuCategories[0].menus.size})",
+                        style = storeMeTextStyle(FontWeight.ExtraBold, 2),
+                    )
+                }
+            }
+        }
+
         if(menuCategories.size > 1) {
-            itemsIndexed(menuCategories.drop(1)) { index, menuCategory ->
+            itemsIndexed(menuCategories.drop(1), key = { _, item -> item.categoryName }) { index, menuCategory ->
                 ReorderableItem(state = reorderableLazyListState, key = menuCategory.categoryName) { isDragging ->
                     val interactionSource = remember { MutableInteractionSource() }
 
@@ -246,25 +264,6 @@ fun MenuCategoryReorderList(
                 }
             }
         }
-
-        if(menuCategories.isNotEmpty()) {
-            item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = Color.White)
-                        .clickable { onClick(menuCategories[0].categoryName) }
-                        .padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "${menuCategories[0].categoryName} (${menuCategories[0].menus.size})",
-                        style = storeMeTextStyle(FontWeight.ExtraBold, 2),
-                    )
-                }
-            }
-        }
-
     }
 }
 
@@ -283,7 +282,7 @@ fun MenuCategoryItem(
         onDelete = { showDialog = true }
     ) {
         Row(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .background(color = Color.White)
                 .padding(20.dp),
