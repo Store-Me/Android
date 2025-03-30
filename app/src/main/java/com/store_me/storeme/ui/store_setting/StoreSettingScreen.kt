@@ -25,6 +25,7 @@ import com.store_me.storeme.data.enums.StoreHomeItem
 import com.store_me.storeme.data.enums.StoreProfileItems
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
+import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 
 @Composable
@@ -97,7 +98,33 @@ fun StoreSettingScreen(
                     DefaultHorizontalDivider()
                 }
 
-                //TODO 외부 링크 관리
+                item {
+                    Row (
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { navController.navigate(OwnerRoute.LinkSetting.fullRoute) }
+                            .padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "링크",
+                            style = storeMeTextStyle(FontWeight.ExtraBold, 2),
+                            color = Color.Black
+                        )
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_arrow_right),
+                            contentDescription = "이동 아이콘",
+                            modifier = Modifier
+                                .size(18.dp),
+                            tint = Color.Black
+                        )
+                    }
+
+                    DefaultHorizontalDivider()
+                }
 
                 items(StoreHomeItem.entries) {
                     Row (
