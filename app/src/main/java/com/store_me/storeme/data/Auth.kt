@@ -1,5 +1,6 @@
 package com.store_me.storeme.data
 
+import com.store_me.storeme.utils.DefaultMenuCategoryName
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -94,7 +95,8 @@ object Auth {
                 isRecommend = true,
             )
         )),
-        OldMenuCategory(DEFAULT_MENU_CATEGORY, menuList = listOf(
+        OldMenuCategory(
+            DefaultMenuCategoryName, menuList = listOf(
             OldMenuData(
                 name = "이름1",
                 price = MenuPrice.Variable,
@@ -131,7 +133,7 @@ object Auth {
             )
         )
 
-        val defaultCategoryIndex = currentList.indexOfFirst { it.categoryName == DEFAULT_MENU_CATEGORY }
+        val defaultCategoryIndex = currentList.indexOfFirst { it.categoryName == DefaultMenuCategoryName }
 
         if(defaultCategoryIndex == -1)
             return
@@ -144,7 +146,7 @@ object Auth {
     }
 
     fun deleteCategory(categoryName: String) {
-        if(categoryName == DEFAULT_MENU_CATEGORY)
+        if(categoryName == DefaultMenuCategoryName)
             return
 
         val currentList = _menuCategoryList.value.toMutableList()
@@ -167,7 +169,7 @@ object Auth {
                 _menuCategoryList.value = currentList.apply {
                     add(
                         OldMenuCategory(
-                            categoryName = DEFAULT_MENU_CATEGORY,
+                            categoryName = DefaultMenuCategoryName,
                             menuList = listOf(menuData)
                         )
                     )
