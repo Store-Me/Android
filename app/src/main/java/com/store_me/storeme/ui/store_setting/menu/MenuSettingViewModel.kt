@@ -6,6 +6,7 @@ import com.store_me.storeme.data.MenuData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -13,6 +14,10 @@ class MenuSettingViewModel @Inject constructor(
 ): ViewModel() {
     private val _menuCategories = MutableStateFlow<List<MenuCategoryData>>(emptyList())
     val menuCategories: StateFlow<List<MenuCategoryData>> = _menuCategories
+
+    fun updateMenuCategories(menuCategories: List<MenuCategoryData>) {
+        _menuCategories.value = menuCategories
+    }
 
     fun addMenu(menu: MenuData, targetCategoryName: String) {
         val updatedCategories = _menuCategories.value.map { menuCategory ->
@@ -203,5 +208,14 @@ class MenuSettingViewModel @Inject constructor(
         currentList[categoryIndex] = updatedMenuCategory
 
         _menuCategories.value = currentList
+    }
+
+    fun getMenuWithCategory(menuName: String): Pair<String, MenuData>? {
+        return _menuCategories.value
+            .firstNotNullOfOrNull { category ->
+                category.menus.firstOrNull { it.name == menuName }?.let {
+                    category.categoryName to it
+                }
+            }
     }
 }

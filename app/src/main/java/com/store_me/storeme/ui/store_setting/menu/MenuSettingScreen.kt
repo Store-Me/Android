@@ -3,7 +3,7 @@
 package com.store_me.storeme.ui.store_setting.menu
 
 import android.view.HapticFeedbackConstants
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -49,13 +50,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.store_me.storeme.R
 import com.store_me.storeme.data.MenuCategoryData
 import com.store_me.storeme.data.MenuData
-import com.store_me.storeme.data.enums.MenuPriceType
+import com.store_me.storeme.data.enums.menu.MenuTag
 import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
@@ -63,9 +63,6 @@ import com.store_me.storeme.ui.component.EditAndDeleteRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
-import com.store_me.storeme.ui.store_setting.menu.management.MenuManagementViewModel.MenuHighLightType.POPULAR
-import com.store_me.storeme.ui.store_setting.menu.management.MenuManagementViewModel.MenuHighLightType.RECOMMEND
-import com.store_me.storeme.ui.store_setting.menu.management.MenuManagementViewModel.MenuHighLightType.SIGNATURE
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.LighterHighlightColor
@@ -87,7 +84,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun MenuSettingScreen(
     navController: NavController,
     selectedMenuName: String = "",
-    menuSettingViewModel: MenuSettingViewModel = hiltViewModel()
+    menuSettingViewModel: MenuSettingViewModel
 ) {
     val auth = LocalAuth.current
     val loadingViewModel = LocalLoadingViewModel.current
@@ -101,7 +98,10 @@ fun MenuSettingScreen(
 
     var showBackWarnDialog by remember { mutableStateOf(false) }
     val hasDifference by remember { derivedStateOf {
-        originalMenuCategories != menuCategories
+        if(menuCategories.isEmpty()) //초기 비교 방지
+            false
+        else
+            originalMenuCategories != menuCategories
     } }
 
     //후기의 메뉴 항목을 선택 시
@@ -127,9 +127,13 @@ fun MenuSettingScreen(
         lazyListState.scrollToItem(index)
     }
 
+    LaunchedEffect(originalMenuCategories) {
+        menuSettingViewModel.updateMenuCategories(originalMenuCategories)
+    }
+
     fun onClose() {
         if(hasDifference) {
-            showBackWarnDialog = false
+            showBackWarnDialog = true
         } else {
             navController.popBackStack()
         }
@@ -178,7 +182,7 @@ fun MenuSettingScreen(
                         menuSettingViewModel.deleteMenu(menuName = it)
                     },
                     onEdit = {
-                        //TODO EDIT SCREEN
+                        navController.navigate(OwnerRoute.MenuManagement(it).fullRoute)
                     }
                 )
             }
@@ -198,17 +202,20 @@ fun MenuSettingScreen(
 
 @Composable
 fun MenuSettingTopBarButtons(menuCategories: List<MenuCategoryData>, hasDifference: Boolean, onSave: () -> Unit, onManageCategory: () -> Unit, onAddMenu: () -> Unit) {
+    val showSave = hasDifference
+    val showCategory = menuCategories.isNotEmpty()
+
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        AnimatedVisibility(
-            visible = hasDifference,
-            modifier = Modifier
-                .weight(1f)
-        ) {
+        if(showSave) {
             DefaultButton(
                 buttonText = "저장",
+                modifier = Modifier
+                    .animateContentSize()
+                    .weight(1f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black,
                     contentColor = Color.White
@@ -218,13 +225,12 @@ fun MenuSettingTopBarButtons(menuCategories: List<MenuCategoryData>, hasDifferen
             }
         }
 
-        AnimatedVisibility(
-            visible = menuCategories.isNotEmpty(),
-            modifier = Modifier
-                .weight(1f)
-        ) {
+        if(showCategory) {
             DefaultButton(
                 buttonText = "카테고리 관리",
+                modifier = Modifier
+                    .animateContentSize()
+                    .weight(1f),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = SubHighlightColor,
                     contentColor = Color.Black
@@ -235,15 +241,23 @@ fun MenuSettingTopBarButtons(menuCategories: List<MenuCategoryData>, hasDifferen
         }
 
         DefaultButton(
-            buttonText = "메뉴 추가",
+            buttonText = if(showSave && showCategory) "" else "메뉴 추가",
             leftIconResource = R.drawable.ic_circle_plus,
             colors = ButtonDefaults.buttonColors(
                 containerColor = HighlightColor,
                 contentColor = Color.White
             ),
             leftIconTint = Color.White,
-            modifier = Modifier
-                .weight(1f)
+            modifier = if(showSave && showCategory) {
+                Modifier
+                    .animateContentSize()
+                    .width(60.dp)
+            } else {
+                Modifier
+                    .animateContentSize()
+                    .weight(1f)
+            }
+
         ) {
             onAddMenu()
         }
@@ -279,7 +293,7 @@ fun MenuReorderList(
                         Text(
                             text = menuCategory.categoryName,
                             style = storeMeTextStyle(FontWeight.ExtraBold, 6),
-                            modifier = Modifier.padding(20.dp)
+                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
                         )
 
                         DefaultHorizontalDivider()
@@ -294,7 +308,7 @@ fun MenuReorderList(
                 ReorderableItem(state = reorderableLazyListState, key = menuData.name) { isDragging ->
                     Box {
                         Column {
-                            MenuItem(
+                            DraggableMenuItem(
                                 modifier = Modifier
                                     .combinedClickable(
                                         interactionSource = interactionSource,
@@ -333,7 +347,7 @@ fun MenuReorderList(
                                 text = "${menuCategory.categoryName}에 메뉴를 추가해보세요.",
                                 style = storeMeTextStyle(FontWeight.Bold, 2),
                                 modifier = Modifier
-                                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                                    .padding(horizontal = 20.dp, vertical = 12.dp),
                                 color = UndefinedTextColor
                             )
 
@@ -348,25 +362,8 @@ fun MenuReorderList(
 }
 
 @Composable
-fun MenuItem(modifier: Modifier, menuData: MenuData, onEdit: (String) -> Unit, onDelete: (String) -> Unit) {
+fun DraggableMenuItem(modifier: Modifier, menuData: MenuData, onEdit: (String) -> Unit, onDelete: (String) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
-
-    val priceText = when(menuData.priceType) {
-        MenuPriceType.fixed.name -> PriceUtils().numberToPrice(menuData.price)
-        MenuPriceType.ranged.name -> {
-            val minPriceText = PriceUtils().numberToPrice(menuData.minPrice)
-            val maxPriceText = PriceUtils().numberToPrice(menuData.maxPrice)
-
-            when {
-                menuData.minPrice != null && menuData.maxPrice != null -> "$minPriceText ~ $maxPriceText"
-                menuData.minPrice == null && menuData.maxPrice != null -> "최대 $maxPriceText"
-                menuData.minPrice != null && menuData.maxPrice == null -> "최소 $minPriceText"
-                else -> { "" }
-            }
-        }
-        MenuPriceType.variable.name -> "변동"
-        else -> { "" }
-    }
 
     EditAndDeleteRow(
         modifier = modifier,
@@ -379,7 +376,8 @@ fun MenuItem(modifier: Modifier, menuData: MenuData, onEdit: (String) -> Unit, o
     ) {
         Row(
             modifier = Modifier
-                .padding(horizontal = 20.dp, vertical = 10.dp),
+                .background(Color.White)
+                .padding(horizontal = 20.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
@@ -408,7 +406,7 @@ fun MenuItem(modifier: Modifier, menuData: MenuData, onEdit: (String) -> Unit, o
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = priceText,
+                    text = PriceUtils().numberToPrice(menuData.priceType, menuData.price, menuData.minPrice, menuData.maxPrice),
                     style = storeMeTextStyle(FontWeight.ExtraBold, 0),
                     color = Color.Black
                 )
@@ -420,7 +418,7 @@ fun MenuItem(modifier: Modifier, menuData: MenuData, onEdit: (String) -> Unit, o
                 ) {
                     if(menuData.isSignature){
                         Text(
-                            text = SIGNATURE.displayName,
+                            text = MenuTag.Signature.displayName,
                             style = storeMeTextStyle(FontWeight.Bold, -2),
                             modifier = Modifier
                                 .background(
@@ -434,7 +432,7 @@ fun MenuItem(modifier: Modifier, menuData: MenuData, onEdit: (String) -> Unit, o
 
                     if(menuData.isPopular){
                         Text(
-                            text = POPULAR.displayName,
+                            text = MenuTag.Popular.displayName,
                             style = storeMeTextStyle(FontWeight.Bold, -2),
                             modifier = Modifier
                                 .background(
@@ -448,7 +446,7 @@ fun MenuItem(modifier: Modifier, menuData: MenuData, onEdit: (String) -> Unit, o
 
                     if(menuData.isRecommend){
                         Text(
-                            text = RECOMMEND.displayName,
+                            text = MenuTag.Recommend.displayName,
                             style = storeMeTextStyle(FontWeight.Bold, -2),
                             modifier = Modifier
                                 .background(
@@ -462,14 +460,17 @@ fun MenuItem(modifier: Modifier, menuData: MenuData, onEdit: (String) -> Unit, o
                 }
             }
 
-            AsyncImage(
-                model = menuData.image,
-                contentDescription = "메뉴 이미지",
-                error = painterResource(id = R.drawable.store_null_image),
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(shape = RoundedCornerShape(18.dp))
-            )
+            if(menuData.image != null) {
+                AsyncImage(
+                    model = menuData.image,
+                    contentDescription = "메뉴 이미지",
+                    error = painterResource(id = R.drawable.store_null_image),
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(shape = RoundedCornerShape(18.dp))
+                )
+            }
+
         }
     }
 
