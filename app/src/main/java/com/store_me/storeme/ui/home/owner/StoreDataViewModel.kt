@@ -421,7 +421,7 @@ class StoreDataViewModel @Inject constructor(
     /**
      * MenuCategories 조회
      */
-    fun getStoreMenus(storeId: String, menuCategories: List<MenuCategoryData>) {
+    fun getStoreMenus(storeId: String) {
         viewModelScope.launch {
             val response = ownerRepository.getStoreMenus(storeId = storeId)
 
