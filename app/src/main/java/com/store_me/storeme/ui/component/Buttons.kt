@@ -130,7 +130,7 @@ fun DefaultButton(
 ) {
     val density = LocalDensity.current
 
-    val iconSize = remember { SizeUtils.textSizeToDp(density, diffValue, 4) }
+    val iconSize = remember { SizeUtils.textSizeToDp(density, diffValue) }
     val paddingValue = remember { defaultButtonPadding(diffValue).dp }
 
     Button(
