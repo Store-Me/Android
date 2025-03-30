@@ -236,7 +236,7 @@ class MainActivity : ComponentActivity() {
                 items.forEach { item ->
                     val isSelected = currentDestination
                         ?.hierarchy
-                        ?.any { it.route == item.screenRoute } == true
+                        ?.any { it.route?.startsWith(item.screenRoute) == true } == true
 
                     NavigationBarItem(
                         icon = {
@@ -271,15 +271,6 @@ class MainActivity : ComponentActivity() {
             }
 
         }
-    }
-
-    enum class CustomerNavItem {
-        NOTIFICATION,
-        LOCATION,
-        BANNER_LIST,
-        BANNER_DETAIL,
-        STORE_DETAIL,
-        MY_COUPON
     }
 
     override fun onDestroy() {
