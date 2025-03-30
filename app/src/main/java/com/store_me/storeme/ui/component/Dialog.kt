@@ -37,7 +37,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.ui.theme.CancelButtonColor
-import com.store_me.storeme.ui.theme.SelectedCheckBoxColorPink
+import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
@@ -246,7 +246,7 @@ fun SelectStoreDialog(
                                     R.drawable.ic_check_off
                             ),
                             contentDescription = "체크",
-                            tint = if(selectedStoreId.value == it.storeId) SelectedCheckBoxColorPink else UndefinedTextColor,
+                            tint = if(selectedStoreId.value == it.storeId) HighlightColor else UndefinedTextColor,
                             modifier = Modifier.size(SizeUtils.textSizeToDp(localDensity, 2, 8))
                         )
                     }
