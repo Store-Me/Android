@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.store_me.storeme.R
@@ -57,7 +58,7 @@ import com.store_me.storeme.utils.SizeUtils
  */
 private fun defaultButtonPadding(diffValue: Int): Int {
     return when {
-        diffValue > 0 -> 20
+        diffValue > 0 -> 16
 
         else -> 10
     }
@@ -97,6 +98,8 @@ fun DefaultButton(
         Text(
             text = buttonText,
             style = storeMeTextStyle(fontWeight, diffValue),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -181,13 +184,18 @@ fun DefaultButton(
 fun DefaultToggleButton(
     buttonText: String,
     modifier: Modifier = Modifier,
+    unSelectedBorderColor: Color = ExpiredColor,
+    selectedContentColor: Color = Color.White,
+    unSelectedContentColor: Color = Color.Black,
+    selectedContainerColor: Color = Color.Black,
+    unSelectedContainerColor: Color = Color.White,
     diffValue: Int = 0,
     isSelected: Boolean,
     onClick: () -> Unit
 ) {
-    val borderStroke = if(!isSelected) BorderStroke(1.dp, ExpiredColor) else null
-    val contentColor = if(!isSelected) Color.Black else Color.White
-    val containerColor = if(!isSelected) Color.White else Color.Black
+    val borderStroke = if(!isSelected) BorderStroke(1.dp, unSelectedBorderColor) else null
+    val contentColor = if(!isSelected) unSelectedContentColor else selectedContentColor
+    val containerColor = if(!isSelected) unSelectedContainerColor else selectedContainerColor
 
     val paddingValue = remember { defaultButtonPadding(diffValue).dp }
 
