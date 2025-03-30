@@ -61,26 +61,23 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.ReviewComment
 import com.store_me.storeme.data.enums.AccountType
-import com.store_me.storeme.data.enums.StoreHomeItem
-import com.store_me.storeme.data.hasMenu
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.KeyBoardInputField
+import com.store_me.storeme.ui.component.ProfileImage
 import com.store_me.storeme.ui.component.StoreMeSnackbar
 import com.store_me.storeme.ui.component.SubTitleSection
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
-import com.store_me.storeme.ui.component.ProfileImage
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
-import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.OwnerReplyBoxColor
 import com.store_me.storeme.ui.theme.ReviewCountTextColor
 import com.store_me.storeme.ui.theme.ReviewMenuBorderColor
 import com.store_me.storeme.ui.theme.ReviewMenuContentColor
 import com.store_me.storeme.ui.theme.ReviewMenuTitleColor
+import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.SizeUtils
@@ -223,9 +220,7 @@ fun AllReviewSection(navController: NavController, snackbarHostState: SnackbarHo
                 ReviewItem(
                     it,
                     onClickMenu = { menuName ->
-                        val menuExist = Auth.menuCategoryList.value.any { category ->
-                            category.hasMenu(menuName) != -1
-                        }
+                        val menuExist = false //TODO 메뉴 존재하는지 확인
                         when (menuExist) {
                             true -> { navController.navigate(OwnerRoute.MenuSetting(menuName).fullRoute) }
                             false -> { scope.launch {
