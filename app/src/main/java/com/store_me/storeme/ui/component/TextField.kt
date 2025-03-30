@@ -199,13 +199,13 @@ fun TextLengthRow(text: String, limitSize: Int){
     ){
         Text(
             text = text.length.toString(),
-            style = storeMeTextStyle(FontWeight.Bold, 2),
+            style = storeMeTextStyle(FontWeight.Bold, 0),
             color = if(text.length > limitSize) ErrorTextFieldColor else Black
         )
 
         Text(
             text = "/${limitSize}",
-            style = storeMeTextStyle(FontWeight.Bold, 2),
+            style = storeMeTextStyle(FontWeight.Bold, 0),
             color = UndefinedTextColor
         )
     }
@@ -613,32 +613,23 @@ fun SimpleNumberOutLinedTextField(
     OutlinedTextField(
         value = text,
         onValueChange = {
-            if(it.last().isDigit() && it.length <= 8)
+            if (it.length <= 11 && (it.isEmpty() || it.last().isDigit())) {
                 onValueChange(it)
+            }
         },
         textStyle = storeMeTextStyle(FontWeight.Normal, 1),
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
         trailingIcon = {
-            Row {
-                if(text.isNotEmpty()){
-                    IconButton(onClick = { onValueChange("") }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_text_clear),
-                            contentDescription = "삭제",
-                            modifier = Modifier
-                                .size(24.dp),
-                            tint = Color.Unspecified
-                        )
-                    }
-                }
-
-                if(!suffixText.isNullOrEmpty()) {
-                    Text(
-                        text = suffixText,
-                        style = storeMeTextStyle(FontWeight.Normal, 2),
-                        color = GuideColor
+            if(text.isNotEmpty()){
+                IconButton(onClick = { onValueChange("") }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_text_clear),
+                        contentDescription = "삭제",
+                        modifier = Modifier
+                            .size(24.dp),
+                        tint = Color.Unspecified
                     )
                 }
             }
@@ -663,6 +654,15 @@ fun SimpleNumberOutLinedTextField(
                     text = errorText,
                     style = storeMeTextStyle(FontWeight.Normal, 0),
                     color = ErrorTextFieldColor
+                )
+            }
+        },
+        suffix = {
+            if(!suffixText.isNullOrEmpty()) {
+                Text(
+                    text = suffixText,
+                    style = storeMeTextStyle(FontWeight.Normal, 2),
+                    color = GuideColor
                 )
             }
         }
