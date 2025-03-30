@@ -30,7 +30,7 @@ sealed class OwnerRoute(
     data class MenuSetting(val selectedMenuName: String?): OwnerRoute(if(selectedMenuName != null) "menuSetting/$selectedMenuName" else "menuSetting", parent = Home)
     data class MenuManagement(val selectedMenuName: String?): OwnerRoute(if(selectedMenuName != null) "menuManagement/$selectedMenuName" else "menuManagement", parent = Home)
     data object MenuCategorySetting: OwnerRoute("menuCategorySetting", parent = Home)
-    data class MenuCategoryEdit(val selectedCategoryName: String?): OwnerRoute(if(selectedCategoryName != null) "menuCategoryEdit/$selectedCategoryName" else "menuCategoryEdit", parent = Home)
+    data class MenuCategoryManagement(val selectedCategoryName: String?): OwnerRoute(if(selectedCategoryName != null) "menuCategoryEdit/$selectedCategoryName" else "menuCategoryEdit", parent = Home)
     data object CouponSetting: OwnerRoute("couponSetting", parent = Home)
     data object StorySetting: OwnerRoute("storySetting", parent = Home)
     data object ReviewSetting: OwnerRoute("reviewSetting", parent = Home)
