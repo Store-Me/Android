@@ -195,8 +195,6 @@ val BlockBeforeIconColor = Color(0xFFD9D9D9)
  * Select Check Box Color
  */
 val SelectedCheckBoxColor = Color(0xFF220000)
-val SelectedCheckBoxColorPink = Color(0xFFD449DA)
-
 
 /**
  * Add Menu Color
@@ -212,8 +210,6 @@ val RecommendBoxColor = Color(0xFFFFEECC)
 val RecommendTextColor = Color(0xFFE59F11)
 
 val UnselectedHighLightMenuColor = Color(0xFFAAADB4)
-
-val MenuPriceDescriptionColor = Color(0xFF898C93)
 
 /**
  * Review Color
