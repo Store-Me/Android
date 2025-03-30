@@ -14,13 +14,13 @@ enum class StoreHomeItem(
         displayName = "사진",
         route = OwnerRoute.FeaturedImageSetting
     ),
-    COUPON(
-        displayName = "스토어 쿠폰",
-        route = OwnerRoute.CouponSetting
-    ),
     MENU(
         displayName = "메뉴",
         route = OwnerRoute.MenuSetting(null)
+    ),
+    COUPON(
+        displayName = "스토어 쿠폰",
+        route = OwnerRoute.CouponSetting
     ),
     STORY(
         displayName = "스토어 스토리",
