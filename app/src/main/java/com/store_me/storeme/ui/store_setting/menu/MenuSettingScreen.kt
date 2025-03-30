@@ -128,7 +128,8 @@ fun MenuSettingScreen(
     }
 
     LaunchedEffect(originalMenuCategories) {
-        menuSettingViewModel.updateMenuCategories(originalMenuCategories)
+        if(menuCategories.isEmpty())
+            menuSettingViewModel.updateMenuCategories(originalMenuCategories)
     }
 
     fun onClose() {

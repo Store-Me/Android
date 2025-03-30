@@ -20,8 +20,9 @@ import com.store_me.storeme.ui.store_setting.intro.IntroSettingScreen
 import com.store_me.storeme.ui.store_setting.location.LocationSettingScreen
 import com.store_me.storeme.ui.store_setting.menu.MenuSettingScreen
 import com.store_me.storeme.ui.store_setting.menu.MenuSettingViewModel
-import com.store_me.storeme.ui.store_setting.menu.category.MenuCategoryEditScreen
+import com.store_me.storeme.ui.store_setting.menu.category.MenuCategoryManagementScreen
 import com.store_me.storeme.ui.store_setting.menu.category.MenuCategorySettingScreen
+import com.store_me.storeme.ui.store_setting.menu.category.MenuCategorySettingViewModel
 import com.store_me.storeme.ui.store_setting.menu.management.MenuManagementScreen
 import com.store_me.storeme.ui.store_setting.notice.NoticeSettingScreen
 import com.store_me.storeme.ui.store_setting.phone_number.PhoneNumberSettingScreen
@@ -57,10 +58,10 @@ fun OwnerNavigationGraph(navController: NavHostController) {
         composable(OwnerRoute.FeaturedImageSetting.fullRoute) { FeaturedImageSettingScreen(navController) }
 
         //메뉴
-        composable(OwnerRoute.MenuSetting(null).fullRoute) { MenuSettingScreen(navController) }
+        composable(OwnerRoute.MenuSetting(null).fullRoute) { MenuSettingScreen(navController, menuSettingViewModel = hiltViewModel()) }
         composable(OwnerRoute.MenuSetting(null).fullRoute + "/{selectedMenuName}") { backStackEntry ->
             val selectedMenuName = backStackEntry.arguments?.getString("selectedMenuName")
-            MenuSettingScreen(navController, selectedMenuName = selectedMenuName ?: "")
+            MenuSettingScreen(navController, menuSettingViewModel = hiltViewModel(), selectedMenuName = selectedMenuName ?: "")
         }
 
         composable(OwnerRoute.MenuManagement(null).fullRoute) {
@@ -92,10 +93,31 @@ fun OwnerNavigationGraph(navController: NavHostController) {
             )
         }
 
-        composable(OwnerRoute.MenuCategorySetting.fullRoute) { MenuCategorySettingScreen(navController) }
-        composable(OwnerRoute.MenuCategoryEdit(null).fullRoute + "/{selectedCategoryName}") { backStackEntry ->
+        composable(OwnerRoute.MenuCategorySetting.fullRoute) { backStackEntry ->
+            //viewModel 공유
+            val parentEntry = remember(navController.currentBackStackEntryAsState().value) {
+                navController.getBackStackEntry(OwnerRoute.MenuSetting(null).fullRoute)
+            }
+            val sharedViewModel: MenuSettingViewModel = hiltViewModel(parentEntry)
+
+            MenuCategorySettingScreen(
+                navController = navController,
+                menuSettingViewModel = sharedViewModel
+            )
+        }
+        composable(OwnerRoute.MenuCategoryManagement(null).fullRoute + "/{selectedCategoryName}") { backStackEntry ->
             val selectedCategoryName = backStackEntry.arguments?.getString("selectedCategoryName")
-            MenuCategoryEditScreen(navController, selectedCategoryName = selectedCategoryName ?: "")
+
+            val parentEntry = remember(navController.currentBackStackEntryAsState().value) {
+                navController.getBackStackEntry(OwnerRoute.MenuCategorySetting.fullRoute)
+            }
+            val sharedViewModel: MenuCategorySettingViewModel = hiltViewModel(parentEntry)
+
+            MenuCategoryManagementScreen(
+                navController = navController,
+                selectedCategoryName = selectedCategoryName ?: "",
+                menuCategorySettingViewModel = sharedViewModel
+            )
         }
 
         //쿠폰

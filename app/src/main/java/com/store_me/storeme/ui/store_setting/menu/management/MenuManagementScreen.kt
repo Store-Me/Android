@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,8 +30,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -76,7 +73,6 @@ import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.store_setting.menu.MenuSettingViewModel
 import com.store_me.storeme.ui.theme.DisabledColor
-import com.store_me.storeme.ui.theme.ErrorColor
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.LighterHighlightColor

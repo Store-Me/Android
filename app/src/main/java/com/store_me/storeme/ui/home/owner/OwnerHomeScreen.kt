@@ -81,6 +81,7 @@ fun OwnerHomeScreen(
             storeDataViewModel.getStoreLinks(storeId = storeId!!)
             storeDataViewModel.getStoreNotice(storeId = storeId!!)
             storeDataViewModel.getStoreFeaturedImages(storeId = storeId!!)
+            storeDataViewModel.getStoreMenus(storeId = storeId!!)
         }
     }
 

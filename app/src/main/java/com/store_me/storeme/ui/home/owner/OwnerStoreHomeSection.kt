@@ -1,8 +1,10 @@
 package com.store_me.storeme.ui.home.owner
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,21 +19,35 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.store_me.storeme.R
+import com.store_me.storeme.data.MenuCategoryData
+import com.store_me.storeme.data.MenuData
 import com.store_me.storeme.data.enums.StoreHomeItem
+import com.store_me.storeme.data.enums.menu.MenuTag
 import com.store_me.storeme.data.store.FeaturedImageData
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.theme.GuideColor
+import com.store_me.storeme.ui.theme.HighlightColor
+import com.store_me.storeme.ui.theme.LighterHighlightColor
+import com.store_me.storeme.ui.theme.PopularBoxColor
+import com.store_me.storeme.ui.theme.PopularTextColor
+import com.store_me.storeme.ui.theme.RecommendBoxColor
+import com.store_me.storeme.ui.theme.RecommendTextColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
+import com.store_me.storeme.utils.PriceUtils
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
 @Composable
@@ -56,6 +72,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItem, onClick: (StoreHomeItem) 
 
     val notice by storeDataViewModel.notice.collectAsState()
     val featuredImages by storeDataViewModel.featuredImages.collectAsState()
+    val menuCategories by storeDataViewModel.menuCategories.collectAsState()
 
     Column(
         modifier = Modifier
@@ -76,6 +93,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItem, onClick: (StoreHomeItem) 
         when(storeHomeItem) {
             StoreHomeItem.NOTICE -> NoticeSection(notice) { onClick(it) }
             StoreHomeItem.FEATURED_IMAGES -> FeaturedImageSection(featuredImages) { onClick(it) }
+            StoreHomeItem.MENU -> MenuSection(menuCategories) { onClick(it) }
             else -> {
 
             }
@@ -167,4 +185,162 @@ fun FeaturedImageItem(featuredImageData: FeaturedImageData) {
             .aspectRatio(1f),
         contentScale = ContentScale.Crop
     )
+}
+
+@Composable
+fun MenuSection(menuCategories: List<MenuCategoryData>, onClick: (StoreHomeItem) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        if(menuCategories.isEmpty()) {
+            Text(
+                text = "메뉴를 추가하여 손님들에게 메뉴 정보를 제공해 보세요.",
+                style = storeMeTextStyle(FontWeight.Normal, 0),
+                color = GuideColor,
+                modifier = Modifier.padding(horizontal = 20.dp)
+            )
+        } else {
+            if(menuCategories.size == 1) {
+                //기본 카테고리만 있는 경우
+                menuCategories[0].menus.forEachIndexed { index, menuData ->
+                    MenuItem(menuData)
+
+                    if(index != menuCategories[0].menus.lastIndex)
+                        DefaultHorizontalDivider()
+                }
+            } else {
+                Text(
+                    text = menuCategories[1].categoryName,
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 6),
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
+                )
+
+                DefaultHorizontalDivider()
+
+                menuCategories[1].menus.forEachIndexed { index, menuData ->
+                    MenuItem(menuData)
+
+                    if(index != menuCategories[1].menus.lastIndex)
+                        DefaultHorizontalDivider()
+                }
+            }
+
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        DefaultButton(
+            buttonText = "메뉴 관리",
+            diffValue = 2,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = SubHighlightColor,
+                contentColor = Color.Black
+            ),
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+        ) {
+            onClick(StoreHomeItem.MENU)
+        }
+    }
+}
+
+@Composable
+fun MenuItem(menuData: MenuData) {
+    Row(
+        modifier = Modifier
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+        ) {
+            //메뉴 이름
+            Text(
+                text = menuData.name,
+                style = storeMeTextStyle(FontWeight.ExtraBold, 2),
+                color = Color.Black
+            )
+
+            if(!menuData.description.isNullOrEmpty()){
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = menuData.description,
+                    style = storeMeTextStyle(FontWeight.Bold, 0),
+                    color = GuideColor,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = PriceUtils().numberToPrice(menuData.priceType, menuData.price, menuData.minPrice, menuData.maxPrice),
+                style = storeMeTextStyle(FontWeight.ExtraBold, 0),
+                color = Color.Black
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                if(menuData.isSignature){
+                    Text(
+                        text = MenuTag.Signature.displayName,
+                        style = storeMeTextStyle(FontWeight.Bold, -2),
+                        modifier = Modifier
+                            .background(
+                                color = LighterHighlightColor,
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .padding(4.dp),
+                        color = HighlightColor
+                    )
+                }
+
+                if(menuData.isPopular){
+                    Text(
+                        text = MenuTag.Popular.displayName,
+                        style = storeMeTextStyle(FontWeight.Bold, -2),
+                        modifier = Modifier
+                            .background(
+                                color = PopularBoxColor,
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .padding(4.dp),
+                        color = PopularTextColor
+                    )
+                }
+
+                if(menuData.isRecommend){
+                    Text(
+                        text = MenuTag.Recommend.displayName,
+                        style = storeMeTextStyle(FontWeight.Bold, -2),
+                        modifier = Modifier
+                            .background(
+                                color = RecommendBoxColor,
+                                shape = RoundedCornerShape(6.dp)
+                            )
+                            .padding(4.dp),
+                        color = RecommendTextColor
+                    )
+                }
+            }
+        }
+
+        if(menuData.image != null) {
+            AsyncImage(
+                model = menuData.image,
+                contentDescription = "메뉴 이미지",
+                error = painterResource(id = R.drawable.store_null_image),
+                modifier = Modifier
+                    .size(100.dp)
+                    .clip(shape = RoundedCornerShape(18.dp))
+            )
+        }
+    }
 }
