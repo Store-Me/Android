@@ -3,6 +3,7 @@
 package com.store_me.storeme.ui.store_setting.menu
 
 import android.view.HapticFeedbackConstants
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -138,6 +139,10 @@ fun MenuSettingScreen(
         } else {
             navController.popBackStack()
         }
+    }
+
+    BackHandler {
+        onClose()
     }
 
     Scaffold(
