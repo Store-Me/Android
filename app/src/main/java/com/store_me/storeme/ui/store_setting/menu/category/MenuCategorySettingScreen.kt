@@ -327,7 +327,7 @@ fun EditMenuCategorySection(initValue: String = "", menuCategories: List<MenuCat
             .padding(horizontal = 20.dp)
     ) {
         Text(
-            text = "카테고리" + if(initValue.isEmpty()) " 수정" else "",
+            text = "카테고리" + if(initValue.isEmpty()) "" else " 수정",
             style = storeMeTextStyle(FontWeight.ExtraBold, 4)
         )
 
