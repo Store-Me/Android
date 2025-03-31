@@ -212,6 +212,9 @@ fun MenuManagementScreen(
 
                 item { MenuPriceSection(
                     priceType = priceType,
+                    initPrice = price,
+                    initMinPrice = minPrice,
+                    initMaxPrice = maxPrice,
                     onPriceTypeChange = {
                         menuManagementViewModel.updateMenuPriceType(it)
                     },
@@ -471,16 +474,12 @@ fun MenuNameSection(
 @Composable
 fun MenuPriceSection(
     priceType: String?,
+    initPrice: Long?,
+    initMinPrice: Long?,
+    initMaxPrice: Long?,
     onPriceTypeChange: (MenuPriceType) -> Unit,
     onPriceChange: (Long?, Long?, Long?) -> Unit
 ) {
-    var priceText by remember { mutableStateOf("") }
-    var minPriceText by remember { mutableStateOf("") }
-    var maxPriceText by remember { mutableStateOf("") }
-
-    LaunchedEffect(priceText, minPriceText, maxPriceText) {
-        onPriceChange(priceText.toLongOrNull(), minPriceText.toLongOrNull(), maxPriceText.toLongOrNull())
-    }
 
     Column(
         modifier = Modifier
@@ -507,7 +506,7 @@ fun MenuPriceSection(
                 isSelected = priceType == MenuPriceType.Fixed.name,
             ) {
                 onPriceTypeChange(MenuPriceType.Fixed)
-                onPriceChange(0, null, null)
+                onPriceChange(null, null, null)
             }
 
             DefaultCheckButton(
@@ -518,7 +517,7 @@ fun MenuPriceSection(
                 isSelected = priceType == MenuPriceType.Ranged.name,
             ) {
                 onPriceTypeChange(MenuPriceType.Ranged)
-                onPriceChange(null, 0, 0)
+                onPriceChange(null, null, null)
             }
 
             DefaultCheckButton(
@@ -538,8 +537,8 @@ fun MenuPriceSection(
         //정가 가격 입력
         AnimatedVisibility(priceType == MenuPriceType.Fixed.name) {
             SimpleNumberOutLinedTextField(
-                text = priceText,
-                onValueChange = { priceText = it },
+                text = initPrice?.toString() ?: "",
+                onValueChange = { onPriceChange(it.toLongOrNull(), null, null) },
                 placeholderText = "가격을 입력하세요.",
                 suffixText = "원",
                 isError = false,
@@ -561,8 +560,8 @@ fun MenuPriceSection(
                     )
 
                     SimpleNumberOutLinedTextField(
-                        text = minPriceText,
-                        onValueChange = { minPriceText = it },
+                        text = initMinPrice?.toString() ?: "",
+                        onValueChange = { onPriceChange(null, it.toLongOrNull(), initMaxPrice) },
                         placeholderText = "최소 가격을 입력하세요.",
                         suffixText = "원",
                         isError = false,
@@ -583,8 +582,8 @@ fun MenuPriceSection(
                     )
 
                     SimpleNumberOutLinedTextField(
-                        text = maxPriceText,
-                        onValueChange = { maxPriceText = it },
+                        text = initMaxPrice?.toString() ?: "",
+                        onValueChange = { onPriceChange(null, initMinPrice, it.toLongOrNull()) },
                         placeholderText = "최대 가격을 입력하세요.",
                         suffixText = "원",
                         isError = false,
