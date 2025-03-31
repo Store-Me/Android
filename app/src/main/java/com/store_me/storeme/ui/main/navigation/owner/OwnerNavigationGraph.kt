@@ -1,12 +1,10 @@
 package com.store_me.storeme.ui.main.navigation.owner
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.store_me.storeme.ui.home.owner.OwnerHomeScreen
 import com.store_me.storeme.ui.link.LinkSettingScreen
 import com.store_me.storeme.ui.post.SelectPostTypeScreen
@@ -15,6 +13,7 @@ import com.store_me.storeme.ui.store_setting.NewsSettingScreen
 import com.store_me.storeme.ui.store_setting.StoreSettingScreen
 import com.store_me.storeme.ui.store_setting.business_hours.BusinessHoursSettingScreen
 import com.store_me.storeme.ui.store_setting.coupon.create.CreateCouponScreen
+import com.store_me.storeme.ui.store_setting.coupon.setting.CouponSettingScreen
 import com.store_me.storeme.ui.store_setting.image.FeaturedImageSettingScreen
 import com.store_me.storeme.ui.store_setting.intro.IntroSettingScreen
 import com.store_me.storeme.ui.store_setting.location.LocationSettingScreen
@@ -58,69 +57,88 @@ fun OwnerNavigationGraph(navController: NavHostController) {
         composable(OwnerRoute.FeaturedImageSetting.fullRoute) { FeaturedImageSettingScreen(navController) }
 
         //메뉴
-        composable(OwnerRoute.MenuSetting(null).fullRoute) { MenuSettingScreen(navController, menuSettingViewModel = hiltViewModel()) }
+        composable(OwnerRoute.MenuSetting(null).fullRoute) { backStackEntry ->
+            val sharedMenuSettingViewModel: MenuSettingViewModel = hiltViewModel(backStackEntry)
+
+            MenuSettingScreen(
+                navController = navController,
+                menuSettingViewModel = sharedMenuSettingViewModel
+            )
+        }
         composable(OwnerRoute.MenuSetting(null).fullRoute + "/{selectedMenuName}") { backStackEntry ->
             val selectedMenuName = backStackEntry.arguments?.getString("selectedMenuName")
-            MenuSettingScreen(navController, menuSettingViewModel = hiltViewModel(), selectedMenuName = selectedMenuName ?: "")
+            val sharedMenuSettingViewModel: MenuSettingViewModel = hiltViewModel(backStackEntry)
+
+            MenuSettingScreen(
+                navController = navController,
+                menuSettingViewModel = sharedMenuSettingViewModel,
+                selectedMenuName = selectedMenuName ?: "")
         }
 
-        composable(OwnerRoute.MenuManagement(null).fullRoute) {
+        composable(OwnerRoute.MenuManagement(null).fullRoute) { backStackEntry ->
             //viewModel 공유
-            val parentEntry = remember(navController.currentBackStackEntryAsState().value) {
-                navController.getBackStackEntry(OwnerRoute.MenuSetting(null).fullRoute)
-            }
-            val sharedViewModel: MenuSettingViewModel = hiltViewModel(parentEntry)
+            val sharedMenuSettingViewModel: MenuSettingViewModel =
+                if(navController.previousBackStackEntry != null)
+                    hiltViewModel(navController.previousBackStackEntry!!)
+                else
+                    hiltViewModel()
 
             MenuManagementScreen(
                 navController = navController,
                 selectedMenuName = "",
-                menuSettingViewModel = sharedViewModel
+                menuSettingViewModel = sharedMenuSettingViewModel
             )
         }
         composable(OwnerRoute.MenuManagement(null).fullRoute + "/{selectedMenuName}") { backStackEntry ->
             val selectedMenuName = backStackEntry.arguments?.getString("selectedMenuName")
-
-            //viewModel 공유
-            val parentEntry = remember(navController.currentBackStackEntryAsState().value) {
-                navController.getBackStackEntry(OwnerRoute.MenuSetting(null).fullRoute)
-            }
-            val sharedViewModel: MenuSettingViewModel = hiltViewModel(parentEntry)
+            val sharedMenuSettingViewModel: MenuSettingViewModel =
+                if(navController.previousBackStackEntry != null)
+                    hiltViewModel(navController.previousBackStackEntry!!)
+                else
+                    hiltViewModel()
 
             MenuManagementScreen(
                 navController = navController,
                 selectedMenuName = selectedMenuName ?: "",
-                menuSettingViewModel = sharedViewModel
+                menuSettingViewModel = sharedMenuSettingViewModel
             )
         }
 
         composable(OwnerRoute.MenuCategorySetting.fullRoute) { backStackEntry ->
             //viewModel 공유
-            val parentEntry = remember(navController.currentBackStackEntryAsState().value) {
-                navController.getBackStackEntry(OwnerRoute.MenuSetting(null).fullRoute)
-            }
-            val sharedViewModel: MenuSettingViewModel = hiltViewModel(parentEntry)
+            val sharedMenuCategorySettingViewModel: MenuCategorySettingViewModel = hiltViewModel(backStackEntry)
+            val sharedMenuSettingViewModel: MenuSettingViewModel =
+                if(navController.previousBackStackEntry != null)
+                    hiltViewModel(navController.previousBackStackEntry!!)
+                else
+                    hiltViewModel()
 
             MenuCategorySettingScreen(
                 navController = navController,
-                menuSettingViewModel = sharedViewModel
+                menuSettingViewModel = sharedMenuSettingViewModel,
+                menuCategorySettingViewModel = sharedMenuCategorySettingViewModel
             )
         }
         composable(OwnerRoute.MenuCategoryManagement(null).fullRoute + "/{selectedCategoryName}") { backStackEntry ->
             val selectedCategoryName = backStackEntry.arguments?.getString("selectedCategoryName")
 
-            val parentEntry = remember(navController.currentBackStackEntryAsState().value) {
-                navController.getBackStackEntry(OwnerRoute.MenuCategorySetting.fullRoute)
-            }
-            val sharedViewModel: MenuCategorySettingViewModel = hiltViewModel(parentEntry)
+            val sharedMenuCategorySettingViewModel: MenuCategorySettingViewModel =
+                if(navController.previousBackStackEntry != null)
+                    hiltViewModel(navController.previousBackStackEntry!!)
+                else
+                    hiltViewModel()
 
             MenuCategoryManagementScreen(
                 navController = navController,
                 selectedCategoryName = selectedCategoryName ?: "",
-                menuCategorySettingViewModel = sharedViewModel
+                menuCategorySettingViewModel = sharedMenuCategorySettingViewModel
             )
         }
 
         //쿠폰
+        composable(OwnerRoute.CouponSetting.fullRoute) {
+            CouponSettingScreen(navController)
+        }
         composable(OwnerRoute.CouponCreate(null).fullRoute + "/{selectedCouponType}") { backStackEntry ->
             val selectedCouponType = backStackEntry.arguments?.getString("selectedCouponType")
             CreateCouponScreen(navController, selectedCouponType = selectedCouponType ?: "")
