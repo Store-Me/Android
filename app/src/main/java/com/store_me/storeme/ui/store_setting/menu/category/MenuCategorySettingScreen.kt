@@ -44,7 +44,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.data.MenuCategoryData
 import com.store_me.storeme.ui.component.BackWarningDialog
@@ -68,7 +67,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun MenuCategorySettingScreen(
     navController: NavController,
     menuSettingViewModel: MenuSettingViewModel,
-    menuCategorySettingViewModel: MenuCategorySettingViewModel = viewModel()
+    menuCategorySettingViewModel: MenuCategorySettingViewModel
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val focusManager = LocalFocusManager.current
