@@ -2,10 +2,13 @@ package com.store_me.storeme.ui.store_setting.menu.category
 
 import androidx.lifecycle.ViewModel
 import com.store_me.storeme.data.MenuCategoryData
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
-class MenuCategorySettingViewModel: ViewModel() {
+@HiltViewModel
+class MenuCategorySettingViewModel @Inject constructor() : ViewModel() {
     private val _menuCategories = MutableStateFlow<List<MenuCategoryData>>(emptyList())
     val menuCategories: StateFlow<List<MenuCategoryData>> = _menuCategories
 
