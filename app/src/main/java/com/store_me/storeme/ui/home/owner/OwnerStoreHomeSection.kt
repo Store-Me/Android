@@ -407,11 +407,9 @@ fun CouponSection(coupons: List<CouponData>, onClick: (StoreHomeItem) -> Unit) {
             colors = ButtonDefaults.buttonColors(
                 containerColor = SubHighlightColor,
                 contentColor = Color.Black
-            ),
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
+            )
         ) {
-            onClick(StoreHomeItem.MENU)
+            onClick(StoreHomeItem.COUPON)
         }
     }
 }
