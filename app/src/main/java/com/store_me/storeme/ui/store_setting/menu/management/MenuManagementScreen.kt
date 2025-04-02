@@ -653,7 +653,7 @@ fun MenuImageSection(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        ImageBox(image = image, imageUri = imageUri, progress = progress) {
+        ImageBox(modifier = Modifier.size(100.dp), image = image, imageUri = imageUri, progress = progress) {
             galleryLauncher.launch("image/*")
         }
     }
@@ -661,22 +661,23 @@ fun MenuImageSection(
 
 @Composable
 fun ImageBox(
+    modifier: Modifier = Modifier,
     image: String?,
     imageUri: Uri?,
     progress: Float,
     onClick: () -> Unit
 ) {
     Box(
-        modifier = Modifier
-            .size(100.dp)
+        modifier = modifier
             .background(color = GuideColor, shape = RoundedCornerShape(14))
             .clip(shape = RoundedCornerShape(14))
-            .clickable { onClick() },
+            .clickable { onClick() }
+            .padding(1.dp),
         contentAlignment = Alignment.Center
     ) {
         Canvas(
             modifier = Modifier
-                .size(98.dp)
+                .matchParentSize()
                 .clip(shape = RoundedCornerShape(14))
         ) {
             drawRect(color = Color.White)
@@ -687,18 +688,18 @@ fun ImageBox(
                 AsyncImage(
                     model = imageUri,
                     modifier = Modifier
-                        .size(98.dp)
+                        .matchParentSize()
                         .clip(shape = RoundedCornerShape(14)),
-                    contentDescription = "메뉴 이미지"
+                    contentDescription = "이미지"
                 )
             }
             image != null -> {
                 AsyncImage(
                     model = image,
                     modifier = Modifier
-                        .size(98.dp)
+                        .matchParentSize()
                         .clip(shape = RoundedCornerShape(14)),
-                    contentDescription = "메뉴 이미지"
+                    contentDescription = "이미지"
                 )
             }
             else -> {
@@ -715,7 +716,7 @@ fun ImageBox(
             LoadingProgress(
                 progress = progress,
                 modifier = Modifier
-                    .size(100.dp)
+                    .matchParentSize()
             )
         }
     }
