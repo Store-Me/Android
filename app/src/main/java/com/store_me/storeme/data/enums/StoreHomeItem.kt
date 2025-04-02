@@ -19,8 +19,12 @@ enum class StoreHomeItem(
         route = OwnerRoute.MenuSetting(null)
     ),
     COUPON(
-        displayName = "스토어 쿠폰",
+        displayName = "쿠폰",
         route = OwnerRoute.CouponSetting
+    ),
+    STAMP_COUPON(
+        displayName = "스탬프",
+        route = OwnerRoute.StampCouponSetting
     ),
     STORY(
         displayName = "스토어 스토리",

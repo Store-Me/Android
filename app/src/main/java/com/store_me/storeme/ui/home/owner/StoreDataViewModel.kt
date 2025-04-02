@@ -5,7 +5,9 @@ import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
+import com.store_me.storeme.data.CouponData
 import com.store_me.storeme.data.MenuCategoryData
+import com.store_me.storeme.data.StampCouponData
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
@@ -54,6 +56,12 @@ class StoreDataViewModel @Inject constructor(
 
     private val _menuCategories = MutableStateFlow<List<MenuCategoryData>>(emptyList())
     val menuCategories: StateFlow<List<MenuCategoryData>> = _menuCategories
+
+    private val _coupons = MutableStateFlow<List<CouponData>>(emptyList())
+    val coupons: StateFlow<List<CouponData>> = _coupons
+
+    private val _stampCoupon = MutableStateFlow<StampCouponData?>(null)
+    val stampCoupon: StateFlow<StampCouponData?> = _stampCoupon
 
     /**
      * StoreData 조회 함수
@@ -293,6 +301,21 @@ class StoreDataViewModel @Inject constructor(
     }
 
     /**
+     * 쿠폰 갱신 함수
+     */
+    fun updateCoupons(coupons: List<CouponData>) {
+        _coupons.value = coupons
+    }
+
+    /**
+     * 스탬프 쿠폰 갱신 함수
+     */
+    fun updateStampCoupon(stampCoupon: StampCouponData?) {
+        _stampCoupon.value = stampCoupon
+    }
+
+
+    /**
      * Notice 조회
      */
     fun getStoreNotice(storeId: String) {
@@ -451,6 +474,44 @@ class StoreDataViewModel @Inject constructor(
                 updateMenuCategories(it.result.categories)
 
                 SuccessEventBus.successFlow.emit(it.message)
+            }.onFailure {
+                if (it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
+
+    /**
+     * Coupons 조회
+     */
+    fun getStoreCoupons(storeId: String) {
+        viewModelScope.launch {
+            val response = ownerRepository.getStoreCoupons(storeId = storeId)
+
+            response.onSuccess {
+                updateCoupons(it.coupons)
+            }.onFailure {
+                if (it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
+
+    /**
+     * StampCoupon 조회
+     */
+    fun getStampCoupon(storeId: String) {
+        viewModelScope.launch {
+            val response = ownerRepository.getStampCoupon(storeId = storeId)
+
+            response.onSuccess {
+                updateStampCoupon(it.stampCoupon)
             }.onFailure {
                 if (it is ApiException) {
                     ErrorEventBus.errorFlow.emit(it.message)
