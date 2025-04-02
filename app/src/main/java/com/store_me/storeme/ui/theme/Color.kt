@@ -264,6 +264,14 @@ val UndefinedBorderColor = Color(0xFF898C93)
 val TextClearIconColor = Color(0xFF545A68)
 
 /**
+ * Coupon Color
+ */
+val CouponDueDateIconColor = Color(0xFFFA8E29)
+val CouponDueDateBoxColor = Color(0xFFFFDED5)
+val CouponQuantityIconColor = Color(0xFF00CD55)
+val CouponQuantityBoxColor = Color(0xFFCCFFD6)
+
+/**
  * Default Color
  */
 val DisabledColor = Color(0xFFAAADB4)
@@ -272,6 +280,7 @@ val FinishedColor = Color(0xFF545A68)
 
 val HighlightColor = Color(0xFFD449DA)
 val LighterHighlightColor = Color(0xFFFEEBFE)
+val LightestHighlightColor = Color(0xFFFFF4FF)
 val SubHighlightColor = Color(0xFFEBF3FE)
 
 val DividerColor = Color(0xFFEFF0F5)
