@@ -95,19 +95,21 @@ fun BannerDetailScreen(
 
 @Composable
 fun BannerTitleSection(bannerDetailViewModel: BannerDetailViewModel) {
+    val bannerData = bannerDetailViewModel.bannerDetailData.collectAsState()
+
     Column(
         modifier = Modifier.padding(horizontal = 20.dp),
     ) {
         Text(
-            text = bannerDetailViewModel.bannerDetailData.value!!.title,
+            text = bannerData.value?.title ?: "",
             style = storeMeTypography.labelLarge
         )
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        if(bannerDetailViewModel.bannerDetailData.value!!.subTitle != null){
+        if(bannerData.value?.subTitle != null){
             Text(
-                text = bannerDetailViewModel.bannerDetailData.value!!.subTitle!!,
+                text = bannerData.value!!.subTitle!!,
                 style = storeMeTypography.titleSmall,
                 color = BannerSubtitleColor
                 )
