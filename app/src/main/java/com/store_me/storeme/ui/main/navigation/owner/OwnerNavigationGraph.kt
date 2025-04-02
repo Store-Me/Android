@@ -12,7 +12,7 @@ import com.store_me.storeme.ui.store_info.StoreInfoScreen
 import com.store_me.storeme.ui.store_setting.NewsSettingScreen
 import com.store_me.storeme.ui.store_setting.StoreSettingScreen
 import com.store_me.storeme.ui.store_setting.business_hours.BusinessHoursSettingScreen
-import com.store_me.storeme.ui.store_setting.coupon.create.CreateCouponScreen
+import com.store_me.storeme.ui.store_setting.coupon.management.CouponManagementScreen
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponSettingScreen
 import com.store_me.storeme.ui.store_setting.image.FeaturedImageSettingScreen
 import com.store_me.storeme.ui.store_setting.intro.IntroSettingScreen
@@ -27,6 +27,8 @@ import com.store_me.storeme.ui.store_setting.notice.NoticeSettingScreen
 import com.store_me.storeme.ui.store_setting.phone_number.PhoneNumberSettingScreen
 import com.store_me.storeme.ui.store_setting.profile.ProfileSettingScreen
 import com.store_me.storeme.ui.store_setting.review.ReviewSettingScreen
+import com.store_me.storeme.ui.store_setting.stamp.StampCouponCreateScreen
+import com.store_me.storeme.ui.store_setting.stamp.StampCouponSettingScreen
 import com.store_me.storeme.ui.store_setting.story.StorySettingScreen
 
 @Composable
@@ -139,13 +141,27 @@ fun OwnerNavigationGraph(navController: NavHostController) {
         composable(OwnerRoute.CouponSetting.fullRoute) {
             CouponSettingScreen(navController)
         }
-        composable(OwnerRoute.CouponCreate(null).fullRoute + "/{selectedCouponType}") { backStackEntry ->
+        composable(OwnerRoute.CouponCreate.template()) { backStackEntry ->
             val selectedCouponType = backStackEntry.arguments?.getString("selectedCouponType")
-            CreateCouponScreen(navController, selectedCouponType = selectedCouponType ?: "")
+            CouponManagementScreen(navController, selectedCouponType = selectedCouponType ?: "", couponId = null)
+        }
+
+        composable(OwnerRoute.CouponEdit.template()) { backStackEntry ->
+            val couponId = backStackEntry.arguments?.getString("couponId") ?: ""
+            val selectedCouponType = backStackEntry.arguments?.getString("selectedCouponType") ?: ""
+            CouponManagementScreen(navController, selectedCouponType = selectedCouponType, couponId = couponId)
+        }
+
+        //스탬프 쿠폰
+        composable(OwnerRoute.StampCouponSetting.fullRoute) {
+            StampCouponSettingScreen(navController)
+        }
+        composable(OwnerRoute.StampCouponCreate.fullRoute) {
+            StampCouponCreateScreen(navController)
         }
 
         composable(OwnerRoute.StorySetting.fullRoute) { StorySettingScreen(navController) }
         composable(OwnerRoute.ReviewSetting.fullRoute) { ReviewSettingScreen(navController) }
-        composable(OwnerRoute.ReviewSetting.fullRoute) { NewsSettingScreen(navController) }
+        composable(OwnerRoute.NewsSetting.fullRoute) { NewsSettingScreen(navController) }
     }
 }
