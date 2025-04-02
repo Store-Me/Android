@@ -328,18 +328,18 @@ fun TemporaryAdjustedItem(item: TemporaryOpeningHours.Adjusted, onMenuClick: () 
             if(item.dailyHoursData.isAlwaysOpen)
                 "24시간 영업"
             else {
-                DateTimeUtils().getSelectTimeText(openingHours.openHours, openingHours.openMinutes) +
+                DateTimeUtils.getSelectTimeText(openingHours.openHours, openingHours.openMinutes) +
                         " ~ " +
-                        DateTimeUtils().getSelectTimeText(openingHours.closeHours, openingHours.closeMinutes)
+                        DateTimeUtils.getSelectTimeText(openingHours.closeHours, openingHours.closeMinutes)
             }
 
     val breakTimeText = "브레이크타임 : " +
             if(!item.dailyHoursData.hasBreakTime)
                 ""
             else {
-                DateTimeUtils().getSelectTimeText(openingHours.startBreakHours, openingHours.startBreakMinutes) +
+                DateTimeUtils.getSelectTimeText(openingHours.startBreakHours, openingHours.startBreakMinutes) +
                         " ~ " +
-                        DateTimeUtils().getSelectTimeText(openingHours.endBreakHours, openingHours.endBreakMinutes)
+                        DateTimeUtils.getSelectTimeText(openingHours.endBreakHours, openingHours.endBreakMinutes)
             }
 
     Row(
@@ -352,8 +352,8 @@ fun TemporaryAdjustedItem(item: TemporaryOpeningHours.Adjusted, onMenuClick: () 
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "${item.startMonth}월 ${item.startDay}일 (${DateTimeUtils().getDayOfWeek(item.startYear, item.startMonth, item.startDay)}) ~ " +
-                    "${item.endMonth}월 ${item.endDay}일 (${DateTimeUtils().getDayOfWeek(item.endYear, item.endMonth, item.endDay)})",
+                text = "${item.startMonth}월 ${item.startDay}일 (${DateTimeUtils.getDayOfWeek(item.startYear, item.startMonth, item.startDay)}) ~ " +
+                    "${item.endMonth}월 ${item.endDay}일 (${DateTimeUtils.getDayOfWeek(item.endYear, item.endMonth, item.endDay)})",
                 style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -397,8 +397,8 @@ fun TemporaryClosedItem(item: TemporaryOpeningHours.Closed, onMenuClick: () -> U
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "${item.startMonth}월 ${item.startDay}일 (${DateTimeUtils().getDayOfWeek(item.startYear, item.startMonth, item.startDay)}) ~ " +
-                    "${item.endMonth}월 ${item.endDay}일 (${DateTimeUtils().getDayOfWeek(item.endYear, item.endMonth, item.endDay)})",
+                text = "${item.startMonth}월 ${item.startDay}일 (${DateTimeUtils.getDayOfWeek(item.startYear, item.startMonth, item.startDay)}) ~ " +
+                    "${item.endMonth}월 ${item.endDay}일 (${DateTimeUtils.getDayOfWeek(item.endYear, item.endMonth, item.endDay)})",
                 style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -649,7 +649,7 @@ fun SelectTimeSection(thisType: EditTimeType) {
                 val selected = isStartTime && typeSelected
 
                 SmallButton(
-                    text = DateTimeUtils().getSelectTimeText(
+                    text = DateTimeUtils.getSelectTimeText(
                         hours = selectedStartHour.value,
                         minutes = selectedStartMinute.value
                     ),
@@ -676,7 +676,7 @@ fun SelectTimeSection(thisType: EditTimeType) {
                 val selected = !isStartTime && typeSelected
 
                 SmallButton(
-                    text = DateTimeUtils().getSelectTimeText(
+                    text = DateTimeUtils.getSelectTimeText(
                         hours = selectedEndHour.value,
                         minutes = selectedEndMinute.value
                     ),

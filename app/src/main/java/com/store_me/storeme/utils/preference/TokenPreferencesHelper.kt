@@ -4,7 +4,6 @@ import android.app.Application
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
-import com.store_me.storeme.utils.DateTimeUtils
 
 object TokenPreferencesHelper {
     private const val PREFERENCES_FILE_NAME = "token_preferences"

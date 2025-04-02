@@ -284,7 +284,7 @@ fun ReviewItem(reviewComment: ReviewComment, onClickMenu: (String) -> Unit, onWr
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "${reviewComment.userData.nickName} · ${DateTimeUtils().datetimeAgo(reviewComment.dateTime)}",
+                    text = "${reviewComment.userData.nickName} · ${DateTimeUtils.datetimeAgo(reviewComment.dateTime)}",
                     style = storeMeTextStyle(FontWeight.Bold, 0)
                 )
             }

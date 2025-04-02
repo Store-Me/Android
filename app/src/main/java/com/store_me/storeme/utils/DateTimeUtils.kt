@@ -12,8 +12,46 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
 
-class DateTimeUtils {
+object DateTimeUtils {
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
+
+    /**
+     * YYYY-MM-DDTHH:MM:SS 형식의 문자열 데이터를 현재 기준 사용 가능 여부를 반환하는 함수
+     */
+    fun isValid(dueDateText: String): Boolean {
+        return try {
+            val dueDate = LocalDateTime.parse(dueDateText, formatter)
+            val currentTime = LocalDateTime.now()
+
+            currentTime.isBefore(dueDate) || currentTime.isEqual(dueDate)
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    /**
+     * YYYY-MM-DDTHH:MM:SS 형식의 문자열 데이터를 YYYY.MM.DD 로 반환하는 함수
+     */
+    fun formatToDate(dueDateText: String): String {
+        return try {
+            val date = LocalDate.parse(dueDateText, formatter)
+            date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
+    /**
+     * YYYY-MM-DDTHH:MM:SS 형식의 문자열 데이터를 YY.MM.DD 로 반환하는 함수
+     */
+    fun formatToShortDate(dueDateText: String): String {
+        return try {
+            val date = LocalDate.parse(dueDateText, formatter)
+            date.format(DateTimeFormatter.ofPattern("yy.MM.dd"))  // 여기만 변경
+        } catch (e: Exception) {
+            ""
+        }
+    }
 
     /**
      * 현재 시각 기준으로 이후인지 확인하는 함수
@@ -30,11 +68,16 @@ class DateTimeUtils {
      * "YYYY년 M월 D일 까지" 텍스트를 출력하는 함수
      * @param datetime 시간 정보
      */
-    fun convertExpiredDateToKorean(datetime: String): String {
-        val outputFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일까지")
+    fun convertExpiredDateToKorean(datetime: String?): String {
+        return try {
+            val outputFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일까지")
 
-        val localDateTime = LocalDateTime.parse(datetime, formatter)
-        return localDateTime.format(outputFormatter)
+            val localDateTime = LocalDateTime.parse(datetime, formatter)
+
+            localDateTime.format(outputFormatter)
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     /**
@@ -178,25 +221,6 @@ class DateTimeUtils {
 
         } catch (e: Exception) {
             "잘못된 날짜 형식"
-        }
-    }
-
-    /**
-     * 날짜 정보를 받아 무슨 요일인지 반환하는 함수
-     */
-    fun getDayOfWeek(dateData: DateData): DayOfWeek {
-        val date = LocalDate.of(dateData.year, dateData.month, dateData.day)
-
-        return DayOfWeek.entries[date.dayOfWeek.value % 7]
-    }
-
-    fun stringToDateData(dateString: String): DateData? {
-        return try {
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-            val localDate = LocalDate.parse(dateString, formatter)
-            DateData(localDate.year, localDate.monthValue, localDate.dayOfMonth)
-        } catch (e: Exception) {
-            null
         }
     }
 

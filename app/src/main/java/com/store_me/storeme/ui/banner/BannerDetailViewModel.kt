@@ -22,10 +22,10 @@ class BannerDetailViewModel(): ViewModel() {
     }
 
     fun getBannerState(): DateTimeUtils.PeriodStatus{
-        return DateTimeUtils().getPeriodStatus(_bannerDetailData.value!!.startDate, _bannerDetailData.value!!.endDate)
+        return DateTimeUtils.getPeriodStatus(_bannerDetailData.value!!.startDate, _bannerDetailData.value!!.endDate)
     }
 
     fun getBannerPeriodText(): String {
-        return DateTimeUtils().getBannerPeriodText(_bannerDetailData.value!!.startDate, _bannerDetailData.value!!.endDate)
+        return DateTimeUtils.getBannerPeriodText(_bannerDetailData.value!!.startDate, _bannerDetailData.value!!.endDate)
     }
 }

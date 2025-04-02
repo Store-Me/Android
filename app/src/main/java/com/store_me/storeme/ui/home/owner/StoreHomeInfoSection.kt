@@ -242,8 +242,8 @@ fun StoreHomeIcon(id: Int) {
 @Composable
 fun StoreBusinessHoursSection(businessHours: BusinessHoursResponse, onClick: () -> Unit) {
     val showAll = remember { mutableStateOf(false) }
-    val todayWeekDay = remember { mutableStateOf(DateTimeUtils().getTodayWeekday()) }
-    val currentTime = remember { mutableStateOf(DateTimeUtils().getCurrentTime()) }
+    val todayWeekDay = remember { mutableStateOf(DateTimeUtils.getTodayWeekday()) }
+    val currentTime = remember { mutableStateOf(DateTimeUtils.getCurrentTime()) }
 
     Row(
         modifier = Modifier
@@ -268,7 +268,7 @@ fun StoreBusinessHoursSection(businessHours: BusinessHoursResponse, onClick: () 
             }
             else -> {
                 Text(
-                    text = DateTimeUtils().getBusinessHoursText(currentTime = currentTime.value, businessHourData = businessHours.businessHours[todayWeekDay.value]),
+                    text = DateTimeUtils.getBusinessHoursText(currentTime = currentTime.value, businessHourData = businessHours.businessHours[todayWeekDay.value]),
                     style = storeMeTextStyle(FontWeight.Bold, 0),
                     color = Color.Black
                 )
@@ -454,7 +454,7 @@ fun StoreLocationSection(
         StoreHomeIcon(R.drawable.ic_marker)
 
         Text(
-            text = storeLocationAddress + "\n" + (storeLocationDetail ?: ""),
+            text = storeLocationAddress + (("\n" + storeLocationDetail)),
             style = storeMeTextStyle(FontWeight.Bold, 0),
             color = Color.Black,
         )

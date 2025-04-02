@@ -154,10 +154,10 @@ fun BusinessHoursSettingScreen(
                 }
 
                 //휴일 아닌 경우
-                businessHoursSettingViewModel.updateStartBusinessTime(index, DateTimeUtils().getTimeData(businessHourData.openingTime))
-                businessHoursSettingViewModel.updateEndBusinessTime(index, DateTimeUtils().getTimeData(businessHourData.closingTime))
-                businessHoursSettingViewModel.updateStartBreakTime(index, DateTimeUtils().getTimeData(businessHourData.startBreak))
-                businessHoursSettingViewModel.updateEndBreakTime(index, DateTimeUtils().getTimeData(businessHourData.endBreak))
+                businessHoursSettingViewModel.updateStartBusinessTime(index, DateTimeUtils.getTimeData(businessHourData.openingTime))
+                businessHoursSettingViewModel.updateEndBusinessTime(index, DateTimeUtils.getTimeData(businessHourData.closingTime))
+                businessHoursSettingViewModel.updateStartBreakTime(index, DateTimeUtils.getTimeData(businessHourData.startBreak))
+                businessHoursSettingViewModel.updateEndBreakTime(index, DateTimeUtils.getTimeData(businessHourData.endBreak))
 
                 if(businessHourData.openingTime == null && businessHourData.closingTime == null)
                     businessHoursSettingViewModel.updateIsAlwaysOpen(index, true)
@@ -415,8 +415,8 @@ fun TemporaryBusinessListSection(modifier: Modifier, temporaryBusinesses: List<T
 
 @Composable
 fun TemporaryBusinessItem(temporaryBusinessData: TemporaryBusinessData, onMenuClick: () -> Unit) {
-    val startDatText = remember { DateTimeUtils().getDateString(temporaryBusinessData.startDate, showYear = false, showDay = true) }
-    val endDateText = remember { DateTimeUtils().getDateString(temporaryBusinessData.endDate, showYear = false, showDay = true) }
+    val startDatText = remember { DateTimeUtils.getDateString(temporaryBusinessData.startDate, showYear = false, showDay = true) }
+    val endDateText = remember { DateTimeUtils.getDateString(temporaryBusinessData.endDate, showYear = false, showDay = true) }
 
     val businessHoursText = remember {
         when(temporaryBusinessData.businessHour.isHoliday) {
