@@ -216,7 +216,7 @@ fun NotificationItem(notification: NotificationWithStoreInfoData) {
                 )
 
                 Text(
-                    text = DateTimeUtils().datetimeAgo(notification.datetime),
+                    text = DateTimeUtils.datetimeAgo(notification.datetime),
                     fontFamily = appFontFamily,
                     color = DateTimeTextColor,
                     fontSize = 10.sp,

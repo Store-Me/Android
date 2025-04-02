@@ -1,12 +1,9 @@
 package com.store_me.storeme.ui.mycoupon
 
 import androidx.lifecycle.ViewModel
-import com.store_me.storeme.data.UserCouponWithStoreIdData
 import com.store_me.storeme.data.UserCouponWithStoreInfoData
-import com.store_me.storeme.utils.CategoryUtils
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.SampleDataUtils
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -45,7 +42,7 @@ class MyCouponViewModel : ViewModel(){
      * Check Coupon Validation
      */
     private fun checkCouponValidation(coupon: UserCouponWithStoreInfoData): Boolean{
-        return DateTimeUtils().isAfterDatetime(coupon.expirationDatetime) && !coupon.isUsed
+        return DateTimeUtils.isAfterDatetime(coupon.expirationDatetime) && !coupon.isUsed
     }
 
 
@@ -65,10 +62,10 @@ class MyCouponViewModel : ViewModel(){
     private fun sortCoupons(){
         when(currentSortType.value){
             SortType.RECEIVED_DATE -> {
-                _myValidCouponList.update { DateTimeUtils().sortCouponsByReceivedDate(myValidCouponList.value).toMutableList() }
+                _myValidCouponList.update { DateTimeUtils.sortCouponsByReceivedDate(myValidCouponList.value).toMutableList() }
             }
             SortType.EXPIRATION_DATE -> {
-                _myValidCouponList.update { DateTimeUtils().sortCouponsByExpiredDate(myValidCouponList.value).toMutableList() }
+                _myValidCouponList.update { DateTimeUtils.sortCouponsByExpiredDate(myValidCouponList.value).toMutableList() }
             }
         }
     }

@@ -327,7 +327,7 @@ fun PostItem(postData: NormalPostWithStoreInfoData, onMenuClick: () -> Unit, onL
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Text(
-                    text = postData.storeInfoData.location + " · " + DateTimeUtils().datetimeAgo(postData.datetime),
+                    text = postData.storeInfoData.location + " · " + DateTimeUtils.datetimeAgo(postData.datetime),
                     fontFamily = appFontFamily,
                     fontSize = 10.sp,
                     letterSpacing = 0.3.sp,

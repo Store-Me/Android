@@ -431,7 +431,7 @@ fun CouponContentSection(isValid: Boolean, coupon: UserCouponWithStoreInfoData) 
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = DateTimeUtils().convertExpiredDateToKorean(coupon.expirationDatetime),
+                text = DateTimeUtils.convertExpiredDateToKorean(coupon.expirationDatetime),
                 fontFamily = appFontFamily,
                 fontWeight = FontWeight.Bold,
                 fontSize = 12.sp,

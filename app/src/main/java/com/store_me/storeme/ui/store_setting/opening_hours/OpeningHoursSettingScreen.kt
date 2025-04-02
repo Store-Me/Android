@@ -332,10 +332,10 @@ fun WeekListSection(onClickWeek: (DateTimeUtils.DayOfWeek) -> Unit) {
                             )
                         else
                             Text(
-                                text = "영업시간 : ${DateTimeUtils().getSelectTimeText(
+                                text = "영업시간 : ${DateTimeUtils.getSelectTimeText(
                                     hours = dailyHoursMap[it]?.openHours ?: 0, 
                                     minutes = dailyHoursMap[it]?.openMinutes ?: 0
-                                )}~${DateTimeUtils().getSelectTimeText(
+                                )}~${DateTimeUtils.getSelectTimeText(
                                     hours = dailyHoursMap[it]?.closeHours ?: 0,
                                     minutes = dailyHoursMap[it]?.closeMinutes ?: 0
                                 )}",
@@ -344,10 +344,10 @@ fun WeekListSection(onClickWeek: (DateTimeUtils.DayOfWeek) -> Unit) {
                             )
 
                         if(dailyHoursMap[it]?.hasBreakTime == true)
-                            Text(text = "브레이크타임 : ${DateTimeUtils().getSelectTimeText(
+                            Text(text = "브레이크타임 : ${DateTimeUtils.getSelectTimeText(
                                 hours = dailyHoursMap[it]?.startBreakHours ?: 0,
                                 minutes = dailyHoursMap[it]?.startBreakMinutes ?: 0
-                            )}~${DateTimeUtils().getSelectTimeText(
+                            )}~${DateTimeUtils.getSelectTimeText(
                                 hours = dailyHoursMap[it]?.endBreakHours ?: 0,
                                 minutes = dailyHoursMap[it]?.endBreakMinutes ?: 0
                             )}",
@@ -458,7 +458,7 @@ fun SelectTimeSection(thisType: EditTimeType, selectedWeek: DateTimeUtils.DayOfW
                 val selected = isStartTime && typeSelected
 
                 SmallButton(
-                    text = DateTimeUtils().getSelectTimeText(
+                    text = DateTimeUtils.getSelectTimeText(
                         hours = selectedStartHour.value,
                         minutes = selectedStartMinute.value
                     ),
@@ -485,7 +485,7 @@ fun SelectTimeSection(thisType: EditTimeType, selectedWeek: DateTimeUtils.DayOfW
                 val selected = !isStartTime && typeSelected
 
                 SmallButton(
-                    text = DateTimeUtils().getSelectTimeText(
+                    text = DateTimeUtils.getSelectTimeText(
                         hours = selectedEndHour.value,
                         minutes = selectedEndMinute.value
                     ),
