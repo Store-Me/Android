@@ -149,35 +149,6 @@ fun TitleWithDeleteButton(title: String, isInTopAppBar: Boolean = false, onClose
 }
 
 @Composable
-fun TitleWithDeleteButtonAtDetail(title: String, isInTopAppBar: Boolean = false, onClose: () -> Unit){
-    val modifier =
-        if(isInTopAppBar)
-            Modifier.padding(start = 4.dp, end = 20.dp)
-        else
-            Modifier.padding(start = 20.dp, end = 20.dp)
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(60.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Text(
-            text = title,
-            style = storeMeTextStyle(FontWeight.ExtraBold, 6)
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-
-        DeleteButton {
-            onClose()
-        }
-    }
-}
-
-@Composable
 fun TitleWithDeleteButtonAndRow(
     title: String,
     scrollBehavior: TopAppBarScrollBehavior,
@@ -205,42 +176,6 @@ fun TitleWithDeleteButtonAndRow(
                 .padding(horizontal = 20.dp, vertical = 8.dp),
             content = row
         )
-    }
-}
-
-@Composable
-fun TitleWithSaveButton(
-    navController: NavController,
-    title: String,
-    scrollBehavior: TopAppBarScrollBehavior,
-    finishButtonEnable: Boolean = true,
-    onFinish: () -> Unit
-){
-    Column {
-        TopAppBar(
-            title = {
-                TitleWithDeleteButton(title = title, isInTopAppBar = true) {
-                    navController.popBackStack()
-                }
-            },
-            scrollBehavior = scrollBehavior,
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = White,
-                scrolledContainerColor = White
-            )
-        )
-
-        LargeButton(
-            text = "저장",
-            enabled = finishButtonEnable,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp, vertical = 10.dp),
-            containerColor = Black,
-            contentColor = White
-        ) {
-            onFinish()
-        }
     }
 }
 
