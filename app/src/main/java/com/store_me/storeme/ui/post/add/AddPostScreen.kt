@@ -2,7 +2,6 @@
 
 package com.store_me.storeme.ui.post.add
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -324,7 +323,6 @@ fun KeyboardToolbar(
     val items = listOf(
         ToolbarItems.IMAGE to R.drawable.ic_image,
         ToolbarItems.ALIGN to textAlignPainterResource,
-        ToolbarItems.DIVIDER to R.drawable.ic_line,
         ToolbarItems.TEXT_STYLE to R.drawable.ic_text,
         ToolbarItems.EMOJI to R.drawable.ic_emoji
     )
@@ -563,6 +561,8 @@ fun TextStyleItems(state: RichTextState) {
     val textHasUnderLine by addPostViewModel.textHasUnderLine.collectAsState()
     val textColor by addPostViewModel.textColor.collectAsState()
 
+    val underlineStyle = SpanStyle(textDecoration = TextDecoration.Underline)
+
     LaunchedEffect(textSize) {
         state.toggleSpanStyle(
             spanStyle = SpanStyle(fontSize = textSize.spSize)
@@ -584,11 +584,11 @@ fun TextStyleItems(state: RichTextState) {
     LaunchedEffect(textHasUnderLine) {
         if (textHasUnderLine) {
             state.toggleSpanStyle(
-                spanStyle = SpanStyle(textDecoration = TextDecoration.Underline)
+                spanStyle = underlineStyle
             )
         } else {
             state.removeSpanStyle(
-                spanStyle = SpanStyle(textDecoration = TextDecoration.Underline)
+                spanStyle = underlineStyle
             )
         }
     }
