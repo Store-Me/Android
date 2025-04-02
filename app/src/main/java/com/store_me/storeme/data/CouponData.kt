@@ -1,12 +1,12 @@
 package com.store_me.storeme.data
 
 data class CouponData(
-    val id: String,
+    val couponId: String,
     val name: String,
     val type: String,
     val value: String,
     val target: String,
-    val quantity: Int?,
+    val quantity: Long?,
     val dueDate: String,
     val image: String?,
     val description: String?,
