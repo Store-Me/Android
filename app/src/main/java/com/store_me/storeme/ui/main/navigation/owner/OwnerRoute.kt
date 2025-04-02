@@ -26,15 +26,34 @@ sealed class OwnerRoute(
     data object LinkSetting: OwnerRoute("linkSetting", parent = Home)
 
     data object NoticeSetting: OwnerRoute("noticeSetting", parent = Home)
+
     data object FeaturedImageSetting: OwnerRoute("featuredImageSetting", parent = Home)
+
     data class MenuSetting(val selectedMenuName: String?): OwnerRoute(if(selectedMenuName != null) "menuSetting/$selectedMenuName" else "menuSetting", parent = Home)
     data class MenuManagement(val selectedMenuName: String?): OwnerRoute(if(selectedMenuName != null) "menuManagement/$selectedMenuName" else "menuManagement", parent = Home)
     data object MenuCategorySetting: OwnerRoute("menuCategorySetting", parent = Home)
     data class MenuCategoryManagement(val selectedCategoryName: String?): OwnerRoute(if(selectedCategoryName != null) "menuCategoryEdit/$selectedCategoryName" else "menuCategoryEdit", parent = Home)
+
     data object CouponSetting: OwnerRoute("couponSetting", parent = Home)
+    data class CouponCreate(val selectedCouponType: String): OwnerRoute("create/$selectedCouponType", CouponSetting) {
+        companion object {
+            fun template(): String = "${CouponSetting.fullRoute}/create/{selectedCouponType}"
+        }
+    }
+    data class CouponEdit(val selectedCouponType: String, val couponId: String): OwnerRoute("edit/$selectedCouponType/$couponId", CouponSetting) {
+        companion object {
+            fun template(): String = "${CouponSetting.fullRoute}/edit/{selectedCouponType}/{couponId}"
+        }
+    }
+
+    data object StampCouponSetting: OwnerRoute("stampCouponSetting", parent = Home)
+    data object StampCouponCreate: OwnerRoute("stampCouponCreate", StampCouponSetting)
+
     data object StorySetting: OwnerRoute("storySetting", parent = Home)
     data object ReviewSetting: OwnerRoute("reviewSetting", parent = Home)
     data object NewsSetting: OwnerRoute("newsSetting", parent = Home)
 
-    data class CouponCreate(val selectedCouponType: String?): OwnerRoute(if(selectedCouponType != null) "couponCreate/$selectedCouponType" else "couponCreate", parent = Home)
+
+
+
 }
