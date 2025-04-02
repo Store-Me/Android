@@ -7,7 +7,6 @@ import androidx.compose.ui.unit.sp
 enum class ToolbarItems {
     IMAGE,
     ALIGN,
-    DIVIDER,
     TEXT_STYLE,
     EMOJI
 }
