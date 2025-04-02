@@ -82,6 +82,8 @@ fun OwnerHomeScreen(
             storeDataViewModel.getStoreNotice(storeId = storeId!!)
             storeDataViewModel.getStoreFeaturedImages(storeId = storeId!!)
             storeDataViewModel.getStoreMenus(storeId = storeId!!)
+            storeDataViewModel.getStoreCoupons(storeId = storeId!!)
+            storeDataViewModel.getStampCoupon(storeId = storeId!!)
         }
     }
 
@@ -90,7 +92,6 @@ fun OwnerHomeScreen(
             storeDataViewModel.getStoreImage(LatLng(storeInfoData!!.storeLat!!, storeInfoData!!.storeLng!!))
         }
     }
-
 
     Scaffold(
         containerColor = White,

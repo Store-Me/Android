@@ -1,7 +1,8 @@
 package com.store_me.storeme.repository.storeme
 
 import com.store_me.storeme.data.CouponData
-import com.store_me.storeme.data.request.CouponRequest
+import com.store_me.storeme.data.StampCouponData
+import com.store_me.storeme.data.request.store.CouponRequest
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
@@ -11,6 +12,7 @@ import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
 import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
+import com.store_me.storeme.data.request.store.PostStampCouponRequest
 import com.store_me.storeme.data.response.AcceptCouponResponse
 import com.store_me.storeme.data.response.BusinessHoursResponse
 import com.store_me.storeme.data.response.CouponsResponse
@@ -20,6 +22,8 @@ import com.store_me.storeme.data.response.MenusResponse
 import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.data.response.NoticeResponse
 import com.store_me.storeme.data.response.PatchResponse
+import com.store_me.storeme.data.response.StampCouponPasswordResponse
+import com.store_me.storeme.data.response.StampCouponResponse
 import com.store_me.storeme.data.response.UseCouponResponse
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.network.storeme.OwnerApiService
@@ -77,6 +81,16 @@ interface OwnerRepository {
     suspend fun getStoreMenus(storeId: String): Result<MenusResponse>
 
     suspend fun patchStoreMenus(storeId: String, patchStoreMenusRequest: MenusResponse): Result<PatchResponse<MenusResponse>>
+
+    suspend fun getStampCoupon(storeId: String): Result<StampCouponResponse>
+
+    suspend fun patchStampCoupon(storeId: String, patchStampCouponRequest: StampCouponData): Result<PatchResponse<StampCouponResponse>>
+
+    suspend fun postStampCoupon(storeId: String, postStampCouponRequest: PostStampCouponRequest): Result<PatchResponse<StampCouponResponse>>
+
+    suspend fun getStampCouponPassword(storeId: String): Result<PatchResponse<StampCouponPasswordResponse>>
+
+    suspend fun patchStampCouponPassword(storeId: String, patchStampCouponPasswordRequest: StampCouponPasswordResponse): Result<PatchResponse<Unit>>
 }
 
 class OwnerRepositoryImpl @Inject constructor(
@@ -451,6 +465,8 @@ class OwnerRepositoryImpl @Inject constructor(
             if(response.isSuccessful) {
                 val responseBody = response.body()
 
+                Timber.d(responseBody.toString())
+
                 Result.success(responseBody ?: CouponsResponse(coupons = emptyList()))
             } else {
                 ResponseHandler.handleErrorResponse(response)
@@ -469,6 +485,8 @@ class OwnerRepositoryImpl @Inject constructor(
 
             if(response.isSuccessful) {
                 val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
 
                 if(responseBody != null) {
                     Result.success(responseBody)
@@ -493,6 +511,8 @@ class OwnerRepositoryImpl @Inject constructor(
             if(response.isSuccessful) {
                 val responseBody = response.body()
 
+                Timber.d(responseBody.toString())
+
                 if(responseBody != null) {
                     Result.success(responseBody)
                 } else {
@@ -515,6 +535,8 @@ class OwnerRepositoryImpl @Inject constructor(
 
             if(response.isSuccessful) {
                 val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
 
                 if(responseBody != null) {
                     Result.success(responseBody)
@@ -542,6 +564,8 @@ class OwnerRepositoryImpl @Inject constructor(
             if(response.isSuccessful) {
                 val responseBody = response.body()
 
+                Timber.d(responseBody.toString())
+
                 if(responseBody != null) {
                     Result.success(responseBody)
                 } else {
@@ -568,6 +592,8 @@ class OwnerRepositoryImpl @Inject constructor(
             if(response.isSuccessful) {
                 val responseBody = response.body()
 
+                Timber.d(responseBody.toString())
+
                 if(responseBody != null) {
                     Result.success(responseBody)
                 } else {
@@ -590,6 +616,8 @@ class OwnerRepositoryImpl @Inject constructor(
             if(response.isSuccessful) {
                 val responseBody = response.body()
 
+                Timber.d(responseBody.toString())
+
                 Result.success(responseBody ?: MenusResponse(categories = emptyList()))
             } else {
                 ResponseHandler.handleErrorResponse(response)
@@ -611,6 +639,136 @@ class OwnerRepositoryImpl @Inject constructor(
 
             if(response.isSuccessful) {
                 val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun getStampCoupon(storeId: String): Result<StampCouponResponse> {
+        return try {
+            val response = ownerApiService.getStampCoupon(
+                storeId = storeId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                Result.success(responseBody ?: StampCouponResponse(stampCoupon = null))
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun patchStampCoupon(
+        storeId: String,
+        patchStampCouponRequest: StampCouponData
+    ): Result<PatchResponse<StampCouponResponse>> {
+        return try {
+            val response = ownerApiService.patchStampCoupon(
+                storeId = storeId,
+                patchStampCouponRequest = patchStampCouponRequest
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun postStampCoupon(
+        storeId: String,
+        postStampCouponRequest: PostStampCouponRequest
+    ): Result<PatchResponse<StampCouponResponse>> {
+        return try {
+            val response = ownerApiService.postStampCoupon(
+                storeId = storeId,
+                postStampCouponRequest = postStampCouponRequest
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun getStampCouponPassword(storeId: String): Result<PatchResponse<StampCouponPasswordResponse>> {
+        return try {
+            val response = ownerApiService.getStampCouponPassword(
+                storeId = storeId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun patchStampCouponPassword(
+        storeId: String,
+        patchStampCouponPasswordRequest: StampCouponPasswordResponse
+    ): Result<PatchResponse<Unit>> {
+        return try {
+            val response = ownerApiService.patchStampCouponPassword(
+                storeId = storeId,
+                patchStampCouponPasswordRequest = patchStampCouponPasswordRequest
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
 
                 if(responseBody != null) {
                     Result.success(responseBody)

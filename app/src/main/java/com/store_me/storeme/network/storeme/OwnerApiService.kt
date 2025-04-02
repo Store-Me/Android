@@ -1,7 +1,8 @@
 package com.store_me.storeme.network.storeme
 
 import com.store_me.storeme.data.CouponData
-import com.store_me.storeme.data.request.CouponRequest
+import com.store_me.storeme.data.StampCouponData
+import com.store_me.storeme.data.request.store.CouponRequest
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
@@ -11,6 +12,7 @@ import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
 import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
+import com.store_me.storeme.data.request.store.PostStampCouponRequest
 import com.store_me.storeme.data.response.AcceptCouponResponse
 import com.store_me.storeme.data.response.BusinessHoursResponse
 import com.store_me.storeme.data.response.CouponsResponse
@@ -20,6 +22,8 @@ import com.store_me.storeme.data.response.MenusResponse
 import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.data.response.NoticeResponse
 import com.store_me.storeme.data.response.PatchResponse
+import com.store_me.storeme.data.response.StampCouponResponse
+import com.store_me.storeme.data.response.StampCouponPasswordResponse
 import com.store_me.storeme.data.response.UseCouponResponse
 import com.store_me.storeme.data.store.StoreInfoData
 import retrofit2.Response
@@ -229,4 +233,46 @@ interface OwnerApiService {
         @Body patchStoreMenusRequest: MenusResponse
     ): Response<PatchResponse<MenusResponse>>
 
+    /**
+     * 스탬프 쿠폰 생성 API
+     */
+    @POST("auth/store/{storeId}/stamp-coupon")
+    suspend fun postStampCoupon(
+        @Path("storeId") storeId: String,
+        @Body postStampCouponRequest: PostStampCouponRequest
+    ): Response<PatchResponse<StampCouponResponse>>
+
+    /**
+     * 스탬프 쿠폰 조회 API
+     */
+    @GET("auth/store/{storeId}/stamp-coupon")
+    suspend fun getStampCoupon(
+        @Path("storeId") storeId: String
+    ): Response<StampCouponResponse>
+
+    /**
+     * 스탬프 쿠폰 수정 API
+     */
+    @PATCH("auth/store/{storeId}/stamp-coupon")
+    suspend fun patchStampCoupon(
+        @Path("storeId") storeId: String,
+        @Body patchStampCouponRequest: StampCouponData
+    ): Response<PatchResponse<StampCouponResponse>>
+
+    /**
+     * 스탬프 비밀번호 조회 API
+     */
+    @GET("auth/store/{storeId}/stamp-coupon/password")
+    suspend fun getStampCouponPassword(
+        @Path("storeId") storeId: String
+    ): Response<PatchResponse<StampCouponPasswordResponse>>
+
+    /**
+     * 스탬프 비밀번호 변경 API
+     */
+    @PATCH("auth/store/{storeId}/stamp-coupon/password")
+    suspend fun patchStampCouponPassword(
+        @Path("storeId") storeId: String,
+        @Body patchStampCouponPasswordRequest: StampCouponPasswordResponse
+    ): Response<PatchResponse<Unit>>
 }
