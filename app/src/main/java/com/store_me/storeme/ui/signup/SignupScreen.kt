@@ -480,7 +480,7 @@ fun GuideTextBoxItem(modifier: Modifier = Modifier, title: String, content: Stri
     Column(
         modifier = modifier
             .background(color = SignupTextBoxColor, shape = RoundedCornerShape(14.dp))
-            .padding(horizontal = 24.dp, vertical = 20.dp)
+            .padding(horizontal = 20.dp, vertical = 20.dp)
             .fillMaxWidth()
     ) {
         Text(
