@@ -25,6 +25,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,7 +52,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
@@ -59,12 +59,10 @@ import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.DateTimeUtils
-import com.store_me.storeme.utils.ValidationUtils
 import java.time.LocalDate
 
 enum class TextFieldErrorType {
-    STORE_NAME,
-    LINK, DESCRIPTION, DATE, NAME, COUPON_CONTENT, MENU_DESCRIPTION, MENU_NAME, MENU_CATEGORY_NAME,
+    DESCRIPTION, DATE, NAME, COUPON_CONTENT, MENU_DESCRIPTION, MENU_NAME, MENU_CATEGORY_NAME,
     COUPON_QUANTITY, COUPON_RATE, PRICE
 }
 
@@ -227,197 +225,6 @@ fun filterNonNumeric(text: String): String {
 }
 
 @Composable
-fun DateOutLineTextField(
-    selectedDate: LocalDate?,
-    modifier: Modifier = Modifier,
-    placeholderText: String = "",
-    errorType: TextFieldErrorType? = TextFieldErrorType.DATE,
-    onErrorChange: (Boolean) -> Unit = {},
-    onClick: () -> Unit
-) {
-    val dateText =
-        if(selectedDate == null)
-            ""
-        else {
-            val date = DateTimeUtils().localDateToDateData(selectedDate)
-
-            "${date.year}년 ${date.month}월 ${date.day}일 까지"
-        }
-
-    val errorMessage = when (errorType) {
-        TextFieldErrorType.DATE -> {
-            if(selectedDate != null && selectedDate.isBefore(LocalDate.now()))
-                "오늘 이전 날짜는 선택이 불가능합니다."
-            else
-                null
-        }
-
-        else -> null
-    }
-
-    LaunchedEffect(errorMessage) {
-        onErrorChange(errorMessage != null)
-    }
-
-    OutlinedTextField(
-        value = dateText,
-        onValueChange = {  },
-        placeholder = { Text(
-            text = placeholderText,
-            style = storeMeTextStyle(FontWeight.Normal, 0)) },
-        textStyle = storeMeTextStyle(FontWeight.Normal, 0),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = HighlightTextFieldColor,
-            disabledBorderColor = if(errorMessage == null) Black else ErrorTextFieldColor,
-            disabledTextColor = Black,
-        ),
-        label = { when(errorMessage) {
-            null -> {  }
-            else -> {
-                Text(
-                    text = errorMessage,
-                    style = storeMeTextStyle(FontWeight.Normal, 0),
-                    color = ErrorTextFieldColor
-                )
-            }
-        } },
-        trailingIcon = {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_calendar),
-                contentDescription = "달력 아이콘",
-                modifier = Modifier
-                    .size(18.dp),
-                tint = Black
-            )
-        },
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .clickable(
-                onClick = { onClick() },
-                indication = null,
-                interactionSource = null
-            ),
-        enabled = false,
-    )
-}
-
-@Composable
-fun NumberOutLineTextField(
-    text: String,
-    modifier: Modifier = Modifier,
-    placeholderText: String = "",
-    onValueChange: (Int?) -> Unit,
-    suffixText: String = "",
-    errorType: TextFieldErrorType? = null,
-    onErrorChange: (Boolean) -> Unit,
-    enabled: Boolean = true,
-) {
-
-    val errorMessage = when (errorType) {
-        TextFieldErrorType.COUPON_QUANTITY -> {
-            if(text.toIntOrNull() == null && text.isNotEmpty()) {
-                "숫자만 입력이 가능합니다."
-            } else if (text.length > 4) {
-                "최대 9999장의 쿠폰 생성이 가능합니다."
-            } else
-                null
-        }
-        TextFieldErrorType.PRICE -> {
-            if (text.toIntOrNull() == null && text.isNotEmpty()) {
-                "숫자만 입력이 가능합니다."
-            } else if (text.length > 8) {
-                "최대 99,999,999 까지만 입력이 가능합니다."
-            } else
-                null
-        }
-        TextFieldErrorType.COUPON_RATE -> {
-            if(text.toIntOrNull() == null && text.isNotEmpty()) {
-                "숫자만 입력이 가능합니다."
-            } else if ((text.toIntOrNull() ?: 0) !in 0..100) {
-                "유효한 범위 (0 ~ 100)의 숫자를 입력해 주세요."
-            } else
-                null
-        }
-
-        else -> null
-    }
-
-    LaunchedEffect(errorMessage) {
-        onErrorChange(errorMessage != null)
-    }
-
-    //쉼표 포함 시키는 함수
-    fun formatNumberWithCommas(input: String): String {
-        return input.replace(",", "").toIntOrNull()?.let {
-            "%,d".format(it)
-        } ?: ""
-    }
-
-    OutlinedTextField(
-        value = text,
-        onValueChange = {
-            when(errorType) {
-                TextFieldErrorType.COUPON_QUANTITY -> {
-                    if (it.length <= 4){
-                        onValueChange(it.toIntOrNull())
-                    }
-                }
-                TextFieldErrorType.PRICE -> {
-                    if (it.length <= 8) {
-                        onValueChange(it.toIntOrNull())
-                    }
-                }
-                TextFieldErrorType.COUPON_RATE -> {
-                    if (it.length <= 3){
-                        onValueChange(it.toIntOrNull())
-                    }
-                }
-
-                else -> {
-                    onValueChange(it.toIntOrNull())
-                }
-            }
-        },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
-        placeholder = { Text(
-            text = placeholderText,
-            style = storeMeTextStyle(FontWeight.Normal, 0)) },
-        textStyle = storeMeTextStyle(FontWeight.Normal, 0),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = HighlightTextFieldColor,
-            errorBorderColor = ErrorTextFieldColor,
-            errorLabelColor = ErrorTextFieldColor,
-        ),
-        suffix = { Text(text = suffixText, style = storeMeTextStyle(FontWeight.Normal, 0)) },
-        label = { when(errorMessage) {
-            null -> {  }
-            else -> { Text(text = errorMessage, style = storeMeTextStyle(FontWeight.Normal, 0)) }
-        } },
-        isError = errorMessage != null,
-        trailingIcon = {
-            if(text.isNotEmpty())
-                IconButton(onClick = {
-                    onValueChange(null)
-                }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_text_clear),
-                        contentDescription = "모두 지우기 아이콘",
-                        modifier = Modifier
-                            .size(18.dp)
-                            .clip(CircleShape),
-                        tint = Color.Unspecified
-                    )
-                }
-        },
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        enabled = enabled
-    )
-}
-
-@Composable
 fun KeyBoardInputField(
     text: String,
     placeholderText: String,
@@ -549,21 +356,29 @@ fun PwOutlinedTextField(
 
 @Composable
 fun SimpleOutLinedTextField(
+    modifier: Modifier = Modifier,
     text: String,
     placeholderText: String,
     onValueChange: (String) -> Unit,
+    trailingIconResource: Int? = null,
     isError: Boolean,
     errorText: String,
+    enabled: Boolean = true,
+    colors: TextFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = HighlightTextFieldColor,
+        errorBorderColor = ErrorTextFieldColor,
+        errorLabelColor = ErrorTextFieldColor,
+    )
 ) {
     OutlinedTextField(
         value = text,
         onValueChange = { onValueChange(it) },
         textStyle = storeMeTextStyle(FontWeight.Normal, 1),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
         trailingIcon = {
-            if(text.isNotEmpty()){
+            if(text.isNotEmpty() && trailingIconResource == null){
                 IconButton(onClick = { onValueChange("") }) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_text_clear),
@@ -574,6 +389,16 @@ fun SimpleOutLinedTextField(
                     )
                 }
             }
+
+            if(trailingIconResource != null) {
+                Icon(
+                    painter = painterResource(id = trailingIconResource),
+                    contentDescription = "아이콘",
+                    modifier = Modifier
+                        .size(24.dp),
+                    tint = Color.Unspecified
+                )
+            }
         },
         placeholder = {
             Text(
@@ -583,11 +408,7 @@ fun SimpleOutLinedTextField(
             )
         },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = HighlightTextFieldColor,
-            errorBorderColor = ErrorTextFieldColor,
-            errorLabelColor = ErrorTextFieldColor,
-        ),
+        colors = colors,
         isError = isError,
         supportingText = {
             if(isError){
@@ -597,7 +418,8 @@ fun SimpleOutLinedTextField(
                     color = ErrorTextFieldColor
                 )
             }
-        }
+        },
+        enabled = enabled
     )
 }
 
@@ -609,6 +431,8 @@ fun SimpleNumberOutLinedTextField(
     isError: Boolean,
     errorText: String,
     suffixText: String? = null,
+    enabled: Boolean = true,
+    isPassword: Boolean = false
 ) {
     OutlinedTextField(
         value = text,
@@ -621,6 +445,7 @@ fun SimpleNumberOutLinedTextField(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(14.dp),
+        enabled = enabled,
         trailingIcon = {
             if(text.isNotEmpty()){
                 IconButton(onClick = { onValueChange("") }) {
@@ -665,6 +490,7 @@ fun SimpleNumberOutLinedTextField(
                     color = GuideColor
                 )
             }
-        }
+        },
+        visualTransformation = if(isPassword) PasswordVisualTransformation() else VisualTransformation.None
     )
 }
