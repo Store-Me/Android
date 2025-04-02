@@ -125,12 +125,12 @@ fun StoreMeScrollableTabRow(
 @Composable
 fun StoreMeTabContent(
     tabTitles: List<String>,
-    state: PagerState,
+    pagerState: PagerState,
     content: @Composable (page: Int) -> Unit
 ) {
     HorizontalPager(
         count = tabTitles.size,
-        state = state,
+        state = pagerState,
         modifier = Modifier
             .fillMaxSize(),
         verticalAlignment = Alignment.Top
