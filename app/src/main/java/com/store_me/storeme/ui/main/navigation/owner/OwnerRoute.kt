@@ -46,10 +46,15 @@ sealed class OwnerRoute(
         }
     }
 
+    //스탬프
     data object StampCouponSetting: OwnerRoute("stampCouponSetting", parent = Home)
     data object StampCouponCreate: OwnerRoute("stampCouponCreate", StampCouponSetting)
 
+    //스토리
     data object StorySetting: OwnerRoute("storySetting", parent = Home)
+    data object StoryManagement: OwnerRoute("storyManagement", parent = StorySetting)
+
+
     data object ReviewSetting: OwnerRoute("reviewSetting", parent = Home)
     data object NewsSetting: OwnerRoute("newsSetting", parent = Home)
 
