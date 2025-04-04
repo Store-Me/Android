@@ -53,7 +53,7 @@ object CropUtils {
             }
         }
 
-        val file = File(context.cacheDir, "cropped_image_${System.currentTimeMillis()}.jpg")
+        val file = File(context.cacheDir, "cropped_image_${System.currentTimeMillis()}.jpeg")
         val contentUri = FileProvider.getUriForFile(
             context,
             "${context.packageName}.fileprovider",
