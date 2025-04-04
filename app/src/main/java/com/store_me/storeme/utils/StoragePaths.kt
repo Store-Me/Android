@@ -7,4 +7,5 @@ object StoragePaths {
     const val STORE_IMAGES = "store_images"
     const val STORE_MENU_IMAGES = "store_menu_images"
     const val STORE_COUPON_IMAGES = "store_coupon_images"
+    const val STORE_STORIES = "store_stories"
 }
