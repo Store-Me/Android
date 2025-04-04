@@ -1,6 +1,7 @@
 package com.store_me.storeme.repository.storeme
 
 import android.net.Uri
+import androidx.core.net.toFile
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
 import com.store_me.storeme.utils.exception.ApiException
@@ -15,11 +16,10 @@ import kotlin.coroutines.suspendCoroutine
 interface ImageRepository {
     suspend fun uploadImage(folderName: String, uniqueName: String, uri: Uri, onProgress: (Float) -> Unit): Result<String>
 
-    suspend fun uploadImages(folderName: String, accountId: String, uris: List<Uri>, onProgress: (Float) -> Unit): Result<List<String>>
+    suspend fun uploadVideo(folderName: String, uniqueName: String, uri: Uri, mimeType: String, onProgress: (Float) -> Unit): Result<String>
 }
 
 class ImageRepositoryImpl @Inject constructor(
-
 ): ImageRepository {
     override suspend fun uploadImage(folderName: String, uniqueName: String, uri: Uri, onProgress: (Float) -> Unit): Result<String> {
         return suspendCoroutine { continuation ->
@@ -34,7 +34,11 @@ class ImageRepositoryImpl @Inject constructor(
                 .addOnProgressListener { taskSnapshot ->
                     val bytesTransferred = taskSnapshot.bytesTransferred
                     val totalByteCount = taskSnapshot.totalByteCount
-                    val progress = if (totalByteCount > 0) (100.0f * bytesTransferred / totalByteCount) else 0.0f
+                    val progress = if (totalByteCount > 0) {
+                        (100.0f * bytesTransferred / totalByteCount)
+                    } else {
+                        0.0f
+                    }
 
                     onProgress(progress)
                     Timber.d("업로드 진행 중: ${progress.toInt()}%")
@@ -55,41 +59,55 @@ class ImageRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun uploadImages(folderName: String, accountId: String, uris: List<Uri>, onProgress: (Float) -> Unit): Result<List<String>> {
+    override suspend fun uploadVideo(
+        folderName: String,
+        uniqueName: String,
+        uri: Uri,
+        mimeType: String,
+        onProgress: (Float) -> Unit
+    ): Result<String> {
         return suspendCoroutine { continuation ->
             val storage = Firebase.storage
             val storageRef = storage.getReference(folderName)
-            val urls = mutableListOf<String>()
-            var uploadCount = 0
 
-            for(uri in uris) {
-                val fileName = "${accountId}_${System.currentTimeMillis()}"
+            // 확장자 추출
+            val extension = android.webkit.MimeTypeMap.getSingleton()
+                .getExtensionFromMimeType(mimeType) ?: "mp4"
 
-                val imageRef = storageRef.child("${fileName}.jpeg")
+            val fileName = "${uniqueName}_${System.currentTimeMillis()}.$extension"
+            val videoRef = storageRef.child(fileName)
 
-                imageRef.putFile(uri)
-                    .addOnSuccessListener {
+            // 메타데이터 설정
+            val metadata = com.google.firebase.storage.StorageMetadata.Builder()
+                .setContentType(mimeType)
+                .build()
 
-                        imageRef.downloadUrl.addOnSuccessListener { downloadUrl ->
-                            Timber.d("이미지 업로드 성공: $downloadUrl")
-
-                            urls.add(downloadUrl.toString())
-                            uploadCount++
-
-                            if(uploadCount == uris.size) {
-                                continuation.resume(Result.success(urls))
-                            }
-                        }.addOnFailureListener { e ->
-                            Timber.e("URL 가져오기 실패: ${e.message}")
-                            continuation.resume(Result.failure(ApiException(code = null, message = e.message)))
-                        }
-
+            videoRef.putFile(uri, metadata)
+                .addOnProgressListener { taskSnapshot ->
+                    val bytesTransferred = taskSnapshot.bytesTransferred
+                    val totalByteCount = taskSnapshot.totalByteCount
+                    val progress = if (totalByteCount > 0) {
+                        100.0f * bytesTransferred / totalByteCount
+                    } else {
+                        0.0f
                     }
-                    .addOnFailureListener { e ->
-                        Timber.e("이미지 업로드 실패: ${e.message}")
+
+                    onProgress(progress)
+                    Timber.d("동영상 업로드 진행 중: ${progress.toInt()}%")
+                }
+                .addOnSuccessListener {
+                    videoRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+                        Timber.d("동영상 업로드 성공: $downloadUrl")
+                        continuation.resume(Result.success(downloadUrl.toString()))
+                    }.addOnFailureListener { e ->
+                        Timber.e("URL 가져오기 실패: ${e.message}")
                         continuation.resume(Result.failure(ApiException(code = null, message = e.message)))
                     }
-            }
+                }
+                .addOnFailureListener { e ->
+                    Timber.e("동영상 업로드 실패: ${e.message}")
+                    continuation.resume(Result.failure(ApiException(code = null, message = e.message)))
+                }
         }
     }
 }
