@@ -132,11 +132,11 @@ fun SelectPostTypeSection(onSelectType: (PostType) -> Unit) {
                 PostTypeSmallItem(
                     modifier = Modifier
                         .weight(1f),
-                    postType = PostType.EVENT,
-                    iconResource = R.drawable.ic_event,
+                    postType = PostType.SURVEY,
+                    iconResource = R.drawable.ic_survey,
                     iconTint = AddPostEventIconColor
                 ) {
-                    onSelectType(PostType.EVENT)
+                    onSelectType(PostType.SURVEY)
                 }
             }
 
@@ -148,11 +148,11 @@ fun SelectPostTypeSection(onSelectType: (PostType) -> Unit) {
                 PostTypeSmallItem(
                     modifier = Modifier
                         .weight(1f),
-                    postType = PostType.SURVEY,
-                    iconResource = R.drawable.ic_survey,
+                    postType = PostType.VOTE,
+                    iconResource = R.drawable.ic_vote,
                     iconTint = AddPostSurveyIconColor
                 ) {
-                    onSelectType(PostType.SURVEY)
+                    onSelectType(PostType.VOTE)
                 }
 
                 PostTypeSmallItem(

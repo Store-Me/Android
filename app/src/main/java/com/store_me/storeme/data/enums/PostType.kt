@@ -19,12 +19,12 @@ enum class PostType(val displayName: String, val description: String?) {
         displayName = "쿠폰 홍보",
         description = null
     ),
-    EVENT(
-        displayName = "이벤트",
+    SURVEY(
+        displayName = "설문",
         description = null
     ),
-    SURVEY(
-        displayName = "투표/설문",
+    VOTE(
+        displayName = "투표",
         description = null
     ),
     NOTICE(
