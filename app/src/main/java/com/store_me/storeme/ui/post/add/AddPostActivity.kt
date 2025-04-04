@@ -20,6 +20,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.store_me.storeme.data.enums.PostType
 import com.store_me.storeme.ui.loading.LoadingScreen
 import com.store_me.storeme.ui.loading.LoadingViewModel
+import com.store_me.storeme.ui.post.add.survey.AddSurveyScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.utils.KeyboardHeightObserver
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
@@ -84,6 +85,7 @@ class AddPostActivity : ComponentActivity() {
                         ) {
                             when(postType) {
                                 null -> { finish() }
+                                PostType.SURVEY -> { AddSurveyScreen() }
                                 else -> { AddPostScreen(postType = postType) }
                             }
 
