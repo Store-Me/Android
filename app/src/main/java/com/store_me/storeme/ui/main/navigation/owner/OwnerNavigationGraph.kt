@@ -29,7 +29,9 @@ import com.store_me.storeme.ui.store_setting.profile.ProfileSettingScreen
 import com.store_me.storeme.ui.store_setting.review.ReviewSettingScreen
 import com.store_me.storeme.ui.store_setting.stamp.StampCouponCreateScreen
 import com.store_me.storeme.ui.store_setting.stamp.StampCouponSettingScreen
+import com.store_me.storeme.ui.store_setting.story.StoryManagementScreen
 import com.store_me.storeme.ui.store_setting.story.StorySettingScreen
+import com.store_me.storeme.ui.store_setting.story.StorySettingViewModel
 
 @Composable
 fun OwnerNavigationGraph(navController: NavHostController) {
@@ -160,7 +162,22 @@ fun OwnerNavigationGraph(navController: NavHostController) {
             StampCouponCreateScreen(navController)
         }
 
-        composable(OwnerRoute.StorySetting.fullRoute) { StorySettingScreen(navController) }
+        //스토리
+        composable(OwnerRoute.StorySetting.fullRoute) { backStackEntry ->
+            val sharedStorySettingViewModel: StorySettingViewModel = hiltViewModel(backStackEntry)
+
+            StorySettingScreen(navController, storySettingViewModel = sharedStorySettingViewModel)
+        }
+        composable(OwnerRoute.StoryManagement.fullRoute) { backStackEntry ->
+            val sharedStorySettingViewModel: StorySettingViewModel =
+                if(navController.previousBackStackEntry != null)
+                    hiltViewModel(navController.previousBackStackEntry!!)
+                else
+                    hiltViewModel()
+
+            StoryManagementScreen(navController, storySettingViewModel = sharedStorySettingViewModel)
+        }
+
         composable(OwnerRoute.ReviewSetting.fullRoute) { ReviewSettingScreen(navController) }
         composable(OwnerRoute.NewsSetting.fullRoute) { NewsSettingScreen(navController) }
     }
