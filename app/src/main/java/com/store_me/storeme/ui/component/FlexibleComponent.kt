@@ -737,10 +737,10 @@ fun LinkSection(
 fun LinkIcon(modifier: Modifier = Modifier, url: String) {
     val context = LocalContext.current
 
-    val type = SocialMediaAccountUtils().getType(url)
+    val type = SocialMediaAccountUtils.getType(url)
 
     Icon(
-        imageVector = ImageVector.vectorResource(id = SocialMediaAccountUtils().getIcon(type)),
+        imageVector = ImageVector.vectorResource(id = SocialMediaAccountUtils.getIcon(type)),
         contentDescription = "프로필 링크",
         modifier = modifier
             .clickable(
