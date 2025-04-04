@@ -147,7 +147,7 @@ fun LinkSettingScreen(
             .addFocusCleaner(focusManager),
         topBar = {
             TitleWithDeleteButtonAndRow(
-                title = "외부링크 관리",
+                title = "링크 관리",
                 scrollBehavior = scrollBehavior,
                 onClose = { onClose() }
             ) {

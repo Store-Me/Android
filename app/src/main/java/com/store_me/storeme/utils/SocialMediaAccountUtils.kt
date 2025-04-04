@@ -3,7 +3,7 @@ package com.store_me.storeme.utils
 import com.store_me.storeme.R
 import com.store_me.storeme.data.SocialMediaAccountType
 
-class SocialMediaAccountUtils {
+object SocialMediaAccountUtils {
     fun getType(url: String): SocialMediaAccountType {
         return when {
             url.startsWith("https://www.instagram.com") -> { SocialMediaAccountType.INSTAGRAM }
