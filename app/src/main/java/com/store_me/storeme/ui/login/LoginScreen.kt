@@ -288,6 +288,7 @@ fun LoginScreen(
                                 isPwError.value = true
                             }
                             else -> {
+                                loadingViewModel.showLoading()
                                 loginViewModel.loginWithApp()
                             }
                         }
