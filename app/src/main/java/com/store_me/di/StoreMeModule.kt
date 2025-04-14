@@ -6,6 +6,7 @@ import com.store_me.auth.AuthInterceptor
 import com.store_me.storeme.network.storeme.AuthApiService
 import com.store_me.storeme.network.storeme.CustomerApiService
 import com.store_me.storeme.network.storeme.OwnerApiService
+import com.store_me.storeme.network.storeme.PostApiService
 import com.store_me.storeme.network.storeme.UserApiService
 import com.store_me.storeme.utils.preference.TokenPreferencesHelper
 import dagger.Module
@@ -26,7 +27,7 @@ import javax.inject.Singleton
 object StoreMeModule {
     @Provides
     @Named("StoreMeBaseUrl")
-    fun provideBaseUrl() = "https://us-central1-storeme-67dc6.cloudfunctions.net/api/"
+    fun provideBaseUrl() = "https://us-central1-storeme-67dc6.cloudfunctions.net/"
 
     @Provides
     @Singleton
@@ -159,5 +160,13 @@ object StoreMeModule {
         @Named("AuthorizedRetrofit") retrofit: Retrofit
     ): CustomerApiService {
         return retrofit.create(CustomerApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun PostApiService(
+        @Named("AuthorizedRetrofit") retrofit: Retrofit
+    ): PostApiService {
+        return retrofit.create(PostApiService::class.java)
     }
 }
