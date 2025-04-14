@@ -2,6 +2,7 @@ package com.store_me.storeme.repository.storeme
 
 import com.store_me.storeme.data.CouponData
 import com.store_me.storeme.data.StampCouponData
+import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.data.request.store.CouponRequest
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
@@ -13,6 +14,7 @@ import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.request.store.PostStampCouponRequest
+import com.store_me.storeme.data.request.store.PostStoryRequest
 import com.store_me.storeme.data.response.AcceptCouponResponse
 import com.store_me.storeme.data.response.BusinessHoursResponse
 import com.store_me.storeme.data.response.CouponsResponse
@@ -21,7 +23,8 @@ import com.store_me.storeme.data.response.LinksResponse
 import com.store_me.storeme.data.response.MenusResponse
 import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.data.response.NoticeResponse
-import com.store_me.storeme.data.response.PatchResponse
+import com.store_me.storeme.data.response.PagingResponse
+import com.store_me.storeme.data.response.StoreMeResponse
 import com.store_me.storeme.data.response.StampCouponPasswordResponse
 import com.store_me.storeme.data.response.StampCouponResponse
 import com.store_me.storeme.data.response.UseCouponResponse
@@ -40,57 +43,65 @@ interface OwnerRepository {
 
     suspend fun getStoreData(storeId: String): Result<StoreInfoData>
 
-    suspend fun patchStoreProfileImages(storeId: String, patchStoreProfileImagesRequest: PatchStoreProfileImagesRequest): Result<PatchResponse<StoreInfoData>>
+    suspend fun patchStoreProfileImages(storeId: String, patchStoreProfileImagesRequest: PatchStoreProfileImagesRequest): Result<StoreMeResponse<StoreInfoData>>
 
-    suspend fun patchStoreIntro(storeId: String, patchStoreIntroRequest: PatchStoreIntroRequest): Result<PatchResponse<StoreInfoData>>
+    suspend fun patchStoreIntro(storeId: String, patchStoreIntroRequest: PatchStoreIntroRequest): Result<StoreMeResponse<StoreInfoData>>
 
-    suspend fun patchStoreDescription(storeId: String, patchStoreDescriptionRequest: PatchStoreDescriptionRequest): Result<PatchResponse<StoreInfoData>>
+    suspend fun patchStoreDescription(storeId: String, patchStoreDescriptionRequest: PatchStoreDescriptionRequest): Result<StoreMeResponse<StoreInfoData>>
 
     suspend fun getBusinessHours(storeId: String): Result<BusinessHoursResponse>
 
-    suspend fun patchStoreBusinessHours(storeId: String, patchBusinessHoursRequest: PatchBusinessHoursRequest): Result<PatchResponse<BusinessHoursResponse>>
+    suspend fun patchStoreBusinessHours(storeId: String, patchBusinessHoursRequest: PatchBusinessHoursRequest): Result<StoreMeResponse<BusinessHoursResponse>>
 
     suspend fun getStoreLinks(storeId: String): Result<LinksResponse>
 
-    suspend fun patchStoreLinks(storeId: String, patchLinksRequest: PatchLinksRequest): Result<PatchResponse<LinksResponse>>
+    suspend fun patchStoreLinks(storeId: String, patchLinksRequest: PatchLinksRequest): Result<StoreMeResponse<LinksResponse>>
 
-    suspend fun patchStorePhoneNumber(storeId: String, phoneNumber: String?): Result<PatchResponse<StoreInfoData>>
+    suspend fun patchStorePhoneNumber(storeId: String, phoneNumber: String?): Result<StoreMeResponse<StoreInfoData>>
 
     suspend fun getStoreNotice(storeId: String): Result<NoticeResponse>
 
-    suspend fun patchStoreNotice(storeId: String, patchStoreNoticeRequest: PatchStoreNoticeRequest): Result<PatchResponse<NoticeResponse>>
+    suspend fun patchStoreNotice(storeId: String, patchStoreNoticeRequest: PatchStoreNoticeRequest): Result<StoreMeResponse<NoticeResponse>>
 
-    suspend fun patchStoreLocation(storeId: String, patchStoreLocationRequest: PatchStoreLocationRequest): Result<PatchResponse<StoreInfoData>>
+    suspend fun patchStoreLocation(storeId: String, patchStoreLocationRequest: PatchStoreLocationRequest): Result<StoreMeResponse<StoreInfoData>>
 
     suspend fun getStoreFeaturedImages(storeId: String): Result<FeaturedImagesResponse>
 
-    suspend fun patchFeaturedImages(storeId: String, patchStoreFeaturedImagesRequest: PatchStoreFeaturedImagesRequest): Result<PatchResponse<FeaturedImagesResponse>>
+    suspend fun patchFeaturedImages(storeId: String, patchStoreFeaturedImagesRequest: PatchStoreFeaturedImagesRequest): Result<StoreMeResponse<FeaturedImagesResponse>>
 
     suspend fun getStoreCoupons(storeId: String): Result<CouponsResponse>
 
-    suspend fun postStoreCoupon(storeId: String, couponRequest: CouponRequest): Result<PatchResponse<CouponData>>
+    suspend fun postStoreCoupon(storeId: String, couponRequest: CouponRequest): Result<StoreMeResponse<CouponData>>
 
-    suspend fun patchStoreCoupon(storeId: String, couponRequest: CouponRequest): Result<PatchResponse<CouponData>>
+    suspend fun patchStoreCoupon(storeId: String, couponRequest: CouponRequest): Result<StoreMeResponse<CouponData>>
 
-    suspend fun deleteStoreCoupon(storeId: String, couponId: String): Result<PatchResponse<Unit>>
+    suspend fun deleteStoreCoupon(storeId: String, couponId: String): Result<StoreMeResponse<Unit>>
 
-    suspend fun acceptStoreCoupon(storeId: String, couponId: String): Result<PatchResponse<AcceptCouponResponse>>
+    suspend fun acceptStoreCoupon(storeId: String, couponId: String): Result<StoreMeResponse<AcceptCouponResponse>>
 
-    suspend fun useStoreCoupon(storeId: String, couponId: String): Result<PatchResponse<UseCouponResponse>>
+    suspend fun useStoreCoupon(storeId: String, couponId: String): Result<StoreMeResponse<UseCouponResponse>>
 
     suspend fun getStoreMenus(storeId: String): Result<MenusResponse>
 
-    suspend fun patchStoreMenus(storeId: String, patchStoreMenusRequest: MenusResponse): Result<PatchResponse<MenusResponse>>
+    suspend fun patchStoreMenus(storeId: String, patchStoreMenusRequest: MenusResponse): Result<StoreMeResponse<MenusResponse>>
 
     suspend fun getStampCoupon(storeId: String): Result<StampCouponResponse>
 
-    suspend fun patchStampCoupon(storeId: String, patchStampCouponRequest: StampCouponData): Result<PatchResponse<StampCouponResponse>>
+    suspend fun patchStampCoupon(storeId: String, patchStampCouponRequest: StampCouponData): Result<StoreMeResponse<StampCouponResponse>>
 
-    suspend fun postStampCoupon(storeId: String, postStampCouponRequest: PostStampCouponRequest): Result<PatchResponse<StampCouponResponse>>
+    suspend fun postStampCoupon(storeId: String, postStampCouponRequest: PostStampCouponRequest): Result<StoreMeResponse<StampCouponResponse>>
 
-    suspend fun getStampCouponPassword(storeId: String): Result<PatchResponse<StampCouponPasswordResponse>>
+    suspend fun getStampCouponPassword(storeId: String): Result<StoreMeResponse<StampCouponPasswordResponse>>
 
-    suspend fun patchStampCouponPassword(storeId: String, patchStampCouponPasswordRequest: StampCouponPasswordResponse): Result<PatchResponse<Unit>>
+    suspend fun patchStampCouponPassword(storeId: String, patchStampCouponPasswordRequest: StampCouponPasswordResponse): Result<StoreMeResponse<Unit>>
+
+    suspend fun getStoreStories(storeId: String, lastCreatedAt: String?): Result<PagingResponse<List<StoryData>>>
+
+    suspend fun postStoreStory(storeId: String, postStoreStoryRequest: PostStoryRequest): Result<PagingResponse<List<StoryData>>>
+
+    suspend fun getStoreStory(storeId: String, storyId: String): Result<StoryData>
+
+    suspend fun deleteStoreStory(storeId: String, storyId: String): Result<StoreMeResponse<Unit>>
 }
 
 class OwnerRepositoryImpl @Inject constructor(
@@ -139,7 +150,7 @@ class OwnerRepositoryImpl @Inject constructor(
     override suspend fun patchStoreProfileImages(
         storeId: String,
         patchStoreProfileImagesRequest: PatchStoreProfileImagesRequest
-    ): Result<PatchResponse<StoreInfoData>> {
+    ): Result<StoreMeResponse<StoreInfoData>> {
         return try {
             val response = ownerApiService.patchStoreProfileImages(
                 storeId = storeId,
@@ -167,7 +178,7 @@ class OwnerRepositoryImpl @Inject constructor(
     override suspend fun patchStoreIntro(
         storeId: String,
         patchStoreIntroRequest: PatchStoreIntroRequest
-    ): Result<PatchResponse<StoreInfoData>> {
+    ): Result<StoreMeResponse<StoreInfoData>> {
         return try {
             val response = ownerApiService.patchStoreIntro(
                 storeId = storeId,
@@ -195,7 +206,7 @@ class OwnerRepositoryImpl @Inject constructor(
     override suspend fun patchStoreDescription(
         storeId: String,
         patchStoreDescriptionRequest: PatchStoreDescriptionRequest
-    ): Result<PatchResponse<StoreInfoData>> {
+    ): Result<StoreMeResponse<StoreInfoData>> {
         return try {
             val response = ownerApiService.patchStoreDescription(
                 storeId = storeId,
@@ -240,7 +251,7 @@ class OwnerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun patchStoreBusinessHours(storeId: String, patchBusinessHoursRequest: PatchBusinessHoursRequest): Result<PatchResponse<BusinessHoursResponse>> {
+    override suspend fun patchStoreBusinessHours(storeId: String, patchBusinessHoursRequest: PatchBusinessHoursRequest): Result<StoreMeResponse<BusinessHoursResponse>> {
         return try {
             val response = ownerApiService.patchBusinessHours(
                 storeId = storeId,
@@ -288,7 +299,7 @@ class OwnerRepositoryImpl @Inject constructor(
     override suspend fun patchStoreLinks(
         storeId: String,
         patchLinksRequest: PatchLinksRequest
-    ): Result<PatchResponse<LinksResponse>> {
+    ): Result<StoreMeResponse<LinksResponse>> {
         return try {
             val response = ownerApiService.patchStoreLinks(
                 storeId = storeId,
@@ -316,7 +327,7 @@ class OwnerRepositoryImpl @Inject constructor(
     override suspend fun patchStorePhoneNumber(
         storeId: String,
         phoneNumber: String?
-    ): Result<PatchResponse<StoreInfoData>> {
+    ): Result<StoreMeResponse<StoreInfoData>> {
         return try {
             val response = ownerApiService.patchStorePhoneNumber(
                 storeId = storeId,
@@ -365,7 +376,7 @@ class OwnerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun patchStoreNotice(storeId: String, patchStoreNoticeRequest: PatchStoreNoticeRequest): Result<PatchResponse<NoticeResponse>> {
+    override suspend fun patchStoreNotice(storeId: String, patchStoreNoticeRequest: PatchStoreNoticeRequest): Result<StoreMeResponse<NoticeResponse>> {
         return try {
             val response = ownerApiService.patchStoreNotice(
                 storeId = storeId,
@@ -389,7 +400,7 @@ class OwnerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun patchStoreLocation(storeId: String, patchStoreLocationRequest: PatchStoreLocationRequest): Result<PatchResponse<StoreInfoData>> {
+    override suspend fun patchStoreLocation(storeId: String, patchStoreLocationRequest: PatchStoreLocationRequest): Result<StoreMeResponse<StoreInfoData>> {
         return try {
             val response = ownerApiService.patchStoreLocation(
                 storeId = storeId,
@@ -432,7 +443,7 @@ class OwnerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun patchFeaturedImages(storeId: String, patchStoreFeaturedImagesRequest: PatchStoreFeaturedImagesRequest): Result<PatchResponse<FeaturedImagesResponse>> {
+    override suspend fun patchFeaturedImages(storeId: String, patchStoreFeaturedImagesRequest: PatchStoreFeaturedImagesRequest): Result<StoreMeResponse<FeaturedImagesResponse>> {
         return try {
             val response = ownerApiService.patchStoreFeaturedImages(
                 storeId = storeId,
@@ -476,7 +487,7 @@ class OwnerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun postStoreCoupon(storeId: String, couponRequest: CouponRequest): Result<PatchResponse<CouponData>> {
+    override suspend fun postStoreCoupon(storeId: String, couponRequest: CouponRequest): Result<StoreMeResponse<CouponData>> {
         return try {
             val response = ownerApiService.postStoreCoupon(
                 storeId = storeId,
@@ -501,7 +512,7 @@ class OwnerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun patchStoreCoupon(storeId: String, couponRequest: CouponRequest): Result<PatchResponse<CouponData>> {
+    override suspend fun patchStoreCoupon(storeId: String, couponRequest: CouponRequest): Result<StoreMeResponse<CouponData>> {
         return try {
             val response = ownerApiService.patchStoreCoupon(
                 storeId = storeId,
@@ -526,7 +537,7 @@ class OwnerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteStoreCoupon(storeId: String, couponId: String): Result<PatchResponse<Unit>> {
+    override suspend fun deleteStoreCoupon(storeId: String, couponId: String): Result<StoreMeResponse<Unit>> {
         return try {
             val response = ownerApiService.deleteStoreCoupon(
                 storeId = storeId,
@@ -554,7 +565,7 @@ class OwnerRepositoryImpl @Inject constructor(
     override suspend fun acceptStoreCoupon(
         storeId: String,
         couponId: String
-    ): Result<PatchResponse<AcceptCouponResponse>> {
+    ): Result<StoreMeResponse<AcceptCouponResponse>> {
         return try {
             val response = ownerApiService.acceptStoreCoupon(
                 storeId = storeId,
@@ -582,7 +593,7 @@ class OwnerRepositoryImpl @Inject constructor(
     override suspend fun useStoreCoupon(
         storeId: String,
         couponId: String
-    ): Result<PatchResponse<UseCouponResponse>> {
+    ): Result<StoreMeResponse<UseCouponResponse>> {
         return try {
             val response = ownerApiService.useStoreCoupon(
                 storeId = storeId,
@@ -630,7 +641,7 @@ class OwnerRepositoryImpl @Inject constructor(
     override suspend fun patchStoreMenus(
         storeId: String,
         patchStoreMenusRequest: MenusResponse
-    ): Result<PatchResponse<MenusResponse>> {
+    ): Result<StoreMeResponse<MenusResponse>> {
         return try {
             val response = ownerApiService.patchStoreMenus(
                 storeId = storeId,
@@ -678,7 +689,7 @@ class OwnerRepositoryImpl @Inject constructor(
     override suspend fun patchStampCoupon(
         storeId: String,
         patchStampCouponRequest: StampCouponData
-    ): Result<PatchResponse<StampCouponResponse>> {
+    ): Result<StoreMeResponse<StampCouponResponse>> {
         return try {
             val response = ownerApiService.patchStampCoupon(
                 storeId = storeId,
@@ -706,7 +717,7 @@ class OwnerRepositoryImpl @Inject constructor(
     override suspend fun postStampCoupon(
         storeId: String,
         postStampCouponRequest: PostStampCouponRequest
-    ): Result<PatchResponse<StampCouponResponse>> {
+    ): Result<StoreMeResponse<StampCouponResponse>> {
         return try {
             val response = ownerApiService.postStampCoupon(
                 storeId = storeId,
@@ -731,7 +742,7 @@ class OwnerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getStampCouponPassword(storeId: String): Result<PatchResponse<StampCouponPasswordResponse>> {
+    override suspend fun getStampCouponPassword(storeId: String): Result<StoreMeResponse<StampCouponPasswordResponse>> {
         return try {
             val response = ownerApiService.getStampCouponPassword(
                 storeId = storeId
@@ -758,11 +769,117 @@ class OwnerRepositoryImpl @Inject constructor(
     override suspend fun patchStampCouponPassword(
         storeId: String,
         patchStampCouponPasswordRequest: StampCouponPasswordResponse
-    ): Result<PatchResponse<Unit>> {
+    ): Result<StoreMeResponse<Unit>> {
         return try {
             val response = ownerApiService.patchStampCouponPassword(
                 storeId = storeId,
                 patchStampCouponPasswordRequest = patchStampCouponPasswordRequest
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun getStoreStories(storeId: String, lastCreatedAt: String?): Result<PagingResponse<List<StoryData>>> {
+        return try {
+            val response = ownerApiService.getStoreStories(
+                storeId = storeId,
+                lastCreatedAt = lastCreatedAt
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun postStoreStory(
+        storeId: String,
+        postStoreStoryRequest: PostStoryRequest
+    ): Result<PagingResponse<List<StoryData>>> {
+        return try {
+            val response = ownerApiService.postStoreStory(
+                storeId = storeId,
+                postStoreStoryRequest = postStoreStoryRequest
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun getStoreStory(storeId: String, storyId: String): Result<StoryData> {
+        return try {
+            val response = ownerApiService.getStoreStory(
+                storeId = storeId,
+                storyId = storyId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun deleteStoreStory(
+        storeId: String,
+        storyId: String
+    ): Result<StoreMeResponse<Unit>> {
+        return try {
+            val response = ownerApiService.deleteStoreStory(
+                storeId = storeId,
+                storyId = storyId
             )
 
             if(response.isSuccessful) {

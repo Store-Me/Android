@@ -29,9 +29,9 @@ import com.store_me.storeme.ui.store_setting.profile.ProfileSettingScreen
 import com.store_me.storeme.ui.store_setting.review.ReviewSettingScreen
 import com.store_me.storeme.ui.store_setting.stamp.StampCouponCreateScreen
 import com.store_me.storeme.ui.store_setting.stamp.StampCouponSettingScreen
-import com.store_me.storeme.ui.store_setting.story.StoryManagementScreen
-import com.store_me.storeme.ui.store_setting.story.StorySettingScreen
-import com.store_me.storeme.ui.store_setting.story.StorySettingViewModel
+import com.store_me.storeme.ui.store_setting.story.management.StoryManagementScreen
+import com.store_me.storeme.ui.store_setting.story.setting.StorySettingScreen
+import com.store_me.storeme.ui.store_setting.story.setting.StorySettingViewModel
 
 @Composable
 fun OwnerNavigationGraph(navController: NavHostController) {
@@ -168,7 +168,7 @@ fun OwnerNavigationGraph(navController: NavHostController) {
 
             StorySettingScreen(navController, storySettingViewModel = sharedStorySettingViewModel)
         }
-        composable(OwnerRoute.StoryManagement.fullRoute) { backStackEntry ->
+        composable(OwnerRoute.StoryManagement.fullRoute) {
             val sharedStorySettingViewModel: StorySettingViewModel =
                 if(navController.previousBackStackEntry != null)
                     hiltViewModel(navController.previousBackStackEntry!!)
