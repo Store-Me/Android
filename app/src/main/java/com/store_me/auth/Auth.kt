@@ -3,6 +3,7 @@ package com.store_me.auth
 import android.content.Context
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
+import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.preference.TokenPreferencesHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -32,6 +33,10 @@ class Auth @Inject constructor(
     fun init() {
         val refreshToken = TokenPreferencesHelper.getRefreshToken()
         val accessToken = TokenPreferencesHelper.getAccessToken()
+    }
+
+    fun getStoreId(): String {
+        return storeId.value ?: ""
     }
 
     /**

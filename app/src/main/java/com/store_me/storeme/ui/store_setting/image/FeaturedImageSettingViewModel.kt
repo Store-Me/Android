@@ -68,7 +68,7 @@ class FeaturedImageSettingViewModel @Inject constructor(
         _croppedImageUrl.value = url
     }
 
-    fun uploadStoreFeaturedImage(storeName: String) {
+    fun uploadStoreFeaturedImage() {
         if(croppedImageUri.value == null)
             return
 
@@ -76,7 +76,6 @@ class FeaturedImageSettingViewModel @Inject constructor(
             val response = imageRepository.uploadImage(
                 folderName = StoragePaths.STORE_IMAGES,
                 uri = croppedImageUri.value!!,
-                uniqueName = storeName
             ) {
                 _uploadProgress.value = it
             }

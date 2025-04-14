@@ -30,9 +30,9 @@ class LabelViewModel @Inject constructor(
         _selectedLabel.value = label
     }
 
-    fun getLabels(storeId: String) {
+    fun getLabels() {
         viewModelScope.launch {
-            val response = postRepository.getLabels(storeId)
+            val response = postRepository.getLabels()
 
             response.onSuccess {
                 updateLabels(it)

@@ -209,7 +209,6 @@ fun LocationSettingScreen(
                                             enabled = storeLocationAddress.isNotEmpty() && storeLocationCode != null && hasDifference
                                         ) {
                                             storeInfoDataViewModel.patchStoreLocation(
-                                                storeId = auth.storeId.value!!,
                                                 storeLocationAddress = storeLocationAddress,
                                                 storeLocationDetail = storeLocationDetail,
                                                 storeLocationCode = storeLocationCode!!,

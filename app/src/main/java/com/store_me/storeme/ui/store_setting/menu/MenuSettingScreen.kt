@@ -75,7 +75,6 @@ import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.PriceUtils
-import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import sh.calvin.reorderable.ReorderableItem
@@ -87,7 +86,6 @@ fun MenuSettingScreen(
     selectedMenuName: String = "",
     menuSettingViewModel: MenuSettingViewModel
 ) {
-    val auth = LocalAuth.current
     val loadingViewModel = LocalLoadingViewModel.current
     val storeDataViewModel = LocalStoreDataViewModel.current
 
@@ -161,7 +159,7 @@ fun MenuSettingScreen(
                     onSave = {
                         loadingViewModel.showLoading()
 
-                        storeDataViewModel.patchStoreMenus(storeId = auth.storeId.value!!, menuCategories = menuCategories)
+                        storeDataViewModel.patchStoreMenus(menuCategories = menuCategories)
                     },
                     onManageCategory = {
                         navController.navigate(OwnerRoute.MenuCategorySetting.fullRoute)

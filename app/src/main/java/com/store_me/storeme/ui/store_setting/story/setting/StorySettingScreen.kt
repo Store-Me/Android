@@ -35,14 +35,12 @@ import com.store_me.storeme.ui.component.SaveAndAddButton
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
-import com.store_me.storeme.utils.composition_locals.LocalAuth
 
 @Composable
 fun StorySettingScreen(
     navController: NavController,
     storySettingViewModel: StorySettingViewModel
 ) {
-    val auth = LocalAuth.current
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val stories by storySettingViewModel.stories.collectAsState()
@@ -54,7 +52,9 @@ fun StorySettingScreen(
     }
 
     LaunchedEffect(Unit) {
-        storySettingViewModel.getStoreStories(auth.storeId.value!!, null)
+        storySettingViewModel.getStoreStories(null)
+
+        //TODO 다음 페이지
     }
 
     Scaffold(
@@ -115,7 +115,6 @@ fun StorySettingScreen(
             onDismiss = { deleteStoryItem = null },
             onAction = {
                 storySettingViewModel.deleteStoreStories(
-                    storeId = auth.storeId.value!!,
                     storyId = deleteStoryItem?.id ?: ""
                 )
             }

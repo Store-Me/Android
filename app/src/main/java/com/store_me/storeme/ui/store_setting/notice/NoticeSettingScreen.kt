@@ -141,7 +141,7 @@ fun NoticeSettingScreen(
                     ) {
                         loadingViewModel.showLoading()
 
-                        storeDataViewModel.patchStoreNotice(storeId = auth.storeId.value ?: "", notice = notice)
+                        storeDataViewModel.patchStoreNotice(notice = notice)
                     }
                 }
             }

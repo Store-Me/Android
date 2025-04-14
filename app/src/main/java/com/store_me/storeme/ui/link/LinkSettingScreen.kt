@@ -89,7 +89,6 @@ import com.store_me.storeme.ui.theme.SwipeDeleteColor
 import com.store_me.storeme.ui.theme.SwipeEditColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.SizeUtils
-import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import sh.calvin.reorderable.ReorderableItem
@@ -102,7 +101,6 @@ fun LinkSettingScreen(
     linkSettingViewModel: LinkSettingViewModel = viewModel()
 ) {
     val storeDataViewModel = LocalStoreDataViewModel.current
-    val auth = LocalAuth.current
     val loadingViewModel = LocalLoadingViewModel.current
 
     val originalLink by storeDataViewModel.links.collectAsState()
@@ -162,7 +160,7 @@ fun LinkSettingScreen(
                         loadingViewModel.showLoading()
 
                         //변경 저장
-                        storeDataViewModel.patchStoreLinks(storeId = auth.storeId.value!!, links = links)
+                        storeDataViewModel.patchStoreLinks(links = links)
                     }
                 )
             }

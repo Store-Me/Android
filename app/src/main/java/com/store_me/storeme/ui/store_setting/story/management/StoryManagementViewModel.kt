@@ -57,19 +57,18 @@ class StoryManagementViewModel @Inject constructor(
         _description.value = description
     }
 
-    fun uploadStory(storeName: String, videoUri: Uri, imageUri: Uri, mimeType: String) {
-        uploadVideo(storeName, videoUri, mimeType)
-        uploadThumbnail(storeName, imageUri)
+    fun uploadStory(videoUri: Uri, imageUri: Uri, mimeType: String) {
+        uploadVideo(videoUri, mimeType)
+        uploadThumbnail(imageUri)
     }
 
-    private fun uploadVideo(storeName: String, videoUri: Uri, mimeType: String){
+    private fun uploadVideo(videoUri: Uri, mimeType: String){
         _progress.value = 0f
 
         viewModelScope.launch {
             val response = imageRepository.uploadVideo(
                 folderName = StoragePaths.STORE_STORIES,
                 uri = videoUri,
-                uniqueName = storeName,
                 mimeType = mimeType
             ) {
                 _progress.value = it
@@ -89,12 +88,11 @@ class StoryManagementViewModel @Inject constructor(
         }
     }
 
-    private fun uploadThumbnail(storeName: String, imageUri: Uri) {
+    private fun uploadThumbnail(imageUri: Uri) {
         viewModelScope.launch {
             val response = imageRepository.uploadImage(
                 folderName = StoragePaths.STORE_STORIES,
                 uri = imageUri,
-                uniqueName = storeName
             ) {  }
 
             response.onSuccess {
@@ -110,7 +108,7 @@ class StoryManagementViewModel @Inject constructor(
         }
     }
 
-    fun postStoreStory(storeId: String) {
+    fun postStoreStory() {
         viewModelScope.launch {
             if(videoUrl.value == null || thumbnailUrl.value == null) {
                 ErrorEventBus.errorFlow.emit("동영상 업로드가 완료되지 않았습니다.")
@@ -118,7 +116,6 @@ class StoryManagementViewModel @Inject constructor(
             }
 
             val response = ownerRepository.postStoreStory(
-                storeId = storeId,
                 postStoreStoryRequest = PostStoryRequest(
                     video = videoUrl.value!!,
                     thumbNail = thumbnailUrl.value!!,

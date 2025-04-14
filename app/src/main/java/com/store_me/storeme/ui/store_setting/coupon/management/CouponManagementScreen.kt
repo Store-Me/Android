@@ -111,7 +111,6 @@ fun CouponManagementScreen(
     }
 
     val storeDataViewModel = LocalStoreDataViewModel.current
-    val auth = LocalAuth.current
     val loadingViewModel = LocalLoadingViewModel.current
 
     val focusManager = LocalFocusManager.current
@@ -143,7 +142,7 @@ fun CouponManagementScreen(
 
     LaunchedEffect(isFinished) {
         if(isFinished) {
-            storeDataViewModel.getStoreCoupons(auth.storeId.value!!)
+            storeDataViewModel.getStoreCoupons()
             navController.popBackStack()
         }
     }
@@ -226,7 +225,7 @@ fun CouponManagementScreen(
                             progress = progress,
                             onUriChange = {
                                 couponManagementViewModel.updateImageUri(it)
-                                couponManagementViewModel.uploadStoreCouponImage(storeDataViewModel.storeInfoData.value?.storeName!!)
+                                couponManagementViewModel.uploadStoreCouponImage()
                             },
                             onFinish = { couponManagementProgressViewModel.nextProgress() }
                         ) }
@@ -238,9 +237,9 @@ fun CouponManagementScreen(
                                 loadingViewModel.showLoading()
 
                                 if(isEdit) {
-                                    couponManagementViewModel.patchCoupon(storeId = auth.storeId.value!!, couponType = couponType)
+                                    couponManagementViewModel.patchCoupon(couponType = couponType)
                                 } else {
-                                    couponManagementViewModel.postCoupon(storeId = auth.storeId.value!!, couponType = couponType)
+                                    couponManagementViewModel.postCoupon(couponType = couponType)
                                 }
                             }
                         ) }
@@ -255,7 +254,7 @@ fun CouponManagementScreen(
             title = "쿠폰을 삭제할까요?",
             warningContent = couponManagementViewModel.editCoupon.value?.name ?: "",
             content = "위의 쿠폰이 삭제되며, 삭제 이후 복구되지 않아요.",
-            onAction = { couponManagementViewModel.deleteCoupon(storeId = auth.storeId.value!!, couponId = couponId!!) },
+            onAction = { couponManagementViewModel.deleteCoupon(couponId = couponId!!) },
             onDismiss = { showDialog = false },
             actionText = "삭제"
         )

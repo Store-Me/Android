@@ -70,9 +70,9 @@ class StoreDataViewModel @Inject constructor(
     /**
      * StoreData 조회 함수
      */
-    fun getStoreData(storeId: String) {
+    fun getStoreData() {
         viewModelScope.launch {
-            val response = ownerRepository.getStoreData(storeId = storeId)
+            val response = ownerRepository.getStoreData()
 
             response.onSuccess {
                 updateStoreInfoData(it)
@@ -110,9 +110,9 @@ class StoreDataViewModel @Inject constructor(
     /**
      * BusinessHours 조회 함수
      */
-    fun getStoreBusinessHours(storeId:String) {
+    fun getStoreBusinessHours() {
         viewModelScope.launch {
-            val response = ownerRepository.getBusinessHours(storeId = storeId)
+            val response = ownerRepository.getBusinessHours()
 
             response.onSuccess {
                 updateBusinessHours(it)
@@ -129,9 +129,9 @@ class StoreDataViewModel @Inject constructor(
     /**
      * StoreLinks 조회 함수
      */
-    fun getStoreLinks(storeId: String) {
+    fun getStoreLinks() {
         viewModelScope.launch {
-            val response = ownerRepository.getStoreLinks(storeId = storeId)
+            val response = ownerRepository.getStoreLinks()
 
             response.onSuccess {
                 updateStoreLinks(it.links)
@@ -145,10 +145,9 @@ class StoreDataViewModel @Inject constructor(
         }
     }
 
-    fun patchStoreProfileImages(storeId: String, profileImage: String?, backgroundImage: String?) {
+    fun patchStoreProfileImages(profileImage: String?, backgroundImage: String?) {
         viewModelScope.launch {
             val response = ownerRepository.patchStoreProfileImages(
-                storeId = storeId,
                 patchStoreProfileImagesRequest = PatchStoreProfileImagesRequest(storeProfileImage = profileImage, backgroundImage = backgroundImage)
             )
 
@@ -166,10 +165,9 @@ class StoreDataViewModel @Inject constructor(
         }
     }
 
-    fun patchStoreLinks(storeId: String, links: List<String>) {
+    fun patchStoreLinks(links: List<String>) {
         viewModelScope.launch {
             val response = ownerRepository.patchStoreLinks(
-                storeId = storeId,
                 patchLinksRequest = PatchLinksRequest(links = links)
             )
 
@@ -187,10 +185,9 @@ class StoreDataViewModel @Inject constructor(
         }
     }
 
-    fun patchStoreIntro(storeId: String, storeIntro: String) {
+    fun patchStoreIntro(storeIntro: String) {
         viewModelScope.launch {
             val response = ownerRepository.patchStoreIntro(
-                storeId = storeId,
                 patchStoreIntroRequest = PatchStoreIntroRequest(
                     storeIntro = storeIntro
                 )
@@ -210,10 +207,9 @@ class StoreDataViewModel @Inject constructor(
         }
     }
 
-    fun patchStorePhoneNumber(storeId: String, storePhoneNumber: String) {
+    fun patchStorePhoneNumber(storePhoneNumber: String) {
         viewModelScope.launch {
             val response = ownerRepository.patchStorePhoneNumber(
-                storeId = storeId,
                 phoneNumber = storePhoneNumber.ifEmpty { null }
             )
 
@@ -231,10 +227,9 @@ class StoreDataViewModel @Inject constructor(
         }
     }
 
-    fun patchStoreBusinessHours(storeId: String, businessHours: List<BusinessHourData>, extraInfo: String?) {
+    fun patchStoreBusinessHours(businessHours: List<BusinessHourData>, extraInfo: String?) {
         viewModelScope.launch {
             val response = ownerRepository.patchStoreBusinessHours(
-                storeId = storeId,
                 patchBusinessHoursRequest = PatchBusinessHoursRequest(
                     businessHours = businessHours,
                     extraInfo = extraInfo
@@ -325,9 +320,9 @@ class StoreDataViewModel @Inject constructor(
     /**
      * Notice 조회
      */
-    fun getStoreNotice(storeId: String) {
+    fun getStoreNotice() {
         viewModelScope.launch {
-            val response = ownerRepository.getStoreNotice(storeId = storeId)
+            val response = ownerRepository.getStoreNotice()
 
             response.onSuccess {
                 updateNotice(it.notice ?: "")
@@ -344,10 +339,9 @@ class StoreDataViewModel @Inject constructor(
     /**
      * Notice 변경
      */
-    fun patchStoreNotice(storeId: String, notice: String) {
+    fun patchStoreNotice(notice: String) {
         viewModelScope.launch {
             val response = ownerRepository.patchStoreNotice(
-                storeId = storeId,
                 patchStoreNoticeRequest = PatchStoreNoticeRequest(notice = notice)
             )
 
@@ -369,7 +363,6 @@ class StoreDataViewModel @Inject constructor(
      * Location 변경
      */
     fun patchStoreLocation(
-        storeId: String,
         storeLocationAddress: String,
         storeLocationDetail: String?,
         storeLocationCode: Long,
@@ -379,9 +372,7 @@ class StoreDataViewModel @Inject constructor(
     ) {
         viewModelScope.launch {
             val response = ownerRepository.patchStoreLocation(
-                storeId = storeId,
                 patchStoreLocationRequest = PatchStoreLocationRequest(
-                    storeId = storeId,
                     storeLocationAddress = storeLocationAddress,
                     storeLocationDetail = storeLocationDetail,
                     storeLocationCode = storeLocationCode,
@@ -408,9 +399,9 @@ class StoreDataViewModel @Inject constructor(
     /**
      * FeaturedImages 조회
      */
-    fun getStoreFeaturedImages(storeId: String) {
+    fun getStoreFeaturedImages() {
         viewModelScope.launch {
-            val response = ownerRepository.getStoreFeaturedImages(storeId = storeId)
+            val response = ownerRepository.getStoreFeaturedImages()
 
             response.onSuccess {
                 updateFeaturedImages(it.images ?: emptyList())
@@ -427,10 +418,9 @@ class StoreDataViewModel @Inject constructor(
     /**
      * FeaturedImages 변경
      */
-    fun patchStoreFeaturedImages(storeId: String, featuredImages: List<FeaturedImageData>) {
+    fun patchStoreFeaturedImages(featuredImages: List<FeaturedImageData>) {
         viewModelScope.launch {
             val response = ownerRepository.patchFeaturedImages(
-                storeId = storeId,
                 patchStoreFeaturedImagesRequest = PatchStoreFeaturedImagesRequest(images = featuredImages)
             )
 
@@ -451,9 +441,9 @@ class StoreDataViewModel @Inject constructor(
     /**
      * MenuCategories 조회
      */
-    fun getStoreMenus(storeId: String) {
+    fun getStoreMenus() {
         viewModelScope.launch {
-            val response = ownerRepository.getStoreMenus(storeId = storeId)
+            val response = ownerRepository.getStoreMenus()
 
             response.onSuccess {
                 updateMenuCategories(it.categories)
@@ -470,10 +460,9 @@ class StoreDataViewModel @Inject constructor(
     /**
      * MenuCategories 변경
      */
-    fun patchStoreMenus(storeId: String, menuCategories: List<MenuCategoryData>) {
+    fun patchStoreMenus(menuCategories: List<MenuCategoryData>) {
         viewModelScope.launch {
             val response = ownerRepository.patchStoreMenus(
-                storeId = storeId,
                 patchStoreMenusRequest = MenusResponse(categories = menuCategories)
             )
 
@@ -494,9 +483,9 @@ class StoreDataViewModel @Inject constructor(
     /**
      * Coupons 조회
      */
-    fun getStoreCoupons(storeId: String) {
+    fun getStoreCoupons() {
         viewModelScope.launch {
-            val response = ownerRepository.getStoreCoupons(storeId = storeId)
+            val response = ownerRepository.getStoreCoupons()
 
             response.onSuccess {
                 updateCoupons(it.coupons)
@@ -513,9 +502,9 @@ class StoreDataViewModel @Inject constructor(
     /**
      * StampCoupon 조회
      */
-    fun getStampCoupon(storeId: String) {
+    fun getStampCoupon() {
         viewModelScope.launch {
-            val response = ownerRepository.getStampCoupon(storeId = storeId)
+            val response = ownerRepository.getStampCoupon()
 
             response.onSuccess {
                 updateStampCoupon(it.stampCoupon)

@@ -40,7 +40,7 @@ class CustomerDataViewModel @Inject constructor(
             _profileImageUrl.value = null
     }
 
-    fun uploadImage(accountId: String) {
+    fun uploadImage() {
         if(profileImage.value == null)
             return
 
@@ -49,7 +49,6 @@ class CustomerDataViewModel @Inject constructor(
             val response = imageRepository.uploadImage(
                 folderName = StoragePaths.PROFILE_IMAGE,
                 uri = profileImage.value!!,
-                uniqueName = accountId
             ) {
                 _progress.value = it
             }

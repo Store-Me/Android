@@ -24,9 +24,9 @@ class StampCouponSettingViewModel @Inject constructor(
         _stampPassword.value = stampPassword
     }
 
-    fun getStampPassword(storeId: String) {
+    fun getStampPassword() {
         viewModelScope.launch {
-            val response = ownerRepository.getStampCouponPassword(storeId = storeId)
+            val response = ownerRepository.getStampCouponPassword()
 
             response.onSuccess {
                 updateStampPassword(it.result.password)
@@ -40,9 +40,9 @@ class StampCouponSettingViewModel @Inject constructor(
         }
     }
 
-    fun patchStampCouponPassword(storeId: String, password: String) {
+    fun patchStampCouponPassword(password: String) {
         viewModelScope.launch {
-            val response = ownerRepository.patchStampCouponPassword(storeId = storeId, patchStampCouponPasswordRequest = StampCouponPasswordResponse(password = password))
+            val response = ownerRepository.patchStampCouponPassword(patchStampCouponPasswordRequest = StampCouponPasswordResponse(password = password))
 
             response.onSuccess {
                 updateStampPassword(password)

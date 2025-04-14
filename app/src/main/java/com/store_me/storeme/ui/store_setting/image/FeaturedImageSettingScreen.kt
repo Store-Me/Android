@@ -80,7 +80,6 @@ import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.CropUtils
-import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import com.yalantis.ucrop.UCrop
@@ -93,7 +92,6 @@ fun FeaturedImageSettingScreen(
     featuredImageSettingViewModel: FeaturedImageSettingViewModel = hiltViewModel()
 ) {
     val storeDataViewModel = LocalStoreDataViewModel.current
-    val auth = LocalAuth.current
     val loadingViewModel = LocalLoadingViewModel.current
 
     val originalFeaturedImages by storeDataViewModel.featuredImages.collectAsState()
@@ -143,7 +141,7 @@ fun FeaturedImageSettingScreen(
 
     LaunchedEffect(croppedImageUri) {
         if(croppedImageUri != null) {
-            featuredImageSettingViewModel.uploadStoreFeaturedImage(storeName = storeDataViewModel.storeInfoData.value!!.storeName)
+            featuredImageSettingViewModel.uploadStoreFeaturedImage()
         }
     }
 
@@ -175,7 +173,6 @@ fun FeaturedImageSettingScreen(
                         loadingViewModel.showLoading()
 
                         storeDataViewModel.patchStoreFeaturedImages(
-                            storeId = auth.storeId.value!!,
                             featuredImages = featuredImages
                         )
                     }

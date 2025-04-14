@@ -46,11 +46,11 @@ class StorySettingViewModel @Inject constructor(
         _stories.value = _stories.value.filterNot { it.id == storyId }
     }
 
-    fun getStoreStories(storeId: String, lastCreatedAt: String?) {
+    fun getStoreStories(lastCreatedAt: String?) {
         if(!hasNextPage.value) return
 
         viewModelScope.launch {
-            val response = ownerRepository.getStoreStories(storeId, lastCreatedAt)
+            val response = ownerRepository.getStoreStories(lastCreatedAt = lastCreatedAt)
 
             response.onSuccess {
                 addStories(it.result)
@@ -66,10 +66,10 @@ class StorySettingViewModel @Inject constructor(
         }
     }
 
-    fun deleteStoreStories(storeId: String, storyId: String) {
+    fun deleteStoreStories(storyId: String) {
 
         viewModelScope.launch {
-            val response = ownerRepository.deleteStoreStory(storeId, storyId)
+            val response = ownerRepository.deleteStoreStory(storyId)
 
             response.onSuccess {
                 removeStory(storyId)

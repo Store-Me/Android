@@ -62,7 +62,6 @@ import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.DateTimeUtils
-import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
 @Composable
@@ -70,7 +69,6 @@ fun StampCouponSettingScreen(
     navController: NavController,
     stampCouponSettingViewModel: StampCouponSettingViewModel = hiltViewModel()
 ) {
-    val auth = LocalAuth.current
     val storeDataViewModel = LocalStoreDataViewModel.current
     val focusManager = LocalFocusManager.current
 
@@ -87,7 +85,7 @@ fun StampCouponSettingScreen(
 
     LaunchedEffect(stampCoupon) {
         if(stampCoupon != null) {
-            stampCouponSettingViewModel.getStampPassword(auth.storeId.value!!)
+            stampCouponSettingViewModel.getStampPassword()
         }
     }
 
@@ -161,7 +159,7 @@ fun StampCouponSettingScreen(
                         Spacer(modifier = Modifier.height(20.dp))
 
                         StampPassword(stampCouponPassword = stampCouponPassword) {
-                            stampCouponSettingViewModel.patchStampCouponPassword(auth.storeId.value!!, it)
+                            stampCouponSettingViewModel.patchStampCouponPassword(it)
                         }
                     }
                 }

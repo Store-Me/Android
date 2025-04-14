@@ -76,14 +76,14 @@ fun OwnerHomeScreen(
 
     LaunchedEffect(storeId) {
         if(storeId != null) {
-            storeDataViewModel.getStoreData(storeId = storeId!!)
-            storeDataViewModel.getStoreBusinessHours(storeId = storeId!!)
-            storeDataViewModel.getStoreLinks(storeId = storeId!!)
-            storeDataViewModel.getStoreNotice(storeId = storeId!!)
-            storeDataViewModel.getStoreFeaturedImages(storeId = storeId!!)
-            storeDataViewModel.getStoreMenus(storeId = storeId!!)
-            storeDataViewModel.getStoreCoupons(storeId = storeId!!)
-            storeDataViewModel.getStampCoupon(storeId = storeId!!)
+            storeDataViewModel.getStoreData()
+            storeDataViewModel.getStoreBusinessHours()
+            storeDataViewModel.getStoreLinks()
+            storeDataViewModel.getStoreNotice()
+            storeDataViewModel.getStoreFeaturedImages()
+            storeDataViewModel.getStoreMenus()
+            storeDataViewModel.getStoreCoupons()
+            storeDataViewModel.getStampCoupon()
         }
     }
 

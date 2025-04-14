@@ -191,7 +191,7 @@ fun PhoneNumberSettingScreen(
                     ) {
                         loadingViewModel.showLoading()
 
-                        storeDataViewModel.patchStorePhoneNumber(storeId = auth.storeId.value ?: "", storePhoneNumber = phoneNumber)
+                        storeDataViewModel.patchStorePhoneNumber(storePhoneNumber = phoneNumber)
                     }
                 }
             }

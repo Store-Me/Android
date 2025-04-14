@@ -59,8 +59,6 @@ fun SelectPostTypeScreen(
     selectPostTypeViewModel: SelectPostTypeViewModel = viewModel()
 ) {
     val context = LocalContext.current
-    val storeDataViewModel = LocalStoreDataViewModel.current
-    val auth = LocalAuth.current
 
     CompositionLocalProvider(LocalSelectPostTypeViewModel provides selectPostTypeViewModel) {
         Scaffold(
@@ -74,7 +72,7 @@ fun SelectPostTypeScreen(
                         .fillMaxSize()
                 ) {
                     SelectPostTypeSection {
-                        navigateToAddPostActivity(context = context, postType = it, storeName = storeDataViewModel.storeInfoData.value!!.storeName, storeId = auth.storeId.value!!)
+                        navigateToAddPostActivity(context = context, postType = it)
                     }
                 }
             }
@@ -82,12 +80,10 @@ fun SelectPostTypeScreen(
     }
 }
 
-fun navigateToAddPostActivity(context: Context, postType: PostType, storeName: String, storeId: String) {
+fun navigateToAddPostActivity(context: Context, postType: PostType) {
 
     val intent = Intent(context, AddPostActivity::class.java).apply {
         putExtra("postType", postType.name)
-        putExtra("storeName", storeName)
-        putExtra("storeId", storeId)
     }
 
     context.startActivity(intent)

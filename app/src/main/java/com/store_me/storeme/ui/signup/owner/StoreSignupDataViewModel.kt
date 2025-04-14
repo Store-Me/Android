@@ -159,7 +159,7 @@ class StoreSignupDataViewModel @Inject constructor(
             _storeProfileImageUrl.value = null
     }
 
-    fun uploadStoreProfileImage(storeName: String) {
+    fun uploadStoreProfileImage() {
         if(storeProfileImage.value == null)
             return
 
@@ -168,7 +168,6 @@ class StoreSignupDataViewModel @Inject constructor(
             val response = imageRepository.uploadImage(
                 folderName = StoragePaths.STORE_PROFILE_IMAGE,
                 uri = storeProfileImage.value!!,
-                uniqueName = storeName
             ) {
                 _storeProfileImageProgress.value = it
             }

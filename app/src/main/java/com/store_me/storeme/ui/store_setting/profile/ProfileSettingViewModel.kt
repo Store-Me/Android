@@ -71,7 +71,7 @@ class ProfileSettingViewModel @Inject constructor(
         _backgroundImageUri.value = null
     }
 
-    fun uploadStoreProfileImage(storeName: String) {
+    fun uploadStoreProfileImage() {
         if(profileImageUri.value == null)
             return
 
@@ -79,7 +79,6 @@ class ProfileSettingViewModel @Inject constructor(
             val response = imageRepository.uploadImage(
                 folderName = StoragePaths.STORE_PROFILE_IMAGE,
                 uri = profileImageUri.value!!,
-                uniqueName = storeName
             ) {
                 _profileImageProgress.value = it
             }
@@ -98,7 +97,7 @@ class ProfileSettingViewModel @Inject constructor(
         }
     }
 
-    fun uploadStoreBackgroundImage(storeName: String) {
+    fun uploadStoreBackgroundImage() {
         if(backgroundImageUri.value == null)
             return
 
@@ -106,7 +105,6 @@ class ProfileSettingViewModel @Inject constructor(
             val response = imageRepository.uploadImage(
                 folderName = StoragePaths.STORE_BACKGROUND_IMAGE,
                 uri = backgroundImageUri.value!!,
-                uniqueName = storeName
             ) {
                 _backgroundImageProgress.value = it
             }

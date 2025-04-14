@@ -169,7 +169,7 @@ fun IntroSettingScreen(
                     ) {
                         loadingViewModel.showLoading()
 
-                        storeDataViewModel.patchStoreIntro(storeId = auth.storeId.value ?: "", storeIntro = intro)
+                        storeDataViewModel.patchStoreIntro(storeIntro = intro)
                     }
                 }
             }

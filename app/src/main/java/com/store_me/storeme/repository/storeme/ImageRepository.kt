@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.core.net.toFile
 import com.google.firebase.Firebase
 import com.google.firebase.storage.storage
+import com.store_me.auth.Auth
 import com.store_me.storeme.utils.exception.ApiException
 import timber.log.Timber
 import javax.inject.Inject
@@ -14,19 +15,20 @@ import kotlin.coroutines.suspendCoroutine
  * 이미지 관련 Repository
  */
 interface ImageRepository {
-    suspend fun uploadImage(folderName: String, uniqueName: String, uri: Uri, onProgress: (Float) -> Unit): Result<String>
+    suspend fun uploadImage(folderName: String, uri: Uri, onProgress: (Float) -> Unit): Result<String>
 
-    suspend fun uploadVideo(folderName: String, uniqueName: String, uri: Uri, mimeType: String, onProgress: (Float) -> Unit): Result<String>
+    suspend fun uploadVideo(folderName: String, uri: Uri, mimeType: String, onProgress: (Float) -> Unit): Result<String>
 }
 
 class ImageRepositoryImpl @Inject constructor(
+    private val auth: Auth
 ): ImageRepository {
-    override suspend fun uploadImage(folderName: String, uniqueName: String, uri: Uri, onProgress: (Float) -> Unit): Result<String> {
+    override suspend fun uploadImage(folderName: String, uri: Uri, onProgress: (Float) -> Unit): Result<String> {
         return suspendCoroutine { continuation ->
             val storage = Firebase.storage
             val storageRef = storage.getReference(folderName)
 
-            val fileName = "${uniqueName}_${System.currentTimeMillis()}"
+            val fileName = "${auth.getStoreId()}_${System.currentTimeMillis()}"
 
             val imageRef = storageRef.child("${fileName}.jpeg")
 
@@ -61,7 +63,6 @@ class ImageRepositoryImpl @Inject constructor(
 
     override suspend fun uploadVideo(
         folderName: String,
-        uniqueName: String,
         uri: Uri,
         mimeType: String,
         onProgress: (Float) -> Unit
@@ -74,7 +75,7 @@ class ImageRepositoryImpl @Inject constructor(
             val extension = android.webkit.MimeTypeMap.getSingleton()
                 .getExtensionFromMimeType(mimeType) ?: "mp4"
 
-            val fileName = "${uniqueName}_${System.currentTimeMillis()}.$extension"
+            val fileName = "${auth.getStoreId()}_${System.currentTimeMillis()}.$extension"
             val videoRef = storageRef.child(fileName)
 
             // 메타데이터 설정

@@ -88,7 +88,7 @@ class StampCouponCreateViewModel @Inject constructor(
         _description.value = description
     }
 
-    fun postStampCoupon(storeId: String) {
+    fun postStampCoupon() {
         viewModelScope.launch {
             when {
                 name.value.isEmpty() || name.value.length > 20 -> {
@@ -114,7 +114,6 @@ class StampCouponCreateViewModel @Inject constructor(
             }
 
             val response = ownerRepository.postStampCoupon(
-                storeId = storeId,
                 postStampCouponRequest = PostStampCouponRequest(
                     name = name.value,
                     rewardInterval = rewardInterval.value,

@@ -169,7 +169,7 @@ fun MenuManagementScreen(
     }
 
     LaunchedEffect(imageUri) {
-        menuManagementViewModel.uploadStoreMenuImage(storeDataViewModel.storeInfoData.value!!.storeName)
+        menuManagementViewModel.uploadStoreMenuImage()
     }
 
     Scaffold (

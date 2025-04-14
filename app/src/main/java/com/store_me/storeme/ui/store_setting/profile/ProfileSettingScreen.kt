@@ -51,16 +51,13 @@ import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.LoadingProgress
 import com.store_me.storeme.ui.component.ProfileImage
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
-import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.home.owner.BackgroundSection
-import com.store_me.storeme.ui.home.owner.StoreDataViewModel
 import com.store_me.storeme.ui.theme.DividerColor
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.FinishedColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.CropUtils
-import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import com.yalantis.ucrop.UCrop
@@ -73,7 +70,6 @@ fun ProfileSettingScreen(
 ){
     val focusManager = LocalFocusManager.current
 
-    val auth = LocalAuth.current
     val storeDataViewModel = LocalStoreDataViewModel.current
     val loadingViewModel = LocalLoadingViewModel.current
     val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
@@ -112,13 +108,13 @@ fun ProfileSettingScreen(
 
     LaunchedEffect(profileImageUri) {
         if(profileImageUri != null) {
-            storeInfoData?.storeName?.let { profileSettingViewModel.uploadStoreProfileImage(storeName = it) }
+            storeInfoData?.storeName?.let { profileSettingViewModel.uploadStoreProfileImage() }
         }
     }
 
     LaunchedEffect(backgroundImageUri) {
         if(backgroundImageUri != null) {
-            storeInfoData?.storeName?.let { profileSettingViewModel.uploadStoreBackgroundImage(storeName = it) }
+            storeInfoData?.storeName?.let { profileSettingViewModel.uploadStoreBackgroundImage() }
         }
     }
 
@@ -184,7 +180,6 @@ fun ProfileSettingScreen(
                     loadingViewModel.showLoading()
 
                     storeDataViewModel.patchStoreProfileImages(
-                        storeId = auth.storeId.value ?: "",
                         profileImage = profileImageUrl,
                         backgroundImage = backgroundImageUrl
                     )

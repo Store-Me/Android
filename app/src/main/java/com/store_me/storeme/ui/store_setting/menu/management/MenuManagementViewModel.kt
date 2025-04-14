@@ -113,7 +113,7 @@ class MenuManagementViewModel @Inject constructor(
         _imageUri.value = uri
     }
 
-    fun uploadStoreMenuImage(storeName: String) {
+    fun uploadStoreMenuImage() {
         if(imageUri.value == null)
             return
 
@@ -121,7 +121,6 @@ class MenuManagementViewModel @Inject constructor(
             val response = imageRepository.uploadImage(
                 folderName = StoragePaths.STORE_MENU_IMAGES,
                 uri = imageUri.value!!,
-                uniqueName = storeName
             ) {
                 _uploadProgress.value = it
             }

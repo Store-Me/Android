@@ -28,10 +28,9 @@ fun StoreProfileImageSection(onFinish: () -> Unit) {
     val storeProfileImageUrl by storeDataViewModel.storeProfileImageUrl.collectAsState()
     val progress by storeDataViewModel.storeProfileImageProgress.collectAsState()
 
-
     LaunchedEffect(storeProfileImage) {
         if(storeProfileImage != null) {
-            storeDataViewModel.uploadStoreProfileImage(storeName = storeDataViewModel.storeName.value)
+            storeDataViewModel.uploadStoreProfileImage()
         }
     }
     

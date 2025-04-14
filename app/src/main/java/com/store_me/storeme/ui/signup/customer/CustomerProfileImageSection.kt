@@ -29,7 +29,7 @@ fun CustomerProfileImageSection(onFinish: () -> Unit) {
 
     LaunchedEffect(profileImage) {
         if(profileImage != null) {
-            customerDataViewModel.uploadImage(accountId = accountDataViewModel.accountId.value)
+            customerDataViewModel.uploadImage()
         }
     }
 

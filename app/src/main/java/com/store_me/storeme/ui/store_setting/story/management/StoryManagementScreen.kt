@@ -35,9 +35,7 @@ import com.store_me.storeme.ui.store_setting.story.setting.StorySettingViewModel
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.MimeUtils
 import com.store_me.storeme.utils.VideoUtils
-import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
-import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
 @Composable
 fun StoryManagementScreen(
@@ -46,8 +44,6 @@ fun StoryManagementScreen(
     storyManagementViewModel: StoryManagementViewModel = hiltViewModel()
 ) {
     val loadingViewModel = LocalLoadingViewModel.current
-    val storeDataViewModel = LocalStoreDataViewModel.current
-    val auth = LocalAuth.current
     val context = LocalContext.current
 
     val launcher = rememberLauncherForActivityResult(
@@ -119,7 +115,6 @@ fun StoryManagementScreen(
 
         //스토리 업로드
         storyManagementViewModel.uploadStory(
-            storeName = storeDataViewModel.storeInfoData.value!!.storeName,
             videoUri = videoUri!!,
             imageUri = thumbnailUri,
             mimeType = mimeType
@@ -182,9 +177,7 @@ fun StoryManagementScreen(
                 ) {
                     loadingViewModel.showLoading()
 
-                    storyManagementViewModel.postStoreStory(
-                        storeId = auth.storeId.value!!
-                    )
+                    storyManagementViewModel.postStoreStory()
                 }
             }
         }

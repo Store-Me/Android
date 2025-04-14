@@ -52,7 +52,6 @@ import com.store_me.storeme.ui.signup.GuideTextBoxItem
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.DateTimeUtils
-import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import java.time.LocalDate
@@ -63,7 +62,6 @@ fun StampCouponCreateScreen(
     stampCouponCreateViewModel: StampCouponCreateViewModel = hiltViewModel()
 ) {
     val focusManager = LocalFocusManager.current
-    val auth = LocalAuth.current
     val loadingViewModel = LocalLoadingViewModel.current
     val storeDataViewModel = LocalStoreDataViewModel.current
 
@@ -162,7 +160,7 @@ fun StampCouponCreateScreen(
                     ) {
                         loadingViewModel.showLoading()
 
-                        stampCouponCreateViewModel.postStampCoupon(storeId = auth.storeId.value!!)
+                        stampCouponCreateViewModel.postStampCoupon()
                     }
                 }
 

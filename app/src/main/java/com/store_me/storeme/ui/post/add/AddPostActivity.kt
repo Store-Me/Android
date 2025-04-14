@@ -48,8 +48,6 @@ class AddPostActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val postTypeName = intent.getStringExtra("postType")
-            val storeName = intent.getStringExtra("storeName") ?: ""
-            val storeId = intent.getStringExtra("storeId") ?: ""
             val postType = postTypeName?.let {
                 try {
                     PostType.valueOf(it)
@@ -104,7 +102,7 @@ class AddPostActivity : ComponentActivity() {
                             when(postType) {
                                 null -> { finish() }
                                 PostType.SURVEY -> { AddSurveyScreen() }
-                                else -> { AddPostScreen(storeName, storeId) }
+                                else -> { AddPostScreen() }
                             }
 
                             if(isLoading) {

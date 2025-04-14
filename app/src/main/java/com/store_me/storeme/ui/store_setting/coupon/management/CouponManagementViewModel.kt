@@ -115,7 +115,7 @@ class CouponManagementViewModel @Inject constructor(
         _description.value = description
     }
 
-    fun uploadStoreCouponImage(storeName: String) {
+    fun uploadStoreCouponImage() {
         if(imageUri.value == null)
             return
 
@@ -123,7 +123,6 @@ class CouponManagementViewModel @Inject constructor(
             val response = imageRepository.uploadImage(
                 folderName = StoragePaths.STORE_COUPON_IMAGES,
                 uri = imageUri.value!!,
-                uniqueName = storeName
             ) {
                 _uploadProgress.value = it
             }
@@ -179,7 +178,7 @@ class CouponManagementViewModel @Inject constructor(
         updateDescription(couponData.description)
     }
 
-    fun postCoupon(storeId: String, couponType: CouponType) {
+    fun postCoupon(couponType: CouponType) {
         if(value.value == null || target.value == null || dueDate.value == null) {
             viewModelScope.launch {
                 ErrorEventBus.errorFlow.emit("필수 정보가 누락되었습니다.")
@@ -190,7 +189,6 @@ class CouponManagementViewModel @Inject constructor(
 
         viewModelScope.launch {
             val response = ownerRepository.postStoreCoupon(
-                storeId = storeId,
                 couponRequest = CouponRequest(
                     name = name.value,
                     type = couponType.name,
@@ -216,7 +214,7 @@ class CouponManagementViewModel @Inject constructor(
         }
     }
 
-    fun patchCoupon(storeId: String, couponType: CouponType) {
+    fun patchCoupon(couponType: CouponType) {
         if(value.value == null || target.value == null || dueDate.value == null) {
             viewModelScope.launch {
                 ErrorEventBus.errorFlow.emit("필수 정보가 누락되었습니다.")
@@ -226,7 +224,6 @@ class CouponManagementViewModel @Inject constructor(
 
         viewModelScope.launch {
             val response = ownerRepository.patchStoreCoupon(
-                storeId = storeId,
                 couponRequest = CouponRequest(
                     name = name.value,
                     type = couponType.name,
@@ -252,10 +249,9 @@ class CouponManagementViewModel @Inject constructor(
         }
     }
 
-    fun deleteCoupon(storeId: String, couponId: String) {
+    fun deleteCoupon(couponId: String) {
         viewModelScope.launch {
             val response = ownerRepository.deleteStoreCoupon(
-                storeId = storeId,
                 couponId = couponId
             )
 

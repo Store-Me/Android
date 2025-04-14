@@ -1,5 +1,6 @@
 package com.store_me.storeme.repository.storeme
 
+import com.store_me.auth.Auth
 import com.store_me.storeme.data.LabelData
 import com.store_me.storeme.data.request.store.CreatePostRequest
 import com.store_me.storeme.data.request.store.PatchLabelRequest
@@ -11,19 +12,20 @@ import timber.log.Timber
 import javax.inject.Inject
 
 interface PostRepository {
-    suspend fun getLabels(storeId: String): Result<List<LabelData>>
+    suspend fun getLabels(): Result<List<LabelData>>
 
-    suspend fun patchLabel(storeId: String, patchLabelRequest: PatchLabelRequest): Result<StoreMeResponse<List<LabelData>>>
+    suspend fun patchLabel(patchLabelRequest: PatchLabelRequest): Result<StoreMeResponse<List<LabelData>>>
 
-    suspend fun createPost(storeId: String, createPostRequest: CreatePostRequest): Result<StoreMeResponse<Unit>>
+    suspend fun createPost(createPostRequest: CreatePostRequest): Result<StoreMeResponse<Unit>>
 }
 
 class PostRepositoryImpl @Inject constructor(
-    private val postApiService: PostApiService
+    private val postApiService: PostApiService,
+    private val auth: Auth
 ) : PostRepository {
-    override suspend fun getLabels(storeId: String): Result<List<LabelData>> {
+    override suspend fun getLabels(): Result<List<LabelData>> {
         return try {
-            val response = postApiService.getLabels(storeId = storeId)
+            val response = postApiService.getLabels(storeId = auth.getStoreId())
 
             if(response.isSuccessful) {
                 val responseBody = response.body()
@@ -43,10 +45,10 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun patchLabel(storeId: String, patchLabelRequest: PatchLabelRequest): Result<StoreMeResponse<List<LabelData>>> {
+    override suspend fun patchLabel(patchLabelRequest: PatchLabelRequest): Result<StoreMeResponse<List<LabelData>>> {
         return try {
             val response = postApiService.patchLabel(
-                storeId = storeId,
+                storeId = auth.getStoreId(),
                 patchLabelRequest = patchLabelRequest
             )
 
@@ -69,12 +71,11 @@ class PostRepositoryImpl @Inject constructor(
     }
 
     override suspend fun createPost(
-        storeId: String,
         createPostRequest: CreatePostRequest
     ): Result<StoreMeResponse<Unit>> {
         return try {
             val response = postApiService.createPost(
-                storeId = storeId,
+                storeId = auth.getStoreId(),
                 createPostRequest = createPostRequest
             )
 

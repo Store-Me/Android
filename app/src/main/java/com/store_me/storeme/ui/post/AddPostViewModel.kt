@@ -131,7 +131,6 @@ class AddPostViewModel @Inject constructor(
 
     fun uploadImage(
         uri: Uri,
-        storeName: String,
     ) {
         _uploadingCount.value += 1
 
@@ -140,7 +139,6 @@ class AddPostViewModel @Inject constructor(
             val response = imageRepository.uploadImage(
                 folderName = StoragePaths.STORE_POST_IMAGES,
                 uri = uri,
-                uniqueName = storeName
             ) { progress ->
                 updateImageBlockProgress(uri = uri, progress = progress)
             }
@@ -161,7 +159,7 @@ class AddPostViewModel @Inject constructor(
         }
     }
 
-    fun createPost(storeId: String, postType: PostType, labelId: String?) {
+    fun createPost(postType: PostType, labelId: String?) {
         viewModelScope.launch {
             if(title.value.isBlank()) {
                 ErrorEventBus.errorFlow.emit("제목을 입력해주세요.")
@@ -204,7 +202,7 @@ class AddPostViewModel @Inject constructor(
                 }
             }
 
-            val response = postRepository.createPost(storeId = storeId, createPostRequest = CreatePostRequest(
+            val response = postRepository.createPost(createPostRequest = CreatePostRequest(
                 title = title.value,
                 labelId = labelId,
                 content = contentList,

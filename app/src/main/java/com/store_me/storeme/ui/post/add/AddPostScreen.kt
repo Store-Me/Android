@@ -118,8 +118,6 @@ private const val LazyListHeaderCount = 3
 
 @Composable
 fun AddPostScreen(
-    storeName: String,
-    storeId: String,
     labelViewModel: LabelViewModel = hiltViewModel(),
     addPostViewModel: AddPostViewModel = hiltViewModel(),
     toolbarViewModel: ToolbarViewModel = hiltViewModel()
@@ -199,7 +197,7 @@ fun AddPostScreen(
     }
 
     LaunchedEffect(Unit) {
-        labelViewModel.getLabels(storeId)
+        labelViewModel.getLabels()
     }
 
     LaunchedEffect(isSuccess) {
@@ -241,7 +239,7 @@ fun AddPostScreen(
         topBar = {
             AddPostTopBar(
                 onClose = {  },
-                onFinish = { addPostViewModel.createPost(storeId = storeId, postType = PostType.NORMAL, labelId = selectedLabel?.labelId) }
+                onFinish = { addPostViewModel.createPost(postType = PostType.NORMAL, labelId = selectedLabel?.labelId) }
             ) },
         content = { innerPadding ->
             Column(
@@ -343,7 +341,7 @@ fun AddPostScreen(
                     onTextStyleItemClick = { toolbarViewModel.updateSelectedTextStyleItem(item = it) },
                     onImagePick = {
                         val insertResult = addPostViewModel.insertImage(uri = it, focusedIndex = focusedIndex)
-                        addPostViewModel.uploadImage(uri = it, storeName = storeName)
+                        addPostViewModel.uploadImage(uri = it)
 
                         focusedIndex = insertResult.first
                         addedIndex = insertResult.second
