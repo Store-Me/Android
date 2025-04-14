@@ -92,6 +92,13 @@ class AddVotePostViewModel @Inject constructor(
                 return@launch
             }
 
+            options.value.forEach {
+                if (it.isEmpty()) {
+                    ErrorEventBus.errorFlow.emit("빈 항목을 모두 작성해주세요.")
+                    return@launch
+                }
+            }
+
             if(startDateTime.value == null) {
                 ErrorEventBus.errorFlow.emit("시작 날짜를 선택해주세요.")
                 return@launch
