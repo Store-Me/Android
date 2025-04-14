@@ -15,7 +15,7 @@ import com.store_me.storeme.data.NotificationWithStoreInfoData
 import com.store_me.storeme.data.StoreInfoData
 import com.store_me.storeme.data.StorePromotionData
 import com.store_me.storeme.data.UserCouponWithStoreInfoData
-import com.store_me.storeme.data.enums.PostType
+import com.store_me.storeme.data.enums.post.PostType
 
 class SampleDataUtils {
 
