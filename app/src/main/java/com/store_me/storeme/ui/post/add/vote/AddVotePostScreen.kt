@@ -6,6 +6,7 @@ import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -86,6 +87,8 @@ fun AddVotePostScreen(
 
     val title by addVotePostViewModel.title.collectAsState()
     val options by addVotePostViewModel.options.collectAsState()
+    val startDateTime by addVotePostViewModel.startDateTime.collectAsState()
+    val endDateTime by addVotePostViewModel.endDateTime.collectAsState()
     val isSuccess by addVotePostViewModel.isSuccess.collectAsState()
 
     fun onClose() {
@@ -114,7 +117,7 @@ fun AddVotePostScreen(
             AddPostTopBar(
                 postType = PostType.VOTE,
                 onClose = { onClose() },
-                onFinish = {  }
+                onFinish = { addVotePostViewModel.createVotePost() }
             ) },
         content = { innerPadding ->
             LazyColumn (
@@ -143,8 +146,8 @@ fun AddVotePostScreen(
 
                 item {
                     SelectPeriodItem(
-                        startDateTime = null,
-                        endDateTime = null,
+                        startDateTime = startDateTime,
+                        endDateTime = endDateTime,
                         onStartDateTimeChange = { addVotePostViewModel.updateStartDateTime(it) },
                         onEndDateTimeChange = { addVotePostViewModel.updateEndDateTime(it) }
                     )
@@ -176,13 +179,14 @@ fun EditVoteItem(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .animateContentSize()
             .border(
                 width = 2.dp,
                 color = DividerColor,
                 shape = RoundedCornerShape(BACKGROUND_ROUNDING_VALUE)
             )
             .clip(RoundedCornerShape(BACKGROUND_ROUNDING_VALUE))
-            .padding(16.dp),
+            .padding(horizontal = 16.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         SimpleTextField(
@@ -215,6 +219,7 @@ fun EditVoteItem(
                 containerColor = Color.White,
                 contentColor = DisabledColor
             ),
+            fontWeight = FontWeight.Bold,
             leftIconTint = DisabledColor,
             modifier = Modifier
                 .border(
@@ -253,7 +258,7 @@ fun OptionTextFieldItem(
                             contentDescription = "삭제",
                             modifier = Modifier
                                 .size(24.dp),
-                            tint = DisabledColor
+                            tint = Color.Unspecified
                         )
                     }
                 } else {
@@ -308,16 +313,14 @@ fun SelectPeriodItem(
                 shape = RoundedCornerShape(BACKGROUND_ROUNDING_VALUE)
             )
             .clip(RoundedCornerShape(BACKGROUND_ROUNDING_VALUE))
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(horizontal = 16.dp, vertical = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
             text = "투표 기간 설정",
             style = storeMeTextStyle(FontWeight.ExtraBold, 4),
             color = Color.Black
         )
-
-        Spacer(modifier = Modifier.height(4.dp))
 
         PeriodDateTimeRow(isStart = true, dateTime = startDateTime) {
             showStartBottomSheet = true
@@ -357,7 +360,7 @@ fun SelectPeriodItem(
                 if(localDate == null) {
                     ""
                 } else {
-                    DateTimeUtils.formatToDate(startDateTime) + " " + DateTimeUtils.DayOfWeek.entries[DateTimeUtils.getWeekDay(localDate!!)].displayName
+                    DateTimeUtils.formatToDate(localDate!!) + " " + DateTimeUtils.DayOfWeek.entries[DateTimeUtils.getWeekDay(localDate!!)].displayName
                 }
 
             StoreMeSelectDateCalendar(
@@ -369,22 +372,25 @@ fun SelectPeriodItem(
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = "시작 시각",
+                text = if(showStartBottomSheet) "시작 시각" else "종료 시각",
                 style = storeMeTextStyle(FontWeight.ExtraBold, 4),
-                color = Color.Black
+                color = Color.Black,
+                modifier = Modifier.padding(horizontal = 20.dp)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
                     modifier = Modifier
                         .weight(1f),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_clock),
@@ -404,6 +410,7 @@ fun SelectPeriodItem(
                 Row(
                     modifier = Modifier
                         .weight(1f),
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     DefaultButton(
@@ -475,6 +482,16 @@ fun PeriodDateTimeRow(
     dateTime: String?,
     onClick: () -> Unit
 ) {
+    val dateTimeText =
+        if(dateTime != null)
+            DateTimeUtils.convertExpiredDateToKorean(dateTime)
+        else {
+            if(isStart)
+                "시작 시간을 설정해주세요."
+            else
+                "종료 시간을 설정해주세요."
+        }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -497,7 +514,7 @@ fun PeriodDateTimeRow(
         )
 
         Text(
-            text = dateTime ?: if(isStart) "시작 시간을 설정해주세요." else "종료 시간을 설정해주세요.",
+            text = dateTimeText,
             style = storeMeTextStyle(FontWeight.Bold, 2),
             color = if(dateTime == null) GuideColor else Color.Black
         )
