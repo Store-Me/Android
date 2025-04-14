@@ -504,17 +504,27 @@ fun SimpleTextField(
     textStyle: TextStyle = storeMeTextStyle(FontWeight.ExtraBold, 4),
     singleLine: Boolean,
 ) {
-    BasicTextField(
-        value = value.ifEmpty { placeholderText },
-        onValueChange = { onValueChange(it) },
-        textStyle =
-            if (value.isEmpty())
-                textStyle.copy(color = GuideColor)
-            else
-                textStyle.copy(color= Color.Black),
-        modifier = modifier
-            .fillMaxWidth(),
-        singleLine = singleLine,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
-    )
+    Box(
+
+    ) {
+        if(value.isEmpty()) {
+            Text(
+                text = placeholderText,
+                style = textStyle,
+                color = GuideColor
+            )
+        }
+
+        BasicTextField(
+            modifier = modifier
+                .fillMaxWidth(),
+            value = value,
+            onValueChange = { onValueChange(it) },
+            textStyle = textStyle,
+            singleLine = singleLine,
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
+        )
+    }
+
+
 }
