@@ -6,7 +6,9 @@ import android.app.Activity
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -706,9 +708,7 @@ fun ImageSection(
             }
         }
     }
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
-    ) {
+    val galleryLauncher = rememberLauncherForActivityResult(PickVisualMedia()) {
         it?.let { sourceUri ->
             val cropIntent = CropUtils.getCropIntent(context = context, sourceUri = sourceUri, aspectRatio = Pair(1f, 1f))
             cropLauncher.launch(cropIntent)
@@ -739,7 +739,7 @@ fun ImageSection(
                 imageUri = imageUri,
                 progress = progress
             ) {
-                galleryLauncher.launch("image/*")
+                galleryLauncher.launch(PickVisualMediaRequest(PickVisualMedia.ImageOnly))
             }
 
             GuideTextBoxItem(
