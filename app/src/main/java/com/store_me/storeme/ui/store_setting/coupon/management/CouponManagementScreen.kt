@@ -631,7 +631,7 @@ fun DueDateSection(
                     indication = null,
                     interactionSource = null
                 ),
-            text = DateTimeUtils.convertExpiredDateToKorean(dueDate),
+            text = DateTimeUtils.convertExpiredDateToKorean(dueDate) + "까지",
             placeholderText = "사용 기한을 선택해주세요.",
             onValueChange = {},
             trailingIconResource = R.drawable.ic_calendar,
