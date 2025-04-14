@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.store_me.storeme.data.MenuData
 import com.store_me.storeme.data.enums.menu.MenuPriceType
 import com.store_me.storeme.repository.storeme.ImageRepository
-import com.store_me.storeme.utils.DefaultMenuCategoryName
+import com.store_me.storeme.utils.DEFAULT_MENU_CATEGORY_NAME
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.StoragePaths
 import com.store_me.storeme.utils.exception.ApiException
@@ -20,7 +20,7 @@ import javax.inject.Inject
 class MenuManagementViewModel @Inject constructor(
     private val imageRepository: ImageRepository
 ) : ViewModel() {
-    private val _selectedCategory = MutableStateFlow(DefaultMenuCategoryName)
+    private val _selectedCategory = MutableStateFlow(DEFAULT_MENU_CATEGORY_NAME)
     val selectedCategory: StateFlow<String> = _selectedCategory
 
     private val _name = MutableStateFlow("")

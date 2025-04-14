@@ -82,7 +82,7 @@ import com.store_me.storeme.ui.theme.RecommendTextColor
 import com.store_me.storeme.ui.theme.SwipeEditColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.CropUtils
-import com.store_me.storeme.utils.DefaultMenuCategoryName
+import com.store_me.storeme.utils.DEFAULT_MENU_CATEGORY_NAME
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import com.yalantis.ucrop.UCrop
 
@@ -338,6 +338,8 @@ fun MenuCategorySection(menuCategories: List<MenuCategoryData>, selectedCategory
         skipPartiallyExpanded = true
     )
 
+    DefaultHorizontalDivider()
+
     Row(
         modifier = Modifier
             .clickable { showBottomSheet = true }
@@ -388,20 +390,22 @@ fun SelectCategoryBottomSheetContent(
     selectedCategory: String,
     onSelected: (String) -> Unit
 ) {
+    var selected by remember { mutableStateOf(selectedCategory) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
         LazyColumn {
-            items(menuCategories.ifEmpty { listOf(MenuCategoryData(DefaultMenuCategoryName, emptyList())) }) {
+            items(menuCategories.ifEmpty { listOf(MenuCategoryData(DEFAULT_MENU_CATEGORY_NAME, emptyList())) }) {
                 val isSelected by remember { derivedStateOf {
-                    selectedCategory == it.categoryName
+                    selected == it.categoryName
                 } }
 
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onSelected(it.categoryName) }
+                        .clickable { selected = it.categoryName }
                         .padding(horizontal = 20.dp, vertical = 12.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -430,7 +434,7 @@ fun SelectCategoryBottomSheetContent(
             modifier = Modifier
                 .padding(horizontal = 20.dp)
         ) {
-            onSelected(selectedCategory)
+            onSelected(selected)
         }
 
         Spacer(modifier = Modifier.height(20.dp))
