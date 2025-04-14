@@ -1,4 +1,4 @@
-package com.store_me.storeme.data.enums
+package com.store_me.storeme.data.enums.post
 
 
 /**

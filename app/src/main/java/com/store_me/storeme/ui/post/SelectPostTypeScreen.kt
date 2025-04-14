@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
-import com.store_me.storeme.data.enums.PostType
+import com.store_me.storeme.data.enums.post.PostType
 import com.store_me.storeme.ui.post.add.AddPostActivity
 import com.store_me.storeme.ui.theme.AddPostCouponIconColor
 import com.store_me.storeme.ui.theme.AddPostEditIconColor
@@ -46,6 +46,8 @@ import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.SizeUtils
+import com.store_me.storeme.utils.composition_locals.LocalAuth
+import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
 val LocalSelectPostTypeViewModel = staticCompositionLocalOf<SelectPostTypeViewModel> {
     error("No AddPostViewModel provided")
@@ -57,6 +59,8 @@ fun SelectPostTypeScreen(
     selectPostTypeViewModel: SelectPostTypeViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    val storeDataViewModel = LocalStoreDataViewModel.current
+    val auth = LocalAuth.current
 
     CompositionLocalProvider(LocalSelectPostTypeViewModel provides selectPostTypeViewModel) {
         Scaffold(
@@ -70,7 +74,7 @@ fun SelectPostTypeScreen(
                         .fillMaxSize()
                 ) {
                     SelectPostTypeSection {
-                        navigateToAddPostActivity(context = context, postType = it)
+                        navigateToAddPostActivity(context = context, postType = it, storeName = storeDataViewModel.storeInfoData.value!!.storeName, storeId = auth.storeId.value!!)
                     }
                 }
             }
@@ -78,9 +82,12 @@ fun SelectPostTypeScreen(
     }
 }
 
-fun navigateToAddPostActivity(context: Context, postType: PostType) {
+fun navigateToAddPostActivity(context: Context, postType: PostType, storeName: String, storeId: String) {
+
     val intent = Intent(context, AddPostActivity::class.java).apply {
         putExtra("postType", postType.name)
+        putExtra("storeName", storeName)
+        putExtra("storeId", storeId)
     }
 
     context.startActivity(intent)

@@ -22,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -47,6 +48,7 @@ import com.store_me.storeme.data.SurveyData
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultToggleButton
 import com.store_me.storeme.ui.component.SimpleOutLinedTextField
+import com.store_me.storeme.ui.component.StoreMeSnackbar
 import com.store_me.storeme.ui.theme.DisabledColor
 import com.store_me.storeme.ui.theme.DividerColor
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
@@ -55,12 +57,14 @@ import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
+import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 
 @Composable
 fun AddSurveyScreen(
     addSurveyViewModel: AddSurveyViewModel = hiltViewModel()
 ) {
     val focusManager = LocalFocusManager.current
+    val snackbarHostState = LocalSnackbarHostState.current
 
     val surveys by addSurveyViewModel.surveys.collectAsState()
 
@@ -69,6 +73,10 @@ fun AddSurveyScreen(
 
         },
         containerColor = Color.White,
+        snackbarHost = { SnackbarHost(
+            hostState = snackbarHostState,
+            snackbar = { StoreMeSnackbar(snackbarData = it) }
+        ) },
         content = { innerPadding ->
             LazyColumn (
                 modifier = Modifier

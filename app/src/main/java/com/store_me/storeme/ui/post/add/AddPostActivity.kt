@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -17,18 +18,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.store_me.storeme.data.enums.PostType
+import com.store_me.storeme.R
+import com.store_me.storeme.data.enums.post.PostType
 import com.store_me.storeme.ui.loading.LoadingScreen
 import com.store_me.storeme.ui.loading.LoadingViewModel
 import com.store_me.storeme.ui.post.add.survey.AddSurveyScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
+import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.KeyboardHeightObserver
+import com.store_me.storeme.utils.SuccessEventBus
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.preference.SettingPreferencesHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -45,6 +48,8 @@ class AddPostActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             val postTypeName = intent.getStringExtra("postType")
+            val storeName = intent.getStringExtra("storeName") ?: ""
+            val storeId = intent.getStringExtra("storeId") ?: ""
             val postType = postTypeName?.let {
                 try {
                     PostType.valueOf(it)
@@ -52,8 +57,6 @@ class AddPostActivity : ComponentActivity() {
                     null
                 }
             }
-
-            Timber.d("postType: $postType")
 
             keyboardHeightObserver = KeyboardHeightObserver(this) { height ->
                 lifecycleScope.launch {
@@ -63,11 +66,26 @@ class AddPostActivity : ComponentActivity() {
 
             keyboardHeightObserver.startObserving()
 
-            StoreMeTheme {
-                val loadingViewModel: LoadingViewModel = viewModel()
-                val isLoading by loadingViewModel.isLoading.collectAsState()
+            val loadingViewModel: LoadingViewModel = viewModel()
+            val isLoading by loadingViewModel.isLoading.collectAsState()
 
+            StoreMeTheme {
                 val snackbarHostState = remember { SnackbarHostState() }
+
+                //메시지 처리
+                LaunchedEffect(Unit) {
+                    ErrorEventBus.errorFlow.collect { errorMessage ->
+                        loadingViewModel.hideLoading()
+                        snackbarHostState.showSnackbar(message = errorMessage ?: getString(R.string.unknown_error_message))
+                    }
+                }
+
+                LaunchedEffect(Unit) {
+                    SuccessEventBus.successFlow.collect { message ->
+                        loadingViewModel.hideLoading()
+                        snackbarHostState.showSnackbar(message = message ?: getString(R.string.default_success_message))
+                    }
+                }
 
                 CompositionLocalProvider(
                     LocalSnackbarHostState provides snackbarHostState,
@@ -86,9 +104,8 @@ class AddPostActivity : ComponentActivity() {
                             when(postType) {
                                 null -> { finish() }
                                 PostType.SURVEY -> { AddSurveyScreen() }
-                                else -> { AddPostScreen(postType = postType) }
+                                else -> { AddPostScreen(storeName, storeId) }
                             }
-
 
                             if(isLoading) {
                                 LoadingScreen()

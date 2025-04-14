@@ -1,6 +1,6 @@
 package com.store_me.storeme.data
 
-import com.store_me.storeme.data.enums.PostType
+import com.store_me.storeme.data.enums.post.PostType
 
 
 /**
