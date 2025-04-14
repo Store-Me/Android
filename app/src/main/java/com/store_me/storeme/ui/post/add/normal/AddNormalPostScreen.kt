@@ -2,7 +2,7 @@
     ExperimentalFoundationApi::class
 )
 
-package com.store_me.storeme.ui.post.add
+package com.store_me.storeme.ui.post.add.normal
 
 import android.app.Activity
 import android.content.Intent
@@ -41,6 +41,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -100,8 +101,7 @@ import com.store_me.storeme.ui.component.LoadingProgress
 import com.store_me.storeme.ui.component.StoreMeSnackbar
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
-import com.store_me.storeme.ui.post.AddPostViewModel
-import com.store_me.storeme.ui.post.LabelViewModel
+import com.store_me.storeme.ui.post.add.ToolbarViewModel
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
@@ -117,9 +117,9 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 private const val LazyListHeaderCount = 3
 
 @Composable
-fun AddPostScreen(
+fun AddNormalPostScreen(
     labelViewModel: LabelViewModel = hiltViewModel(),
-    addPostViewModel: AddPostViewModel = hiltViewModel(),
+    addNormalPostViewModel: AddNormalPostViewModel = hiltViewModel(),
     toolbarViewModel: ToolbarViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
@@ -153,7 +153,7 @@ fun AddPostScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val imeVisible = WindowInsets.isImeVisible
 
-    val title by addPostViewModel.title.collectAsState()
+    val title by addNormalPostViewModel.title.collectAsState()
 
     val labels by labelViewModel.labels.collectAsState()
     val selectedLabel by labelViewModel.selectedLabel.collectAsState()
@@ -163,7 +163,7 @@ fun AddPostScreen(
     val selectedTextStyleItem by toolbarViewModel.selectedTextStyleItem.collectAsState()
     val galleryImages by toolbarViewModel.galleryImages.collectAsState()
 
-    val content by addPostViewModel.content.collectAsState()
+    val content by addNormalPostViewModel.content.collectAsState()
     var focusedIndex by remember { mutableIntStateOf(0) }
     var addedIndex by remember { mutableIntStateOf(0) }
 
@@ -176,7 +176,7 @@ fun AddPostScreen(
         val fromIndex = from.index - LazyListHeaderCount
         val toIndex = to.index - LazyListHeaderCount
 
-        addPostViewModel.reorderBlock(fromIndex, toIndex)
+        addNormalPostViewModel.reorderBlock(fromIndex, toIndex)
 
         view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
     }
@@ -184,7 +184,7 @@ fun AddPostScreen(
     val keyboardHeightDp = with(density) { keyboardHeight.toDp() }
     var lastSelectedToolbarItems by remember { mutableStateOf<ToolbarItems?>(null) }
 
-    val isSuccess by addPostViewModel.isSuccess.collectAsState()
+    val isSuccess by addNormalPostViewModel.isSuccess.collectAsState()
 
     BackHandler {
         if(selectedToolbarItem != null) {
@@ -238,8 +238,9 @@ fun AddPostScreen(
         ) },
         topBar = {
             AddPostTopBar(
+                postType = PostType.NORMAL,
                 onClose = {  },
-                onFinish = { addPostViewModel.createPost(postType = PostType.NORMAL, labelId = selectedLabel?.labelId) }
+                onFinish = { addNormalPostViewModel.createPost(postType = PostType.NORMAL, labelId = selectedLabel?.labelId) }
             ) },
         content = { innerPadding ->
             Column(
@@ -263,7 +264,7 @@ fun AddPostScreen(
                     item {
                         EditNormalPostTitle(
                             title = title,
-                            onValueChange = { addPostViewModel.updateTitle(it) }
+                            onValueChange = { addNormalPostViewModel.updateTitle(it) }
                         )
                     }
 
@@ -291,7 +292,7 @@ fun AddPostScreen(
                                     item = item,
                                     reorderableLazyListState = reorderableLazyListState,
                                     onDelete = {
-                                        focusedIndex = addPostViewModel.removeBlockAt(index, focusedIndex = focusedIndex)
+                                        focusedIndex = addNormalPostViewModel.removeBlockAt(index, focusedIndex = focusedIndex)
                                     }
                                 )
                             }
@@ -340,8 +341,8 @@ fun AddPostScreen(
                     },
                     onTextStyleItemClick = { toolbarViewModel.updateSelectedTextStyleItem(item = it) },
                     onImagePick = {
-                        val insertResult = addPostViewModel.insertImage(uri = it, focusedIndex = focusedIndex)
-                        addPostViewModel.uploadImage(uri = it)
+                        val insertResult = addNormalPostViewModel.insertImage(uri = it, focusedIndex = focusedIndex)
+                        addNormalPostViewModel.uploadImage(uri = it)
 
                         focusedIndex = insertResult.first
                         addedIndex = insertResult.second
@@ -353,10 +354,12 @@ fun AddPostScreen(
 }
 
 @Composable
-fun AddPostTopBar(onClose: () -> Unit, onFinish: () -> Unit) {
+fun AddPostTopBar(postType: PostType, onClose: () -> Unit, onFinish: () -> Unit) {
+    val titleText = postType.displayName + " 추가"
+
     CenterAlignedTopAppBar(
         title = { Text(
-            text = "추가하기",
+            text = titleText,
             style = storeMeTextStyle(FontWeight.ExtraBold, 6)
         ) },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -376,7 +379,10 @@ fun AddPostTopBar(onClose: () -> Unit, onFinish: () -> Unit) {
             content = { Text(
                 text = "완료",
                 style = storeMeTextStyle(FontWeight.ExtraBold, 2),
-            ) }
+            ) },
+            colors = ButtonDefaults.textButtonColors(
+                contentColor = Color.Black
+            )
         ) },
     )
 }

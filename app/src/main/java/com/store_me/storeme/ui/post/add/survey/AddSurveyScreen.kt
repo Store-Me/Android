@@ -1,6 +1,5 @@
 package com.store_me.storeme.ui.post.add.survey
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.border
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -24,15 +22,12 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,19 +37,18 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.SurveyData
+import com.store_me.storeme.data.enums.post.PostType
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultToggleButton
 import com.store_me.storeme.ui.component.SimpleOutLinedTextField
 import com.store_me.storeme.ui.component.StoreMeSnackbar
+import com.store_me.storeme.ui.component.addFocusCleaner
+import com.store_me.storeme.ui.post.add.normal.AddPostTopBar
 import com.store_me.storeme.ui.theme.DisabledColor
 import com.store_me.storeme.ui.theme.DividerColor
-import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.GuideColor
-import com.store_me.storeme.ui.theme.HighlightColor
-import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
@@ -67,6 +61,31 @@ fun AddSurveyScreen(
     val snackbarHostState = LocalSnackbarHostState.current
 
     val surveys by addSurveyViewModel.surveys.collectAsState()
+
+    Scaffold(
+        modifier = Modifier
+            .addFocusCleaner(focusManager),
+        containerColor = Color.White,
+        snackbarHost = { SnackbarHost(
+            hostState = snackbarHostState,
+            snackbar = { StoreMeSnackbar(snackbarData = it) }
+        ) },
+        topBar = {
+            AddPostTopBar(
+                postType = PostType.VOTE,
+                onClose = {  },
+                onFinish = {  }
+            ) },
+        content = { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
+
+            }
+        }
+    )
 
     Scaffold(
         topBar = {

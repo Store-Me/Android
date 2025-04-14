@@ -2,6 +2,8 @@ package com.store_me.storeme.network.storeme
 
 import com.store_me.storeme.data.LabelData
 import com.store_me.storeme.data.request.store.CreatePostRequest
+import com.store_me.storeme.data.request.store.CreateSurveyPostRequest
+import com.store_me.storeme.data.request.store.CreateVotePostRequest
 import com.store_me.storeme.data.request.store.PatchLabelRequest
 import com.store_me.storeme.data.response.StoreMeResponse
 import retrofit2.Response
@@ -32,9 +34,26 @@ interface PostApiService {
     /**
      * 일반 게시글 추가
      */
-    @POST("posts/store/{storeId}/posts")
+    @POST("posts/store/{storeId}/normal")
     suspend fun createPost(
         @Path("storeId") storeId: String,
         @Body createPostRequest: CreatePostRequest
     ): Response<StoreMeResponse<Unit>>
-}
+
+    /**
+     * 투표 게시글 추가
+     */
+    @POST("posts/store/{storeId}/vote")
+    suspend fun createVotePost(
+        @Path("storeId") storeId: String,
+        @Body createVotePostRequest: CreateVotePostRequest
+    ): Response<StoreMeResponse<Unit>>
+
+    /**
+     * 설문 게시글 추가
+     */
+    @POST("posts/store/{storeId}/survey")
+    suspend fun createSurveyPost(
+        @Path("storeId") storeId: String,
+        @Body createSurveyPostRequest: CreateSurveyPostRequest
+    ): Response<StoreMeResponse<Unit>>}

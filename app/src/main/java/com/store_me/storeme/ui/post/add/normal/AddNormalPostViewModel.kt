@@ -1,4 +1,4 @@
-package com.store_me.storeme.ui.post
+package com.store_me.storeme.ui.post.add.normal
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddPostViewModel @Inject constructor(
+class AddNormalPostViewModel @Inject constructor(
     private val imageRepository: ImageRepository,
     private val postRepository: PostRepository
 ): ViewModel() {

@@ -259,8 +259,6 @@ val UndefinedTextColor = Color(0xFF898C93)
 
 val DeleteTextColor = Color(0xFFAAADB4)
 
-val UndefinedBorderColor = Color(0xFF898C93)
-
 val TextClearIconColor = Color(0xFF545A68)
 
 /**

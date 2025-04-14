@@ -22,7 +22,9 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.post.PostType
 import com.store_me.storeme.ui.loading.LoadingScreen
 import com.store_me.storeme.ui.loading.LoadingViewModel
+import com.store_me.storeme.ui.post.add.normal.AddNormalPostScreen
 import com.store_me.storeme.ui.post.add.survey.AddSurveyScreen
+import com.store_me.storeme.ui.post.add.vote.AddVotePostScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.KeyboardHeightObserver
@@ -101,8 +103,10 @@ class AddPostActivity : ComponentActivity() {
                         ) {
                             when(postType) {
                                 null -> { finish() }
+                                PostType.NORMAL -> { AddNormalPostScreen() }
+                                PostType.VOTE -> { AddVotePostScreen() }
                                 PostType.SURVEY -> { AddSurveyScreen() }
-                                else -> { AddPostScreen() }
+                                else -> { AddNormalPostScreen() }
                             }
 
                             if(isLoading) {

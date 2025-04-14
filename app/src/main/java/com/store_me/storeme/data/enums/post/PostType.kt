@@ -12,7 +12,7 @@ package com.store_me.storeme.data.enums.post
  */
 enum class PostType(val displayName: String, val description: String?) {
     NORMAL(
-        displayName = "일반 게시글 작성",
+        displayName = "일반 게시글",
         description = "가게 관련 소식이나 정보를 작성 해보세요."
     ),
     COUPON(

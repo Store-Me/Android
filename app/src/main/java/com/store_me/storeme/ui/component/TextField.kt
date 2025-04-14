@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,6 +47,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -62,8 +65,7 @@ import com.store_me.storeme.utils.DateTimeUtils
 import java.time.LocalDate
 
 enum class TextFieldErrorType {
-    DESCRIPTION, DATE, NAME, COUPON_CONTENT, MENU_DESCRIPTION, MENU_NAME, MENU_CATEGORY_NAME,
-    COUPON_QUANTITY, COUPON_RATE, PRICE
+    DESCRIPTION, NAME, COUPON_CONTENT, MENU_DESCRIPTION, MENU_NAME, MENU_CATEGORY_NAME,
 }
 
 @Composable
@@ -293,8 +295,6 @@ fun KeyBoardInputField(
         }
     }
 
-
-
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
@@ -492,5 +492,29 @@ fun SimpleNumberOutLinedTextField(
             }
         },
         visualTransformation = if(isPassword) PasswordVisualTransformation() else VisualTransformation.None
+    )
+}
+
+@Composable
+fun SimpleTextField(
+    modifier: Modifier = Modifier,
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholderText: String,
+    textStyle: TextStyle = storeMeTextStyle(FontWeight.ExtraBold, 4),
+    singleLine: Boolean,
+) {
+    BasicTextField(
+        value = value.ifEmpty { placeholderText },
+        onValueChange = { onValueChange(it) },
+        textStyle =
+            if (value.isEmpty())
+                textStyle.copy(color = GuideColor)
+            else
+                textStyle.copy(color= Color.Black),
+        modifier = modifier
+            .fillMaxWidth(),
+        singleLine = singleLine,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
     )
 }

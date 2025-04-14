@@ -16,6 +16,37 @@ object DateTimeUtils {
     private val formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME
 
     /**
+     * LocalDateTime 문자열에서 LocalDate 추출
+     */
+    fun extractLocalDate(localDateTimeText: String?): LocalDate? {
+        return try {
+            LocalDateTime.parse(localDateTimeText, formatter).toLocalDate()
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * LocalDateTime 문자열에서 TimeData 추출
+     */
+    fun extractTimeData(localDateTimeText: String?): TimeData? {
+        return try {
+            val time = LocalDateTime.parse(localDateTimeText, formatter).toLocalTime()
+            TimeData(hour = time.hour, minute = time.minute)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * LocalDate와 TimeData를 ISO 형식의 문자열로 변환하는 함수
+     */
+    fun toIsoDateTimeString(date: LocalDate, time: TimeData): String {
+        val dateTime = LocalDateTime.of(date.year, date.month, date.dayOfMonth, time.hour, time.minute)
+        return dateTime.format(formatter)
+    }
+
+    /**
      * YYYY-MM-DDTHH:MM:SS 형식의 문자열 데이터를 현재 기준 사용 가능 여부를 반환하는 함수
      */
     fun isValid(dueDateText: String): Boolean {
@@ -32,7 +63,7 @@ object DateTimeUtils {
     /**
      * YYYY-MM-DDTHH:MM:SS 형식의 문자열 데이터를 YYYY.MM.DD 로 반환하는 함수
      */
-    fun formatToDate(dueDateText: String): String {
+    fun formatToDate(dueDateText: String?): String {
         return try {
             val date = LocalDate.parse(dueDateText, formatter)
             date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
@@ -243,6 +274,16 @@ object DateTimeUtils {
      */
     fun getTodayWeekday(): Int {
         val calendar = Calendar.getInstance()
+        return (calendar.get(Calendar.DAY_OF_WEEK) - 1)
+    }
+
+    /**
+     * 특정 LocalDate의 요일을 반환하는 함수
+     */
+    fun getWeekDay(localDate: LocalDate): Int {
+        val calendar = Calendar.getInstance().apply {
+            set(localDate.year, localDate.monthValue - 1, localDate.dayOfMonth)
+        }
         return (calendar.get(Calendar.DAY_OF_WEEK) - 1)
     }
 

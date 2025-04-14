@@ -1,4 +1,4 @@
-package com.store_me.storeme.ui.post
+package com.store_me.storeme.ui.post.add.normal
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
