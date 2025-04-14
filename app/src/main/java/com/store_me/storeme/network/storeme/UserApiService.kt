@@ -12,21 +12,21 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface UserApiService {
-    @POST("auth/signup/customer")
+    @POST("api/auth/signup/customer")
     suspend fun customerSignup(
         @Body customerSignupRequest: CustomerSignupRequest
     ): Response<Unit>
 
-    @POST("auth/signup/owner")
+    @POST("api/auth/signup/owner")
     suspend fun ownerSignup(
         @Body ownerSignupRequest: OwnerSignupRequest
     ): Response<Unit>
-    @POST("auth/login")
+    @POST("api/auth/login")
     suspend fun login(
         @Body loginRequest: LoginRequest
     ): Response<LoginResponse>
 
-    @GET("auth/check-duplicate")
+    @GET("api/auth/check-duplicate")
     suspend fun checkAccountIdDuplication(
         @Query("accountId") accountId: String
     ): Response<CheckAccountIdDuplicateResponse>
