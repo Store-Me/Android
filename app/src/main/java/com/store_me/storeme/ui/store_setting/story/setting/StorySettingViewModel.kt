@@ -4,6 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.repository.storeme.OwnerRepository
+import com.store_me.storeme.utils.ErrorEventBus
+import com.store_me.storeme.utils.SuccessEventBus
+import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +42,10 @@ class StorySettingViewModel @Inject constructor(
         _hasNextPage.value = hasNextPage
     }
 
+    private fun removeStory(storyId: String) {
+        _stories.value = _stories.value.filterNot { it.id == storyId }
+    }
+
     fun getStoreStories(storeId: String, lastCreatedAt: String?) {
         if(!hasNextPage.value) return
 
@@ -50,7 +57,29 @@ class StorySettingViewModel @Inject constructor(
                 updateLastCreatedAt(it.pagination.lastCreatedAt)
                 updateHasNextPage(it.pagination.hasNextPage)
             }.onFailure {
+                if(it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
 
+    fun deleteStoreStories(storeId: String, storyId: String) {
+
+        viewModelScope.launch {
+            val response = ownerRepository.deleteStoreStory(storeId, storyId)
+
+            response.onSuccess {
+                removeStory(storyId)
+                SuccessEventBus.successFlow.emit(it.message)
+            }.onFailure {
+                if(it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
             }
         }
     }

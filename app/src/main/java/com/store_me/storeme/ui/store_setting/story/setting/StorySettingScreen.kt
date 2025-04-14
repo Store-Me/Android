@@ -1,7 +1,10 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
 package com.store_me.storeme.ui.store_setting.story.setting
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,10 +16,14 @@ import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -26,6 +33,7 @@ import coil.compose.AsyncImage
 import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.ui.component.SaveAndAddButton
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
+import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 
@@ -38,6 +46,8 @@ fun StorySettingScreen(
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     val stories by storySettingViewModel.stories.collectAsState()
+
+    var deleteStoryItem by remember { mutableStateOf<StoryData?>(null) }
 
     fun onClose() {
         navController.popBackStack()
@@ -78,22 +88,47 @@ fun StorySettingScreen(
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 content = {
                     itemsIndexed(stories) { index, item ->
-                        StoryItem(storyData = item)
+                        StoryItem(
+                            modifier = Modifier
+                                .combinedClickable(
+                                    indication = ripple(bounded = true),
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    onLongClick = {
+                                        deleteStoryItem = item
+                                    },
+                                    onClick = {}
+                                )
+                            ,
+                            storyData = item
+                        )
                     }
                 }
             )
         }
     )
+
+    if(deleteStoryItem != null) {
+        WarningDialog(
+            title = "스토리 삭제",
+            content = "정말로 삭제하시겠습니까?",
+            actionText = "삭제",
+            onDismiss = { deleteStoryItem = null },
+            onAction = {
+                storySettingViewModel.deleteStoreStories(
+                    storeId = auth.storeId.value!!,
+                    storyId = deleteStoryItem?.id ?: ""
+                )
+            }
+        )
+    }
 }
 
 @Composable
-fun StoryItem(storyData: StoryData) {
-
-    //TODO LONG PRESS DELETE
+fun StoryItem(modifier: Modifier, storyData: StoryData) {
     AsyncImage(
         model = storyData.thumbNail,
         contentDescription = null,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .aspectRatio(9f / 16f)
     )
