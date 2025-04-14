@@ -35,7 +35,9 @@ class LabelViewModel @Inject constructor(
             val response = postRepository.getLabels()
 
             response.onSuccess {
-                updateLabels(it)
+                val sortedLabels = it.sortedBy { label -> label.order }
+
+                updateLabels(sortedLabels)
             }.onFailure {
                 if(it is ApiException) {
                     ErrorEventBus.errorFlow.emit(it.message)
