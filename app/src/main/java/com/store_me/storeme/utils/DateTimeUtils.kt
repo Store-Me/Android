@@ -42,7 +42,7 @@ object DateTimeUtils {
      * LocalDate와 TimeData를 ISO 형식의 문자열로 변환하는 함수
      */
     fun toIsoDateTimeString(date: LocalDate, time: TimeData): String {
-        val dateTime = LocalDateTime.of(date.year, date.month, date.dayOfMonth, time.hour, time.minute)
+        val dateTime = LocalDateTime.of(date.year, date.month, date.dayOfMonth, time.hour, time.minute, 59)
         return dateTime.format(formatter)
     }
 
@@ -72,6 +72,14 @@ object DateTimeUtils {
         }
     }
 
+    fun formatToDate(localDate: LocalDate): String {
+        return try {
+            localDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
+        } catch (e: Exception) {
+            ""
+        }
+    }
+
     /**
      * YYYY-MM-DDTHH:MM:SS 형식의 문자열 데이터를 YY.MM.DD 로 반환하는 함수
      */
@@ -96,12 +104,12 @@ object DateTimeUtils {
     }
 
     /**
-     * "YYYY년 M월 D일 까지" 텍스트를 출력하는 함수
+     * "YYYY년 M월 D일" 텍스트를 출력하는 함수
      * @param datetime 시간 정보
      */
     fun convertExpiredDateToKorean(datetime: String?): String {
         return try {
-            val outputFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일까지")
+            val outputFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
 
             val localDateTime = LocalDateTime.parse(datetime, formatter)
 
@@ -109,15 +117,6 @@ object DateTimeUtils {
         } catch (e: Exception) {
             ""
         }
-    }
-
-    /**
-     * 현재 날짜를 "2024년 9월 1일" 형식으로 반환하는 함수
-     */
-    fun dateTimeToDateText(datetime: String): String {
-        val dateFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
-
-        return LocalDateTime.parse(datetime, formatter).format(dateFormatter)
     }
 
     /**
