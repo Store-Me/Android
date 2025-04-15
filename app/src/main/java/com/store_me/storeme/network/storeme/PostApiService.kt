@@ -1,6 +1,7 @@
 package com.store_me.storeme.network.storeme
 
 import com.store_me.storeme.data.LabelData
+import com.store_me.storeme.data.request.store.CreateCouponPostRequest
 import com.store_me.storeme.data.request.store.CreatePostRequest
 import com.store_me.storeme.data.request.store.CreateSurveyPostRequest
 import com.store_me.storeme.data.request.store.CreateVotePostRequest
@@ -56,4 +57,14 @@ interface PostApiService {
     suspend fun createSurveyPost(
         @Path("storeId") storeId: String,
         @Body createSurveyPostRequest: CreateSurveyPostRequest
-    ): Response<StoreMeResponse<Unit>>}
+    ): Response<StoreMeResponse<Unit>>
+
+    /**
+     * 쿠폰 홍보 게시글 추가
+     */
+    @POST("posts/store/{storeId}/coupon")
+    suspend fun createCouponPost(
+        @Path("storeId") storeId: String,
+        @Body createCouponPostRequest: CreateCouponPostRequest
+    ): Response<StoreMeResponse<Unit>>
+}

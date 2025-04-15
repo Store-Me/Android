@@ -61,6 +61,7 @@ import com.store_me.storeme.ui.theme.PostTimeTextColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.DateTimeUtils
+import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
 @Composable
 fun OwnerCouponDetailScreen(
@@ -121,6 +122,7 @@ fun CouponDetailInfo(
     onEdit: () -> Unit,
     onAttach: () -> Unit
 ) {
+    val storeDataViewModel = LocalStoreDataViewModel.current
     var couponHeight by remember { mutableStateOf(0) }
 
     Row(
@@ -141,7 +143,9 @@ fun CouponDetailInfo(
                     )
                     .onGloballyPositioned {
                         couponHeight = it.size.height
-                    })
+                    },
+                storeName = storeDataViewModel.storeInfoData.value!!.storeName,
+            )
         }
 
         Column(

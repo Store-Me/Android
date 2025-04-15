@@ -376,6 +376,8 @@ fun CouponItem(
     sharedTransitionScope: SharedTransitionScope,
     onShowDetail: (String) -> Unit
 ){
+    val storeDataViewModel = LocalStoreDataViewModel.current
+
     with(sharedTransitionScope) {
         CouponInfo(
             modifier = Modifier
@@ -388,13 +390,18 @@ fun CouponItem(
                     interactionSource = null,
                     indication = null
                 ),
-            coupon = coupon
+            coupon = coupon,
+            storeName = storeDataViewModel.storeInfoData.value!!.storeName
         )
     }
 }
 
 @Composable
-fun CouponInfo(coupon: CouponData, modifier: Modifier = Modifier) {
+fun CouponInfo(
+    coupon: CouponData,
+    modifier: Modifier = Modifier,
+    storeName: String
+) {
     val isActivate by remember { mutableStateOf(DateTimeUtils.isValid(coupon.dueDate)) }
 
     Box(
@@ -411,7 +418,8 @@ fun CouponInfo(coupon: CouponData, modifier: Modifier = Modifier) {
             //쿠폰 이미지
             CouponImage(
                 isActivate = isActivate,
-                imageUrl = coupon.image
+                imageUrl = coupon.image,
+                storeName = storeName
             )
 
             //쿠폰 증정 내용
@@ -481,9 +489,8 @@ fun CouponContent(
 fun CouponImage(
     isActivate: Boolean,
     imageUrl: String?,
+    storeName: String
 ) {
-    val storeDataViewModel = LocalStoreDataViewModel.current
-    val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
     val colorSteps = arrayOf(
         0.7f to Color.Transparent,
         0.85f to Color.Black.copy(alpha = 0.1f),
@@ -512,7 +519,7 @@ fun CouponImage(
         )
 
         Text(
-            text = storeInfoData?.storeName ?: "",
+            text = storeName ?: "",
             style = storeMeTextStyle(FontWeight.Bold, 1),
             color = Color.White,
             modifier = Modifier

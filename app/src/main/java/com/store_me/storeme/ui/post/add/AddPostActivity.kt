@@ -22,6 +22,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.post.PostType
 import com.store_me.storeme.ui.loading.LoadingScreen
 import com.store_me.storeme.ui.loading.LoadingViewModel
+import com.store_me.storeme.ui.post.add.coupon.AddCouponPostScreen
 import com.store_me.storeme.ui.post.add.normal.AddNormalPostScreen
 import com.store_me.storeme.ui.post.add.survey.AddSurveyScreen
 import com.store_me.storeme.ui.post.add.vote.AddVotePostScreen
@@ -106,6 +107,7 @@ class AddPostActivity : ComponentActivity() {
                             when(postType) {
                                 null -> { finish() }
                                 PostType.NORMAL -> { AddNormalPostScreen() }
+                                PostType.COUPON -> { AddCouponPostScreen() }
                                 PostType.VOTE -> { AddVotePostScreen() }
                                 PostType.SURVEY -> { AddSurveyScreen() }
                                 else -> { AddNormalPostScreen() }

@@ -351,6 +351,7 @@ fun MenuItem(menuData: MenuData) {
 
 @Composable
 fun CouponSection(coupons: List<CouponData>, onClick: (StoreHomeItem) -> Unit) {
+    val storeDataViewModel = LocalStoreDataViewModel.current
     val validCoupons = remember(coupons) {
         coupons
             .filter { DateTimeUtils.isValid(it.dueDate) }
@@ -390,7 +391,8 @@ fun CouponSection(coupons: List<CouponData>, onClick: (StoreHomeItem) -> Unit) {
                         CouponInfo(
                             coupon = couponData,
                             modifier = Modifier
-                                .weight(1f)
+                                .weight(1f),
+                            storeName = storeDataViewModel.storeInfoData.value!!.storeName
                         )
                     }
 
