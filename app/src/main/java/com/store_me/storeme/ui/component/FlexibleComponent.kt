@@ -782,10 +782,10 @@ fun LinkIcon(modifier: Modifier = Modifier, url: String) {
 
     val type = SocialMediaAccountUtils.getType(url)
 
-    Box(
+    Icon(
+        imageVector = ImageVector.vectorResource(id = SocialMediaAccountUtils.getIcon(type)),
+        contentDescription = "프로필 링크",
         modifier = modifier
-            .shadow(8.dp, shape = CircleShape)
-            .background(color = Color.White, shape = CircleShape)
             .clickable(
                 onClick = {
                     val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
@@ -800,18 +800,11 @@ fun LinkIcon(modifier: Modifier = Modifier, url: String) {
                 interactionSource = remember { MutableInteractionSource() },
                 indication = ripple(bounded = false)
             )
-            .padding(8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = ImageVector.vectorResource(id = SocialMediaAccountUtils.getIcon(type)),
-            contentDescription = "프로필 링크",
-            modifier = Modifier
-                .clip(shape = RoundedCornerShape(12)),
-            tint = Unspecified
-        )
-    }
+            .clip(CircleShape),
+        tint = Unspecified
+    )
 }
+
 
 @Composable
 fun CircleBorderWithIcon(modifier: Modifier, borderColor: Color, circleColor: Color, iconResource: Int?, iconColor: Color, size: Int, onClick: () -> Unit) {
