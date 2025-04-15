@@ -6,13 +6,15 @@ import com.store_me.auth.Auth
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.data.request.login.LoginRequest
-import com.store_me.storeme.data.response.MyStoresResponse
+import com.store_me.storeme.data.response.CustomerInfoResponse
+import com.store_me.storeme.data.response.MyStore
 import com.store_me.storeme.repository.storeme.CustomerRepository
 import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.repository.storeme.UserRepository
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -37,11 +39,11 @@ class LoginViewModel @Inject constructor(
     private val _accountPw = MutableStateFlow("")
     val accountPw: StateFlow<String> = _accountPw
 
-    private val _myStoresResponse = MutableStateFlow<MyStoresResponse?>(null)
-    val myStoresResponse: StateFlow<MyStoresResponse?> = _myStoresResponse
+    private val _myStores = MutableStateFlow<List<MyStore>?>(null)
+    val myStores: StateFlow<List<MyStore>?> = _myStores
 
-    private val _customerLoginSuccess = MutableStateFlow(false)
-    val customerLoginSuccess: StateFlow<Boolean> = _customerLoginSuccess
+    private val _customerInfo = MutableStateFlow<CustomerInfoResponse?>(null)
+    val customerInfo: StateFlow<CustomerInfoResponse?> = _customerInfo
 
     fun clearKakaoLoginFailedState() {
         _isKakaoLoginFailed.value = false
@@ -69,7 +71,7 @@ class LoginViewModel @Inject constructor(
             response.onSuccess {
                 //로그인 성공 시
                 auth.updateLoginType(LoginType.KAKAO)
-                loginSuccess()
+                onLoginSuccess()
             }.onFailure {
                 //로그인 실패 시
                 if(it is ApiException){
@@ -94,7 +96,7 @@ class LoginViewModel @Inject constructor(
             response.onSuccess {
                 //로그인 성공 시
                 auth.updateLoginType(LoginType.APP)
-                loginSuccess()
+                onLoginSuccess()
             }.onFailure {
                 //로그인 실패 시
                 if(it is ApiException) {
@@ -106,67 +108,43 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private suspend fun loginSuccess() {
-        getMyStores()
-    }
+    private fun onLoginSuccess() {
+        viewModelScope.launch {
+            val storeDeferred = async { ownerRepository.getMyStores() }
+            val customerDeferred = async { customerRepository.getCustomerInfo() }
 
-    private suspend fun getMyStores() {
-        val response = ownerRepository.getMyStores()
+            val storeResponse = storeDeferred.await()
+            val customerResponse = customerDeferred.await()
 
-        response.onSuccess {
-            if(it.stores.isEmpty()) {
-                loginByCustomerAccount()
-            } else {
-                auth.updateAccountType(AccountType.OWNER)
-                _myStoresResponse.value = it   //사장님은 가게 선택 후 로그인 완료
+            var storeFailed = false
+            var customerFailed = false
+
+            storeResponse.onSuccess {
+                _myStores.value = it.stores
+            }.onFailure {
+                storeFailed = true
             }
 
-            if(it.stores.isEmpty()) {
-                //Customer
-                loginByCustomerAccount()
-            } else {
-                //Owner
-
+            customerResponse.onSuccess {
+                _customerInfo.value = it
+            }.onFailure {
+                customerFailed = true
             }
-        }.onFailure {
-            if(it is ApiException) {
-                ErrorEventBus.errorFlow.emit(it.message)
-            } else {
-                ErrorEventBus.errorFlow.emit(null)
+
+            if (storeFailed && customerFailed) {
+                ErrorEventBus.errorFlow.emit("계정정보 조회에 실패하였습니다.")
             }
         }
     }
 
-    fun selectStoreFinish(selectedStoreId: String) {
-        auth.updateSelectedStoreId(selectedStoreId)
-
+    fun loginAsOwner(selectedMyStore: MyStore) {
+        auth.updateAccountType(AccountType.OWNER)
+        auth.updateSelectedStoreId(selectedMyStore.storeId)
         auth.updateIsLoggedIn(true)
     }
 
-    /**
-     * Customer 정보 받는 함수
-     */
-    fun loginByCustomerAccount() {
-        viewModelScope.launch {
-            val response = customerRepository.getCustomerInfo()
-
-            response.onSuccess {
-                updateCustomerLoginSuccess(true)
-                auth.updateAccountType(AccountType.CUSTOMER)
-                auth.updateIsLoggedIn(true)
-            }.onFailure {
-                _myStoresResponse.value = null
-
-                if(it is ApiException) {
-                    ErrorEventBus.errorFlow.emit(it.message)
-                } else {
-                    ErrorEventBus.errorFlow.emit(null)
-                }
-            }
-        }
-    }
-
-    fun updateCustomerLoginSuccess(customerLoginSuccess: Boolean) {
-        _customerLoginSuccess.value = customerLoginSuccess
+    fun loginAsCustomer() {
+        auth.updateAccountType(AccountType.CUSTOMER)
+        auth.updateIsLoggedIn(true)
     }
 }

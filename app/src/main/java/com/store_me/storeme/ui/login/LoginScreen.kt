@@ -1,10 +1,16 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.store_me.storeme.ui.login
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,17 +19,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,8 +41,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.platform.LocalContext
@@ -41,21 +53,29 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.LoginType
+import com.store_me.storeme.data.response.CustomerInfoResponse
+import com.store_me.storeme.data.response.MyStore
+import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.PwOutlinedTextField
-import com.store_me.storeme.ui.component.SelectStoreDialog
-import com.store_me.storeme.ui.component.StoreMeSnackbar
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.onboarding.OnboardingActivity
+import com.store_me.storeme.ui.theme.AddPostCouponIconColor
+import com.store_me.storeme.ui.theme.CouponDueDateIconColor
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
+import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.KakaoLoginButtonColor
 import com.store_me.storeme.ui.theme.LoginDividerColor
+import com.store_me.storeme.ui.theme.PopularBoxColor
+import com.store_me.storeme.ui.theme.RecommendBoxColor
 import com.store_me.storeme.ui.theme.StoreMeLoginButtonColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
@@ -64,7 +84,6 @@ import com.store_me.storeme.utils.ValidationUtils
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @Composable
 fun LoginScreen(
@@ -88,10 +107,11 @@ fun LoginScreen(
     val isIdError = remember { mutableStateOf(false) }
     val isPwError = remember { mutableStateOf(false) }
 
-    val storeList by loginViewModel.myStoresResponse.collectAsState()
-    val customerLoginSuccess by loginViewModel.customerLoginSuccess.collectAsState()
+    val myStores by loginViewModel.myStores.collectAsState()
+    val customerInfo by loginViewModel.customerInfo.collectAsState()
 
-    val showSelectStoreDialog = remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    var showBottomSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(isKakaoLoginFailed) {
         if(isKakaoLoginFailed){
@@ -112,25 +132,15 @@ fun LoginScreen(
         }
     }
 
-    LaunchedEffect(storeList) {
-        if(storeList == null){
-            return@LaunchedEffect
-        }
-
-        loadingViewModel.hideLoading()
-
-        showSelectStoreDialog.value = true
-        Timber.d("showSelectStoreDialog: ${showSelectStoreDialog.value}")
-    }
-
-    LaunchedEffect(customerLoginSuccess) {
-        if(customerLoginSuccess) {
+    LaunchedEffect(myStores, customerInfo) {
+        if(myStores != null || customerInfo != null) {
             loadingViewModel.hideLoading()
-            loginViewModel.updateCustomerLoginSuccess(false)
+            showBottomSheet = true
         }
     }
 
     Scaffold(
+
         modifier = Modifier
             .fillMaxSize()
             .addFocusCleaner(focusManager)
@@ -299,21 +309,231 @@ fun LoginScreen(
         }
     )
 
-    if(showSelectStoreDialog.value) {
-        Timber.d("showDialog")
-        storeList?.let {
-            SelectStoreDialog(
-                myStoresResponse = it,
-                onAction = { selectedStoreId ->
-                    showSelectStoreDialog.value = false
-                    loginViewModel.selectStoreFinish(selectedStoreId)
+    if(showBottomSheet) {
+        fun dismissBottomSheet() {
+            coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
+                if(!sheetState.isVisible) {
+                    showBottomSheet = false
+                }
+            }
+        }
+
+        DefaultBottomSheet(
+            sheetState = sheetState,
+            onDismiss = { dismissBottomSheet() },
+        ) {
+            SelectProfile(
+                customerInfo = customerInfo,
+                myStores = myStores,
+                onAddCustomerProfile = {
+                    //TODO
+                    dismissBottomSheet()
                 },
-                onCustomer = {
-                    showSelectStoreDialog.value = false
-                    loginViewModel.loginByCustomerAccount()
+                onAddStore = {
+                    //TODO
+                    dismissBottomSheet()
+                },
+                onSelectCustomerProfile = {
+                    loadingViewModel.showLoading()
+                    loginViewModel.loginAsCustomer()
+                    dismissBottomSheet()
+                },
+                onSelectMyStore = {
+                    loadingViewModel.showLoading()
+                    loginViewModel.loginAsOwner(it)
+                    dismissBottomSheet()
                 }
             )
         }
+    }
+
+}
+
+@Composable
+fun SelectProfile(
+    customerInfo: CustomerInfoResponse?,
+    myStores: List<MyStore>?,
+    onAddCustomerProfile: () -> Unit,
+    onAddStore: () -> Unit,
+    onSelectCustomerProfile: () -> Unit,
+    onSelectMyStore: (MyStore) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
+    ) {
+        Text(
+            text = "로그인할 프로필을 선택하세요.",
+            style = storeMeTextStyle(FontWeight.ExtraBold, 6),
+        )
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            item {
+                if(customerInfo == null) {
+                    AddItem(isOwner = false) {
+                        onAddCustomerProfile()
+                    }
+                } else {
+                    ProfileItem(
+                        profileImage = customerInfo.profileImageUrl,
+                        name = customerInfo.nickname,
+                        isOwner = false,
+                    ) {
+                        onSelectCustomerProfile()
+                    }
+                }
+            }
+
+            if(myStores == null) {
+                item {
+                    AddItem(isOwner = true) {
+                        onAddStore()
+                    }
+                }
+            } else {
+                items(myStores) {
+                    ProfileItem(
+                        profileImage = it.storeProfileImage,
+                        name = it.storeName,
+                        isOwner = true
+                    ) {
+                        onSelectMyStore(it)
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+    }
+}
+
+@Composable
+fun AddItem(
+    isOwner: Boolean,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .width(120.dp)
+            .clickable(
+                onClick = { onClick() },
+                interactionSource = null,
+                indication = null
+            ),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(120.dp),
+            contentAlignment = Alignment.TopEnd
+        ) {
+            AsyncImage(
+                model = null,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .aspectRatio(1f)
+                    .clip(CircleShape),
+                error = painterResource(if(isOwner) R.drawable.store_null_image else R.drawable.profile_null_image)
+            )
+        }
+
+        if(isOwner) {
+            Text(
+                text = "스토어",
+                style = storeMeTextStyle(FontWeight.Bold, 0),
+                color = AddPostCouponIconColor,
+                modifier = Modifier
+                    .background(color = PopularBoxColor, shape = CircleShape)
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+            )
+        } else {
+            Text(
+                text = "손님",
+                style = storeMeTextStyle(FontWeight.Bold, 0),
+                color = CouponDueDateIconColor,
+                modifier = Modifier
+                    .background(color = RecommendBoxColor, shape = CircleShape)
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+            )
+        }
+
+        Text(
+            text = if(isOwner) "스토어 추가" else "프로필 생성",
+            style = storeMeTextStyle(FontWeight.Bold, 4),
+            color = GuideColor,
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
+        )
+    }
+}
+
+@Composable
+fun ProfileItem(
+    profileImage: String?,
+    name: String,
+    isOwner: Boolean,
+    onClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .width(120.dp)
+            .clickable(
+                onClick = { onClick() },
+                interactionSource = null,
+                indication = null
+            ),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(120.dp),
+            contentAlignment = Alignment.TopEnd
+        ) {
+            AsyncImage(
+                model = profileImage,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .aspectRatio(1f)
+                    .clip(CircleShape),
+                error = painterResource(if(isOwner) R.drawable.store_null_image else R.drawable.profile_null_image)
+            )
+        }
+
+        if(isOwner) {
+            Text(
+                text = "스토어",
+                style = storeMeTextStyle(FontWeight.Bold, 0),
+                color = AddPostCouponIconColor,
+                modifier = Modifier
+                    .background(color = PopularBoxColor, shape = CircleShape)
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+            )
+        } else {
+            Text(
+                text = "손님",
+                style = storeMeTextStyle(FontWeight.Bold, 0),
+                color = CouponDueDateIconColor,
+                modifier = Modifier
+                    .background(color = RecommendBoxColor, shape = CircleShape)
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+            )
+        }
+
+        Text(
+            text = name,
+            style = storeMeTextStyle(FontWeight.Bold, 4),
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1
+        )
     }
 }
 

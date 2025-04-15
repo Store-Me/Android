@@ -10,7 +10,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 interface CustomerRepository {
-    suspend fun getCustomerInfo(): Result<Unit>
+    suspend fun getCustomerInfo(): Result<CustomerInfoResponse>
 
     suspend fun getCouponData(couponId: String): Result<StoreMeResponse<CouponResponse>>
 }
@@ -18,8 +18,26 @@ interface CustomerRepository {
 class CustomerRepositoryImpl @Inject constructor(
     private val customerApiService: CustomerApiService
 ): CustomerRepository {
-    override suspend fun getCustomerInfo(): Result<Unit> {
-        return Result.success(Unit)
+    override suspend fun getCustomerInfo(): Result<CustomerInfoResponse> {
+        return try {
+            val response = customerApiService.getCustomerInfo()
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
     }
 
     override suspend fun getCouponData(couponId: String): Result<StoreMeResponse<CouponResponse>> {
