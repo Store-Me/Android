@@ -73,6 +73,7 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.BACKGROUND_ROUNDING_VALUE
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import java.time.LocalDate
 
 @Composable
@@ -83,6 +84,7 @@ fun AddVotePostScreen(
     val context = LocalContext.current
 
     val snackbarHostState = LocalSnackbarHostState.current
+    val loadingViewModel = LocalLoadingViewModel.current
 
     var showBackWarningDialog by remember{ mutableStateOf(false) }
 
@@ -120,7 +122,10 @@ fun AddVotePostScreen(
             AddPostTopBar(
                 postType = PostType.VOTE,
                 onClose = { onClose() },
-                onFinish = { addVotePostViewModel.createVotePost() }
+                onFinish = {
+                    loadingViewModel.showLoading()
+                    addVotePostViewModel.createVotePost()
+                }
             ) },
         content = { innerPadding ->
             LazyColumn (
@@ -217,24 +222,31 @@ fun EditVoteItem(
             )
         }
 
-        DefaultButton(
-            buttonText = "항목 추가",
-            leftIconResource = R.drawable.ic_plus,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = DisabledColor
-            ),
-            fontWeight = FontWeight.Bold,
-            leftIconTint = DisabledColor,
-            modifier = Modifier
-                .border(
-                    color = DisabledColor,
-                    width = 1.dp,
-                    shape = RoundedCornerShape(BACKGROUND_ROUNDING_VALUE)
-                )
-        ) {
+        AddOptionButton {
             onAddOption()
         }
+    }
+}
+
+@Composable
+fun AddOptionButton(onAddOption: () -> Unit) {
+    DefaultButton(
+        buttonText = "항목 추가",
+        leftIconResource = R.drawable.ic_plus,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.White,
+            contentColor = DisabledColor
+        ),
+        fontWeight = FontWeight.Bold,
+        leftIconTint = DisabledColor,
+        modifier = Modifier
+            .border(
+                color = DisabledColor,
+                width = 1.dp,
+                shape = RoundedCornerShape(BACKGROUND_ROUNDING_VALUE)
+            )
+    ) {
+        onAddOption()
     }
 }
 
@@ -324,7 +336,7 @@ fun SelectPeriodItem(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "투표 기간 설정",
+            text = "기간 설정",
             style = storeMeTextStyle(FontWeight.ExtraBold, 4),
             color = Color.Black
         )
@@ -442,7 +454,7 @@ fun SelectPeriodItem(
                     }
 
                     Text(
-                        text = "부터",
+                        text = if(showStartBottomSheet) "부터" else "까지",
                         style = storeMeTextStyle(FontWeight.Bold, 2),
                         color = Color.Black
                     )

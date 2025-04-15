@@ -40,6 +40,7 @@ import com.store_me.storeme.R
 import com.store_me.storeme.ui.main.navigation.customer.CustomerRoute
 import com.store_me.storeme.ui.theme.CopyButtonColor
 import com.store_me.storeme.ui.theme.ExpiredColor
+import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.SelectedCheckBoxColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.TextClearIconColor
@@ -415,6 +416,7 @@ fun CircleToggleButton(text: String, isSelected: Boolean, enabled: Boolean = tru
  */
 @Composable
 fun DefaultCheckButton(
+    modifier: Modifier = Modifier,
     text: String,
     fontWeight: FontWeight = FontWeight.Bold,
     isCheckIconOnLeft: Boolean = false,
@@ -423,10 +425,9 @@ fun DefaultCheckButton(
     enabled: Boolean = true,
     isSelected: Boolean,
     description: String = "",
-    modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    val contentColor = if(!isSelected) UndefinedTextColor else selectedColor
+    val contentColor = if(!isSelected) GuideColor else selectedColor
     val iconId = if(!isSelected) R.drawable.ic_check_off else R.drawable.ic_check_on
 
     Row(
@@ -452,7 +453,8 @@ fun DefaultCheckButton(
             Spacer(modifier = Modifier.width(5.dp))
         }
 
-        Text(text = text,
+        Text(
+            text = text,
             style = storeMeTextStyle(fontWeight, diffValue),
             color = contentColor,
             modifier = Modifier

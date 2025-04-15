@@ -76,6 +76,7 @@ class AddPostActivity : ComponentActivity() {
                 LaunchedEffect(Unit) {
                     ErrorEventBus.errorFlow.collect { errorMessage ->
                         loadingViewModel.hideLoading()
+                        snackbarHostState.currentSnackbarData?.dismiss()
                         snackbarHostState.showSnackbar(message = errorMessage ?: getString(R.string.unknown_error_message))
                     }
                 }
@@ -83,6 +84,7 @@ class AddPostActivity : ComponentActivity() {
                 LaunchedEffect(Unit) {
                     SuccessEventBus.successFlow.collect { message ->
                         loadingViewModel.hideLoading()
+                        snackbarHostState.currentSnackbarData?.dismiss()
                         snackbarHostState.showSnackbar(message = message ?: getString(R.string.default_success_message))
                     }
                 }

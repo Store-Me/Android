@@ -522,7 +522,6 @@ fun SimpleTextField(
             onValueChange = { onValueChange(it) },
             textStyle = textStyle,
             singleLine = singleLine,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next)
         )
     }
 

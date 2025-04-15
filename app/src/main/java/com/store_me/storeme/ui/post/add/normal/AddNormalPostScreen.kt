@@ -109,6 +109,7 @@ import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.PermissionUtils
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
@@ -127,6 +128,7 @@ fun AddNormalPostScreen(
     val coroutine = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
     val view = LocalView.current
+    val loadingViewModel = LocalLoadingViewModel.current
 
     val snackbarHostState = LocalSnackbarHostState.current
 
@@ -247,7 +249,10 @@ fun AddNormalPostScreen(
             AddPostTopBar(
                 postType = PostType.NORMAL,
                 onClose = { onClose() },
-                onFinish = { addNormalPostViewModel.createPost(postType = PostType.NORMAL, labelId = selectedLabel?.labelId) }
+                onFinish = {
+                    loadingViewModel.showLoading()
+                    addNormalPostViewModel.createPost(postType = PostType.NORMAL, labelId = selectedLabel?.labelId)
+                }
             ) },
         content = { innerPadding ->
             Column(
