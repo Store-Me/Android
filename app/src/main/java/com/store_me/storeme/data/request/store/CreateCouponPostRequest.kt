@@ -4,5 +4,5 @@ data class CreateCouponPostRequest(
     val title: String,
     val description: String,
     val couponId: String?,
-    val stampCouponId: String?
+    val isStampCoupon: Boolean
 )

@@ -107,7 +107,7 @@ class AddCouponPostViewModel @Inject constructor(
                     title = title.value,
                     description = description.value,
                     couponId = if(selectedCoupon.value == null) null else selectedCoupon.value!!.couponId,
-                    stampCouponId = if(selectedStamp.value == null) null else selectedStamp.value!!.name
+                    isStampCoupon = if(selectedStamp.value == null) false else true
                 )
             )
 

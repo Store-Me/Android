@@ -39,6 +39,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.store_me.storeme.data.CouponData
 import com.store_me.storeme.data.StampCouponData
 import com.store_me.storeme.data.enums.post.PostType
+import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.SimpleTextField
 import com.store_me.storeme.ui.component.StoreMeSnackbar
@@ -147,6 +148,16 @@ fun AddCouponPostScreen(
             }
         }
     )
+
+    if(showBackWarningDialog) {
+        BackWarningDialog(
+            onDismiss = { showBackWarningDialog = false },
+            onAction = {
+                showBackWarningDialog = false
+                (context as Activity).finish()
+            }
+        )
+    }
 }
 
 /**
