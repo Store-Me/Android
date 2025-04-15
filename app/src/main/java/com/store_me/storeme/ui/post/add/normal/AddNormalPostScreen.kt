@@ -93,6 +93,7 @@ import com.store_me.storeme.data.LabelData
 import com.store_me.storeme.data.PostContentBlock
 import com.store_me.storeme.data.enums.ToolbarItems
 import com.store_me.storeme.data.enums.post.PostType
+import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
@@ -186,14 +187,20 @@ fun AddNormalPostScreen(
 
     val isSuccess by addNormalPostViewModel.isSuccess.collectAsState()
 
-    BackHandler {
+    var showBackWarningDialog by remember { mutableStateOf(false) }
+
+    fun onClose() {
         if(selectedToolbarItem != null) {
             toolbarViewModel.updateSelectedToolbarItem(null)
         } else if(selectedTextStyleItem != null) {
             toolbarViewModel.updateSelectedTextStyleItem(null)
         } else {
-            (context as Activity).finish()
+            showBackWarningDialog = true
         }
+    }
+
+    BackHandler {
+        onClose()
     }
 
     LaunchedEffect(Unit) {
@@ -239,7 +246,7 @@ fun AddNormalPostScreen(
         topBar = {
             AddPostTopBar(
                 postType = PostType.NORMAL,
-                onClose = {  },
+                onClose = { onClose() },
                 onFinish = { addNormalPostViewModel.createPost(postType = PostType.NORMAL, labelId = selectedLabel?.labelId) }
             ) },
         content = { innerPadding ->
@@ -351,6 +358,14 @@ fun AddNormalPostScreen(
             }
         }
     )
+
+    if(showBackWarningDialog) {
+        BackWarningDialog(
+            onAction = { showBackWarningDialog = false
+                (context as Activity).finish() },
+            onDismiss = { showBackWarningDialog = false }
+        )
+    }
 }
 
 @Composable
