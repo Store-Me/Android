@@ -77,6 +77,7 @@ import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.LinkIcon
+import com.store_me.storeme.ui.component.LinkIconWithShadow
 import com.store_me.storeme.ui.component.SaveAndAddButton
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
@@ -522,7 +523,7 @@ fun LinkItem(
                     modifier = Modifier.weight(1f),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    LinkIcon(
+                    LinkIconWithShadow(
                         modifier = Modifier
                             .size(40.dp),
                         url

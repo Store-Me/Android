@@ -109,7 +109,6 @@ import com.store_me.storeme.ui.theme.SwipeEditColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.storeMeTypography
-import com.store_me.storeme.utils.BACKGROUND_ROUNDING_VALUE
 import com.store_me.storeme.utils.SampleDataUtils
 import com.store_me.storeme.utils.SizeUtils
 import com.store_me.storeme.utils.SocialMediaAccountUtils
@@ -718,7 +717,7 @@ fun LinkSection(
 
         if(storeLink.isNotEmpty()) {
             items(storeLink) {
-                LinkIcon(
+                LinkIconWithShadow(
                     modifier = Modifier.size(40.dp),
                     it
                 )
@@ -727,6 +726,48 @@ fun LinkSection(
 
         if(accountType == AccountType.OWNER)
             item { EditLinkIcon { onEditClick() } }
+    }
+}
+
+/**
+ * 링크 아이콘 Composable
+ * @param url 링크 주소
+ * @param size 크기
+ */
+@Composable
+fun LinkIconWithShadow(modifier: Modifier = Modifier, url: String) {
+    val context = LocalContext.current
+
+    val type = SocialMediaAccountUtils.getType(url)
+
+    Box(
+        modifier = modifier
+            .shadow(8.dp, shape = CircleShape)
+            .background(color = Color.White, shape = CircleShape)
+            .clickable(
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
+                    }
+                    if (intent.resolveActivity(context.packageManager) != null) {
+                        context.startActivity(intent)
+                    } else {
+                        val webIntent = Intent(Intent.ACTION_VIEW, url.toUri())
+                        context.startActivity(webIntent)
+                    }
+                },
+                interactionSource = remember { MutableInteractionSource() },
+                indication = ripple(bounded = false)
+            )
+            .padding(8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = SocialMediaAccountUtils.getIcon(type)),
+            contentDescription = "프로필 링크",
+            modifier = Modifier
+                .clip(shape = RoundedCornerShape(12)),
+            tint = Unspecified
+        )
     }
 }
 
@@ -769,44 +810,6 @@ fun LinkIcon(modifier: Modifier = Modifier, url: String) {
                 .clip(shape = RoundedCornerShape(12)),
             tint = Unspecified
         )
-    }
-}
-
-
-/**
- * 원형 테두리를 가진 아이콘 Composable
- * @param borderColor Border Color
- * @param circleColor Inner Circle Color
- * @param iconResource Icon Resource Id
- * @param size Circle Size
- */
-@Composable
-fun CircleBorderWithIcon(modifier: Modifier, borderColor: Color, circleColor: Color, iconResource: Int?, iconColor: Color, size: Int) {
-    Box(
-        modifier = modifier
-            .size(size.dp)
-            .border(width = 2.dp, shape = CircleShape, color = borderColor),
-        contentAlignment = Alignment.Center
-    ) {
-        Box(
-            modifier = Modifier
-                .size((size - 1).dp)
-                .background(
-                    color = circleColor,
-                    shape = CircleShape
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            iconResource?.let {
-                Icon(
-                    painter = painterResource(id = it),
-                    contentDescription = "아이콘",
-                    tint = iconColor,
-                    modifier = Modifier
-                        .size((size / 2).dp)
-                )
-            }
-        }
     }
 }
 
