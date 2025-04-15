@@ -64,6 +64,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
@@ -108,6 +109,7 @@ import com.store_me.storeme.ui.theme.SwipeEditColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.storeMeTypography
+import com.store_me.storeme.utils.BACKGROUND_ROUNDING_VALUE
 import com.store_me.storeme.utils.SampleDataUtils
 import com.store_me.storeme.utils.SizeUtils
 import com.store_me.storeme.utils.SocialMediaAccountUtils
@@ -709,7 +711,7 @@ fun LinkSection(
     }
 
     LazyRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
         reverseLayout = true
     ) {
         item { ShareIcon { onShareClick() } }
@@ -739,10 +741,10 @@ fun LinkIcon(modifier: Modifier = Modifier, url: String) {
 
     val type = SocialMediaAccountUtils.getType(url)
 
-    Icon(
-        imageVector = ImageVector.vectorResource(id = SocialMediaAccountUtils.getIcon(type)),
-        contentDescription = "프로필 링크",
+    Box(
         modifier = modifier
+            .shadow(8.dp, shape = CircleShape)
+            .background(color = Color.White, shape = CircleShape)
             .clickable(
                 onClick = {
                     val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
@@ -757,9 +759,17 @@ fun LinkIcon(modifier: Modifier = Modifier, url: String) {
                 interactionSource = remember { MutableInteractionSource() },
                 indication = ripple(bounded = false)
             )
-            .clip(CircleShape),
-        tint = Unspecified
-    )
+            .padding(8.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(id = SocialMediaAccountUtils.getIcon(type)),
+            contentDescription = "프로필 링크",
+            modifier = Modifier
+                .clip(shape = RoundedCornerShape(12)),
+            tint = Unspecified
+        )
+    }
 }
 
 
