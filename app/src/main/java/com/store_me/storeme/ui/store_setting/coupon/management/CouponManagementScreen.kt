@@ -82,7 +82,6 @@ import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.CropUtils
 import com.store_me.storeme.utils.DateTimeUtils
-import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import com.yalantis.ucrop.UCrop
@@ -631,7 +630,7 @@ fun DueDateSection(
                     indication = null,
                     interactionSource = null
                 ),
-            text = DateTimeUtils.convertExpiredDateToKorean(dueDate) + "까지",
+            text = DateTimeUtils.convertDateTimeToKorean(dueDate) + "까지",
             placeholderText = "사용 기한을 선택해주세요.",
             onValueChange = {},
             trailingIconResource = R.drawable.ic_calendar,

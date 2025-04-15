@@ -73,6 +73,7 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.BACKGROUND_ROUNDING_VALUE
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
+import java.time.LocalDate
 
 @Composable
 fun AddVotePostScreen(
@@ -87,8 +88,10 @@ fun AddVotePostScreen(
 
     val title by addVotePostViewModel.title.collectAsState()
     val options by addVotePostViewModel.options.collectAsState()
-    val startDateTime by addVotePostViewModel.startDateTime.collectAsState()
-    val endDateTime by addVotePostViewModel.endDateTime.collectAsState()
+    val startLocalDate by addVotePostViewModel.startLocalDate.collectAsState()
+    val startTime by addVotePostViewModel.startTime.collectAsState()
+    val endLocalDate by addVotePostViewModel.endLocalDate.collectAsState()
+    val endTime by addVotePostViewModel.endTime.collectAsState()
     val isSuccess by addVotePostViewModel.isSuccess.collectAsState()
 
     fun onClose() {
@@ -146,10 +149,12 @@ fun AddVotePostScreen(
 
                 item {
                     SelectPeriodItem(
-                        startDateTime = startDateTime,
-                        endDateTime = endDateTime,
-                        onStartDateTimeChange = { addVotePostViewModel.updateStartDateTime(it) },
-                        onEndDateTimeChange = { addVotePostViewModel.updateEndDateTime(it) }
+                        startLocalDate = startLocalDate,
+                        startTime = startTime,
+                        endLocalDate = endLocalDate,
+                        endTime = endTime,
+                        onStartDateTimeChange = { localDate, timeData -> addVotePostViewModel.updateStartDateTime(localDate, timeData) },
+                        onEndDateTimeChange = { localDate, timeData -> addVotePostViewModel.updateEndDateTime(localDate, timeData) }
                     )
                 }
             }
@@ -293,10 +298,12 @@ fun OptionTextFieldItem(
 
 @Composable
 fun SelectPeriodItem(
-    startDateTime: String?,
-    endDateTime: String?,
-    onStartDateTimeChange: (String) -> Unit,
-    onEndDateTimeChange: (String) -> Unit
+    startLocalDate: LocalDate?,
+    startTime: TimeData,
+    endLocalDate: LocalDate?,
+    endTime: TimeData,
+    onStartDateTimeChange: (LocalDate?, TimeData) -> Unit,
+    onEndDateTimeChange: (LocalDate?, TimeData) -> Unit
 ) {
     var showStartBottomSheet by remember { mutableStateOf(false) }
     var showEndBottomSheet by remember { mutableStateOf(false) }
@@ -322,11 +329,19 @@ fun SelectPeriodItem(
             color = Color.Black
         )
 
-        PeriodDateTimeRow(isStart = true, dateTime = startDateTime) {
+        PeriodDateTimeRow(
+            isStart = true,
+            localDate = startLocalDate,
+            time = startTime
+        ) {
             showStartBottomSheet = true
         }
 
-        PeriodDateTimeRow(isStart = false, dateTime = endDateTime) {
+        PeriodDateTimeRow(
+            isStart = false,
+            localDate = endLocalDate,
+            time = endTime
+        ) {
             showEndBottomSheet = true
         }
     }
@@ -344,21 +359,21 @@ fun SelectPeriodItem(
             var localDate by remember {
                 mutableStateOf(
                     if(showStartBottomSheet)
-                        DateTimeUtils.extractLocalDate(startDateTime)
+                        startLocalDate
                     else
-                        DateTimeUtils.extractLocalDate(endDateTime)
+                        endLocalDate
                 )
             }
             var timeData by remember {
                 if(showStartBottomSheet)
-                    mutableStateOf(DateTimeUtils.extractTimeData(startDateTime) ?: TimeData(9, 0))
+                    mutableStateOf(startTime)
                 else
-                    mutableStateOf(DateTimeUtils.extractTimeData(endDateTime) ?: TimeData(9, 0))
+                    mutableStateOf(endTime)
             }
 
             val dateText =
                 if(localDate == null) {
-                    ""
+                    "날짜를 선택해주세요."
                 } else {
                     DateTimeUtils.formatToDate(localDate!!) + " " + DateTimeUtils.DayOfWeek.entries[DateTimeUtils.getWeekDay(localDate!!)].displayName
                 }
@@ -397,13 +412,13 @@ fun SelectPeriodItem(
                         contentDescription = "시계 아이콘",
                         tint = Color.Black,
                         modifier = Modifier
-                            .size(24.dp)
+                            .size(20.dp)
                     )
 
                     Text(
                         text = dateText,
                         style = storeMeTextStyle(FontWeight.Bold, 2),
-                        color = Color.Black
+                        color = if(localDate == null) GuideColor else Color.Black
                     )
                 }
 
@@ -452,19 +467,9 @@ fun SelectPeriodItem(
                 enabled = localDate != null
             ) {
                 if(showStartBottomSheet) {
-                    onStartDateTimeChange(
-                        DateTimeUtils.toIsoDateTimeString(
-                            date = localDate!!,
-                            time = timeData
-                        )
-                    )
+                    onStartDateTimeChange(localDate, timeData)
                 } else {
-                    onEndDateTimeChange(
-                        DateTimeUtils.toIsoDateTimeString(
-                            date = localDate!!,
-                            time = timeData
-                        )
-                    )
+                    onEndDateTimeChange(localDate, timeData)
                 }
 
                 showStartBottomSheet = false
@@ -479,12 +484,13 @@ fun SelectPeriodItem(
 @Composable
 fun PeriodDateTimeRow(
     isStart: Boolean,
-    dateTime: String?,
+    localDate: LocalDate?,
+    time: TimeData,
     onClick: () -> Unit
 ) {
     val dateTimeText =
-        if(dateTime != null)
-            DateTimeUtils.convertExpiredDateToKorean(dateTime)
+        if(localDate != null)
+            DateTimeUtils.convertLocalDateToKorean(localDate = localDate, withDayOfWeek = true) + " " + time.getText()
         else {
             if(isStart)
                 "시작 시간을 설정해주세요."
@@ -510,13 +516,13 @@ fun PeriodDateTimeRow(
             contentDescription = "시계 아이콘",
             tint = Color.Black,
             modifier = Modifier
-                .size(24.dp)
+                .size(20.dp)
         )
 
         Text(
             text = dateTimeText,
             style = storeMeTextStyle(FontWeight.Bold, 2),
-            color = if(dateTime == null) GuideColor else Color.Black
+            color = if(localDate == null) GuideColor else Color.Black
         )
     }
 }
