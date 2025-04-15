@@ -353,7 +353,7 @@ fun StampCouponDueDateSection(
                     indication = null,
                     interactionSource = null
                 ),
-            text = DateTimeUtils.convertExpiredDateToKorean(dueDate) + "까지",
+            text = DateTimeUtils.convertDateTimeToKorean(dueDate) + "까지",
             placeholderText = "유효 기한을 선택해주세요.",
             onValueChange = {},
             trailingIconResource = R.drawable.ic_calendar,

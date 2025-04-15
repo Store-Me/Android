@@ -7,7 +7,6 @@ import com.store_me.storeme.data.store.BusinessHourData
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.util.Calendar
@@ -41,8 +40,8 @@ object DateTimeUtils {
     /**
      * LocalDate와 TimeData를 ISO 형식의 문자열로 변환하는 함수
      */
-    fun toIsoDateTimeString(date: LocalDate, time: TimeData): String {
-        val dateTime = LocalDateTime.of(date.year, date.month, date.dayOfMonth, time.hour, time.minute, 59)
+    fun toIsoDateTimeString(date: LocalDate, time: TimeData, second: Int): String {
+        val dateTime = LocalDateTime.of(date.year, date.month, date.dayOfMonth, time.hour, time.minute, second)
         return dateTime.format(formatter)
     }
 
@@ -107,7 +106,7 @@ object DateTimeUtils {
      * "YYYY년 M월 D일" 텍스트를 출력하는 함수
      * @param datetime 시간 정보
      */
-    fun convertExpiredDateToKorean(datetime: String?): String {
+    fun convertDateTimeToKorean(datetime: String?): String {
         return try {
             val outputFormatter = DateTimeFormatter.ofPattern("yyyy년 M월 d일")
 
@@ -118,6 +117,17 @@ object DateTimeUtils {
             ""
         }
     }
+
+    fun convertLocalDateToKorean(localDate: LocalDate, withDayOfWeek: Boolean): String {
+        val dateText = "${localDate.year}년 ${localDate.monthValue}월 ${localDate.dayOfMonth}일"
+        return if (withDayOfWeek) {
+            val dayOfWeekText = DateTimeUtils.DayOfWeek.entries[localDate.dayOfWeek.value % 7].displayName
+            "$dateText ($dayOfWeekText)"
+        } else {
+            dateText
+        }
+    }
+
 
     /**
      * 현재 날짜와 시간을 "2024년 9월 1일 17:09" 형식으로 반환하는 함수
