@@ -44,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -107,11 +108,12 @@ fun CouponSettingScreen(
 
     val pagerState = rememberPagerState()
 
+    var showDetail by remember { mutableStateOf(false) }
     val selectedCoupon by ownerCouponDetailViewModel.coupon.collectAsState()
 
     fun onClose() {
-        if(selectedCoupon != null) {
-            ownerCouponDetailViewModel.updateCouponData(null)
+        if(showDetail) {
+            showDetail = false
         } else {
             navController.popBackStack()
         }
@@ -144,15 +146,15 @@ fun CouponSettingScreen(
                         .padding(innerPadding)
                 ) {
                     AnimatedContent(
-                        targetState = selectedCoupon
+                        targetState = showDetail
                     ) {
-                        if(it != null) {
+                        if(it) {
                             OwnerCouponDetailScreen(
                                 animatedVisibilityScope = this,
                                 sharedTransitionScope = this@SharedTransitionLayout,
                                 ownerCouponDetailViewModel = ownerCouponDetailViewModel,
                                 onEdit = { couponType ->
-                                    navController.navigate(OwnerRoute.CouponEdit(selectedCouponType = couponType, couponId = it.couponId).fullRoute)
+                                    navController.navigate(OwnerRoute.CouponEdit(selectedCouponType = couponType, couponId = selectedCoupon?.couponId ?: "").fullRoute)
                                 }
                             )
                         } else {
@@ -164,16 +166,9 @@ fun CouponSettingScreen(
                                 sharedTransitionScope = this@SharedTransitionLayout
                             ) { couponData ->
                                 ownerCouponDetailViewModel.updateCouponData(couponData)
+                                showDetail = true
                             }
                         }
-                    }
-
-                    AnimatedVisibility(visible = selectedCoupon == null) {
-
-                    }
-
-                    AnimatedVisibility(visible = selectedCoupon != null) {
-
                     }
                 }
             }
