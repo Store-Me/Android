@@ -3,13 +3,16 @@
 package com.store_me.storeme.ui.store_setting.story.setting
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
@@ -27,7 +30,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -36,6 +41,7 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.ui.component.SaveAndAddButton
+import com.store_me.storeme.ui.component.StoryPlayer
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
@@ -53,6 +59,8 @@ fun StorySettingScreen(
     val stories by storySettingViewModel.stories.collectAsState()
 
     var deleteStoryItem by remember { mutableStateOf<StoryData?>(null) }
+    var showStory by remember { mutableStateOf(false) }
+    var selectedIndex by remember { mutableStateOf(0) }
 
     fun onClose() {
         navController.popBackStack()
@@ -109,7 +117,7 @@ fun StorySettingScreen(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 content = {
                     itemsIndexed(stories) { index, item ->
-                        StoryItem(
+                        StoryThumbnailItem(
                             modifier = Modifier
                                 .combinedClickable(
                                     indication = ripple(bounded = true),
@@ -118,7 +126,8 @@ fun StorySettingScreen(
                                         deleteStoryItem = item
                                     },
                                     onClick = {
-                                        //TODO SHOW STORY
+                                        selectedIndex = index
+                                        showStory = true
                                     }
                                 )
                             ,
@@ -144,10 +153,34 @@ fun StorySettingScreen(
             }
         )
     }
+
+    if(showStory) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.Transparent)
+                .blur(2.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            StoryDetailItem(storyData = stories[selectedIndex])
+        }
+    }
 }
 
 @Composable
-fun StoryItem(modifier: Modifier, storyData: StoryData) {
+fun StoryDetailItem(storyData: StoryData) {
+    Box(
+        modifier = Modifier
+            .wrapContentSize()
+    ) {
+        StoryPlayer(
+            videoUrl = storyData.video
+        )
+    }
+}
+
+@Composable
+fun StoryThumbnailItem(modifier: Modifier, storyData: StoryData) {
     AsyncImage(
         model = storyData.thumbNail,
         contentDescription = null,
