@@ -4,11 +4,12 @@ import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +31,6 @@ import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.EditableStoryItem
-import com.store_me.storeme.ui.component.SimpleOutLinedTextField
 import com.store_me.storeme.ui.component.SimpleTextField
 import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
@@ -138,61 +138,75 @@ fun StoryManagementScreen(
             onClose = { onClose() }
         )  },
         content = { innerPadding ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
                     .padding(horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                EditableStoryItem(
-                    videoUri = videoUri,
-                    videoUrl = videoUrl,
-                    progress = progress,
-                    onAdd = {
-                        launcher.launch("video/*")
-                    },
-                    onDelete = {
-                        storyManagementViewModel.updateVideoUri(null)
+                item {
+                    EditableStoryItem(
+                        videoUri = videoUri,
+                        videoUrl = videoUrl,
+                        progress = progress,
+                        onAdd = {
+                            launcher.launch("video/*")
+                        },
+                        onDelete = {
+                            storyManagementViewModel.updateVideoUri(null)
+                        }
+                    )
+                }
+
+                item {
+                    GuideTextBoxItem(
+                        title = "스토리 가이드",
+                        content = "짧은 영상을 업로드 하여 손님들에게 공유할 수 있어요.\n\n영상의 길이는 5초 ~ 1분 사이의 영상을 권장하고 있어요."
+                    )
+                }
+
+                item {
+                    Text(
+                        text = "스토리 설명",
+                        style = storeMeTextStyle(FontWeight.ExtraBold, 2),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                item {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SimpleTextField(
+                            value = description,
+                            onValueChange = {
+                                storyManagementViewModel.updateDescription(it)
+                            },
+                            placeholderText = "스토리에 대한 간략한 설명을 입력해주세요.",
+                            singleLine = false,
+                            textStyle = storeMeTextStyle(FontWeight.Bold, -1),
+                            minLines = 2
+                        )
+
+                        DefaultHorizontalDivider()
+
+                        TextLengthRow(
+                            text = description,
+                            limitSize = 100
+                        )
                     }
-                )
+                }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                item {
+                    DefaultButton(
+                        buttonText = "저장",
+                    ) {
+                        loadingViewModel.showLoading()
 
-                GuideTextBoxItem(
-                    title = "스토리 가이드",
-                    content = "짧은 영상을 업로드 하여 손님들에게 공유할 수 있어요.\n\n영상의 길이는 5초 ~ 1분 사이의 영상을 권장하고 있어요."
-                )
-
-                Text(
-                    text = "스토리 설명",
-                    style = storeMeTextStyle(FontWeight.ExtraBold, 2)
-                )
-
-                SimpleTextField(
-                    value = description,
-                    onValueChange = {
-                        storyManagementViewModel.updateDescription(it)
-                    },
-                    placeholderText = "스토리에 대한 간략한 설명을 입력해주세요.",
-                    singleLine = false,
-                )
-
-                DefaultHorizontalDivider()
-
-                TextLengthRow(
-                    text = description,
-                    limitSize = 100
-                )
-
-                Spacer(modifier = Modifier.height(40.dp))
-
-                DefaultButton(
-                    buttonText = "저장",
-                ) {
-                    loadingViewModel.showLoading()
-
-                    storyManagementViewModel.postStoreStory()
+                        storyManagementViewModel.postStoreStory()
+                    }
                 }
             }
         }
@@ -201,7 +215,10 @@ fun StoryManagementScreen(
     if(showBackWarnDialog) {
         BackWarningDialog(
             onDismiss = { showBackWarnDialog = false },
-            onAction = { navController.popBackStack() }
+            onAction = {
+                showBackWarnDialog = false
+                navController.popBackStack()
+            }
         )
     }
 }

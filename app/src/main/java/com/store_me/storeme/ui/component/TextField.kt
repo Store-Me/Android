@@ -503,6 +503,7 @@ fun SimpleTextField(
     placeholderText: String,
     textStyle: TextStyle = storeMeTextStyle(FontWeight.ExtraBold, 4),
     singleLine: Boolean,
+    minLines: Int = 1,
 ) {
     Box(
 
@@ -522,6 +523,7 @@ fun SimpleTextField(
             onValueChange = { onValueChange(it) },
             textStyle = textStyle,
             singleLine = singleLine,
+            minLines = minLines
         )
     }
 
