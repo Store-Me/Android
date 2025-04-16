@@ -1,5 +1,6 @@
 package com.store_me.storeme.ui.store_setting.story.management
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -11,8 +12,10 @@ import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.StoragePaths
 import com.store_me.storeme.utils.SuccessEventBus
+import com.store_me.storeme.utils.VideoUtils
 import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -20,6 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StoryManagementViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val imageRepository: ImageRepository,
     private val ownerRepository: OwnerRepository
 ) : ViewModel() {
@@ -42,6 +46,18 @@ class StoryManagementViewModel @Inject constructor(
     val postResult: StateFlow<PagingResponse<List<StoryData>>?> = _postResult
 
     fun updateVideoUri(uri: Uri?) {
+        if(uri != null) {
+            val durationMillis = VideoUtils.getVideoDurationMillis(videoUri = uri, context = context)
+            val durationSec = durationMillis / 1000
+
+            if(durationSec < 5 || durationSec > 60) {
+                viewModelScope.launch {
+                    ErrorEventBus.errorFlow.emit("영상의 길이는 5초 ~ 1분 사이의 영상을 권장하고 있어요.")
+                }
+                return
+            }
+        }
+
         _videoUri.value = uri
     }
 
@@ -112,6 +128,11 @@ class StoryManagementViewModel @Inject constructor(
         viewModelScope.launch {
             if(videoUrl.value == null || thumbnailUrl.value == null) {
                 ErrorEventBus.errorFlow.emit("동영상 업로드가 완료되지 않았습니다.")
+                return@launch
+            }
+
+            if(description.value.length > 100) {
+                ErrorEventBus.errorFlow.emit("설명은 100자 이내로 작성해야 합니다.")
                 return@launch
             }
 

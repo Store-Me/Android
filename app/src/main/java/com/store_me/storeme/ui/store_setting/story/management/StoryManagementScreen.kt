@@ -28,9 +28,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.EditableStoryItem
 import com.store_me.storeme.ui.component.SimpleOutLinedTextField
+import com.store_me.storeme.ui.component.SimpleTextField
+import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
+import com.store_me.storeme.ui.signup.GuideTextBoxItem
 import com.store_me.storeme.ui.store_setting.story.setting.StorySettingViewModel
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.MimeUtils
@@ -153,27 +157,38 @@ fun StoryManagementScreen(
                     }
                 )
 
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(20.dp))
+
+                GuideTextBoxItem(
+                    title = "스토리 가이드",
+                    content = "짧은 영상을 업로드 하여 손님들에게 공유할 수 있어요.\n\n영상의 길이는 5초 ~ 1분 사이의 영상을 권장하고 있어요."
+                )
 
                 Text(
                     text = "스토리 설명",
                     style = storeMeTextStyle(FontWeight.ExtraBold, 2)
                 )
 
-                SimpleOutLinedTextField(
-                    text = description,
+                SimpleTextField(
+                    value = description,
                     onValueChange = {
                         storyManagementViewModel.updateDescription(it)
                     },
                     placeholderText = "스토리에 대한 간략한 설명을 입력해주세요.",
-                    isError = false,
-                    errorText = ""
+                    singleLine = false,
+                )
+
+                DefaultHorizontalDivider()
+
+                TextLengthRow(
+                    text = description,
+                    limitSize = 100
                 )
 
                 Spacer(modifier = Modifier.height(40.dp))
 
                 DefaultButton(
-                    buttonText = "스토리 추가",
+                    buttonText = "저장",
                 ) {
                     loadingViewModel.showLoading()
 

@@ -46,11 +46,11 @@ class StorySettingViewModel @Inject constructor(
         _stories.value = _stories.value.filterNot { it.id == storyId }
     }
 
-    fun getStoreStories(lastCreatedAt: String?) {
+    fun getStoreStories() {
         if(!hasNextPage.value) return
 
         viewModelScope.launch {
-            val response = ownerRepository.getStoreStories(lastCreatedAt = lastCreatedAt)
+            val response = ownerRepository.getStoreStories(lastCreatedAt = lastCreatedAt.value)
 
             response.onSuccess {
                 addStories(it.result)

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
@@ -24,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -35,6 +37,7 @@ import com.store_me.storeme.ui.component.SaveAndAddButton
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
+import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
 fun StorySettingScreen(
@@ -42,6 +45,7 @@ fun StorySettingScreen(
     storySettingViewModel: StorySettingViewModel
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val listState = rememberLazyGridState()
 
     val stories by storySettingViewModel.stories.collectAsState()
 
@@ -52,9 +56,21 @@ fun StorySettingScreen(
     }
 
     LaunchedEffect(Unit) {
-        storySettingViewModel.getStoreStories(null)
+        //초기 로드
+        storySettingViewModel.getStoreStories()
+    }
 
-        //TODO 다음 페이지
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            val totalItemCount = listState.layoutInfo.totalItemsCount
+            lastVisibleItemIndex to totalItemCount
+        }.distinctUntilChanged()
+            .collect { (lastVisible, total) ->
+                if (lastVisible != null && lastVisible >= total - 1) {
+                    storySettingViewModel.getStoreStories()
+                }
+            }
     }
 
     Scaffold(
@@ -84,8 +100,10 @@ fun StorySettingScreen(
                     .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
                     .padding(horizontal = 20.dp),
+                state = listState,
                 columns = GridCells.Fixed(2),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 content = {
                     itemsIndexed(stories) { index, item ->
                         StoryItem(
@@ -109,14 +127,15 @@ fun StorySettingScreen(
 
     if(deleteStoryItem != null) {
         WarningDialog(
-            title = "스토리 삭제",
-            content = "정말로 삭제하시겠습니까?",
+            title = "스토리를 삭제할까요?",
+            content = "선택된 스토리가 삭제되며, 삭제 이후 복구되지 않아요.",
             actionText = "삭제",
             onDismiss = { deleteStoryItem = null },
             onAction = {
                 storySettingViewModel.deleteStoreStories(
                     storyId = deleteStoryItem?.id ?: ""
                 )
+                deleteStoryItem = null
             }
         )
     }
