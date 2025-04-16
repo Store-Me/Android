@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
@@ -27,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
@@ -37,6 +39,7 @@ import com.store_me.storeme.ui.component.SaveAndAddButton
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
+import com.store_me.storeme.utils.BACKGROUND_ROUNDING_VALUE
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
@@ -114,7 +117,9 @@ fun StorySettingScreen(
                                     onLongClick = {
                                         deleteStoryItem = item
                                     },
-                                    onClick = {}
+                                    onClick = {
+                                        //TODO SHOW STORY
+                                    }
                                 )
                             ,
                             storyData = item
@@ -149,5 +154,6 @@ fun StoryItem(modifier: Modifier, storyData: StoryData) {
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(9f / 16f)
+            .clip(RoundedCornerShape(BACKGROUND_ROUNDING_VALUE))
     )
 }
