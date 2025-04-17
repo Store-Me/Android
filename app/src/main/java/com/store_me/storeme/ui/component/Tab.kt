@@ -5,6 +5,7 @@ package com.store_me.storeme.ui.component
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
+import com.store_me.storeme.ui.theme.DividerColor
 import com.store_me.storeme.ui.theme.TabDividerLineColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import kotlinx.coroutines.launch
@@ -89,15 +91,15 @@ fun StoreMeScrollableTabRow(
             TabRowDefaults.SecondaryIndicator(
                 modifier = Modifier
                     .tabIndicatorOffset(tabPositions[pagerState.currentPage])
-                    .height(2.dp)
+                    .height(1.dp)
                     .fillMaxWidth(0.9f),
                 color = Black
             )
         },
         divider = {
             HorizontalDivider(
-                color = TabDividerLineColor,
-                thickness = 2.dp
+                color = DividerColor,
+                thickness = 1.dp
             )
         },
         edgePadding = 0.dp
@@ -113,8 +115,8 @@ fun StoreMeScrollableTabRow(
                 text = {
                     Text(
                         text = title,
-                        style = storeMeTextStyle(FontWeight.Bold, 0),
-                        color = if(index == pagerState.currentPage) Black else TabDividerLineColor
+                        style = storeMeTextStyle(if(index == pagerState.currentPage) FontWeight.ExtraBold else FontWeight.Bold, 1 ),
+                        color = if(index == pagerState.currentPage) Black else TabDividerLineColor,
                     )
                 }
             )
