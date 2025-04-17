@@ -63,6 +63,7 @@ import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.EditAndDeleteRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
+import com.store_me.storeme.ui.home.owner.MenuItem
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightColor
@@ -378,104 +379,7 @@ fun DraggableMenuItem(modifier: Modifier, menuData: MenuData, onEdit: (String) -
             showDialog = true
         }
     ) {
-        Row(
-            modifier = Modifier
-                .background(Color.White)
-                .padding(horizontal = 20.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                //메뉴 이름
-                Text(
-                    text = menuData.name,
-                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
-                    color = Color.Black
-                )
-
-                if(!menuData.description.isNullOrEmpty()){
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Text(
-                        text = menuData.description,
-                        style = storeMeTextStyle(FontWeight.Bold, 0),
-                        color = GuideColor,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Text(
-                    text = PriceUtils().numberToPrice(menuData.priceType, menuData.price, menuData.minPrice, menuData.maxPrice),
-                    style = storeMeTextStyle(FontWeight.ExtraBold, 0),
-                    color = Color.Black
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    if(menuData.isSignature){
-                        Text(
-                            text = MenuTag.Signature.displayName,
-                            style = storeMeTextStyle(FontWeight.Bold, -2),
-                            modifier = Modifier
-                                .background(
-                                    color = LighterHighlightColor,
-                                    shape = RoundedCornerShape(6.dp)
-                                )
-                                .padding(4.dp),
-                            color = HighlightColor
-                        )
-                    }
-
-                    if(menuData.isPopular){
-                        Text(
-                            text = MenuTag.Popular.displayName,
-                            style = storeMeTextStyle(FontWeight.Bold, -2),
-                            modifier = Modifier
-                                .background(
-                                    color = PopularBoxColor,
-                                    shape = RoundedCornerShape(6.dp)
-                                )
-                                .padding(4.dp),
-                            color = PopularTextColor
-                        )
-                    }
-
-                    if(menuData.isRecommend){
-                        Text(
-                            text = MenuTag.Recommend.displayName,
-                            style = storeMeTextStyle(FontWeight.Bold, -2),
-                            modifier = Modifier
-                                .background(
-                                    color = RecommendBoxColor,
-                                    shape = RoundedCornerShape(6.dp)
-                                )
-                                .padding(4.dp),
-                            color = RecommendTextColor
-                        )
-                    }
-                }
-            }
-
-            if(menuData.image != null) {
-                AsyncImage(
-                    model = menuData.image,
-                    contentDescription = "메뉴 이미지",
-                    error = painterResource(id = R.drawable.store_null_image),
-                    modifier = Modifier
-                        .size(100.dp)
-                        .clip(shape = RoundedCornerShape(18.dp))
-                )
-            }
-
-        }
+        MenuItem(menuData = menuData)
     }
 
     if (showDialog) {

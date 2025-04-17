@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,6 +32,7 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -38,6 +41,7 @@ import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.naver.maps.geometry.LatLng
 import com.store_me.storeme.R
+import com.store_me.storeme.data.MenuCategoryData
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.tab_menu.StoreTabMenu
 import com.store_me.storeme.data.response.BusinessHoursResponse
@@ -46,6 +50,7 @@ import com.store_me.storeme.ui.component.LinkSection
 import com.store_me.storeme.ui.component.ProfileImageWithBorder
 import com.store_me.storeme.ui.component.StoreMeScrollableTabRow
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
+import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.ToastMessageUtils
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
@@ -209,7 +214,10 @@ fun OwnerHomeScreen(
 }
 
 @Composable
-fun OwnerHomeContentSection(navController: NavController, pagerState: PagerState) {
+fun OwnerHomeContentSection(
+    navController: NavController,
+    pagerState: PagerState
+) {
     HorizontalPager(
         count = StoreTabMenu.entries.size,
         state = pagerState,
@@ -225,7 +233,7 @@ fun OwnerHomeContentSection(navController: NavController, pagerState: PagerState
                 NewsScreen(navController)
             }
             StoreTabMenu.MENU -> {
-
+                MenuListSection()
             }
             StoreTabMenu.COUPON -> {
 
@@ -238,6 +246,38 @@ fun OwnerHomeContentSection(navController: NavController, pagerState: PagerState
             }
             StoreTabMenu.REVIEW -> {
 
+            }
+        }
+    }
+}
+
+/**
+ * StoreHome MenuList
+ */
+@Composable
+fun MenuListSection() {
+    val storeDataViewModel = LocalStoreDataViewModel.current
+    val menuCategories by storeDataViewModel.menuCategories.collectAsState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        menuCategories.forEach { menuCategory ->
+            if(menuCategory.menus.isNotEmpty()) {
+                Text(
+                    text = menuCategory.categoryName,
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 6),
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
+                )
+
+                DefaultHorizontalDivider()
+
+                menuCategory.menus.forEach { menu ->
+                    MenuItem(menu)
+
+                    DefaultHorizontalDivider()
+                }
             }
         }
     }
