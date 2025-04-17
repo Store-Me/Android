@@ -1,13 +1,19 @@
-@file:OptIn(ExperimentalPagerApi::class, ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalPagerApi::class, ExperimentalFoundationApi::class,
+    ExperimentalLayoutApi::class
+)
 
 package com.store_me.storeme.ui.home.owner
 
+import android.graphics.ImageDecoder
+import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +21,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -45,6 +51,7 @@ import com.store_me.storeme.data.MenuCategoryData
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.tab_menu.StoreTabMenu
 import com.store_me.storeme.data.response.BusinessHoursResponse
+import com.store_me.storeme.data.store.FeaturedImageData
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.LinkSection
 import com.store_me.storeme.ui.component.ProfileImageWithBorder
@@ -54,6 +61,13 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.ToastMessageUtils
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import androidx.core.net.toUri
+import coil.compose.AsyncImage
+import com.store_me.storeme.data.StampCouponData
+import com.store_me.storeme.ui.store_setting.stamp.RewardItem
+import com.store_me.storeme.ui.store_setting.stamp.StampCouponItem
 
 @Composable
 fun OwnerHomeScreen(
@@ -218,6 +232,11 @@ fun OwnerHomeContentSection(
     navController: NavController,
     pagerState: PagerState
 ) {
+    val storeDataViewModel = LocalStoreDataViewModel.current
+    val menuCategories by storeDataViewModel.menuCategories.collectAsState()
+    val featuredImages by storeDataViewModel.featuredImages.collectAsState()
+    val stampCoupon by storeDataViewModel.stampCoupon.collectAsState()
+
     HorizontalPager(
         count = StoreTabMenu.entries.size,
         state = pagerState,
@@ -233,13 +252,16 @@ fun OwnerHomeContentSection(
                 NewsScreen(navController)
             }
             StoreTabMenu.MENU -> {
-                MenuListSection()
+                MenuListSection(menuCategories = menuCategories)
             }
             StoreTabMenu.COUPON -> {
 
             }
+            StoreTabMenu.STAMP -> {
+                stampCoupon?.let { StampCouponSection(stampCoupon = it) }
+            }
             StoreTabMenu.PHOTO -> {
-
+                FeaturedImageSection(featuredImages = featuredImages)
             }
             StoreTabMenu.STORY -> {
 
@@ -251,14 +273,37 @@ fun OwnerHomeContentSection(
     }
 }
 
+@Composable
+fun StampCouponSection(
+    stampCoupon: StampCouponData
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp)
+    ) {
+        StampCouponItem(stampCoupon = stampCoupon)
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        when(stampCoupon.rewardInterval) {
+            5 -> {
+                RewardItem(indexText = "보상 1",rewardText = stampCoupon.rewardFor5 ?: "올바르지 않은 값입니다.")
+                Spacer(modifier = Modifier.height(8.dp))
+                RewardItem(indexText = "보상 2",rewardText = stampCoupon.rewardFor10)
+            }
+            10 -> {
+                RewardItem(indexText = "보상 2",rewardText = stampCoupon.rewardFor10)
+            }
+        }
+    }
+}
+
 /**
  * StoreHome MenuList
  */
 @Composable
-fun MenuListSection() {
-    val storeDataViewModel = LocalStoreDataViewModel.current
-    val menuCategories by storeDataViewModel.menuCategories.collectAsState()
-
+fun MenuListSection(menuCategories: List<MenuCategoryData>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -281,6 +326,11 @@ fun MenuListSection() {
             }
         }
     }
+}
+
+@Composable
+fun FeaturedImageSection(featuredImages: List<FeaturedImageData>) {
+
 }
 
 @Composable
