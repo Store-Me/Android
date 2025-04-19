@@ -236,6 +236,7 @@ fun OwnerHomeContentSection(
     val menuCategories by storeDataViewModel.menuCategories.collectAsState()
     val featuredImages by storeDataViewModel.featuredImages.collectAsState()
     val stampCoupon by storeDataViewModel.stampCoupon.collectAsState()
+    val coupons by storeDataViewModel.coupons.collectAsState()
 
     HorizontalPager(
         count = StoreTabMenu.entries.size,

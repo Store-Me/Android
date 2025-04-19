@@ -45,7 +45,7 @@ import com.store_me.storeme.ui.component.StoryPlayer
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
-import com.store_me.storeme.utils.BACKGROUND_ROUNDING_VALUE
+import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 @Composable
@@ -187,6 +187,6 @@ fun StoryThumbnailItem(modifier: Modifier, storyData: StoryData) {
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(9f / 16f)
-            .clip(RoundedCornerShape(BACKGROUND_ROUNDING_VALUE))
+            .clip(RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
     )
 }
