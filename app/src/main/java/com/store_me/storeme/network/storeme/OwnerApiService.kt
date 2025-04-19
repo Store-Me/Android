@@ -1,33 +1,28 @@
 package com.store_me.storeme.network.storeme
 
-import com.store_me.storeme.data.CouponData
 import com.store_me.storeme.data.StampCouponData
 import com.store_me.storeme.data.StoryData
-import com.store_me.storeme.data.request.store.CouponRequest
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
-import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
-import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
+import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
 import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
+import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.request.store.PostStampCouponRequest
 import com.store_me.storeme.data.request.store.PostStoryRequest
-import com.store_me.storeme.data.response.AcceptCouponResponse
 import com.store_me.storeme.data.response.BusinessHoursResponse
-import com.store_me.storeme.data.response.CouponsResponse
 import com.store_me.storeme.data.response.FeaturedImagesResponse
 import com.store_me.storeme.data.response.LinksResponse
 import com.store_me.storeme.data.response.MenusResponse
 import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.data.response.NoticeResponse
 import com.store_me.storeme.data.response.PagingResponse
-import com.store_me.storeme.data.response.StoreMeResponse
-import com.store_me.storeme.data.response.StampCouponResponse
 import com.store_me.storeme.data.response.StampCouponPasswordResponse
-import com.store_me.storeme.data.response.UseCouponResponse
+import com.store_me.storeme.data.response.StampCouponResponse
+import com.store_me.storeme.data.response.StoreMeResponse
 import com.store_me.storeme.data.store.StoreInfoData
 import retrofit2.Response
 import retrofit2.http.Body
@@ -167,58 +162,7 @@ interface OwnerApiService {
         @Body patchStoreFeaturedImagesRequest: PatchStoreFeaturedImagesRequest
     ): Response<StoreMeResponse<FeaturedImagesResponse>>
 
-    /**
-     * 쿠폰 목록 조회 API
-     */
-    @GET("api/auth/store/{storeId}/coupons")
-    suspend fun getStoreCoupons(
-        @Path("storeId") storeId: String
-    ): Response<CouponsResponse>
 
-    /**
-     * 쿠폰 생성 API
-     */
-    @POST("api/auth/store/{storeId}/coupons")
-    suspend fun postStoreCoupon(
-        @Path("storeId") storeId: String,
-        @Body couponRequest: CouponRequest
-    ): Response<StoreMeResponse<CouponData>>
-
-    /**
-     * 쿠폰 수정 API
-     */
-    @PATCH("api/auth/store/{storeId}/coupons/{couponId}")
-    suspend fun patchStoreCoupon(
-        @Path("storeId") storeId: String,
-        @Body couponRequest: CouponRequest
-    ): Response<StoreMeResponse<CouponData>>
-
-    /**
-     * 쿠폰 삭제 API
-     */
-    @DELETE("api/auth/store/{storeId}/coupons/{couponId}")
-    suspend fun deleteStoreCoupon(
-        @Path("storeId") storeId: String,
-        @Path("couponId") couponId: String
-    ): Response<StoreMeResponse<Unit>>
-
-    /**
-     * 쿠폰 수령 API
-     */
-    @POST("api/auth/store/{storeId}/coupons/{couponId}/accept")
-    suspend fun acceptStoreCoupon(
-        @Path("storeId") storeId: String,
-        @Path("couponId") couponId: String
-    ): Response<StoreMeResponse<AcceptCouponResponse>>
-
-    /**
-     * 쿠폰 사용 API
-     */
-    @POST("api/auth/store/{storeId}/coupons/{couponId}/use")
-    suspend fun useStoreCoupon(
-        @Path("storeId") storeId: String,
-        @Path("couponId") couponId: String
-    ): Response<StoreMeResponse<UseCouponResponse>>
 
     /**
      * 메뉴 조회 API

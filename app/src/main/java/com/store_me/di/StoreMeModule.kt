@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.store_me.auth.AuthInterceptor
 import com.store_me.storeme.network.storeme.AuthApiService
+import com.store_me.storeme.network.storeme.CouponApiService
 import com.store_me.storeme.network.storeme.CustomerApiService
 import com.store_me.storeme.network.storeme.OwnerApiService
 import com.store_me.storeme.network.storeme.PostApiService
@@ -160,6 +161,14 @@ object StoreMeModule {
         @Named("AuthorizedRetrofit") retrofit: Retrofit
     ): CustomerApiService {
         return retrofit.create(CustomerApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun CouponApiService(
+        @Named("AuthorizedRetrofit") retrofit: Retrofit
+    ): CouponApiService {
+        return retrofit.create(CouponApiService::class.java)
     }
 
     @Provides

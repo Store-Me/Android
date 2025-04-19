@@ -22,6 +22,7 @@ import com.store_me.storeme.data.store.BusinessHourData
 import com.store_me.storeme.data.store.FeaturedImageData
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.repository.naver.NaverRepository
+import com.store_me.storeme.repository.storeme.CouponRepository
 import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.SuccessEventBus
@@ -35,6 +36,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StoreDataViewModel @Inject constructor(
     private val ownerRepository: OwnerRepository,
+    private val couponRepository: CouponRepository,
     private val naverRepository: NaverRepository
 ): ViewModel() {
     private val _storeInfoData = MutableStateFlow<StoreInfoData?>(null)
@@ -485,7 +487,7 @@ class StoreDataViewModel @Inject constructor(
      */
     fun getStoreCoupons() {
         viewModelScope.launch {
-            val response = ownerRepository.getStoreCoupons()
+            val response = couponRepository.getStoreCoupons()
 
             response.onSuccess {
                 updateCoupons(it.coupons)

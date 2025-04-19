@@ -7,6 +7,7 @@ import com.store_me.storeme.data.CouponData
 import com.store_me.storeme.data.enums.coupon.CouponDiscountType
 import com.store_me.storeme.data.enums.coupon.CouponType
 import com.store_me.storeme.data.request.store.CouponRequest
+import com.store_me.storeme.repository.storeme.CouponRepository
 import com.store_me.storeme.repository.storeme.ImageRepository
 import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.utils.DateTimeUtils
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class CouponManagementViewModel @Inject constructor(
     private val imageRepository: ImageRepository,
     private val ownerRepository: OwnerRepository,
+    private val couponRepository: CouponRepository
 ) : ViewModel() {
     private val _editCoupon = MutableStateFlow<CouponData?>(null)
     val editCoupon: StateFlow<CouponData?> = _editCoupon
@@ -188,7 +190,7 @@ class CouponManagementViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val response = ownerRepository.postStoreCoupon(
+            val response = couponRepository.postStoreCoupon(
                 couponRequest = CouponRequest(
                     name = name.value,
                     type = couponType.name,
@@ -223,7 +225,7 @@ class CouponManagementViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            val response = ownerRepository.patchStoreCoupon(
+            val response = couponRepository.patchStoreCoupon(
                 couponRequest = CouponRequest(
                     name = name.value,
                     type = couponType.name,
@@ -251,7 +253,7 @@ class CouponManagementViewModel @Inject constructor(
 
     fun deleteCoupon(couponId: String) {
         viewModelScope.launch {
-            val response = ownerRepository.deleteStoreCoupon(
+            val response = couponRepository.deleteStoreCoupon(
                 couponId = couponId
             )
 

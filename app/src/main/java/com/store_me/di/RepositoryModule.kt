@@ -4,6 +4,8 @@ import com.store_me.storeme.repository.naver.NaverRepository
 import com.store_me.storeme.repository.naver.NaverRepositoryImpl
 import com.store_me.storeme.repository.storeme.AuthRepository
 import com.store_me.storeme.repository.storeme.AuthRepositoryImpl
+import com.store_me.storeme.repository.storeme.CouponRepository
+import com.store_me.storeme.repository.storeme.CouponRepositoryImpl
 import com.store_me.storeme.repository.storeme.CustomerRepository
 import com.store_me.storeme.repository.storeme.CustomerRepositoryImpl
 import com.store_me.storeme.repository.storeme.ImageRepository
@@ -58,6 +60,12 @@ abstract class RepositoryModule {
     abstract fun bindImageRepository(
         imageRepositoryImpl: ImageRepositoryImpl
     ): ImageRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCouponRepository(
+        couponRepositoryImpl: CouponRepositoryImpl
+    ): CouponRepository
 
     @Binds
     @Singleton

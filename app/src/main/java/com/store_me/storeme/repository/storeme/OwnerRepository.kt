@@ -1,34 +1,29 @@
 package com.store_me.storeme.repository.storeme
 
 import com.store_me.auth.Auth
-import com.store_me.storeme.data.CouponData
 import com.store_me.storeme.data.StampCouponData
 import com.store_me.storeme.data.StoryData
-import com.store_me.storeme.data.request.store.CouponRequest
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
-import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
-import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
+import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchStoreIntroRequest
 import com.store_me.storeme.data.request.store.PatchStoreLocationRequest
+import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.request.store.PostStampCouponRequest
 import com.store_me.storeme.data.request.store.PostStoryRequest
-import com.store_me.storeme.data.response.AcceptCouponResponse
 import com.store_me.storeme.data.response.BusinessHoursResponse
-import com.store_me.storeme.data.response.CouponsResponse
 import com.store_me.storeme.data.response.FeaturedImagesResponse
 import com.store_me.storeme.data.response.LinksResponse
 import com.store_me.storeme.data.response.MenusResponse
 import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.data.response.NoticeResponse
 import com.store_me.storeme.data.response.PagingResponse
-import com.store_me.storeme.data.response.StoreMeResponse
 import com.store_me.storeme.data.response.StampCouponPasswordResponse
 import com.store_me.storeme.data.response.StampCouponResponse
-import com.store_me.storeme.data.response.UseCouponResponse
+import com.store_me.storeme.data.response.StoreMeResponse
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.network.storeme.OwnerApiService
 import com.store_me.storeme.utils.exception.ApiExceptionHandler.toResult
@@ -69,18 +64,6 @@ interface OwnerRepository {
     suspend fun getStoreFeaturedImages(): Result<FeaturedImagesResponse>
 
     suspend fun patchFeaturedImages(patchStoreFeaturedImagesRequest: PatchStoreFeaturedImagesRequest): Result<StoreMeResponse<FeaturedImagesResponse>>
-
-    suspend fun getStoreCoupons(): Result<CouponsResponse>
-
-    suspend fun postStoreCoupon(couponRequest: CouponRequest): Result<StoreMeResponse<CouponData>>
-
-    suspend fun patchStoreCoupon(couponRequest: CouponRequest): Result<StoreMeResponse<CouponData>>
-
-    suspend fun deleteStoreCoupon(couponId: String): Result<StoreMeResponse<Unit>>
-
-    suspend fun acceptStoreCoupon(couponId: String): Result<StoreMeResponse<AcceptCouponResponse>>
-
-    suspend fun useStoreCoupon(couponId: String): Result<StoreMeResponse<UseCouponResponse>>
 
     suspend fun getStoreMenus(): Result<MenusResponse>
 
@@ -462,154 +445,7 @@ class OwnerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getStoreCoupons(): Result<CouponsResponse> {
-        return try {
-            val response = ownerApiService.getStoreCoupons(
-                storeId = auth.getStoreId(),
-            )
 
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.d(responseBody.toString())
-
-                Result.success(responseBody ?: CouponsResponse(coupons = emptyList()))
-            } else {
-                ResponseHandler.handleErrorResponse(response)
-            }
-        } catch (e: Exception) {
-            e.toResult()
-        }
-    }
-
-    override suspend fun postStoreCoupon(couponRequest: CouponRequest): Result<StoreMeResponse<CouponData>> {
-        return try {
-            val response = ownerApiService.postStoreCoupon(
-                storeId = auth.getStoreId(),
-                couponRequest = couponRequest
-            )
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.d(responseBody.toString())
-
-                if(responseBody != null) {
-                    Result.success(responseBody)
-                } else {
-                    ResponseHandler.handleErrorResponse(response)
-                }
-            } else {
-                ResponseHandler.handleErrorResponse(response)
-            }
-        } catch (e: Exception) {
-            e.toResult()
-        }
-    }
-
-    override suspend fun patchStoreCoupon(couponRequest: CouponRequest): Result<StoreMeResponse<CouponData>> {
-        return try {
-            val response = ownerApiService.patchStoreCoupon(
-                storeId = auth.getStoreId(),
-                couponRequest = couponRequest
-            )
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.d(responseBody.toString())
-
-                if(responseBody != null) {
-                    Result.success(responseBody)
-                } else {
-                    ResponseHandler.handleErrorResponse(response)
-                }
-            } else {
-                ResponseHandler.handleErrorResponse(response)
-            }
-        } catch (e: Exception) {
-            e.toResult()
-        }
-    }
-
-    override suspend fun deleteStoreCoupon(couponId: String): Result<StoreMeResponse<Unit>> {
-        return try {
-            val response = ownerApiService.deleteStoreCoupon(
-                storeId = auth.getStoreId(),
-                couponId = couponId
-            )
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.d(responseBody.toString())
-
-                if(responseBody != null) {
-                    Result.success(responseBody)
-                } else {
-                    ResponseHandler.handleErrorResponse(response)
-                }
-            } else {
-                ResponseHandler.handleErrorResponse(response)
-            }
-        } catch (e: Exception) {
-            e.toResult()
-        }
-    }
-
-    override suspend fun acceptStoreCoupon(
-        couponId: String
-    ): Result<StoreMeResponse<AcceptCouponResponse>> {
-        return try {
-            val response = ownerApiService.acceptStoreCoupon(
-                storeId = auth.getStoreId(),
-                couponId = couponId
-            )
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.d(responseBody.toString())
-
-                if(responseBody != null) {
-                    Result.success(responseBody)
-                } else {
-                    ResponseHandler.handleErrorResponse(response)
-                }
-            } else {
-                ResponseHandler.handleErrorResponse(response)
-            }
-        } catch (e: Exception) {
-            e.toResult()
-        }
-    }
-
-    override suspend fun useStoreCoupon(
-        couponId: String
-    ): Result<StoreMeResponse<UseCouponResponse>> {
-        return try {
-            val response = ownerApiService.useStoreCoupon(
-                storeId = auth.getStoreId(),
-                couponId = couponId
-            )
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.d(responseBody.toString())
-
-                if(responseBody != null) {
-                    Result.success(responseBody)
-                } else {
-                    ResponseHandler.handleErrorResponse(response)
-                }
-            } else {
-                ResponseHandler.handleErrorResponse(response)
-            }
-        } catch (e: Exception) {
-            e.toResult()
-        }
-    }
 
     override suspend fun getStoreMenus(): Result<MenusResponse> {
         return try {

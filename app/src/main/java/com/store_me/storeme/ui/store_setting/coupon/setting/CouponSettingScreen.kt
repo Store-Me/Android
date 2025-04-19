@@ -74,15 +74,11 @@ import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.ui.store_setting.coupon.detail.OwnerCouponDetailScreen
 import com.store_me.storeme.ui.store_setting.coupon.detail.OwnerCouponDetailViewModel
-import com.store_me.storeme.ui.theme.CouponDueDateBoxColor
-import com.store_me.storeme.ui.theme.CouponDueDateIconColor
 import com.store_me.storeme.ui.theme.CouponQuantityBoxColor
 import com.store_me.storeme.ui.theme.CouponQuantityIconColor
 import com.store_me.storeme.ui.theme.CreateCouponArrowColor
 import com.store_me.storeme.ui.theme.DisabledColor
 import com.store_me.storeme.ui.theme.DividerColor
-import com.store_me.storeme.ui.theme.FinishedColor
-import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.PopularBoxColor
 import com.store_me.storeme.ui.theme.PopularTextColor

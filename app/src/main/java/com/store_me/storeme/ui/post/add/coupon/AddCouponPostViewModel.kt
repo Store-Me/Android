@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.store_me.storeme.data.CouponData
 import com.store_me.storeme.data.StampCouponData
 import com.store_me.storeme.data.request.store.CreateCouponPostRequest
+import com.store_me.storeme.repository.storeme.CouponRepository
 import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.repository.storeme.PostRepository
 import com.store_me.storeme.utils.ErrorEventBus
@@ -19,6 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AddCouponPostViewModel @Inject constructor(
     private val ownerRepository: OwnerRepository,
+    private val couponRepository: CouponRepository,
     private val postRepository: PostRepository
 ): ViewModel() {
     private val _title = MutableStateFlow("")
@@ -60,7 +62,7 @@ class AddCouponPostViewModel @Inject constructor(
 
     fun getStoreCoupons() {
         viewModelScope.launch {
-            val response = ownerRepository.getStoreCoupons()
+            val response = couponRepository.getStoreCoupons()
 
             response.onSuccess {
                 _coupons.value = it.coupons
@@ -107,7 +109,7 @@ class AddCouponPostViewModel @Inject constructor(
                     title = title.value,
                     description = description.value,
                     couponId = if(selectedCoupon.value == null) null else selectedCoupon.value!!.couponId,
-                    isStampCoupon = if(selectedStamp.value == null) false else true
+                    isStampCoupon = selectedStamp.value != null
                 )
             )
 
