@@ -4,7 +4,6 @@ package com.store_me.storeme.ui.store_setting.coupon.setting
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -54,7 +53,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -92,7 +90,9 @@ import com.store_me.storeme.ui.theme.RecommendBoxColor
 import com.store_me.storeme.ui.theme.RecommendTextColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
+import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.DateTimeUtils
+import com.store_me.storeme.utils.TEXT_ROUNDING_VALUE
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
@@ -268,7 +268,7 @@ fun GuideImageSection() {
                     .aspectRatio(1.0f)
                     .alpha(alpha)
                     .scale(scale)
-                    .clip(shape = RoundedCornerShape(10))
+                    .clip(shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
                     .clickable(
                         onClick = {
                             coroutineScope.launch {
@@ -302,7 +302,7 @@ fun CreateCouponButton(couponType: CouponType, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
-        shape = RoundedCornerShape(30),
+        shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE),
         colors = ButtonDefaults.buttonColors(
             containerColor = SubHighlightColor,
             contentColor = Color.Black
@@ -402,13 +402,13 @@ fun CouponInfo(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10))
-            .border(width = 2.dp, color = SubHighlightColor, shape = RoundedCornerShape(10))
+            .clip(RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
+            .border(width = 2.dp, color = SubHighlightColor, shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
     ) {
         Column(
             modifier = Modifier
                 .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             //쿠폰 이미지
             CouponImage(
@@ -424,20 +424,15 @@ fun CouponInfo(
             )
 
             //쿠폰 제공 대상
-            CouponTarget(
+            CouponTargetAndQuantity(
                 isActivate = isActivate,
-                couponTarget = coupon.target
+                couponTarget = coupon.target,
+                couponQuantity = coupon.quantity
             )
 
             //활성 여부
             CouponActivateButton(
                 isActivate = isActivate
-            )
-
-            //쿠폰 수량, 마감 기한
-            CouponLimit(
-                isActivate = isActivate,
-                coupon = coupon
             )
         }
     }
@@ -449,7 +444,7 @@ fun CouponContent(
     coupon: CouponData
 ) {
     val valueText = when(coupon.type) {
-        CouponType.Discount.name -> coupon.value + if((coupon.value.toLongOrNull() ?: 0) > 100) "원" else "%" + " 할인"
+        CouponType.Discount.name -> coupon.value + (if((coupon.value.toLongOrNull() ?: 0) > 100) "원" else "%") + " 할인"
         CouponType.Giveaway.name -> "${coupon.value} 증정"
         CouponType.Other.name -> coupon.value
         else -> ""
@@ -457,27 +452,12 @@ fun CouponContent(
 
     val textColor = if(isActivate) Color.Black else DisabledColor
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Text(
-            text = coupon.name,
-            style = storeMeTextStyle(FontWeight.ExtraBold, 2),
-            color = textColor,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Text(
-            text = valueText,
-            style = storeMeTextStyle(FontWeight.Bold, 0),
-            color = textColor,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
+    Text(
+        text = valueText,
+        style = storeMeTextStyle(FontWeight.Bold, 0),
+        color = textColor,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable
@@ -499,7 +479,7 @@ fun CouponImage(
             url = imageUrl,
             accountType = AccountType.OWNER,
             modifier = Modifier
-                .clip(shape = RoundedCornerShape(10))
+                .clip(shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
         )
 
         Box(
@@ -509,12 +489,12 @@ fun CouponImage(
                     brush = Brush.verticalGradient(
                         colorStops = colorSteps
                     ),
-                    shape = RoundedCornerShape(10)
+                    shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)
                 )
         )
 
         Text(
-            text = storeName ?: "",
+            text = storeName,
             style = storeMeTextStyle(FontWeight.Bold, 1),
             color = Color.White,
             modifier = Modifier
@@ -530,10 +510,15 @@ fun CouponImage(
 }
 
 @Composable
-fun CouponTarget(couponTarget: String, isActivate: Boolean) {
+fun CouponTargetAndQuantity(
+    couponTarget: String,
+    isActivate: Boolean,
+    couponQuantity: Long?
+) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         when(couponTarget) {
             CouponTarget.All.name -> {
@@ -543,7 +528,7 @@ fun CouponTarget(couponTarget: String, isActivate: Boolean) {
                     modifier = Modifier
                         .background(
                             color = if(isActivate) RecommendBoxColor else DisabledColor,
-                            shape = RoundedCornerShape(6.dp)
+                            shape = RoundedCornerShape(TEXT_ROUNDING_VALUE)
                         )
                         .padding(4.dp),
                     color = if(isActivate) RecommendTextColor else DividerColor
@@ -556,10 +541,29 @@ fun CouponTarget(couponTarget: String, isActivate: Boolean) {
                     modifier = Modifier
                         .background(
                             color = if(isActivate) PopularBoxColor else DisabledColor,
-                            shape = RoundedCornerShape(6.dp)
+                            shape = RoundedCornerShape(TEXT_ROUNDING_VALUE)
                         )
                         .padding(4.dp),
                     color = if(isActivate) PopularTextColor else DividerColor
+                )
+            }
+        }
+
+        when(couponQuantity) {
+            null -> {
+                //NOTHING
+            }
+            else -> {
+                Text(
+                    text = "잔여 $couponQuantity",
+                    style = storeMeTextStyle(FontWeight.Bold, -2),
+                    modifier = Modifier
+                        .background(
+                            color = if(isActivate) CouponQuantityBoxColor else DisabledColor,
+                            shape = RoundedCornerShape(TEXT_ROUNDING_VALUE)
+                        )
+                        .padding(4.dp),
+                    color = if(isActivate) CouponQuantityIconColor else DividerColor
                 )
             }
         }
@@ -583,91 +587,5 @@ fun CouponActivateButton(isActivate: Boolean) {
         )
     ) {
 
-    }
-}
-
-@Composable
-fun CouponLimit(
-    isActivate: Boolean,
-    coupon: CouponData
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_coupon_stack),
-                contentDescription = "쿠폰 수량 아이콘",
-                modifier = Modifier
-                    .size(24.dp)
-                    .background(color = CouponQuantityBoxColor, shape = RoundedCornerShape(15))
-                    .padding(4.dp),
-                tint = CouponQuantityIconColor
-            )
-
-            if(coupon.quantity != null) {
-                //수량 제한이 있는 경우
-                Text(
-                    text = coupon.quantity.toString(),
-                    style = storeMeTextStyle(FontWeight.Bold, -1),
-                    color = Color.Black
-                )
-
-                Text(
-                    text = "장",
-                    style = storeMeTextStyle(FontWeight.Bold, -1),
-                    color = GuideColor
-                )
-            } else {
-                Text(
-                    text = "제한없음",
-                    style = storeMeTextStyle(FontWeight.Bold, -1),
-                    color = Color.Black
-                )
-            }
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_clock),
-                contentDescription = "시간 아이콘",
-                modifier = Modifier
-                    .size(24.dp)
-                    .background(color = if(isActivate) CouponDueDateBoxColor else FinishedColor, shape = RoundedCornerShape(15))
-                    .padding(4.dp),
-                tint = if(isActivate) CouponDueDateIconColor else Color.White
-            )
-
-            if(isActivate) {
-                Text(
-                    text = DateTimeUtils.formatToShortDate(coupon.dueDate),
-                    style = storeMeTextStyle(FontWeight.Bold, -1),
-                    color = Color.Black
-                )
-
-                Text(
-                    text = "까지",
-                    style = storeMeTextStyle(FontWeight.Bold, -1),
-                    color = GuideColor
-                )
-            } else {
-                Text(
-                    text = "기한 만료",
-                    style = storeMeTextStyle(FontWeight.Bold, -1),
-                    color = FinishedColor
-                )
-            }
-        }
     }
 }

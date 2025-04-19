@@ -10,17 +10,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,9 +25,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,7 +40,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
@@ -51,7 +47,6 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.CouponData
 import com.store_me.storeme.data.UserReceivedCouponData
 import com.store_me.storeme.data.UserUsedCouponData
-import com.store_me.storeme.data.enums.coupon.CouponType
 import com.store_me.storeme.data.enums.tab_menu.CouponDetailTabMenu
 import com.store_me.storeme.ui.component.StoreMeTabContent
 import com.store_me.storeme.ui.component.StoreMeTabRow
@@ -75,8 +70,6 @@ fun OwnerCouponDetailScreen(
 
     val coupon by ownerCouponDetailViewModel.coupon.collectAsState()
 
-    //TODO 상세 정보 조회
-
     if(coupon != null) {
         LazyColumn {
             item {
@@ -84,6 +77,9 @@ fun OwnerCouponDetailScreen(
                     animatedVisibilityScope = animatedVisibilityScope,
                     sharedTransitionScope = sharedTransitionScope,
                     coupon = coupon!!,
+                    onShowAll = {
+
+                    },
                     onEdit = { onEdit(coupon!!.type) },
                     onAttach = {
 
@@ -119,11 +115,12 @@ fun CouponDetailInfo(
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
     coupon: CouponData,
+    onShowAll: () -> Unit,
     onEdit: () -> Unit,
     onAttach: () -> Unit
 ) {
     val storeDataViewModel = LocalStoreDataViewModel.current
-    var couponHeight by remember { mutableStateOf(0) }
+    var couponHeight by remember { mutableIntStateOf(0) }
 
     Row(
         modifier = Modifier
@@ -154,19 +151,34 @@ fun CouponDetailInfo(
                 .height(with(LocalDensity.current) { (couponHeight).toDp() }),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            CouponDetailBox(
+            CouponDetailIconBox(
                 modifier = Modifier
                     .weight(1f),
-                title = "쿠폰 생성일",
-                content = DateTimeUtils.formatToDate(coupon.createdAt)
-            )
+                title = "쿠폰 내용 보기",
+                iconResource = R.drawable.ic_coupon
+            ) {
+                onShowAll()
+            }
 
-            CouponDetailBox(
+            Row(
                 modifier = Modifier
                     .weight(1f),
-                title = "쿠폰 만료일",
-                content = DateTimeUtils.formatToDate(coupon.dueDate)
-            )
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                CouponDetailBox(
+                    modifier = Modifier
+                        .weight(1f),
+                    title = "쿠폰 생성일",
+                    content = DateTimeUtils.formatToDate(coupon.createdAt)
+                )
+
+                CouponDetailBox(
+                    modifier = Modifier
+                        .weight(1f),
+                    title = "쿠폰 만료일",
+                    content = DateTimeUtils.formatToDate(coupon.dueDate)
+                )
+            }
 
             Row(
                 modifier = Modifier
@@ -235,7 +247,7 @@ fun CouponDetailBox(modifier: Modifier, title: String, content: String) {
 
         Text(
             text = content,
-            style = storeMeTextStyle(FontWeight.ExtraBold, 0),
+            style = storeMeTextStyle(FontWeight.Normal, -1),
             color = PostTimeTextColor
         )
     }

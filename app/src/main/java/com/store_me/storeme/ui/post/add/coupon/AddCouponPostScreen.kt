@@ -50,7 +50,7 @@ import com.store_me.storeme.ui.store_setting.stamp.StampCouponItem
 import com.store_me.storeme.ui.theme.DividerColor
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.BACKGROUND_ROUNDING_VALUE
+import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
@@ -200,9 +200,9 @@ fun SelectCouponItem(
                     .border(
                         width = 2.dp,
                         color = DividerColor,
-                        shape = RoundedCornerShape(BACKGROUND_ROUNDING_VALUE)
+                        shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)
                     )
-                    .clip(RoundedCornerShape(BACKGROUND_ROUNDING_VALUE))
+                    .clip(RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
                     .clickable { showBottomSheet = true }
                     .padding(horizontal = 16.dp, vertical = 24.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)

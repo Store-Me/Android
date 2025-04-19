@@ -70,7 +70,7 @@ import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.LighterHighlightColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.BACKGROUND_ROUNDING_VALUE
+import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
@@ -193,9 +193,9 @@ fun EditVoteItem(
             .border(
                 width = 2.dp,
                 color = DividerColor,
-                shape = RoundedCornerShape(BACKGROUND_ROUNDING_VALUE)
+                shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)
             )
-            .clip(RoundedCornerShape(BACKGROUND_ROUNDING_VALUE))
+            .clip(RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
             .padding(horizontal = 16.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -243,7 +243,7 @@ fun AddOptionButton(onAddOption: () -> Unit) {
             .border(
                 color = DisabledColor,
                 width = 1.dp,
-                shape = RoundedCornerShape(BACKGROUND_ROUNDING_VALUE)
+                shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)
             )
     ) {
         onAddOption()
@@ -263,7 +263,7 @@ fun OptionTextFieldItem(
         textStyle = storeMeTextStyle(FontWeight.Bold, 0),
         modifier = Modifier
             .fillMaxWidth(),
-        shape = RoundedCornerShape(BACKGROUND_ROUNDING_VALUE),
+        shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE),
         trailingIcon = {
             AnimatedContent(
                 targetState = text.isEmpty()
@@ -329,9 +329,9 @@ fun SelectPeriodItem(
             .border(
                 width = 2.dp,
                 color = DividerColor,
-                shape = RoundedCornerShape(BACKGROUND_ROUNDING_VALUE)
+                shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)
             )
-            .clip(RoundedCornerShape(BACKGROUND_ROUNDING_VALUE))
+            .clip(RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
             .padding(horizontal = 16.dp, vertical = 24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
