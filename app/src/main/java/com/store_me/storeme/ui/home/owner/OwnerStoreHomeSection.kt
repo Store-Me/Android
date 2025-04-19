@@ -100,7 +100,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItem, onClick: (StoreHomeItem) 
             StoreHomeItem.NOTICE -> NoticeSection(notice) { onClick(it) }
             StoreHomeItem.FEATURED_IMAGES -> FeaturedImageSection(featuredImages) { onClick(it) }
             StoreHomeItem.MENU -> MenuSection(menuCategories) { onClick(it) }
-            StoreHomeItem.COUPON -> CouponSection(coupons) { onClick(it) }
+            StoreHomeItem.COUPON -> CouponPreviewSection(coupons) { onClick(it) }
             StoreHomeItem.STAMP_COUPON -> StampCouponSection(stampCoupon) { onClick(it) }
             else -> {
 
@@ -351,8 +351,11 @@ fun MenuItem(menuData: MenuData) {
     }
 }
 
+/**
+ *
+ */
 @Composable
-fun CouponSection(coupons: List<CouponData>, onClick: (StoreHomeItem) -> Unit) {
+fun CouponPreviewSection(coupons: List<CouponData>, onClick: (StoreHomeItem) -> Unit) {
     val storeDataViewModel = LocalStoreDataViewModel.current
     val validCoupons = remember(coupons) {
         coupons
