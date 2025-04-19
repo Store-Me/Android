@@ -70,7 +70,6 @@ class LoginViewModel @Inject constructor(
 
             response.onSuccess {
                 //로그인 성공 시
-                auth.updateLoginType(LoginType.KAKAO)
                 onLoginSuccess()
             }.onFailure {
                 //로그인 실패 시
@@ -95,7 +94,6 @@ class LoginViewModel @Inject constructor(
 
             response.onSuccess {
                 //로그인 성공 시
-                auth.updateLoginType(LoginType.APP)
                 onLoginSuccess()
             }.onFailure {
                 //로그인 실패 시
@@ -108,7 +106,7 @@ class LoginViewModel @Inject constructor(
         }
     }
 
-    private fun onLoginSuccess() {
+    fun onLoginSuccess() {
         viewModelScope.launch {
             val storeDeferred = async { ownerRepository.getMyStores() }
             val customerDeferred = async { customerRepository.getCustomerInfo() }

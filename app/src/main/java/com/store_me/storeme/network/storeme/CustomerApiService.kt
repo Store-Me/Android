@@ -11,7 +11,7 @@ interface CustomerApiService {
     /**
      * 회원 정보 요청 (손님)
      */
-    @GET("api/customer")
+    @GET("api/auth/customer")
     suspend fun getCustomerInfo(
 
     ): Response<CustomerInfoResponse>

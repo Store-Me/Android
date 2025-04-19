@@ -20,11 +20,7 @@ object AuthModule {
     fun provideAuth(
         @ApplicationContext context: Context
     ): Auth {
-        val auth = Auth(context)
-
-        auth.init()
-
-        return auth
+        return Auth(context)
     }
 
     @Provides

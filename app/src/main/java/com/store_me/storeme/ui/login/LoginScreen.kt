@@ -83,6 +83,7 @@ import com.store_me.storeme.utils.KakaoLoginHelper
 import com.store_me.storeme.utils.ValidationUtils
 import com.store_me.storeme.utils.composition_locals.LocalSnackbarHostState
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
+import com.store_me.storeme.utils.preference.TokenPreferencesHelper
 import kotlinx.coroutines.launch
 
 @Composable
@@ -136,6 +137,12 @@ fun LoginScreen(
         if(myStores != null || customerInfo != null) {
             loadingViewModel.hideLoading()
             showBottomSheet = true
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if(TokenPreferencesHelper.getAccessToken() != null && TokenPreferencesHelper.getRefreshToken() != null) {
+            loginViewModel.onLoginSuccess()
         }
     }
 

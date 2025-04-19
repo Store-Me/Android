@@ -17,10 +17,6 @@ class Auth @Inject constructor(
     private val _isLoggedIn = MutableStateFlow(false)
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
 
-    //로그인 타입
-    private val _loginType = MutableStateFlow<LoginType?>(null)
-    val loginType: StateFlow<LoginType?> = _loginType
-
     //계정 타입
     private val _accountType = MutableStateFlow(AccountType.OWNER)
     val accountType: StateFlow<AccountType> = _accountType
@@ -28,12 +24,6 @@ class Auth @Inject constructor(
     //Owner 계정에서 선택된 StoreId
     private val _storeId = MutableStateFlow<String?>(null)
     val storeId: StateFlow<String?> = _storeId
-
-    //초기화
-    fun init() {
-        val refreshToken = TokenPreferencesHelper.getRefreshToken()
-        val accessToken = TokenPreferencesHelper.getAccessToken()
-    }
 
     fun getStoreId(): String {
         return storeId.value ?: ""
@@ -47,13 +37,6 @@ class Auth @Inject constructor(
      */
     fun updateAccountType(newAccountType: AccountType) {
         _accountType.value = newAccountType
-    }
-
-    /**
-     * 로그인 타입 설정 함수
-     */
-    fun updateLoginType(newLoginType: LoginType) {
-        _loginType.value = newLoginType
     }
 
     /**

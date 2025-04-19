@@ -11,8 +11,6 @@ object TokenPreferencesHelper {
     private const val KEY_REFRESH_TOKEN = "refresh_token"
     private const val KEY_EXPIRED_TIME = "expired_time"
 
-    private const val TOKEN_EXPIRATION_BUFFER = 1 * 60 * 1000L //1분
-
     private lateinit var sharedPreferences: SharedPreferences
 
     /**

@@ -2,16 +2,20 @@ package com.store_me.auth
 
 import com.store_me.storeme.repository.storeme.AuthRepository
 import com.store_me.storeme.utils.preference.TokenPreferencesHelper
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import okhttp3.Interceptor
 import okhttp3.Response
 import timber.log.Timber
+import java.io.IOException
 
 class AuthInterceptor(
     private val authRepository: AuthRepository,
     private val auth: Auth
 ): Interceptor {
     @Volatile
-    private var isRefreshing = false
+    private var tokenMutex = Mutex()
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
@@ -26,36 +30,44 @@ class AuthInterceptor(
         val response = chain.proceed(authenticatedRequest)
 
         //Unauthorized 응답 처리
-        if(response.code == 401) {
-            synchronized(this) {
-                if(!isRefreshing) {
+        if(response.code != 403) return response
 
-                    isRefreshing = true
+        response.close()
 
-                    try {
-                        val reissueResult = authRepository.reissueTokens()
-                        isRefreshing = false
+        Timber.d("Reissue Token")
 
-                        reissueResult.onSuccess {
-                            //기존 요청 재시도
-                            val retriedRequest = originalRequest.newBuilder()
-                                .addHeader("Authorization", "Bearer ${it.accessToken}")
-                                .build()
+        return runBlocking {
+            tokenMutex.withLock {
+                val latestToken = TokenPreferencesHelper.getAccessToken()
 
-                            return chain.proceed(retriedRequest)
-                        }.onFailure {
-                            auth.updateIsLoggedIn(false)
-
-                            Timber.e("Token reissue Failed: $it")
-                        }
-
-                    } finally {
-                        isRefreshing = false
-                    }
+                if(accessToken != latestToken) {
+                    val newRequest = originalRequest.newBuilder()
+                        .header("Authorization", "Bearer $latestToken")
+                        .build()
+                    return@runBlocking chain.proceed(newRequest)
                 }
+
+                val reissueResult = authRepository.reissueTokens()
+
+                reissueResult.fold(
+                    onSuccess = {
+                        TokenPreferencesHelper.saveTokens(
+                            accessToken = it.accessToken,
+                            refreshToken = it.refreshToken
+                        )
+
+                        val newRequest = originalRequest.newBuilder()
+                            .header("Authorization", "Bearer ${it.accessToken}")
+                            .build()
+                        return@runBlocking chain.proceed(newRequest)
+                    },
+                    onFailure = {
+                        auth.updateIsLoggedIn(false)
+
+                        throw IOException("토큰 갱신에 실패하였습니다.", it)
+                    }
+                )
             }
         }
-
-        return response
     }
 }
