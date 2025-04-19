@@ -289,12 +289,13 @@ fun StampCouponSection(
     stampCoupon: StampCouponData?,
     onClick: (StoreHomeItem) -> Unit
 ) {
-    if(stampCoupon != null) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp)
-        ) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp)
+    ) {
+        if(stampCoupon != null) {
+
             StampCouponItem(stampCoupon = stampCoupon)
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -309,26 +310,27 @@ fun StampCouponSection(
                     RewardItem(indexText = "보상 2",rewardText = stampCoupon.rewardFor10)
                 }
             }
+
+        } else {
+            Text(
+                text = "발급중인 스탬프 쿠폰이 없습니다. 스탬프를 새로 생성해보세요.",
+                style = storeMeTextStyle(FontWeight.Normal, 0),
+                color = GuideColor
+            )
         }
-    } else {
-        Text(
-            text = "발급중인 스탬프 쿠폰이 없습니다. 스탬프를 새로 생성해보세요.",
-            style = storeMeTextStyle(FontWeight.Normal, 0),
-            color = GuideColor
-        )
-    }
 
-    Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
-    DefaultButton(
-        buttonText = "스탬프 쿠폰 수정",
-        diffValue = 2,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = SubHighlightColor,
-            contentColor = Color.Black
-        )
-    ) {
-        onClick(StoreHomeItem.STAMP_COUPON)
+        DefaultButton(
+            buttonText = "스탬프 쿠폰 수정",
+            diffValue = 2,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = SubHighlightColor,
+                contentColor = Color.Black
+            )
+        ) {
+            onClick(StoreHomeItem.STAMP_COUPON)
+        }
     }
 }
 
