@@ -78,12 +78,13 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItem, onClick: (StoreHomeItem) 
     val featuredImages by storeDataViewModel.featuredImages.collectAsState()
     val menuCategories by storeDataViewModel.menuCategories.collectAsState()
     val coupons by storeDataViewModel.coupons.collectAsState()
+    val stampCoupon by storeDataViewModel.stampCoupon.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         Text(
             text = storeHomeItem.displayName,
@@ -100,6 +101,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItem, onClick: (StoreHomeItem) 
             StoreHomeItem.FEATURED_IMAGES -> FeaturedImageSection(featuredImages) { onClick(it) }
             StoreHomeItem.MENU -> MenuSection(menuCategories) { onClick(it) }
             StoreHomeItem.COUPON -> CouponSection(coupons) { onClick(it) }
+            StoreHomeItem.STAMP_COUPON -> StampCouponSection(stampCoupon) { onClick(it) }
             else -> {
 
             }
