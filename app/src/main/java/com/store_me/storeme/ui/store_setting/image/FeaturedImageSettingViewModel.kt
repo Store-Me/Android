@@ -28,6 +28,9 @@ class FeaturedImageSettingViewModel @Inject constructor(
     private val _croppedImageUrl = MutableStateFlow<String?>(null)
     val croppedImageUrl: StateFlow<String?> = _croppedImageUrl
 
+    private val _imageSize = MutableStateFlow<Pair<Int, Int>?>(null)
+    val imageSize: StateFlow<Pair<Int, Int>?> = _imageSize
+
     private val _uploadProgress = MutableStateFlow<Float>(0.0f)
     val uploadProgress: StateFlow<Float> = _uploadProgress
 
@@ -66,6 +69,10 @@ class FeaturedImageSettingViewModel @Inject constructor(
 
     fun updateCroppedImageUrl(url: String?) {
         _croppedImageUrl.value = url
+    }
+
+    fun updateImageSize(imageSize: Pair<Int, Int>?) {
+        _imageSize.value = imageSize
     }
 
     fun uploadStoreFeaturedImage() {

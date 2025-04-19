@@ -3,6 +3,7 @@
 package com.store_me.storeme.ui.store_setting.image
 
 import android.app.Activity
+import android.graphics.ImageDecoder
 import android.net.Uri
 import android.view.HapticFeedbackConstants
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -83,6 +84,8 @@ import com.store_me.storeme.utils.CropUtils
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import com.yalantis.ucrop.UCrop
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -99,6 +102,7 @@ fun FeaturedImageSettingScreen(
     val croppedImageUri by featuredImageSettingViewModel.croppedImageUri.collectAsState()
     val croppedImageUrl by featuredImageSettingViewModel.croppedImageUrl.collectAsState()
     val progress by featuredImageSettingViewModel.uploadProgress.collectAsState()
+    val imageSize by featuredImageSettingViewModel.imageSize.collectAsState()
 
     var editIndex by remember { mutableStateOf<Int?>(null) }
     var deleteIndex by remember { mutableStateOf<Int?>(null) }
@@ -216,17 +220,32 @@ fun FeaturedImageSettingScreen(
         DefaultBottomSheet(sheetState = sheetState, onDismiss = {
             featuredImageSettingViewModel.updateCroppedImageUri(null)
             featuredImageSettingViewModel.updateCroppedImageUrl(null)
+            featuredImageSettingViewModel.updateImageSize(null)
         }) {
             AddFeaturedImageBottomSheetContent(
                 uri = croppedImageUri!!,
                 url = croppedImageUrl,
                 progress = progress,
-            ) {
-                featuredImageSettingViewModel.addFeaturedImage(featuredImage = FeaturedImageData(image = croppedImageUrl ?: "", description = it))
+                getImageSize = { imageSize ->
+                    featuredImageSettingViewModel.updateImageSize(imageSize = imageSize)
+                },
+                onAdd = { description ->
+                    imageSize?.let { size ->
+                        featuredImageSettingViewModel.addFeaturedImage(
+                            featuredImage = FeaturedImageData(
+                                image = croppedImageUrl ?: "",
+                                description = description,
+                                width = size.first,
+                                height = size.second
+                            )
+                        )
+                    }
 
-                featuredImageSettingViewModel.updateCroppedImageUri(null)
-                featuredImageSettingViewModel.updateCroppedImageUrl(null)
-            }
+                    featuredImageSettingViewModel.updateCroppedImageUri(null)
+                    featuredImageSettingViewModel.updateCroppedImageUrl(null)
+                    featuredImageSettingViewModel.updateImageSize(null)
+                }
+            )
         }
     }
 
@@ -241,7 +260,10 @@ fun FeaturedImageSettingScreen(
                 featuredImageSettingViewModel.editFeaturedImage(
                     editIndex!!,
                     featuredImage = FeaturedImageData(
-                        image = featuredImages[editIndex!!].image, description = it
+                        image = featuredImages[editIndex!!].image,
+                        description = it,
+                        width = featuredImages[editIndex!!].width,
+                        height = featuredImages[editIndex!!].height
                     )
                 )
 
@@ -384,13 +406,39 @@ fun FeaturedReorderableImageItem(
 }
 
 @Composable
-fun AddFeaturedImageBottomSheetContent(uri: Uri, url: String?, progress: Float, onAdd: (String) -> Unit) {
+fun AddFeaturedImageBottomSheetContent(
+    uri: Uri,
+    url: String?,
+    progress: Float,
+    onAdd: (String) -> Unit,
+    getImageSize: (Pair<Int, Int>) -> Unit
+) {
     val isLoading = url == null
     var description by remember { mutableStateOf("") }
     var isError by remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
+    var imageSize by remember { mutableStateOf<Pair<Int, Int>?>(null) }
+
     LaunchedEffect(description) {
         isError = description.length > 50
+    }
+
+    LaunchedEffect(uri) {
+        imageSize = withContext(Dispatchers.IO) {
+            try {
+                val source = ImageDecoder.createSource(context.contentResolver, uri)
+                val bitmap = ImageDecoder.decodeBitmap(source)
+                Pair(bitmap.width, bitmap.height)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        }
+    }
+
+    LaunchedEffect(imageSize) {
+        imageSize?.let { getImageSize(it) }
     }
 
     Column(
@@ -480,7 +528,7 @@ fun AddFeaturedImageBottomSheetContent(uri: Uri, url: String?, progress: Float, 
 
         DefaultButton(
             buttonText = "추가",
-            enabled = url != null && !isError
+            enabled = url != null && !isError && imageSize != null
         ) {
             onAdd(description)
         }
