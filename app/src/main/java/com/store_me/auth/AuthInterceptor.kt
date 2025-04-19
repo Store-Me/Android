@@ -30,14 +30,14 @@ class AuthInterceptor(
         val response = chain.proceed(authenticatedRequest)
 
         //Unauthorized 응답 처리
-        if(response.code != 403) return response
+        if(response.code != 401) return response
 
         response.close()
 
-        Timber.d("Reissue Token")
-
         return runBlocking {
             tokenMutex.withLock {
+                Timber.d("Reissue Token")
+
                 val latestToken = TokenPreferencesHelper.getAccessToken()
 
                 if(accessToken != latestToken) {

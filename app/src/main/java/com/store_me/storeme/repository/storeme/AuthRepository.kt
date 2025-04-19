@@ -1,5 +1,6 @@
 package com.store_me.storeme.repository.storeme
 
+import com.store_me.storeme.data.request.login.ReissueRequest
 import com.store_me.storeme.data.response.ReissueResponse
 import com.store_me.storeme.network.storeme.AuthApiService
 import com.store_me.storeme.utils.exception.ApiExceptionHandler.toResult
@@ -17,7 +18,14 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun reissueTokens(): Result<ReissueResponse> {
         return try {
-            val response = authApiService.reissueTokens()
+            val refreshToken = TokenPreferencesHelper.getRefreshToken()
+            if(refreshToken.isNullOrEmpty()) {
+                return Result.failure(Exception("토큰이 존재하지 않습니다."))
+            }
+
+            val response = authApiService.reissueTokens(
+                ReissueRequest(refreshToken = refreshToken)
+            )
 
             Timber.d(response.toString())
 
