@@ -2,7 +2,7 @@ package com.store_me.storeme.ui.post.add.coupon
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.store_me.storeme.data.CouponData
+import com.store_me.storeme.data.coupon.CouponData
 import com.store_me.storeme.data.StampCouponData
 import com.store_me.storeme.data.request.store.CreateCouponPostRequest
 import com.store_me.storeme.repository.storeme.CouponRepository

@@ -1,9 +1,11 @@
 package com.store_me.storeme.repository.storeme
 
 import com.store_me.auth.Auth
-import com.store_me.storeme.data.CouponData
+import com.store_me.storeme.data.coupon.CouponData
+import com.store_me.storeme.data.coupon.CouponStats
 import com.store_me.storeme.data.request.store.CouponRequest
 import com.store_me.storeme.data.response.AcceptCouponResponse
+import com.store_me.storeme.data.response.CouponUsersResponse
 import com.store_me.storeme.data.response.CouponsResponse
 import com.store_me.storeme.data.response.StoreMeResponse
 import com.store_me.storeme.data.response.UseCouponResponse
@@ -25,6 +27,10 @@ interface CouponRepository {
     suspend fun acceptStoreCoupon(couponId: String): Result<StoreMeResponse<AcceptCouponResponse>>
 
     suspend fun useStoreCoupon(couponId: String): Result<StoreMeResponse<UseCouponResponse>>
+
+    suspend fun getCouponStats(couponId: String): Result<StoreMeResponse<CouponStats>>
+
+    suspend fun getCouponUsers(couponId: String): Result<StoreMeResponse<CouponUsersResponse>>
 }
 
 class CouponRepositoryImpl @Inject constructor(
@@ -158,6 +164,56 @@ class CouponRepositoryImpl @Inject constructor(
     ): Result<StoreMeResponse<UseCouponResponse>> {
         return try {
             val response = couponApiService.useStoreCoupon(
+                storeId = auth.getStoreId(),
+                couponId = couponId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun getCouponStats(couponId: String): Result<StoreMeResponse<CouponStats>> {
+        return try {
+            val response = couponApiService.getCouponStats(
+                storeId = auth.getStoreId(),
+                couponId = couponId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun getCouponUsers(couponId: String): Result<StoreMeResponse<CouponUsersResponse>> {
+        return try {
+            val response = couponApiService.getCouponUsers(
                 storeId = auth.getStoreId(),
                 couponId = couponId
             )

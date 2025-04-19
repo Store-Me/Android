@@ -57,7 +57,7 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.ToastMessageUtils
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
-import com.store_me.storeme.data.CouponData
+import com.store_me.storeme.data.coupon.CouponData
 import com.store_me.storeme.data.StampCouponData
 import com.store_me.storeme.data.enums.StoreHomeItem
 import com.store_me.storeme.data.store.StoreInfoData

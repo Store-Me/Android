@@ -36,7 +36,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.store_me.storeme.data.CouponData
+import com.store_me.storeme.data.coupon.CouponData
 import com.store_me.storeme.data.StampCouponData
 import com.store_me.storeme.data.enums.post.PostType
 import com.store_me.storeme.ui.component.BackWarningDialog

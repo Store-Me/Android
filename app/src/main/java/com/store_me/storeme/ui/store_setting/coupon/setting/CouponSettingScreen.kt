@@ -61,7 +61,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.R
-import com.store_me.storeme.data.CouponData
+import com.store_me.storeme.data.coupon.CouponData
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.coupon.CouponTarget
 import com.store_me.storeme.data.enums.coupon.CouponType

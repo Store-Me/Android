@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.store_me.storeme.R
-import com.store_me.storeme.data.CouponData
+import com.store_me.storeme.data.coupon.CouponData
 import com.store_me.storeme.data.MenuCategoryData
 import com.store_me.storeme.data.MenuData
 import com.store_me.storeme.data.enums.StoreHomeItem

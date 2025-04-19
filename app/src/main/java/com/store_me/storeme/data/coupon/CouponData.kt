@@ -1,4 +1,4 @@
-package com.store_me.storeme.data
+package com.store_me.storeme.data.coupon
 
 data class CouponData(
     val couponId: String,
