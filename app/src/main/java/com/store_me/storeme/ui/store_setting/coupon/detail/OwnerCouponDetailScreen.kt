@@ -17,18 +17,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,14 +38,13 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.R
-import com.store_me.storeme.data.CouponData
-import com.store_me.storeme.data.UserReceivedCouponData
-import com.store_me.storeme.data.UserUsedCouponData
+import com.store_me.storeme.data.coupon.CouponData
+import com.store_me.storeme.data.coupon.CouponStats
 import com.store_me.storeme.data.enums.tab_menu.CouponDetailTabMenu
+import com.store_me.storeme.ui.component.SkeletonBox
 import com.store_me.storeme.ui.component.StoreMeTabContent
 import com.store_me.storeme.ui.component.StoreMeTabRow
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponInfo
@@ -55,8 +52,10 @@ import com.store_me.storeme.ui.theme.LightestHighlightColor
 import com.store_me.storeme.ui.theme.PostTimeTextColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
+import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
+import timber.log.Timber
 
 @Composable
 fun OwnerCouponDetailScreen(
@@ -69,6 +68,16 @@ fun OwnerCouponDetailScreen(
     val tabTitles = remember { CouponDetailTabMenu.getDisplayNames() }
 
     val coupon by ownerCouponDetailViewModel.coupon.collectAsState()
+    val couponStats by ownerCouponDetailViewModel.couponStats.collectAsState()
+    val couponUsers by ownerCouponDetailViewModel.couponUsers.collectAsState()
+
+    LaunchedEffect(Unit) {
+        coupon?.couponId?.let {
+            Timber.d("couponId: $it")
+            ownerCouponDetailViewModel.getCouponStats(couponId = it)
+            ownerCouponDetailViewModel.getCouponUsers(couponId = it)
+        }
+    }
 
     if(coupon != null) {
         LazyColumn {
@@ -77,6 +86,7 @@ fun OwnerCouponDetailScreen(
                     animatedVisibilityScope = animatedVisibilityScope,
                     sharedTransitionScope = sharedTransitionScope,
                     coupon = coupon!!,
+                    couponStats = couponStats,
                     onShowAll = {
 
                     },
@@ -115,6 +125,7 @@ fun CouponDetailInfo(
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
     coupon: CouponData,
+    couponStats: CouponStats?,
     onShowAll: () -> Unit,
     onEdit: () -> Unit,
     onAttach: () -> Unit
@@ -185,19 +196,31 @@ fun CouponDetailInfo(
                     .weight(1f),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                CouponDetailBox(
+                SkeletonBox(
                     modifier = Modifier
                         .weight(1f),
-                    title = "발급된 쿠폰",
-                    content = 0.toString()  //TODO 값 가져오기
-                )
+                    isLoading = couponStats == null
+                ) {
+                    CouponDetailBox(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        title = "발급된 쿠폰",
+                        content = couponStats!!.receivedCount.toString()
+                    )
+                }
 
-                CouponDetailBox(
+                SkeletonBox(
                     modifier = Modifier
                         .weight(1f),
-                    title = "사용된 쿠폰",
-                    content = 0.toString()
-                )
+                    isLoading = couponStats == null
+                ) {
+                    CouponDetailBox(
+                        modifier = Modifier
+                            .weight(1f),
+                        title = "사용된 쿠폰",
+                        content = couponStats!!.usedCount.toString()
+                    )
+                }
             }
 
             Row(
@@ -232,8 +255,8 @@ fun CouponDetailBox(modifier: Modifier, title: String, content: String) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(color = LightestHighlightColor, shape = RoundedCornerShape(20))
-            .clip(shape = RoundedCornerShape(20)),
+            .background(color = LightestHighlightColor, shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
+            .clip(shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -258,8 +281,8 @@ fun CouponDetailIconBox(modifier: Modifier, title: String, iconResource: Int, on
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(color = SubHighlightColor, shape = RoundedCornerShape(20))
-            .clip(shape = RoundedCornerShape(20))
+            .background(color = SubHighlightColor, shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
+            .clip(shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
             .clickable { onClick() },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -279,72 +302,5 @@ fun CouponDetailIconBox(modifier: Modifier, title: String, iconResource: Int, on
             style = storeMeTextStyle(FontWeight.ExtraBold, -1),
             color = Color.Black
         )
-    }
-}
-
-@Composable
-fun ReceivedUserItem(item: UserReceivedCouponData) {
-    Row(
-        modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        AsyncImage(
-            model = item.userData.profileImage,
-            contentDescription = "사용자 이미지",
-            modifier = Modifier
-                .size(60.dp)
-                .clip(shape = CircleShape),
-            error = painterResource(id = R.drawable.store_null_image)
-        )
-
-        Spacer(modifier = Modifier.width(15.dp))
-
-        Text(
-            text = item.userData.nickName,
-            style = storeMeTextStyle(FontWeight.ExtraBold, 0),
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-fun UsedUserItem(item: UserUsedCouponData) {
-    Row(
-        modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        AsyncImage(
-            model = item.userData.profileImage,
-            contentDescription = "사용자 이미지",
-            modifier = Modifier
-                .size(60.dp)
-                .clip(shape = CircleShape),
-            error = painterResource(id = R.drawable.store_null_image)
-        )
-
-        Spacer(modifier = Modifier.width(15.dp))
-
-        Column(
-            modifier = Modifier
-                .weight(1f),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = item.userData.nickName,
-                style = storeMeTextStyle(FontWeight.ExtraBold, 0),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Text(
-                text = "( 사용 완료 ) ${DateTimeUtils.dateTimeToDateTimeText(item.usedAt)}",
-                style = storeMeTextStyle(FontWeight.ExtraBold, 0),
-                color = PostTimeTextColor,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
     }
 }

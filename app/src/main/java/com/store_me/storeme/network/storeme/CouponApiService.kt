@@ -1,8 +1,10 @@
 package com.store_me.storeme.network.storeme
 
-import com.store_me.storeme.data.CouponData
+import com.store_me.storeme.data.coupon.CouponData
+import com.store_me.storeme.data.coupon.CouponStats
 import com.store_me.storeme.data.request.store.CouponRequest
 import com.store_me.storeme.data.response.AcceptCouponResponse
+import com.store_me.storeme.data.response.CouponUsersResponse
 import com.store_me.storeme.data.response.CouponsResponse
 import com.store_me.storeme.data.response.StoreMeResponse
 import com.store_me.storeme.data.response.UseCouponResponse
@@ -67,4 +69,22 @@ interface CouponApiService {
         @Path("storeId") storeId: String,
         @Path("couponId") couponId: String
     ): Response<StoreMeResponse<UseCouponResponse>>
+
+    /**
+     * 쿠폰 통계 조회 API
+     */
+    @GET("coupon/store/{storeId}/coupons/{couponId}/stats")
+    suspend fun getCouponStats(
+        @Path("storeId") storeId: String,
+        @Path("couponId") couponId: String
+    ): Response<StoreMeResponse<CouponStats>>
+
+    /**
+     * 쿠폰 사용자 조회 API
+     */
+    @GET("coupon/store/{storeId}/coupons/{couponId}/users")
+    suspend fun getCouponUsers(
+        @Path("storeId") storeId: String,
+        @Path("couponId") couponId: String
+    ): Response<StoreMeResponse<CouponUsersResponse>>
 }

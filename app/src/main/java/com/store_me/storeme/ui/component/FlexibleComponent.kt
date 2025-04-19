@@ -8,7 +8,12 @@ import android.view.HapticFeedbackConstants
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.exponentialDecay
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -65,10 +70,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
@@ -100,6 +108,7 @@ import com.store_me.storeme.data.enums.DragValue
 import com.store_me.storeme.ui.location.LocationViewModel
 import com.store_me.storeme.ui.mystore.CategoryViewModel
 import com.store_me.storeme.ui.theme.DividerColor
+import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.NormalCategoryColor
 import com.store_me.storeme.ui.theme.SelectedCategoryColor
@@ -109,6 +118,7 @@ import com.store_me.storeme.ui.theme.SwipeEditColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.storeMeTypography
+import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.SampleDataUtils
 import com.store_me.storeme.utils.SizeUtils
 import com.store_me.storeme.utils.SocialMediaAccountUtils
@@ -884,6 +894,54 @@ fun AlphaBackgroundText(text: String, diffValue: Int, modifier: Modifier = Modif
         }
     }
 }
+
+/**
+ * Skeleton Box
+ */
+@Composable
+fun SkeletonBox(
+    modifier: Modifier = Modifier,
+    isLoading: Boolean,
+    shape: Shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE),
+    content: @Composable () -> Unit
+) {
+    val transition = rememberInfiniteTransition(label = "shimmer")
+
+    val xShimmer by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1000f, // 충분히 큰 값
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 1000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "shimmerX"
+    )
+
+    val brush = Brush.linearGradient(
+        colors = listOf(
+            GuideColor.copy(alpha = 0.6f),
+            GuideColor.copy(alpha = 0.3f),
+            GuideColor.copy(alpha = 0.6f)
+        ),
+        start = Offset(xShimmer - 300f, 0f),
+        end = Offset(xShimmer, 0f)
+    )
+
+    Box(
+        modifier = modifier
+    ) {
+        if(isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(brush = brush, shape = shape)
+            )
+        } else {
+            content()
+        }
+    }
+}
+
 
 /**
  * 기본 HorizontalDivider
