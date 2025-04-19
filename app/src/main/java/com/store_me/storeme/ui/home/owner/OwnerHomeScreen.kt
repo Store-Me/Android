@@ -1,11 +1,7 @@
-@file:OptIn(ExperimentalPagerApi::class, ExperimentalFoundationApi::class,
-    ExperimentalLayoutApi::class
-)
+@file:OptIn(ExperimentalPagerApi::class, ExperimentalFoundationApi::class,)
 
 package com.store_me.storeme.ui.home.owner
 
-import android.graphics.ImageDecoder
-import android.net.Uri
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -13,7 +9,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +31,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -63,14 +57,12 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.ToastMessageUtils
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import androidx.core.net.toUri
-import coil.compose.AsyncImage
 import com.store_me.storeme.data.CouponData
 import com.store_me.storeme.data.StampCouponData
 import com.store_me.storeme.data.enums.StoreHomeItem
+import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.ui.store_setting.coupon.setting.CouponInfo
 import com.store_me.storeme.ui.store_setting.stamp.RewardItem
 import com.store_me.storeme.ui.store_setting.stamp.StampCouponItem
 import com.store_me.storeme.ui.theme.GuideColor
@@ -245,6 +237,7 @@ fun OwnerHomeContentSection(
     val featuredImages by storeDataViewModel.featuredImages.collectAsState()
     val stampCoupon by storeDataViewModel.stampCoupon.collectAsState()
     val coupons by storeDataViewModel.coupons.collectAsState()
+    val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
 
     HorizontalPager(
         count = StoreTabMenu.entries.size,
@@ -264,7 +257,10 @@ fun OwnerHomeContentSection(
                 MenuListSection(menuCategories = menuCategories)
             }
             StoreTabMenu.COUPON -> {
-                ActivateCouponSection(coupons = coupons)
+                ActivateCouponSection(
+                    storeInfoData = storeInfoData!!,
+                    coupons = coupons
+                )
             }
             StoreTabMenu.STAMP -> {
                 stampCoupon?.let { StampCouponSection(stampCoupon = it) { homeItem ->
@@ -338,10 +334,44 @@ fun StampCouponSection(
  * Coupon List
  */
 @Composable
-fun ActivateCouponSection(coupons: List<CouponData>) {
-    val filteredCoupons = coupons.filter { DateTimeUtils.isAfterDatetime(it.dueDate) }
+fun ActivateCouponSection(
+    storeInfoData: StoreInfoData,
+    coupons: List<CouponData>
+) {
+    val filteredCoupons = coupons.filter { DateTimeUtils.isAfterDatetime(it.dueDate) }.chunked(2)
 
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        filteredCoupons.forEach { coupon ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                CouponInfo(
+                    coupon = coupon.first(),
+                    modifier = Modifier
+                        .weight(1f),
+                    storeName = storeInfoData.storeName
+                )
 
+                if(coupon.size != 1) {
+                    CouponInfo(
+                        coupon = coupon.last(),
+                        modifier = Modifier
+                            .weight(1f),
+                        storeName = storeInfoData.storeName
+                    )
+                } else {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+        }
+    }
 }
 
 /**
