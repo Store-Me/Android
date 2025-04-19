@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.SharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import androidx.core.content.edit
 
 object TokenPreferencesHelper {
     private const val PREFERENCES_FILE_NAME = "token_preferences"
@@ -67,6 +68,6 @@ object TokenPreferencesHelper {
      * 토큰 제거
      */
     fun clearTokens() {
-        sharedPreferences.edit().clear().apply()
+        sharedPreferences.edit { clear() }
     }
 }
