@@ -897,6 +897,9 @@ fun AlphaBackgroundText(text: String, diffValue: Int, modifier: Modifier = Modif
 
 /**
  * Skeleton Box
+ * @param isLoading 로딩 여부
+ * @param shape 내부 Skelenton Box의 Shape
+ * @param content Composable
  */
 @Composable
 fun SkeletonBox(
@@ -935,6 +938,7 @@ fun SkeletonBox(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(brush = brush, shape = shape)
+                    .clip(shape)
             )
         } else {
             content()
