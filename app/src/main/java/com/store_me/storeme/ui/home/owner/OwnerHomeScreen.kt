@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,14 +31,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
@@ -47,7 +54,6 @@ import com.store_me.storeme.data.MenuCategoryData
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.tab_menu.StoreTabMenu
 import com.store_me.storeme.data.response.BusinessHoursResponse
-import com.store_me.storeme.data.store.FeaturedImageData
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.LinkSection
 import com.store_me.storeme.ui.component.ProfileImageWithBorder
@@ -60,14 +66,18 @@ import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewMod
 import com.store_me.storeme.data.coupon.CouponData
 import com.store_me.storeme.data.StampCouponData
 import com.store_me.storeme.data.enums.StoreHomeItem
+import com.store_me.storeme.data.store.FeaturedImageData
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.ui.component.SkeletonBox
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponInfo
 import com.store_me.storeme.ui.store_setting.stamp.RewardItem
 import com.store_me.storeme.ui.store_setting.stamp.StampCouponItem
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
+import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.DateTimeUtils
+import timber.log.Timber
 
 @Composable
 fun OwnerHomeScreen(
@@ -91,7 +101,6 @@ fun OwnerHomeScreen(
 
     val backgroundSectionHeight = remember { mutableStateOf(0) } //픽셀 단위
     val profileSectionHeight = remember { mutableStateOf(0) } //픽셀 단위
-
 
     LaunchedEffect(storeId) {
         if(storeId != null) {
@@ -214,8 +223,6 @@ fun OwnerHomeScreen(
         }
     )
 
-
-
     BackHandler {
         val currentTime = System.currentTimeMillis()
         if(currentTime - backPressedTime < 2000){
@@ -263,12 +270,12 @@ fun OwnerHomeContentSection(
                 )
             }
             StoreTabMenu.STAMP -> {
-                stampCoupon?.let { StampCouponSection(stampCoupon = it) { homeItem ->
+                StampCouponSection(stampCoupon = stampCoupon) { homeItem ->
                     navController.navigate(homeItem.route.fullRoute)
-                } }
+                }
             }
-            StoreTabMenu.PHOTO -> {
-                FeaturedImageSection(featuredImages = featuredImages)
+            StoreTabMenu.FEATURED_IMAGES -> {
+                TabFeaturedImageSection(featuredImages)
             }
             StoreTabMenu.STORY -> {
 
@@ -288,7 +295,7 @@ fun StampCouponSection(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(20.dp)
+            .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
         if(stampCoupon != null) {
 
@@ -318,7 +325,7 @@ fun StampCouponSection(
         Spacer(modifier = Modifier.height(12.dp))
 
         DefaultButton(
-            buttonText = "스탬프 쿠폰 수정",
+            buttonText = "스탬프 쿠폰 관리",
             diffValue = 2,
             colors = ButtonDefaults.buttonColors(
                 containerColor = SubHighlightColor,
@@ -403,9 +410,82 @@ fun MenuListSection(menuCategories: List<MenuCategoryData>) {
     }
 }
 
+/**
+ *
+ */
 @Composable
-fun FeaturedImageSection(featuredImages: List<FeaturedImageData>) {
+fun TabFeaturedImageSection(featuredImages: List<FeaturedImageData>) {
+    val (leftFeaturedImages, rightFeaturedImages) = remember(featuredImages) {
+        val COLUMN_BALANCE_TOLERANCE = 0.3f
 
+        val left = mutableListOf<FeaturedImageData>()
+        val right = mutableListOf<FeaturedImageData>()
+        var leftHeight = 0f
+        var rightHeight = 0f
+
+        featuredImages.forEach { image ->
+            val ratio = image.height.toFloat() / image.width
+            if (leftHeight <= (rightHeight + COLUMN_BALANCE_TOLERANCE)) {
+                left += image
+                leftHeight += ratio
+            } else {
+                right += image
+                rightHeight += ratio
+            }
+        }
+
+        left to right
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            leftFeaturedImages.forEach {
+                FeaturedImage(featuredImage = it)
+            }
+        }
+
+        Column(
+            modifier = Modifier
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            rightFeaturedImages.forEach {
+                FeaturedImage(featuredImage = it)
+            }
+        }
+    }
+
+}
+
+@Composable
+fun FeaturedImage(featuredImage: FeaturedImageData) {
+    SubcomposeAsyncImage(
+        model = featuredImage.image,
+        contentDescription = featuredImage.description,
+        contentScale = ContentScale.FillWidth,
+        modifier = Modifier
+            .fillMaxWidth()
+            .aspectRatio(ratio = featuredImage.width.toFloat() / featuredImage.height)
+            .clip(shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)),
+        loading = {
+            SkeletonBox(
+                isLoading = true,
+                modifier = Modifier
+                    .fillMaxSize(),
+            ) {
+
+            }
+        }
+    )
 }
 
 @Composable
