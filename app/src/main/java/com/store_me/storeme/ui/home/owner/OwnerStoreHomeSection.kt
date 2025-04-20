@@ -26,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -145,7 +146,7 @@ fun NoticeSection(notice: String, onClick: (StoreHomeItem) -> Unit) {
 fun FeaturedImageSection(featuredImages: List<FeaturedImageData>, onClick: (StoreHomeItem) -> Unit) {
     if(featuredImages.isEmpty()) {
         Text(
-            text = "사진을 업로드하여 메뉴나 서비스를 홍보해보세요.",
+            text = stringResource(R.string.owner_home_photo_none),
             style = storeMeTextStyle(FontWeight.Normal, 0),
             color = GuideColor,
             modifier = Modifier

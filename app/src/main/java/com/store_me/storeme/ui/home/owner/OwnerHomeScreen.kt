@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalPagerApi::class, ExperimentalFoundationApi::class,)
+@file:OptIn(ExperimentalPagerApi::class, ExperimentalFoundationApi::class)
 
 package com.store_me.storeme.ui.home.owner
 
@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,11 +39,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -51,33 +54,32 @@ import com.google.accompanist.pager.rememberPagerState
 import com.naver.maps.geometry.LatLng
 import com.store_me.storeme.R
 import com.store_me.storeme.data.MenuCategoryData
+import com.store_me.storeme.data.StampCouponData
+import com.store_me.storeme.data.coupon.CouponData
 import com.store_me.storeme.data.enums.AccountType
+import com.store_me.storeme.data.enums.StoreHomeItem
 import com.store_me.storeme.data.enums.tab_menu.StoreTabMenu
 import com.store_me.storeme.data.response.BusinessHoursResponse
-import com.store_me.storeme.ui.component.DefaultHorizontalDivider
-import com.store_me.storeme.ui.component.LinkSection
-import com.store_me.storeme.ui.component.ProfileImageWithBorder
-import com.store_me.storeme.ui.component.StoreMeScrollableTabRow
-import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
-import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.ToastMessageUtils
-import com.store_me.storeme.utils.composition_locals.LocalAuth
-import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
-import com.store_me.storeme.data.coupon.CouponData
-import com.store_me.storeme.data.StampCouponData
-import com.store_me.storeme.data.enums.StoreHomeItem
 import com.store_me.storeme.data.store.FeaturedImageData
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.ui.component.DefaultHorizontalDivider
+import com.store_me.storeme.ui.component.LinkSection
+import com.store_me.storeme.ui.component.ProfileImageWithBorder
 import com.store_me.storeme.ui.component.SkeletonBox
+import com.store_me.storeme.ui.component.StoreMeScrollableTabRow
+import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponInfo
 import com.store_me.storeme.ui.store_setting.stamp.RewardItem
 import com.store_me.storeme.ui.store_setting.stamp.StampCouponItem
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
+import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.DateTimeUtils
-import timber.log.Timber
+import com.store_me.storeme.utils.ToastMessageUtils
+import com.store_me.storeme.utils.composition_locals.LocalAuth
+import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
 @Composable
 fun OwnerHomeScreen(
@@ -415,59 +417,106 @@ fun MenuListSection(menuCategories: List<MenuCategoryData>) {
  */
 @Composable
 fun TabFeaturedImageSection(featuredImages: List<FeaturedImageData>) {
-    val (leftFeaturedImages, rightFeaturedImages) = remember(featuredImages) {
-        val COLUMN_BALANCE_TOLERANCE = 0.3f
-
-        val left = mutableListOf<FeaturedImageData>()
-        val right = mutableListOf<FeaturedImageData>()
-        var leftHeight = 0f
-        var rightHeight = 0f
-
-        featuredImages.forEach { image ->
-            val ratio = image.height.toFloat() / image.width
-            if (leftHeight <= (rightHeight + COLUMN_BALANCE_TOLERANCE)) {
-                left += image
-                leftHeight += ratio
-            } else {
-                right += image
-                rightHeight += ratio
-            }
-        }
-
-        left to right
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Column(
+    if(featuredImages.isEmpty()) {
+        Column (
             modifier = Modifier
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            leftFeaturedImages.forEach {
-                FeaturedImage(featuredImage = it)
+            Text(
+                text = stringResource(R.string.store_home_featured_images_none),
+                style = storeMeTextStyle(FontWeight.Normal, 0),
+                color = GuideColor
+            )
+        }
+    } else {
+        val (leftFeaturedImages, rightFeaturedImages) = remember(featuredImages) {
+            val columnBalanceTolerance = 0.3f
+
+            val left = mutableListOf<FeaturedImageData>()
+            val right = mutableListOf<FeaturedImageData>()
+            var leftHeight = 0f
+            var rightHeight = 0f
+
+            featuredImages.forEach { image ->
+                val ratio = image.height.toFloat() / image.width
+                if (leftHeight <= (rightHeight + columnBalanceTolerance)) {
+                    left += image
+                    leftHeight += ratio
+                } else {
+                    right += image
+                    rightHeight += ratio
+                }
+            }
+
+            left to right
+        }
+
+        var previewFeaturedImage by remember { mutableStateOf<FeaturedImageData?>(null) }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                leftFeaturedImages.forEach {
+                    FeaturedImage(featuredImage = it) {
+                        previewFeaturedImage = it
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                rightFeaturedImages.forEach {
+                    FeaturedImage(featuredImage = it) {
+                        previewFeaturedImage = it
+                    }
+                }
             }
         }
 
-        Column(
-            modifier = Modifier
-                .weight(1f),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            rightFeaturedImages.forEach {
-                FeaturedImage(featuredImage = it)
+        previewFeaturedImage?.let {
+            Dialog(
+                onDismissRequest = { previewFeaturedImage = null },
+                properties = DialogProperties(
+                    usePlatformDefaultWidth = false
+                )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = Color.Black),
+                    contentAlignment = Alignment.Center
+                ) {
+                    AsyncImage(
+                        model = it.image,
+                        contentDescription = it.description,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    )
+                }
             }
         }
     }
-
 }
 
 @Composable
-fun FeaturedImage(featuredImage: FeaturedImageData) {
+fun FeaturedImage(
+    featuredImage: FeaturedImageData,
+    onClick: () -> Unit
+) {
     SubcomposeAsyncImage(
         model = featuredImage.image,
         contentDescription = featuredImage.description,
@@ -475,7 +524,8 @@ fun FeaturedImage(featuredImage: FeaturedImageData) {
         modifier = Modifier
             .fillMaxWidth()
             .aspectRatio(ratio = featuredImage.width.toFloat() / featuredImage.height)
-            .clip(shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)),
+            .clip(shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
+            .clickable { onClick() },
         loading = {
             SkeletonBox(
                 isLoading = true,

@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -74,11 +75,15 @@ import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.ui.store_setting.coupon.detail.OwnerCouponDetailScreen
 import com.store_me.storeme.ui.store_setting.coupon.detail.OwnerCouponDetailViewModel
+import com.store_me.storeme.ui.theme.CouponDueDateBoxColor
+import com.store_me.storeme.ui.theme.CouponDueDateIconColor
 import com.store_me.storeme.ui.theme.CouponQuantityBoxColor
 import com.store_me.storeme.ui.theme.CouponQuantityIconColor
 import com.store_me.storeme.ui.theme.CreateCouponArrowColor
 import com.store_me.storeme.ui.theme.DisabledColor
 import com.store_me.storeme.ui.theme.DividerColor
+import com.store_me.storeme.ui.theme.FinishedColor
+import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.PopularBoxColor
 import com.store_me.storeme.ui.theme.PopularTextColor
@@ -404,7 +409,6 @@ fun CouponInfo(
         Column(
             modifier = Modifier
                 .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             //쿠폰 이미지
             CouponImage(
@@ -413,11 +417,15 @@ fun CouponInfo(
                 storeName = storeName
             )
 
+            Spacer(modifier = Modifier.height(12.dp))
+
             //쿠폰 증정 내용
             CouponContent(
                 isActivate = isActivate,
                 coupon = coupon
             )
+
+            Spacer(modifier = Modifier.height(4.dp))
 
             //쿠폰 제공 대상
             CouponTargetAndQuantity(
@@ -429,6 +437,11 @@ fun CouponInfo(
             //활성 여부
             CouponActivateButton(
                 isActivate = isActivate
+            )
+
+            CouponDueDate(
+                isActivate = isActivate,
+                dueDate = coupon.dueDate
             )
         }
     }
@@ -450,7 +463,7 @@ fun CouponContent(
 
     Text(
         text = valueText,
-        style = storeMeTextStyle(FontWeight.Bold, 0),
+        style = storeMeTextStyle(FontWeight.Bold, 3),
         color = textColor,
         modifier = Modifier.fillMaxWidth()
     )
@@ -583,5 +596,47 @@ fun CouponActivateButton(isActivate: Boolean) {
         )
     ) {
 
+    }
+}
+
+@Composable
+fun CouponDueDate(
+    isActivate: Boolean,
+    dueDate: String,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_clock),
+            contentDescription = "시간 아이콘",
+            modifier = Modifier
+                .size(24.dp)
+                .background(color = if(isActivate) CouponDueDateBoxColor else FinishedColor, shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
+                .padding(4.dp),
+            tint = if(isActivate) CouponDueDateIconColor else Color.White
+        )
+
+        if(isActivate) {
+            Text(
+                text = DateTimeUtils.formatToShortDate(dueDate),
+                style = storeMeTextStyle(FontWeight.Bold, -1),
+                color = Color.Black
+            )
+
+            Text(
+                text = "까지",
+                style = storeMeTextStyle(FontWeight.Bold, -1),
+                color = GuideColor
+            )
+        } else {
+            Text(
+                text = "기한 만료",
+                style = storeMeTextStyle(FontWeight.Bold, -1),
+                color = FinishedColor
+            )
+        }
     }
 }
