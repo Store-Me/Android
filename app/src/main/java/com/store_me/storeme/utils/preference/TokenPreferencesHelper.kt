@@ -34,10 +34,13 @@ object TokenPreferencesHelper {
     /**
      * AccessToken 및 RefreshToken 저장
      */
-    fun saveTokens(accessToken: String, refreshToken: String) {
+    fun saveTokens(accessToken: String, refreshToken: String? = null) {
         sharedPreferences.edit().apply {
             putString(KEY_ACCESS_TOKEN, accessToken)
-            putString(KEY_REFRESH_TOKEN, refreshToken)
+
+            if(refreshToken != null)
+                putString(KEY_REFRESH_TOKEN, refreshToken)
+
             apply()
         }
     }

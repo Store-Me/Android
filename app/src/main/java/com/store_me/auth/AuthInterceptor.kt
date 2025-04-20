@@ -52,8 +52,7 @@ class AuthInterceptor(
                 reissueResult.fold(
                     onSuccess = {
                         TokenPreferencesHelper.saveTokens(
-                            accessToken = it.accessToken,
-                            refreshToken = it.refreshToken
+                            accessToken = it.accessToken
                         )
 
                         val newRequest = originalRequest.newBuilder()

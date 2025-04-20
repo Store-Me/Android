@@ -31,7 +31,7 @@ class AuthRepositoryImpl @Inject constructor(
 
             TokenPreferencesHelper.saveTokens(
                 accessToken = response.accessToken,
-                refreshToken = response.refreshToken
+                refreshToken = refreshToken
             )
 
             Result.success(response)
