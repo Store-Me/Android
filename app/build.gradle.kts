@@ -166,7 +166,7 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     //Load Url Image
-    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
     //indicator
     implementation("com.google.accompanist:accompanist-pager:0.20.3")
@@ -175,7 +175,6 @@ dependencies {
     //liveData
     implementation("androidx.compose.runtime:runtime:1.6.8")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
-    implementation("androidx.compose.runtime:runtime-rxjava2:1.6.8")
 
     //rich-editor
     implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc10")
