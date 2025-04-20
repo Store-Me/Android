@@ -24,6 +24,9 @@
     <string name="owner_home_review_none">아직 가게 후기가 없어요.</string>
     <string name="owner_home_news_none">가게의 소식을 작성하여 홍보를 진행하세요.</string>
 
+    <!--StoreTab None Text-->
+    <string name="store_home_featured_images_none">업체에서 등록한 이미지가 없습니다.</string>
+
     <!--ToastMessage Text-->
     <string name="backpress_message">뒤로 가기를 한 번 더 누르면 종료됩니다.</string>
     <string name="network_fail">서버와의 연결에 실패하였습니다. 작업을 다시 시도해 주세요.</string>
