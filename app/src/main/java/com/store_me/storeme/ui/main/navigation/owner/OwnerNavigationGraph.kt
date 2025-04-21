@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import com.store_me.storeme.ui.home.owner.OwnerHomeScreen
 import com.store_me.storeme.ui.link.LinkSettingScreen
 import com.store_me.storeme.ui.post.SelectPostTypeScreen
+import com.store_me.storeme.ui.post.label.LabelSettingScreen
 import com.store_me.storeme.ui.store_info.StoreInfoScreen
 import com.store_me.storeme.ui.store_setting.NewsSettingScreen
 import com.store_me.storeme.ui.store_setting.StoreSettingScreen
@@ -180,5 +181,7 @@ fun OwnerNavigationGraph(navController: NavHostController) {
 
         composable(OwnerRoute.ReviewSetting.fullRoute) { ReviewSettingScreen(navController) }
         composable(OwnerRoute.NewsSetting.fullRoute) { NewsSettingScreen(navController) }
+
+        composable(OwnerRoute.LabelSetting.fullRoute) { LabelSettingScreen(navController) }
     }
 }
