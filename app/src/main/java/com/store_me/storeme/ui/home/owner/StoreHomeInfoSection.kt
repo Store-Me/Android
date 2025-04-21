@@ -456,7 +456,7 @@ fun StoreLocationSection(
         StoreHomeIcon(R.drawable.ic_marker)
 
         Text(
-            text = storeLocationAddress + (("\n" + storeLocationDetail)),
+            text = storeLocationAddress + if(!storeLocationDetail.isNullOrEmpty()) ("\n" + storeLocationDetail) else "",
             style = storeMeTextStyle(FontWeight.Bold, 0),
             color = Color.Black,
         )
