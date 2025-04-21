@@ -115,6 +115,7 @@ fun OwnerHomeScreen(
             storeDataViewModel.getStoreMenus()
             storeDataViewModel.getStoreCoupons()
             storeDataViewModel.getStampCoupon()
+            storeDataViewModel.getLabels()
         }
     }
 

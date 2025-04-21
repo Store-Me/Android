@@ -42,7 +42,9 @@ class PostRepositoryImpl @Inject constructor(
                 Timber.d(responseBody.toString())
 
                 if(responseBody != null) {
-                    Result.success(responseBody)
+                    val sortedResponseBody = responseBody.sortedBy { it.order }
+
+                    Result.success(sortedResponseBody)
                 } else {
                     ResponseHandler.handleErrorResponse(response)
                 }
@@ -67,7 +69,9 @@ class PostRepositoryImpl @Inject constructor(
                 Timber.d(responseBody.toString())
 
                 if(responseBody != null) {
-                    Result.success(responseBody)
+                    val sortedResponseBody = responseBody.result.sortedBy { it.order }
+
+                    Result.success(responseBody.copy(result = sortedResponseBody))
                 } else {
                     ResponseHandler.handleErrorResponse(response)
                 }

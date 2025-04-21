@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
+import com.store_me.storeme.data.LabelData
 import com.store_me.storeme.data.coupon.CouponData
 import com.store_me.storeme.data.MenuCategoryData
 import com.store_me.storeme.data.StampCouponData
@@ -24,6 +25,7 @@ import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.repository.naver.NaverRepository
 import com.store_me.storeme.repository.storeme.CouponRepository
 import com.store_me.storeme.repository.storeme.OwnerRepository
+import com.store_me.storeme.repository.storeme.PostRepository
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.SuccessEventBus
 import com.store_me.storeme.utils.exception.ApiException
@@ -37,6 +39,7 @@ import javax.inject.Inject
 class StoreDataViewModel @Inject constructor(
     private val ownerRepository: OwnerRepository,
     private val couponRepository: CouponRepository,
+    private val postRepository: PostRepository,
     private val naverRepository: NaverRepository
 ): ViewModel() {
     private val _storeInfoData = MutableStateFlow<StoreInfoData?>(null)
@@ -68,6 +71,9 @@ class StoreDataViewModel @Inject constructor(
 
     private val _stories = MutableStateFlow<List<StoryData>>(emptyList())
     val stories: StateFlow<List<StoryData>> = _stories
+
+    private val _labels = MutableStateFlow<List<LabelData>>(emptyList())
+    val labels: StateFlow<List<LabelData>> = _labels
 
     /**
      * StoreData 조회 함수
@@ -320,6 +326,13 @@ class StoreDataViewModel @Inject constructor(
     }
 
     /**
+     * 라벨 갱신 함수
+     */
+    fun updateLabels(labels: List<LabelData>) {
+        _labels.value = labels
+    }
+
+    /**
      * Notice 조회
      */
     fun getStoreNotice() {
@@ -510,6 +523,25 @@ class StoreDataViewModel @Inject constructor(
 
             response.onSuccess {
                 updateStampCoupon(it.stampCoupon)
+            }.onFailure {
+                if (it is ApiException) {
+                    ErrorEventBus.errorFlow.emit(it.message)
+                } else {
+                    ErrorEventBus.errorFlow.emit(null)
+                }
+            }
+        }
+    }
+
+    /**
+     * Labels 조회
+     */
+    fun getLabels() {
+        viewModelScope.launch {
+            val response = postRepository.getLabels()
+
+            response.onSuccess {
+                updateLabels(it)
             }.onFailure {
                 if (it is ApiException) {
                     ErrorEventBus.errorFlow.emit(it.message)
