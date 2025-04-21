@@ -4,13 +4,12 @@ import android.app.Activity
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.border
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,13 +18,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
@@ -84,39 +81,21 @@ fun ProfileImage(
         }
     }
 
-    AsyncImage(
+    SubcomposeAsyncImage(
         modifier = modifier,
         model = url,
         contentDescription = "프로필 이미지",
-        error = painterResource(id = errorImage)
+        error = {
+            Image(
+                painter = painterResource(errorImage),
+                contentDescription = "프로필 이미지",
+                modifier = Modifier.fillMaxSize()
+            )
+        },
+        loading = {
+            SkeletonBox(isLoading = true) { }
+        }
     )
-}
-
-
-@Composable
-fun ProfileImageWithBorder(
-    modifier: Modifier = Modifier,
-    accountType: AccountType,
-    url: String?,
-    size: Dp = 100.dp,
-    strokeWidth: Dp = 4.dp,
-    borderColor: Color = Color.White
-) {
-    Box(
-        modifier = modifier
-            .size(size)
-            .border(width = strokeWidth, color = borderColor, shape = RoundedCornerShape(18.dp))
-            .clip(shape = RoundedCornerShape(18.dp))
-    ) {
-        ProfileImage(
-            accountType = accountType,
-            url = url,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(strokeWidth)
-
-        )
-    }
 }
 
 @Composable
@@ -182,10 +161,10 @@ fun EditableProfileImage(
                 CircleBorderWithIcon(
                     modifier = Modifier
                         .align(Alignment.TopEnd),
-                    borderColor = White,
+                    borderColor = Color.White,
                     circleColor = ErrorTextFieldColor,
                     iconResource = R.drawable.ic_delete,
-                    iconColor = White,
+                    iconColor = Color.White,
                     size = 26
                 ) {
                     onDelete()
@@ -196,10 +175,10 @@ fun EditableProfileImage(
                 CircleBorderWithIcon(
                     modifier = Modifier
                         .align(Alignment.BottomEnd),
-                    borderColor = White,
-                    circleColor = Black,
+                    borderColor = Color.White,
+                    circleColor = Color.Black,
                     iconResource = R.drawable.ic_camera,
-                    iconColor = White,
+                    iconColor = Color.White,
                     size = 36
                 ) {
                     galleryLauncher.launch("image/*")

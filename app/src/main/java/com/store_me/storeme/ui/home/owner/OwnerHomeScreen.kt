@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
@@ -34,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -65,7 +65,7 @@ import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.LinkSection
-import com.store_me.storeme.ui.component.ProfileImageWithBorder
+import com.store_me.storeme.ui.component.ProfileImage
 import com.store_me.storeme.ui.component.SkeletonBox
 import com.store_me.storeme.ui.component.StoreMeScrollableTabRow
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
@@ -77,6 +77,7 @@ import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.DateTimeUtils
+import com.store_me.storeme.utils.TEXT_ROUNDING_VALUE
 import com.store_me.storeme.utils.ToastMessageUtils
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
@@ -124,7 +125,7 @@ fun OwnerHomeScreen(
     }
 
     Scaffold(
-        containerColor = White,
+        containerColor = Color.White,
         content = { innerPadding -> // 컨텐츠 영역
             when(storeInfoData) {
                 null -> {
@@ -140,7 +141,7 @@ fun OwnerHomeScreen(
                             item {
                                 Box(
                                     modifier = Modifier
-                                        .background(color = White)
+                                        .background(color = Color.White)
                                         .fillMaxWidth(),
                                     contentAlignment = Alignment.TopCenter
                                 ) {
@@ -169,11 +170,21 @@ fun OwnerHomeScreen(
                                             verticalAlignment = Alignment.Bottom
                                         ) {
                                             //프로필 이미지
-                                            ProfileImageWithBorder(
-                                                accountType = AccountType.OWNER,
-                                                url = storeInfoData!!.storeProfileImage,
+                                            Box(
                                                 modifier = Modifier
-                                            )
+                                                    .size(100.dp)
+                                                    .background(color = Color.White, shape = RoundedCornerShape(TEXT_ROUNDING_VALUE))
+                                                    .clip(shape = RoundedCornerShape(TEXT_ROUNDING_VALUE))
+                                                    .padding(4.dp),
+                                            ) {
+                                                ProfileImage(
+                                                    accountType = AccountType.OWNER,
+                                                    url = storeInfoData!!.storeProfileImage,
+                                                    modifier = Modifier
+                                                        .fillMaxSize()
+                                                        .clip(shape = RoundedCornerShape(TEXT_ROUNDING_VALUE))
+                                                )
+                                            }
 
                                             Spacer(modifier = Modifier.weight(1f))
                                             Column (
