@@ -3,6 +3,7 @@ package com.store_me.storeme.utils
 import androidx.compose.ui.unit.dp
 
 const val DEFAULT_MENU_CATEGORY_NAME = "기본 카테고리"
+const val DEFAULT_LABEL_ID = "default"
 
 /**
  * 가장 밖의 Box Rounding 값
