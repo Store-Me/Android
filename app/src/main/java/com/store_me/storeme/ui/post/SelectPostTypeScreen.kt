@@ -4,6 +4,7 @@ package com.store_me.storeme.ui.post
 
 import android.content.Context
 import android.content.Intent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -35,6 +35,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.post.PostType
+import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.ui.post.add.AddPostActivity
 import com.store_me.storeme.ui.theme.AddPostCouponIconColor
 import com.store_me.storeme.ui.theme.AddPostEditIconColor
@@ -42,12 +43,11 @@ import com.store_me.storeme.ui.theme.AddPostEventIconColor
 import com.store_me.storeme.ui.theme.AddPostNoticeIconColor
 import com.store_me.storeme.ui.theme.AddPostStoryIconColor
 import com.store_me.storeme.ui.theme.AddPostSurveyIconColor
+import com.store_me.storeme.ui.theme.DownloadCouponColor
+import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
-import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.SizeUtils
-import com.store_me.storeme.utils.composition_locals.LocalAuth
-import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
+import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 
 val LocalSelectPostTypeViewModel = staticCompositionLocalOf<SelectPostTypeViewModel> {
     error("No AddPostViewModel provided")
@@ -71,7 +71,11 @@ fun SelectPostTypeScreen(
                         .padding(innerPadding)
                         .fillMaxSize()
                 ) {
-                    SelectPostTypeSection {
+                    SelectPostTypeSection(
+                        onLabelSetting = {
+                            navController.navigate(OwnerRoute.LabelSetting.fullRoute)
+                        }
+                    ) {
                         navigateToAddPostActivity(context = context, postType = it)
                     }
                 }
@@ -81,16 +85,59 @@ fun SelectPostTypeScreen(
 }
 
 fun navigateToAddPostActivity(context: Context, postType: PostType) {
-
     val intent = Intent(context, AddPostActivity::class.java).apply {
         putExtra("postType", postType.name)
     }
-
     context.startActivity(intent)
 }
 
 @Composable
-fun SelectPostTypeSection(onSelectType: (PostType) -> Unit) {
+fun LabelSettingButton(onClick: () -> Unit) {
+    Button(
+        onClick = { onClick() },
+        modifier = Modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE),
+        colors = ButtonDefaults.buttonColors(
+            contentColor = Color.Black,
+            containerColor = Color.White
+        ),
+        border = BorderStroke(width = 2.dp, color = SubHighlightColor)
+    ) {
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "소식 라벨 설정",
+                style = storeMeTextStyle(FontWeight.ExtraBold, 2)
+            )
+
+            Text(
+                text = "가게 소식을 라벨별로 관리해보세요.",
+                style = storeMeTextStyle(FontWeight.Bold, 0),
+                color = GuideColor
+            )
+
+        }
+
+        Icon(
+            painter = painterResource(id = R.drawable.ic_label),
+            contentDescription = null,
+            modifier = Modifier
+                .size(32.dp),
+            tint = DownloadCouponColor
+        )
+    }
+}
+
+@Composable
+fun SelectPostTypeSection(
+    onLabelSetting: () -> Unit,
+    onSelectType: (PostType) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -109,6 +156,10 @@ fun SelectPostTypeSection(onSelectType: (PostType) -> Unit) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            LabelSettingButton {
+                onLabelSetting()
+            }
+
             PostTypeLargeItem(
                 postType = PostType.NORMAL,
                 iconResource = R.drawable.ic_edit,
@@ -186,16 +237,12 @@ fun PostTypeLargeItem(postType: PostType, iconResource: Int, iconTint: Color, on
         onClick = { onClick() },
         modifier = Modifier
             .fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE),
         colors = ButtonDefaults.buttonColors(
             contentColor = Color.Black,
             containerColor = SubHighlightColor
         )
     ) {
-        val density = LocalDensity.current
-
-        val iconSize = SizeUtils.textSizeToDp(density, 2, 12)
-
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -211,7 +258,7 @@ fun PostTypeLargeItem(postType: PostType, iconResource: Int, iconTint: Color, on
                 Text(
                     text = it,
                     style = storeMeTextStyle(FontWeight.Bold, 0),
-                    color = UndefinedTextColor
+                    color = GuideColor
                 )
             }
         }
@@ -220,7 +267,7 @@ fun PostTypeLargeItem(postType: PostType, iconResource: Int, iconTint: Color, on
             painter = painterResource(id = iconResource),
             contentDescription = null,
             modifier = Modifier
-                .size(iconSize),
+                .size(32.dp),
             tint = iconTint
         )
     }
@@ -232,16 +279,12 @@ fun PostTypeSmallItem(modifier: Modifier, postType: PostType, iconResource: Int,
         onClick = { onClick() },
         modifier = modifier
             .fillMaxWidth(),
-        shape = RoundedCornerShape(14.dp),
+        shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE),
         colors = ButtonDefaults.buttonColors(
             contentColor = Color.Black,
             containerColor = SubHighlightColor
         )
     ) {
-        val density = LocalDensity.current
-
-        val iconSize = SizeUtils.textSizeToDp(density, 2, 12)
-
         Column(
             modifier = modifier
                 .weight(1f)
@@ -253,7 +296,7 @@ fun PostTypeSmallItem(modifier: Modifier, postType: PostType, iconResource: Int,
                 painter = painterResource(id = iconResource),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(iconSize),
+                    .size(32.dp),
                 tint = iconTint
             )
 
