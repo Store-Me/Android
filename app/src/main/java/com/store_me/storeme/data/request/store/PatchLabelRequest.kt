@@ -5,7 +5,7 @@ data class PatchLabelRequest(
 )
 
 data class PatchLabelData(
-    val labelId: String,
+    val labelId: String?,
     val name: String,
     val order: Int,
 )

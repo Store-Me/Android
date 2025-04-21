@@ -59,6 +59,6 @@ sealed class OwnerRoute(
     data object NewsSetting: OwnerRoute("newsSetting", parent = Home)
 
 
-
+    data object LabelSetting: OwnerRoute("labelSetting", parent = Add)
 
 }
