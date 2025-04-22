@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalLayoutApi::class, ExperimentalPagerApi::class)
+@file:OptIn(ExperimentalLayoutApi::class)
 
 package com.store_me.storeme.ui.home.owner.tab
 
@@ -39,20 +39,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.SubcomposeAsyncImage
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.store.FeaturedImageData
@@ -167,23 +164,14 @@ fun ImageDetailDialog(
     featuredImageData: FeaturedImageData,
     onDismiss: () -> Unit
 ) {
-    var scale by remember { mutableStateOf(1f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
-
-    var containerSize by remember { mutableStateOf(IntSize.Zero) }
-
     val scope = rememberCoroutineScope()
-
 
     val pagerState = rememberPagerState(
         initialPage = featuredImages.indexOf(featuredImageData),
         pageCount = { featuredImages.size }
     )
 
-    LaunchedEffect(pagerState.currentPage) {
-        scale = 1f
-        offset = Offset.Zero
-    }
+    var scale by remember { mutableStateOf(1f) }
 
     Dialog(
         onDismissRequest = { onDismiss() },
@@ -224,13 +212,16 @@ fun ImageDetailDialog(
                 userScrollEnabled = scale == 1.0f //확대 시, scroll 불가
             ) { page ->
 
-                //이미지 확대 / 축소 및 이동 감지
-                val state = rememberTransformableState { zoomChange, panChange, _ ->
-                    if(zoomChange == 1.0f && scale == 1.0f) {
-                        //Pager가 이벤트를 받아야 하는 경우
-
+                ZoomableAsyncImage(
+                    imageUrl = featuredImages[page].image,
+                    width = featuredImages[page].width,
+                    height = featuredImages[page].height,
+                    onScaleChanged = {
+                        scale = it
+                    },
+                    onSwipe = {
                         scope.launch {
-                            pagerState.scrollBy(-panChange.x)
+                            pagerState.scrollBy(-it)
 
                             val targetPage = if (pagerState.currentPageOffsetFraction > 0.5f) {
                                 pagerState.currentPage + 1
@@ -240,58 +231,8 @@ fun ImageDetailDialog(
 
                             pagerState.animateScrollToPage(targetPage)
                         }
-                    } else {
-                        //이미지 offset이 이벤트를 받아야 하는 경우
-
-                        scale = (scale * zoomChange).coerceIn(1.0f, 10.0f)
-
-                        if(scale == 1.0f) {
-                            offset = Offset.Zero
-                        } else {
-                            // 최대 오프셋 계산
-                            val maxOffsetX = ((containerSize.width * scale) - containerSize.width) / 2
-                            val maxOffsetY = ((containerSize.height * scale) - containerSize.height) / 2
-
-                            // 새로운 오프셋 값 계산
-                            val newOffsetX = (offset.x + (panChange.x * scale)).coerceIn(-maxOffsetX, maxOffsetX)
-                            val newOffsetY = (offset.y + (panChange.y * scale)).coerceIn(-maxOffsetY, maxOffsetY)
-
-                            offset = Offset(x = newOffsetX, y = newOffsetY)
-                        }
                     }
-                }
-
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    SubcomposeAsyncImage(
-                        model = featuredImages[page].image,
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .weight(1f)
-                            .aspectRatio(ratio = featuredImages[page].width.toFloat() / featuredImages[page].height)
-                            .onSizeChanged { containerSize = it }
-                            .transformable(state)
-                            .graphicsLayer(
-                                scaleX = scale,
-                                scaleY = scale,
-                                translationX = offset.x,
-                                translationY = offset.y
-                            ),
-                        loading = {
-                            SkeletonBox(
-                                isLoading = true,
-                                modifier = Modifier
-                                    .fillMaxSize(),
-                            ) {
-
-                            }
-                        }
-                    )
-                }
+                )
             }
 
             if(scale == 1f) {
@@ -301,6 +242,87 @@ fun ImageDetailDialog(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun ZoomableAsyncImage(
+    imageUrl: String,
+    width: Int,
+    height: Int,
+    onScaleChanged: (Float) -> Unit,
+    onSwipe: (Float) -> Unit
+) {
+    var scale by remember { mutableStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    var containerSize by remember { mutableStateOf(IntSize.Zero) }
+
+    LaunchedEffect(imageUrl) {
+        scale = 1f
+        offset = Offset.Zero
+    }
+
+    LaunchedEffect(scale) {
+        onScaleChanged(scale)
+    }
+
+    //이미지 확대 / 축소 및 이동 감지
+    val state = rememberTransformableState { zoomChange, panChange, _ ->
+        if(zoomChange == 1.0f && scale == 1.0f) {
+            //Pager가 이벤트를 받아야 하는 경우
+            onSwipe(panChange.x)
+        } else {
+            //이미지 offset이 이벤트를 받아야 하는 경우
+
+            scale = (scale * zoomChange).coerceIn(1.0f, 10.0f)
+
+            if(scale == 1.0f) {
+                offset = Offset.Zero
+            } else {
+                // 최대 오프셋 계산
+                val maxOffsetX = ((containerSize.width * scale) - containerSize.width) / 2
+                val maxOffsetY = ((containerSize.height * scale) - containerSize.height) / 2
+
+                // 새로운 오프셋 값 계산
+                val newOffsetX = (offset.x + (panChange.x * scale)).coerceIn(-maxOffsetX, maxOffsetX)
+                val newOffsetY = (offset.y + (panChange.y * scale)).coerceIn(-maxOffsetY, maxOffsetY)
+
+                offset = Offset(x = newOffsetX, y = newOffsetY)
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        SubcomposeAsyncImage(
+            model = imageUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .weight(1f)
+                .aspectRatio(ratio = width.toFloat() / height)
+                .onSizeChanged { containerSize = it }
+                .transformable(state)
+                .graphicsLayer(
+                    scaleX = scale,
+                    scaleY = scale,
+                    translationX = offset.x,
+                    translationY = offset.y
+                ),
+            loading = {
+                SkeletonBox(
+                    isLoading = true,
+                    modifier = Modifier
+                        .fillMaxSize(),
+                ) {
+
+                }
+            }
+        )
     }
 }
 
