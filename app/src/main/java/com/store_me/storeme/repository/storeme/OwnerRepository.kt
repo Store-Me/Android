@@ -407,6 +407,7 @@ class OwnerRepositoryImpl @Inject constructor(
             val response = ownerApiService.getStoreFeaturedImages(
                 storeId = auth.getStoreId(),
             )
+
             if(response.isSuccessful) {
                 val responseBody = response.body()
 

@@ -236,7 +236,9 @@ fun FeaturedImageSettingScreen(
                                 image = croppedImageUrl ?: "",
                                 description = description,
                                 width = size.first,
-                                height = size.second
+                                height = size.second,
+                                createdAt = null,
+                                updatedAt = null
                             )
                         )
                     }
@@ -259,12 +261,7 @@ fun FeaturedImageSettingScreen(
             ) {
                 featuredImageSettingViewModel.editFeaturedImage(
                     editIndex!!,
-                    featuredImage = FeaturedImageData(
-                        image = featuredImages[editIndex!!].image,
-                        description = it,
-                        width = featuredImages[editIndex!!].width,
-                        height = featuredImages[editIndex!!].height
-                    )
+                    featuredImage = featuredImages[editIndex!!].copy(description = it)
                 )
 
                 editIndex = null
@@ -380,7 +377,7 @@ fun FeaturedReorderableImageItem(
                 }
             )
 
-            if(!featuredImageData.description.isNullOrBlank() && onSuccess) {
+            if(featuredImageData.description.isNotBlank() && onSuccess) {
                 Canvas(modifier = Modifier.matchParentSize()) {
                     drawRect(
                         brush = Brush.verticalGradient(
@@ -542,7 +539,7 @@ fun AddFeaturedImageBottomSheetContent(
 
 @Composable
 fun EditFeaturedImageBottomSheetContent(featuredImage: FeaturedImageData, onEdit: (String) -> Unit) {
-    var description by remember { mutableStateOf(featuredImage.description ?: "") }
+    var description by remember { mutableStateOf(featuredImage.description) }
     var isError by remember { mutableStateOf(false) }
 
     LaunchedEffect(description) {
