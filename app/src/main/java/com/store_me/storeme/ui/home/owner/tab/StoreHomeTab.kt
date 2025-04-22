@@ -1,4 +1,4 @@
-package com.store_me.storeme.ui.home.owner
+package com.store_me.storeme.ui.home.owner.tab
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -56,7 +56,7 @@ import com.store_me.storeme.utils.PriceUtils
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
 @Composable
-fun OwnerStoreHomeSection(navController: NavController) {
+fun StoreHomeTab(navController: NavController) {
     Column {
         StoreHomeItem.entries
             .forEach { item ->
@@ -102,7 +102,7 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItem, onClick: (StoreHomeItem) 
             StoreHomeItem.FEATURED_IMAGES -> FeaturedImageSection(featuredImages) { onClick(it) }
             StoreHomeItem.MENU -> MenuSection(menuCategories) { onClick(it) }
             StoreHomeItem.COUPON -> CouponPreviewSection(coupons) { onClick(it) }
-            StoreHomeItem.STAMP_COUPON -> StampCouponSection(stampCoupon) { onClick(it) }
+            StoreHomeItem.STAMP_COUPON -> StampTab(stampCoupon) { onClick(it) }
             else -> {
 
             }
