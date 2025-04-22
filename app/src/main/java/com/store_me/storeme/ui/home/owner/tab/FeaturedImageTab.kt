@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.SubcomposeAsyncImage
+import com.google.firebase.Timestamp
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.store.FeaturedImageData
@@ -238,7 +239,9 @@ fun ImageDetailDialog(
             if(scale == 1f) {
                 ImageDescription(
                     storeInfoData = storeInfoData,
-                    featuredImageData = featuredImages[pagerState.currentPage],
+                    description = featuredImages[pagerState.currentPage].description,
+                    createdAt = featuredImages[pagerState.currentPage].createdAt,
+                    updatedAt = featuredImages[pagerState.currentPage].updatedAt
                 )
             }
         }
@@ -330,9 +333,15 @@ fun ZoomableAsyncImage(
 fun ImageDescription(
     modifier: Modifier = Modifier,
     storeInfoData: StoreInfoData,
-    featuredImageData: FeaturedImageData
+    description: String,
+    createdAt: Timestamp?,
+    updatedAt: Timestamp?
 ) {
     var showAllDescription by remember { mutableStateOf(false) }
+
+    LaunchedEffect(description) {
+        showAllDescription = false
+    }
 
     Column(
         modifier = modifier
@@ -364,9 +373,9 @@ fun ImageDescription(
                     .weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                if(featuredImageData.description.isNotEmpty()) {
+                if(description.isNotEmpty()) {
                     Text(
-                        text = featuredImageData.description,
+                        text = description,
                         style = storeMeTextStyle(fontWeight = FontWeight.Normal, 2),
                         color = Color.White,
                         maxLines = if(showAllDescription) Int.MAX_VALUE else 1,
@@ -398,12 +407,12 @@ fun ImageDescription(
                     )
 
                     Text(
-                        text = if(featuredImageData.createdAt != null) " " + featuredImageData.createdAt.toTimeAgo() else "",
+                        text = if(createdAt != null) " " + createdAt.toTimeAgo() else "",
                         style = storeMeTextStyle(FontWeight.Normal, 0),
                         color = DisabledColor
                     )
 
-                    if(featuredImageData.createdAt != featuredImageData.updatedAt) {
+                    if(createdAt != updatedAt) {
                         Text(
                             text = " (수정됨)",
                             style = storeMeTextStyle(FontWeight.Normal, 0),
