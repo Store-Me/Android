@@ -45,7 +45,6 @@ import com.store_me.storeme.ui.theme.SelectedCheckBoxColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.ToggleButtonBorderColor
-import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.SizeUtils
 
