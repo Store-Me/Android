@@ -199,17 +199,12 @@ val SelectedCheckBoxColor = Color(0xFF220000)
 /**
  * Add Menu Color
  */
-val SelectedMenuCategoryColor = Color(0xFF898C93)
-
-val SignatureBoxColor = Color(0xFFFEEBFE)
 
 val PopularBoxColor = Color(0xFFDCE8FF)
 val PopularTextColor = Color(0xFF508EFA)
 
 val RecommendBoxColor = Color(0xFFFFEECC)
 val RecommendTextColor = Color(0xFFE59F11)
-
-val UnselectedHighLightMenuColor = Color(0xFFAAADB4)
 
 /**
  * Review Color
@@ -244,10 +239,7 @@ val AddPostStoryIconColor = Color(0xFFFE4343)
 /**
  * Keyboard Toolbar Color
  */
-val SelectedToolbarItemColor = Color(0xFFD449DA)
 val SecondaryToolbarBackgroundColor = Color(0xFFF9F9F9)
-
-val SelectedToolbarTextStyleBackgroundColor = Color(0xFFFEEBFE)
 
 /**
  * Default Color
@@ -288,3 +280,5 @@ val GuideColor = Color(0xFF898C93)
 val ErrorColor = Color(0xFFFE4343)
 
 val ExpiredColor = Color(0xFFD9D9D9)
+
+val LightBlack = Color(0xFF191919)
