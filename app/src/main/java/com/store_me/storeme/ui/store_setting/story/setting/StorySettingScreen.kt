@@ -36,11 +36,13 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.ui.component.SaveAndAddButton
+import com.store_me.storeme.ui.component.SkeletonBox
 import com.store_me.storeme.ui.component.StoryPlayer
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
@@ -181,12 +183,24 @@ fun StoryDetailItem(storyData: StoryData) {
 
 @Composable
 fun StoryThumbnailItem(modifier: Modifier, storyData: StoryData) {
-    AsyncImage(
-        model = storyData.thumbNail,
-        contentDescription = null,
+    Box(
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(9f / 16f)
             .clip(RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
-    )
+            .background(Color.Black)
+    ) {
+        SubcomposeAsyncImage(
+            model = storyData.thumbNail,
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Fit,
+            loading = {
+                SkeletonBox(
+                    modifier = Modifier.fillMaxSize(),
+                    isLoading = true
+                ) {}
+            }
+        )
+    }
 }

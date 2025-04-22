@@ -2,6 +2,7 @@ package com.store_me.storeme.ui.store_setting.story.setting
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Timestamp
 import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.utils.ErrorEventBus
@@ -20,8 +21,8 @@ class StorySettingViewModel @Inject constructor(
     private val _stories = MutableStateFlow<List<StoryData>>(emptyList())
     val stories: StateFlow<List<StoryData>> = _stories
 
-    private val _lastCreatedAt = MutableStateFlow<String?>(null)
-    val lastCreatedAt: StateFlow<String?> = _lastCreatedAt
+    private val _lastCreatedAt = MutableStateFlow<Timestamp?>(null)
+    val lastCreatedAt: StateFlow<Timestamp?> = _lastCreatedAt
 
     private val _hasNextPage = MutableStateFlow(true)
     val hasNextPage: StateFlow<Boolean> = _hasNextPage
@@ -34,7 +35,7 @@ class StorySettingViewModel @Inject constructor(
         _stories.value += stories
     }
 
-    fun updateLastCreatedAt(lastCreatedAt: String?) {
+    fun updateLastCreatedAt(lastCreatedAt: Timestamp?) {
         _lastCreatedAt.value = lastCreatedAt
     }
 

@@ -1,5 +1,6 @@
 package com.store_me.storeme.network.storeme
 
+import com.google.firebase.Timestamp
 import com.store_me.storeme.data.StampCouponData
 import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
@@ -231,7 +232,7 @@ interface OwnerApiService {
     suspend fun getStoreStories(
         @Path("storeId") storeId: String,
         @Query("limit") limit: Int = 10,
-        @Query("lastCreatedAt") lastCreatedAt: String?
+        @Query("lastCreatedAt") lastCreatedAt: Timestamp?
     ): Response<PagingResponse<List<StoryData>>>
 
     /**
@@ -242,15 +243,6 @@ interface OwnerApiService {
         @Path("storeId") storeId: String,
         @Body postStoreStoryRequest: PostStoryRequest
     ): Response<PagingResponse<List<StoryData>>>
-
-    /**
-     * 특정 스토리 조회 API
-     */
-    @GET("story/store/{storeId}/stories/{storyId}")
-    suspend fun getStoreStory(
-        @Path("storeId") storeId: String,
-        @Path("storyId") storyId: String
-    ): Response<StoryData>
 
     /**
      * 스토리 삭제 API

@@ -1,5 +1,6 @@
 package com.store_me.storeme.repository.storeme
 
+import com.google.firebase.Timestamp
 import com.store_me.auth.Auth
 import com.store_me.storeme.data.StampCouponData
 import com.store_me.storeme.data.StoryData
@@ -79,7 +80,7 @@ interface OwnerRepository {
 
     suspend fun patchStampCouponPassword(patchStampCouponPasswordRequest: StampCouponPasswordResponse): Result<StoreMeResponse<Unit>>
 
-    suspend fun getStoreStories(lastCreatedAt: String?): Result<PagingResponse<List<StoryData>>>
+    suspend fun getStoreStories(lastCreatedAt: Timestamp?): Result<PagingResponse<List<StoryData>>>
 
     suspend fun postStoreStory(postStoreStoryRequest: PostStoryRequest): Result<PagingResponse<List<StoryData>>>
 
@@ -620,7 +621,7 @@ class OwnerRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getStoreStories(lastCreatedAt: String?): Result<PagingResponse<List<StoryData>>> {
+    override suspend fun getStoreStories(lastCreatedAt: Timestamp?): Result<PagingResponse<List<StoryData>>> {
         return try {
             val response = ownerApiService.getStoreStories(
                 storeId = auth.getStoreId(),
