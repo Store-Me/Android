@@ -31,7 +31,7 @@ class FeaturedImageSettingViewModel @Inject constructor(
     private val _imageSize = MutableStateFlow<Pair<Int, Int>?>(null)
     val imageSize: StateFlow<Pair<Int, Int>?> = _imageSize
 
-    private val _uploadProgress = MutableStateFlow<Float>(0.0f)
+    private val _uploadProgress = MutableStateFlow(0.0f)
     val uploadProgress: StateFlow<Float> = _uploadProgress
 
     fun updateFeaturedImages(featuredImages: List<FeaturedImageData>) {
