@@ -59,11 +59,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.store_me.storeme.R
+import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.data.response.CustomerInfoResponse
 import com.store_me.storeme.data.response.MyStore
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultButton
+import com.store_me.storeme.ui.component.ProfileImage
 import com.store_me.storeme.ui.component.PwOutlinedTextField
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.onboarding.OnboardingActivity
@@ -317,10 +319,11 @@ fun LoginScreen(
     )
 
     if(showBottomSheet) {
-        fun dismissBottomSheet() {
+        fun dismissBottomSheet(onDismissed: () -> Unit = {}) {
             coroutineScope.launch { sheetState.hide() }.invokeOnCompletion {
                 if(!sheetState.isVisible) {
                     showBottomSheet = false
+                    onDismissed()
                 }
             }
         }
@@ -342,13 +345,15 @@ fun LoginScreen(
                 },
                 onSelectCustomerProfile = {
                     loadingViewModel.showLoading()
-                    loginViewModel.loginAsCustomer()
-                    dismissBottomSheet()
+                    dismissBottomSheet {
+                        loginViewModel.loginAsCustomer()
+                    }
                 },
                 onSelectMyStore = {
                     loadingViewModel.showLoading()
-                    loginViewModel.loginAsOwner(it)
-                    dismissBottomSheet()
+                    dismissBottomSheet {
+                        loginViewModel.loginAsOwner(it)
+                    }
                 }
             )
         }
@@ -396,13 +401,7 @@ fun SelectProfile(
                 }
             }
 
-            if(myStores == null) {
-                item {
-                    AddItem(isOwner = true) {
-                        onAddStore()
-                    }
-                }
-            } else {
+            if(myStores != null) {
                 items(myStores) {
                     ProfileItem(
                         profileImage = it.storeProfileImage,
@@ -411,6 +410,12 @@ fun SelectProfile(
                     ) {
                         onSelectMyStore(it)
                     }
+                }
+            }
+
+            item {
+                AddItem(isOwner = true) {
+                    onAddStore()
                 }
             }
         }
@@ -499,21 +504,14 @@ fun ProfileItem(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(
+        ProfileImage(
+            url = profileImage,
+            accountType = if(isOwner) AccountType.OWNER else AccountType.CUSTOMER,
             modifier = Modifier
-                .size(120.dp),
-            contentAlignment = Alignment.TopEnd
-        ) {
-            AsyncImage(
-                model = profileImage,
-                contentDescription = null,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .aspectRatio(1f)
-                    .clip(CircleShape),
-                error = painterResource(if(isOwner) R.drawable.store_null_image else R.drawable.profile_null_image)
-            )
-        }
+                .size(120.dp)
+                .aspectRatio(1f)
+                .clip(CircleShape)
+        )
 
         if(isOwner) {
             Text(
