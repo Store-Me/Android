@@ -93,7 +93,11 @@ fun ProfileImage(
             )
         },
         loading = {
-            SkeletonBox(isLoading = true) { }
+            SkeletonBox(
+                isLoading = true,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) { }
         }
     )
 }
