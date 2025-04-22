@@ -192,7 +192,7 @@ fun ImageDetailDialog(
             ) {
                 Spacer(modifier = Modifier.weight(1f))
 
-                if(scale != 1.0f) {
+                if(scale == 1.0f) {
                     IconButton(
                         onClick = {
                             onDismiss()
