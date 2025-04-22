@@ -192,18 +192,20 @@ fun ImageDetailDialog(
             ) {
                 Spacer(modifier = Modifier.weight(1f))
 
-                IconButton(
-                    onClick = {
-                        onDismiss()
+                if(scale != 1.0f) {
+                    IconButton(
+                        onClick = {
+                            onDismiss()
+                        }
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
+                            contentDescription = "닫기",
+                            modifier = Modifier
+                                .size(24.dp),
+                            tint = Color.White
+                        )
                     }
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
-                        contentDescription = "닫기",
-                        modifier = Modifier
-                            .size(24.dp),
-                        tint = Color.White
-                    )
                 }
             }
 
