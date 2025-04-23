@@ -75,10 +75,6 @@ val KakaoLoginButtonColor = Color(0xFFFEE500)
 //StoreMe Login Color
 val StoreMeLoginButtonColor = Color(0xFFF393F6)
 
-/**
- * Icon 관련 Color
- */
-val WebIconColor = Color(0xFFD449DA)
 
 /**
  * 온보딩 Color
@@ -117,18 +113,6 @@ val SelectedSortTypeColor = Color(0xFFD449DA)
 //Create Coupon Arrow Color
 val CreateCouponArrowColor = Color(0xFFAAADB4)
 
-//Coupon Card Color
-val CouponCardColor = Color(0xFFEFF0F5)
-
-//Coupon Available Text Color
-val CouponAvailableTextColor = Color(0xFF545A68)
-
-//Expired Coupon Color
-val CouponExpiredTextColor = Color(0xFFAAADB4)
-
-//Expired Coupon Available BoxColor
-val CouponExpiredAvailableBoxColor = Color(0xFFD9D9D9)
-
 /**
  * Banner 관련 Color
  */
@@ -166,16 +150,6 @@ val MyMenuIconColor = Color(0xFF00CC00)
  */
 val HighlightTextFieldColor = Color(0xFFD449DA)
 val ErrorTextFieldColor = Color(0xFFFE4343)
-
-/**
- * Owner Home Color
- */
-val OwnerHomeLikeCountColor = Color(0xFF545A68)
-
-/**
- * Store Detail Color
- */
-val StoreDetailIconColor = Color(0xFF898C93)
 
 /**
  * Time Picker Color
