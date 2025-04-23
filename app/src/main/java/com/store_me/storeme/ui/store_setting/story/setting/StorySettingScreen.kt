@@ -41,7 +41,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
-import coil.compose.SubcomposeAsyncImageScope
 import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.ui.component.SaveAndAddButton
 import com.store_me.storeme.ui.component.SkeletonBox
