@@ -27,11 +27,11 @@ enum class StoreHomeItem(
         route = OwnerRoute.StampCouponSetting
     ),
     STORY(
-        displayName = "스토어 스토리",
+        displayName = "스토리",
         route = OwnerRoute.StorySetting
     ),
     REVIEW(
-        displayName = "스토어 리뷰",
+        displayName = "리뷰",
         route = OwnerRoute.ReviewSetting
     ),
     NEWS(
