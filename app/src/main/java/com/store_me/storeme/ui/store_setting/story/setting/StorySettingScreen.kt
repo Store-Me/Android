@@ -3,6 +3,7 @@
 package com.store_me.storeme.ui.store_setting.story.setting
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -40,6 +41,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageScope
 import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.ui.component.SaveAndAddButton
 import com.store_me.storeme.ui.component.SkeletonBox
@@ -183,24 +185,48 @@ fun StoryDetailItem(storyData: StoryData) {
 
 @Composable
 fun StoryThumbnailItem(modifier: Modifier, storyData: StoryData) {
-    Box(
+    SubcomposeAsyncImage(
+        model = storyData.thumbNail,
+        contentDescription = null,
         modifier = modifier
             .fillMaxWidth()
             .aspectRatio(9f / 16f)
-            .clip(RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
-            .background(Color.Black)
-    ) {
-        SubcomposeAsyncImage(
-            model = storyData.thumbNail,
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Fit,
-            loading = {
+            .clip(RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)),
+        contentScale = ContentScale.Fit,
+        loading = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.White)
+            ) {
                 SkeletonBox(
                     modifier = Modifier.fillMaxSize(),
                     isLoading = true
                 ) {}
             }
-        )
-    }
+        },
+        success = { state ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+            ) {
+                Image(
+                    painter = state.painter,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
+                )
+            }
+        },
+        error = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+            ) {
+
+            }
+        }
+    )
 }
