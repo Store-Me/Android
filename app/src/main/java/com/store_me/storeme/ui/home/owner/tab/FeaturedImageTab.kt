@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,8 +21,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,11 +35,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntSize
@@ -57,6 +52,7 @@ import com.store_me.storeme.data.store.FeaturedImageData
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.ui.component.ProfileImage
 import com.store_me.storeme.ui.component.SkeletonBox
+import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.theme.DisabledColor
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.LightBlack
@@ -185,28 +181,11 @@ fun ImageDetailDialog(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 12.dp)
+            TitleWithDeleteButton(
+                title = "",
+                tint = Color.White
             ) {
-                Spacer(modifier = Modifier.weight(1f))
-
-                if(scale == 1.0f) {
-                    IconButton(
-                        onClick = {
-                            onDismiss()
-                        }
-                    ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
-                            contentDescription = "닫기",
-                            modifier = Modifier
-                                .size(24.dp),
-                            tint = Color.White
-                        )
-                    }
-                }
+                onDismiss()
             }
 
             HorizontalPager (
@@ -349,12 +328,12 @@ fun ImageDescription(
         modifier = modifier
             .fillMaxWidth()
             .background(color = LightBlack)
-            .padding(horizontal = 20.dp, vertical = 12.dp)
             .clickable(
                 onClick = { showAllDescription = !showAllDescription },
                 indication = null,
                 interactionSource = null
             )
+            .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
         Row(
             modifier = Modifier
