@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,9 +38,9 @@ import com.store_me.storeme.data.enums.LoginType
 import com.store_me.storeme.ui.component.StoreMeSnackbar
 import com.store_me.storeme.ui.loading.LoadingScreen
 import com.store_me.storeme.ui.loading.LoadingViewModel
-import com.store_me.storeme.ui.signup.SignupScreen
 import com.store_me.storeme.ui.login.LoginScreen
 import com.store_me.storeme.ui.main.MainActivity
+import com.store_me.storeme.ui.signup.SignupScreen
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.SuccessEventBus
@@ -67,7 +68,7 @@ class OnboardingActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         setContent{
             val onboardingComposition by rememberLottieComposition(
                 LottieCompositionSpec.RawRes(R.raw.onboarding_animation)
@@ -129,6 +130,7 @@ class OnboardingActivity : ComponentActivity() {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
+                                    .background(color = Color.Black)
                                     .padding(it)
                             ) {
                                 NavGraph(navController = navController)

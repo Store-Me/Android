@@ -6,13 +6,17 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -81,7 +85,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        enableEdgeToEdge()
         setContent {
             keyboardHeightObserver = KeyboardHeightObserver(this) { height ->
                 lifecycleScope.launch {
@@ -122,8 +126,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Surface(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .background(color = Color.White),
+                            .fillMaxSize(),
                         color = Color.Transparent
                     ) {
                         val isLoggedIn by auth.isLoggedIn.collectAsState()
@@ -135,6 +138,8 @@ class MainActivity : ComponentActivity() {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
+                                    .background(color = Color.Black)
+                                    .windowInsetsPadding(WindowInsets.systemBars)
                             ) {
                                 when(accountType){
                                     AccountType.CUSTOMER -> { CustomerScreen() }
@@ -173,7 +178,10 @@ class MainActivity : ComponentActivity() {
             ) },
             bottomBar = { BottomNavigationBar(navController) }
         ) {
-            Box(Modifier.padding(it)) {
+            Box(
+                Modifier
+                    .padding(it)
+            ) {
                 CustomerNavigationGraph(navController)
             }
         }
@@ -191,7 +199,9 @@ class MainActivity : ComponentActivity() {
             ) },
             bottomBar = { BottomNavigationBar(navController) }
         ) {
-            Box(Modifier.padding(it)) {
+            Box(
+                Modifier
+                    .padding(it)) {
                 OwnerNavigationGraph(navController)
             }
         }

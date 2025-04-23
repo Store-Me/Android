@@ -3,9 +3,13 @@ package com.store_me.storeme.ui.post.add
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
@@ -15,7 +19,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.store_me.storeme.R
@@ -46,9 +49,8 @@ class AddPostActivity : ComponentActivity() {
     private lateinit var keyboardHeightObserver: KeyboardHeightObserver
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             val postTypeName = intent.getStringExtra("postType")
             val postType = postTypeName?.let {
@@ -97,7 +99,8 @@ class AddPostActivity : ComponentActivity() {
                     Surface(
                         modifier = Modifier
                             .fillMaxSize()
-                            .background(color = Color.White),
+                            .background(color = Color.Black)
+                            .windowInsetsPadding(WindowInsets.systemBars),
                         color = Color.Transparent
                     ) {
                         Box(
