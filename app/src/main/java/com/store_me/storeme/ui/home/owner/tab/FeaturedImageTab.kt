@@ -334,6 +334,7 @@ fun ImageDescription(
                 interactionSource = null
             )
             .padding(horizontal = 20.dp, vertical = 12.dp)
+            .padding(bottom = 80.dp)
     ) {
         Row(
             modifier = Modifier
