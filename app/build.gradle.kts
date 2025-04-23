@@ -20,13 +20,13 @@ fun getApiKey(key: String) = localProps.getProperty(key, "") ?: ""
 
 android {
     namespace = "com.store_me.storeme"
-    compileSdk = 35
+    compileSdk = 34
     buildFeatures.buildConfig = true
 
     defaultConfig {
         applicationId = "com.store_me.storeme"
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -97,9 +97,9 @@ dependencies {
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
-    implementation("androidx.core:core-ktx:1.16.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.7")
-    implementation("androidx.activity:activity-compose:1.10.1")
+    implementation("androidx.core:core-ktx:1.13.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
+    implementation("androidx.activity:activity-compose:1.9.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
 
     //Compose
@@ -112,9 +112,6 @@ dependencies {
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-
-
-    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.3.2")
 
     implementation("androidx.navigation:navigation-compose:2.8.9")
     implementation("com.google.accompanist:accompanist-permissions:0.36.0")
@@ -181,8 +178,8 @@ dependencies {
 
     //ExoPlayer
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
-    implementation("androidx.media3:media3-exoplayer:1.6.1")
-    implementation("androidx.media3:media3-ui:1.6.1")
+    implementation("androidx.media3:media3-exoplayer:1.4.1")
+    implementation("androidx.media3:media3-ui:1.4.1")
 
     //UCrop
     implementation("com.github.yalantis:ucrop:2.2.10")

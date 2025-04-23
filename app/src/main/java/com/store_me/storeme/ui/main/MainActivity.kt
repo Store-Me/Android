@@ -85,7 +85,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             keyboardHeightObserver = KeyboardHeightObserver(this) { height ->
                 lifecycleScope.launch {
@@ -138,8 +137,6 @@ class MainActivity : ComponentActivity() {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .background(color = Color.Black)
-                                    .windowInsetsPadding(WindowInsets.systemBars)
                             ) {
                                 when(accountType){
                                     AccountType.CUSTOMER -> { CustomerScreen() }

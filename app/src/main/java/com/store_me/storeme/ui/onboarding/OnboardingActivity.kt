@@ -68,7 +68,6 @@ class OnboardingActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent{
             val onboardingComposition by rememberLottieComposition(
                 LottieCompositionSpec.RawRes(R.raw.onboarding_animation)
