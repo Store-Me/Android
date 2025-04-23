@@ -30,7 +30,7 @@ data class StoreInfoData(
     val customCategory: String,
     val location: String,
     val locationCode: Int,
-    val favoriteCount: Int,
+    val favoriteCount: Long,
 )
 
 /**

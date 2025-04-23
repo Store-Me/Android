@@ -6,6 +6,7 @@ data class StoryData(
     val id: String,
     val video: String,
     val thumbNail: String,
-    val description: String?,
-    val createdAt: Timestamp
+    val description: String,
+    val createdAt: Timestamp,
+    val likeCount: Long,
 )
