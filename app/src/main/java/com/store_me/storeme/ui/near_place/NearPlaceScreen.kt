@@ -229,7 +229,7 @@ fun StoreItem(storeInfo: StoreInfoData, storePromotion: StorePromotionData) {
                 Spacer(modifier = Modifier.width(5.dp))
 
                 Text(
-                    text = "관심 " + LikeCountUtils().convertLikeCount(storeInfo.favoriteCount),
+                    text = "관심 " + LikeCountUtils.convertLikeCount(storeInfo.favoriteCount),
                     fontFamily = appFontFamily,
                     fontWeight = FontWeight.Bold,
                     fontSize = 10.sp,
