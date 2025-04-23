@@ -20,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -251,19 +252,23 @@ fun StrokeButton(text: String, onClick: () -> Unit){
  * 닫기 버튼
  */
 @Composable
-fun DeleteButton(onClick: () -> Unit) {
-    Icon(
-        imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
-        contentDescription = "닫기",
-        modifier = Modifier
-            .size(20.dp)
-            .clickable(
-                onClick = { onClick() },
-                interactionSource = remember { MutableInteractionSource() },
-                indication = ripple(bounded = false)
-            )
-            .padding(2.dp)
-    )
+fun DeleteButton(
+    tint: Color = Color.Black,
+    onClick: () -> Unit
+) {
+    IconButton(
+        onClick = {
+            onClick()
+        }
+    ) {
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_delete),
+            contentDescription = "닫기",
+            modifier = Modifier
+                .size(20.dp),
+            tint = tint
+        )
+    }
 }
 
 /**
