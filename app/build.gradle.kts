@@ -13,26 +13,20 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-fun getApiKey(propertyKey: String): String {
-    val properties = Properties()
-    val localPropertiesFile = File(rootDir, "local.properties")
-
-    if (localPropertiesFile.exists()) {
-        properties.load(localPropertiesFile.inputStream())
-    }
-
-    return properties.getProperty(propertyKey, "") ?: ""
+val localProps = Properties().apply {
+    load(File("local.properties").inputStream())
 }
+fun getApiKey(key: String) = localProps.getProperty(key, "") ?: ""
 
 android {
     namespace = "com.store_me.storeme"
-    compileSdk = 34
+    compileSdk = 35
     buildFeatures.buildConfig = true
 
     defaultConfig {
         applicationId = "com.store_me.storeme"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -43,29 +37,25 @@ android {
 
         buildConfigField("String", "NAVER_CLIENT_SECRET", getApiKey("naver_client_secret"))
         buildConfigField("String", "NAVER_CLIENT_ID", getApiKey("naver_client_id"))
-        val kakaoKey = getApiKey("kakao_key")
-        buildConfigField("String", "KAKAO_KEY", "\"${kakaoKey}\"")
+        buildConfigField("String", "KAKAO_KEY", "\"${getApiKey("kakao_key")}\"")
     }
 
     val properties = Properties()
     properties.load(project.rootProject.file("local.properties").inputStream())
 
-    android {
-        signingConfigs {
-            create("release") {
-                keyAlias = properties.getProperty("key_alias")
-                keyPassword = properties.getProperty("store_password")
-                storeFile = file(properties.getProperty("store_file"))
-                storePassword = properties.getProperty("store_password")
-            }
+    signingConfigs {
+        create("release") {
+            keyAlias = properties.getProperty("key_alias")
+            keyPassword = properties.getProperty("store_password")
+            storeFile = file(properties.getProperty("store_file"))
+            storePassword = properties.getProperty("store_password")
         }
     }
-
 
     buildTypes {
         debug {
             manifestPlaceholders["KAKAO_KEY"] = getApiKey("kakao_key")
-            manifestPlaceholders["NAVER_MAP_CLIENT_ID"] = properties.getProperty("naver_map_client_id", "")
+            manifestPlaceholders["NAVER_MAP_CLIENT_ID"] = getApiKey("naver_map_client_id")
         }
         release {
             isMinifyEnabled = false
@@ -103,24 +93,37 @@ android {
 }
 
 dependencies {
-    implementation("androidx.compose.animation:animation:1.7.0-rc01")
-    implementation("androidx.compose.foundation:foundation:1.7.0-rc01")
-    implementation("androidx.compose.ui:ui:1.7.0-rc01")
+    val composeBom = platform("androidx.compose:compose-bom:2023.03.00")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
 
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
     implementation("androidx.activity:activity-compose:1.9.1")
+    implementation("androidx.appcompat:appcompat:1.7.0")
+
+    //Compose
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.animation:animation")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.3.0-rc01")
+
+
+
+    implementation("androidx.compose.animation:animation:1.7.0-rc01")
+    implementation("androidx.compose.ui:ui:1.7.0-rc01")
+
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3-adaptive-navigation-suite:1.3.0-rc01")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     implementation("androidx.compose.material3:material3:1.3.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.0")
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("androidx.navigation:navigation-compose:2.7.7")
