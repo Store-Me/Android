@@ -131,7 +131,12 @@ import kotlin.math.roundToInt
  * 여러 곳에서 사용되는 Composable 함수 모음
  */
 @Composable
-fun TitleWithDeleteButton(title: String, isInTopAppBar: Boolean = false, onClose: () -> Unit){
+fun TitleWithDeleteButton(
+    title: String,
+    isInTopAppBar: Boolean = false,
+    tint: Color = Color.Black,
+    onClose: () -> Unit
+){
     val modifier =
         if(isInTopAppBar)
             Modifier.padding(start = 4.dp, end = 20.dp)
@@ -153,7 +158,7 @@ fun TitleWithDeleteButton(title: String, isInTopAppBar: Boolean = false, onClose
 
         Spacer(modifier = Modifier.weight(1f))
 
-        DeleteButton {
+        DeleteButton(tint = tint) {
             onClose()
         }
     }
