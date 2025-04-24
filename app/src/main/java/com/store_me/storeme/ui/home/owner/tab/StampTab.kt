@@ -5,26 +5,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.data.StampCouponData
-import com.store_me.storeme.data.enums.StoreHomeItem
-import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.store_setting.stamp.RewardItem
 import com.store_me.storeme.ui.store_setting.stamp.StampCouponItem
 import com.store_me.storeme.ui.theme.GuideColor
-import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 
 @Composable
 fun StampTab(
-    stampCoupon: StampCouponData?,
-    onClick: (StoreHomeItem) -> Unit
+    stampCoupon: StampCouponData?
 ) {
     Column(
         modifier = Modifier
@@ -54,19 +48,6 @@ fun StampTab(
                 style = storeMeTextStyle(FontWeight.Normal, 0),
                 color = GuideColor
             )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        DefaultButton(
-            buttonText = "스탬프 쿠폰 관리",
-            diffValue = 2,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = SubHighlightColor,
-                contentColor = Color.Black
-            )
-        ) {
-            onClick(StoreHomeItem.STAMP_COUPON)
         }
     }
 }
