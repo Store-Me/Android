@@ -2,6 +2,7 @@
 
 package com.store_me.storeme.ui.login
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -146,6 +147,11 @@ fun LoginScreen(
         if(TokenPreferencesHelper.getAccessToken() != null && TokenPreferencesHelper.getRefreshToken() != null) {
             loginViewModel.onLoginSuccess()
         }
+    }
+
+    BackHandler {
+        TokenPreferencesHelper.clearTokens()
+        navController.popBackStack()
     }
 
     Scaffold(
