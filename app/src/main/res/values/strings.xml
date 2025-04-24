@@ -19,6 +19,7 @@
     <string name="owner_home_intro_none">가게의 소개를 입력해주세요.</string>
     <string name="owner_home_photo_none">대표 사진을 업로드하여 메뉴나 서비스를 홍보하세요.</string>
     <string name="owner_home_coupon_none">쿠폰을 만들어 가게 홍보를 진행하세요.</string>
+    <string name="owner_home_valid_coupon_none">발급중인 쿠폰이 없습니다. 쿠폰을 새로 생성해보세요.</string>
     <string name="owner_home_menu_none">가게의 서비스나 메뉴 가격을 등록해 보세요.</string>
     <string name="owner_home_story_none">가게와 관련된 짧은 영상을 올려 보세요.</string>
     <string name="owner_home_review_none">아직 가게 후기가 없어요.</string>
