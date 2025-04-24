@@ -279,42 +279,49 @@ fun OwnerHomeContentSection(
         verticalAlignment = Alignment.Top
     ) { page ->
 
-        when(StoreTabMenu.entries[page]) {
-            StoreTabMenu.HOME -> {
-                StoreHomeTab(
-                    navController,
-                    storyViewModel = storyViewModel
-                )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            when(StoreTabMenu.entries[page]) {
+                StoreTabMenu.HOME -> {
+                    StoreHomeTab(
+                        navController,
+                        storyViewModel = storyViewModel
+                    )
+                }
+                StoreTabMenu.POST -> {
+                    PostTab()
+                }
+                StoreTabMenu.MENU -> {
+                    MenuTab(menuCategories = menuCategories)
+                }
+                StoreTabMenu.COUPON -> {
+                    CouponTab(
+                        storeInfoData = storeInfoData!!,
+                        coupons = coupons
+                    )
+                }
+                StoreTabMenu.STAMP -> {
+                    StampTab(stampCoupon = stampCoupon)
+                }
+                StoreTabMenu.FEATURED_IMAGES -> {
+                    FeaturedImageTab(
+                        storeInfoData = storeInfoData!!,
+                        featuredImages = featuredImages
+                    )
+                }
+                StoreTabMenu.STORY -> {
+                    StoryTab(
+                        storyViewModel = storyViewModel
+                    )
+                }
+                StoreTabMenu.REVIEW -> {
+                    ReviewTab()
+                }
             }
-            StoreTabMenu.POST -> {
-                PostTab()
-            }
-            StoreTabMenu.MENU -> {
-                MenuTab(menuCategories = menuCategories)
-            }
-            StoreTabMenu.COUPON -> {
-                CouponTab(
-                    storeInfoData = storeInfoData!!,
-                    coupons = coupons
-                )
-            }
-            StoreTabMenu.STAMP -> {
-                StampTab (stampCoupon = stampCoupon)
-            }
-            StoreTabMenu.FEATURED_IMAGES -> {
-                FeaturedImageTab(
-                    storeInfoData = storeInfoData!!,
-                    featuredImages = featuredImages
-                )
-            }
-            StoreTabMenu.STORY -> {
-                StoryTab(
-                    storyViewModel = storyViewModel
-                )
-            }
-            StoreTabMenu.REVIEW -> {
-                ReviewTab()
-            }
+
+            Spacer(modifier = Modifier.height(200.dp))
         }
     }
 }
