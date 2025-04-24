@@ -17,7 +17,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class StorySettingViewModel @Inject constructor(
+class StoryViewModel @Inject constructor(
     private val storyRepository: StoryRepository
 ): ViewModel() {
     private val _stories = MutableStateFlow<List<StoryData>>(emptyList())

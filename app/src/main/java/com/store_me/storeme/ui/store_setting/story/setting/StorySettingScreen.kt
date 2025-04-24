@@ -84,7 +84,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 @Composable
 fun StorySettingScreen(
     navController: NavController,
-    storySettingViewModel: StorySettingViewModel
+    storyViewModel: StoryViewModel
 ) {
     val storeDataViewModel = LocalStoreDataViewModel.current
 
@@ -93,7 +93,7 @@ fun StorySettingScreen(
 
     val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
 
-    val stories by storySettingViewModel.stories.collectAsState()
+    val stories by storyViewModel.stories.collectAsState()
 
     var deleteStoryItem by remember { mutableStateOf<StoryData?>(null) }
     var showStory by remember { mutableStateOf(false) }
@@ -101,11 +101,6 @@ fun StorySettingScreen(
 
     fun onClose() {
         navController.popBackStack()
-    }
-
-    LaunchedEffect(Unit) {
-        //초기 로드
-        storySettingViewModel.getStoreStories()
     }
 
     LaunchedEffect(listState) {
@@ -116,7 +111,7 @@ fun StorySettingScreen(
         }.distinctUntilChanged()
             .collect { (lastVisible, total) ->
                 if (lastVisible != null && lastVisible >= total - 1) {
-                    storySettingViewModel.getStoreStories()
+                    storyViewModel.getStoreStories()
                 }
             }
     }
@@ -156,6 +151,7 @@ fun StorySettingScreen(
                     itemsIndexed(stories) { index, item ->
                         StoryThumbnailItem(
                             modifier = Modifier
+                                .fillMaxWidth()
                                 .combinedClickable(
                                     indication = ripple(bounded = true),
                                     interactionSource = remember { MutableInteractionSource() },
@@ -183,7 +179,7 @@ fun StorySettingScreen(
             actionText = "삭제",
             onDismiss = { deleteStoryItem = null },
             onAction = {
-                storySettingViewModel.deleteStoreStories(
+                storyViewModel.deleteStoreStories(
                     storyId = deleteStoryItem?.id ?: ""
                 )
                 deleteStoryItem = null
@@ -198,7 +194,7 @@ fun StorySettingScreen(
             stories = stories,
             onDismiss = { showStory = false },
             onLike = {
-                storySettingViewModel.updateStoryLike(it)
+                storyViewModel.updateStoryLike(it)
             }
         )
     }
@@ -395,7 +391,6 @@ fun StoryThumbnailItem(modifier: Modifier, thumbnailUrl: String) {
         model = thumbnailUrl,
         contentDescription = null,
         modifier = modifier
-            .fillMaxWidth()
             .aspectRatio(9f / 16f)
             .clip(RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)),
         contentScale = ContentScale.Fit,

@@ -1,10 +1,13 @@
 package com.store_me.storeme.ui.main.navigation.owner
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.store_me.storeme.ui.home.owner.OwnerHomeScreen
 import com.store_me.storeme.ui.link.LinkSettingScreen
 import com.store_me.storeme.ui.post.SelectPostTypeScreen
@@ -32,12 +35,15 @@ import com.store_me.storeme.ui.store_setting.stamp.StampCouponCreateScreen
 import com.store_me.storeme.ui.store_setting.stamp.StampCouponSettingScreen
 import com.store_me.storeme.ui.store_setting.story.management.StoryManagementScreen
 import com.store_me.storeme.ui.store_setting.story.setting.StorySettingScreen
-import com.store_me.storeme.ui.store_setting.story.setting.StorySettingViewModel
+import com.store_me.storeme.ui.store_setting.story.setting.StoryViewModel
 
 @Composable
 fun OwnerHomeNavigationGraph(navController: NavHostController) {
     NavHost(navController, startDestination = OwnerRoute.Home.fullRoute){
-        composable(OwnerRoute.Home.fullRoute) { OwnerHomeScreen(navController) }
+        composable(OwnerRoute.Home.fullRoute) { backStackEntry ->
+            val sharedStoryViewModel: StoryViewModel = hiltViewModel(backStackEntry)
+            OwnerHomeScreen(navController, sharedStoryViewModel)
+        }
 
         //기본 프로필
         composable(OwnerRoute.IntroSetting.fullRoute) { IntroSettingScreen(navController) }
@@ -173,20 +179,24 @@ fun OwnerHomeNavigationGraph(navController: NavHostController) {
          * 스토리 관련 화면
          */
         //스토리 관리
-        composable(OwnerRoute.StorySetting.fullRoute) { backStackEntry ->
-            val sharedStorySettingViewModel: StorySettingViewModel = hiltViewModel(backStackEntry)
+        composable(OwnerRoute.StorySetting.fullRoute) {
+            val currentEntry by navController.currentBackStackEntryAsState()
+            val homeEntry = remember(currentEntry) {
+                navController.getBackStackEntry(OwnerRoute.Home.fullRoute)
+            }
+            val sharedStoryViewModel: StoryViewModel = hiltViewModel(homeEntry)
 
-            StorySettingScreen(navController, storySettingViewModel = sharedStorySettingViewModel)
+            StorySettingScreen(navController, storyViewModel = sharedStoryViewModel)
         }
         //스토리 추가
         composable(OwnerRoute.StoryManagement.fullRoute) {
-            val sharedStorySettingViewModel: StorySettingViewModel =
-                if(navController.previousBackStackEntry != null)
-                    hiltViewModel(navController.previousBackStackEntry!!)
-                else
-                    hiltViewModel()
+            val currentEntry by navController.currentBackStackEntryAsState()
+            val homeEntry = remember(currentEntry) {
+                navController.getBackStackEntry(OwnerRoute.Home.fullRoute)
+            }
+            val sharedStoryViewModel: StoryViewModel = hiltViewModel(homeEntry)
 
-            StoryManagementScreen(navController, storySettingViewModel = sharedStorySettingViewModel)
+            StoryManagementScreen(navController, storyViewModel = sharedStoryViewModel)
         }
 
         composable(OwnerRoute.ReviewSetting.fullRoute) { ReviewSettingScreen(navController) }

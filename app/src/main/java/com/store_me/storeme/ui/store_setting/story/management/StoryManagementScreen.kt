@@ -35,7 +35,7 @@ import com.store_me.storeme.ui.component.SimpleTextField
 import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.signup.GuideTextBoxItem
-import com.store_me.storeme.ui.store_setting.story.setting.StorySettingViewModel
+import com.store_me.storeme.ui.store_setting.story.setting.StoryViewModel
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.MimeUtils
 import com.store_me.storeme.utils.VideoUtils
@@ -44,7 +44,7 @@ import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewMod
 @Composable
 fun StoryManagementScreen(
     navController: NavController,
-    storySettingViewModel: StorySettingViewModel,
+    storyViewModel: StoryViewModel,
     storyManagementViewModel: StoryManagementViewModel = hiltViewModel()
 ) {
     val loadingViewModel = LocalLoadingViewModel.current
@@ -80,9 +80,9 @@ fun StoryManagementScreen(
 
     LaunchedEffect(postResult) {
         if(postResult != null) {
-            storySettingViewModel.updateStories(postResult!!.result)
-            storySettingViewModel.updateHasNextPage(postResult!!.pagination.hasNextPage)
-            storySettingViewModel.updateLastCreatedAt(postResult!!.pagination.lastCreatedAt)
+            storyViewModel.updateStories(postResult!!.result)
+            storyViewModel.updateHasNextPage(postResult!!.pagination.hasNextPage)
+            storyViewModel.updateLastCreatedAt(postResult!!.pagination.lastCreatedAt)
             
             navController.popBackStack()
         }
