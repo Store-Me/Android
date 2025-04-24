@@ -24,7 +24,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +52,7 @@ import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.ToggleButtonBorderColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.SizeUtils
+import kotlinx.coroutines.delay
 
 
 /*
@@ -256,9 +261,21 @@ fun DeleteButton(
     tint: Color = Color.Black,
     onClick: () -> Unit
 ) {
+    var isClicked by remember { mutableStateOf(false) }
+
+    LaunchedEffect(isClicked) {
+        if(isClicked) {
+            delay(300)
+            isClicked = false
+        }
+    }
+
     IconButton(
         onClick = {
-            onClick()
+            if(!isClicked) {
+                isClicked = true
+                onClick()
+            }
         }
     ) {
         Icon(
