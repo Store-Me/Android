@@ -59,10 +59,12 @@ import com.store_me.storeme.ui.main.navigation.customer.CustomerFavoriteNavigati
 import com.store_me.storeme.ui.main.navigation.customer.CustomerHomeNavigationGraph
 import com.store_me.storeme.ui.main.navigation.customer.CustomerNearPlaceNavigationGraph
 import com.store_me.storeme.ui.main.navigation.customer.CustomerMyMenuNavigationGraph
+import com.store_me.storeme.ui.main.navigation.customer.CustomerRoute
 import com.store_me.storeme.ui.main.navigation.customer.CustomerStoreTalkNavigationGraph
 import com.store_me.storeme.ui.main.navigation.owner.OwnerAddNavigationGraph
 import com.store_me.storeme.ui.main.navigation.owner.OwnerCustomerManagementNavigationGraph
 import com.store_me.storeme.ui.main.navigation.owner.OwnerHomeNavigationGraph
+import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.ui.main.navigation.owner.OwnerStoreInfoNavigationGraph
 import com.store_me.storeme.ui.main.navigation.owner.OwnerStoreTalkNavigationGraph
 import com.store_me.storeme.ui.onboarding.OnboardingActivity
@@ -180,14 +182,14 @@ class MainActivity : ComponentActivity() {
         val profileNavController = rememberNavController()
 
         val navControllers = mapOf(
-            R.string.owner_home to homeNavController,
-            R.string.customer_management to favoriteNavController,
-            R.string.owner_add to nearPlaceNavController,
-            R.string.customer_store_talk to storeTalkNavController,
-            R.string.store_info to profileNavController,
+            CustomerRoute.Home.path to homeNavController,
+            CustomerRoute.Favorite.path to favoriteNavController,
+            CustomerRoute.NearPlace.path to nearPlaceNavController,
+            CustomerRoute.StoreTalk.path to storeTalkNavController,
+            CustomerRoute.MyMenu.path to profileNavController,
         )
 
-        var currentTab by rememberSaveable { mutableStateOf(R.string.owner_home) }
+        var currentTab by rememberSaveable { mutableStateOf(CustomerRoute.Home.path) }
 
         val snackbarHostState = LocalSnackbarHostState.current
 
@@ -209,11 +211,11 @@ class MainActivity : ComponentActivity() {
                         exit = fadeOut()
                     ) {
                         when(tab){
-                            R.string.customer_home -> CustomerHomeNavigationGraph(navController)
-                            R.string.customer_favorite -> CustomerFavoriteNavigationGraph(navController)
-                            R.string.customer_near_place -> CustomerNearPlaceNavigationGraph(navController)
-                            R.string.customer_store_talk -> CustomerStoreTalkNavigationGraph(navController)
-                            R.string.customer_my_menu -> CustomerMyMenuNavigationGraph(navController)
+                            CustomerRoute.Home.path -> CustomerHomeNavigationGraph(navController)
+                            CustomerRoute.Favorite.path -> CustomerFavoriteNavigationGraph(navController)
+                            CustomerRoute.NearPlace.path -> CustomerNearPlaceNavigationGraph(navController)
+                            CustomerRoute.StoreTalk.path -> CustomerStoreTalkNavigationGraph(navController)
+                            CustomerRoute.MyMenu.path -> CustomerMyMenuNavigationGraph(navController)
                         }
                     }
                 }
@@ -230,20 +232,20 @@ class MainActivity : ComponentActivity() {
         val storeInfoNavController = rememberNavController()
 
         val navControllers = mapOf(
-            R.string.owner_home to homeNavController,
-            R.string.customer_management to customerManagementNavController,
-            R.string.owner_add to addNavController,
-            R.string.customer_store_talk to storeTalkNavController,
-            R.string.store_info to storeInfoNavController,
+            OwnerRoute.Home.path to homeNavController,
+            OwnerRoute.CustomerManagement.path to customerManagementNavController,
+            OwnerRoute.Add.path to addNavController,
+            OwnerRoute.StoreTalk.path to storeTalkNavController,
+            OwnerRoute.StoreInfo.path to storeInfoNavController,
         )
 
-        var currentTab by rememberSaveable { mutableStateOf(R.string.owner_home) }
+        var currentTab by rememberSaveable { mutableStateOf(OwnerRoute.Home.path) }
 
         val snackbarHostState = LocalSnackbarHostState.current
 
         BackHandler {
-            if(currentTab != R.string.owner_home) {
-                currentTab = R.string.owner_home
+            if(currentTab != OwnerRoute.Home.path) {
+                currentTab = OwnerRoute.Home.path
             }
         }
 
@@ -265,11 +267,11 @@ class MainActivity : ComponentActivity() {
                         exit = fadeOut()
                     ) {
                         when(tab){
-                            R.string.owner_home -> OwnerHomeNavigationGraph(navController)
-                            R.string.customer_management -> OwnerCustomerManagementNavigationGraph(navController)
-                            R.string.owner_add -> OwnerAddNavigationGraph(navController)
-                            R.string.customer_store_talk -> OwnerStoreTalkNavigationGraph(navController)
-                            R.string.store_info -> OwnerStoreInfoNavigationGraph(navController)
+                            OwnerRoute.Home.path -> OwnerHomeNavigationGraph(navController)
+                            OwnerRoute.CustomerManagement.path -> OwnerCustomerManagementNavigationGraph(navController)
+                            OwnerRoute.Add.path -> OwnerAddNavigationGraph(navController)
+                            OwnerRoute.StoreTalk.path -> OwnerStoreTalkNavigationGraph(navController)
+                            OwnerRoute.StoreInfo.path -> OwnerStoreInfoNavigationGraph(navController)
                         }
                     }
                 }
@@ -279,8 +281,8 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun BottomNavigationBar(
-        currentTab: Int,
-        onTabSelected: (Int) -> Unit
+        currentTab: String,
+        onTabSelected: (String) -> Unit
     ) {
         val auth = LocalAuth.current
 
@@ -302,7 +304,7 @@ class MainActivity : ComponentActivity() {
             ){
 
                 items.forEach { item ->
-                    val isSelected = currentTab == item.title
+                    val isSelected = currentTab == item.screenRoute
 
                     NavigationBarItem(
                         icon = {
@@ -321,7 +323,7 @@ class MainActivity : ComponentActivity() {
                         selected = isSelected,
                         alwaysShowLabel = true,
                         onClick = {
-                           onTabSelected(item.title)
+                           onTabSelected(item.screenRoute)
                         },
                         colors = NavigationBarItemDefaults.colors(
                             indicatorColor = Color.Transparent,
