@@ -197,8 +197,12 @@ fun OwnerHomeNavigationGraph(navController: NavHostController) {
 @Composable
 fun OwnerCustomerManagementNavigationGraph(navController: NavHostController) {
     NavHost(
-        navController, startDestination = OwnerRoute.CustomerManagement.fullRoute) {
+        navController,
+        startDestination = OwnerRoute.CustomerManagement.fullRoute
+    ) {
+        composable(OwnerRoute.CustomerManagement.fullRoute) {
 
+        }
     }
 }
 
