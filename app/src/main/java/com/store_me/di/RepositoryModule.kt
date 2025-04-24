@@ -14,6 +14,8 @@ import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.repository.storeme.OwnerRepositoryImpl
 import com.store_me.storeme.repository.storeme.PostRepository
 import com.store_me.storeme.repository.storeme.PostRepositoryImpl
+import com.store_me.storeme.repository.storeme.StoryRepository
+import com.store_me.storeme.repository.storeme.StoryRepositoryImpl
 import com.store_me.storeme.repository.storeme.UserRepository
 import com.store_me.storeme.repository.storeme.UserRepositoryImpl
 import dagger.Binds
@@ -72,4 +74,10 @@ abstract class RepositoryModule {
     abstract fun bindPostRepository(
         postRepositoryImpl: PostRepositoryImpl
     ): PostRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindStoryRepository(
+        storyRepositoryImpl: StoryRepositoryImpl
+    ): StoryRepository
 }

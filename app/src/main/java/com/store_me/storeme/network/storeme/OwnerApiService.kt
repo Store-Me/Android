@@ -1,8 +1,6 @@
 package com.store_me.storeme.network.storeme
 
-import com.google.firebase.Timestamp
 import com.store_me.storeme.data.StampCouponData
-import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
 import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
@@ -13,26 +11,22 @@ import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.request.store.PostStampCouponRequest
-import com.store_me.storeme.data.request.store.PostStoryRequest
 import com.store_me.storeme.data.response.BusinessHoursResponse
 import com.store_me.storeme.data.response.FeaturedImagesResponse
 import com.store_me.storeme.data.response.LinksResponse
 import com.store_me.storeme.data.response.MenusResponse
 import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.data.response.NoticeResponse
-import com.store_me.storeme.data.response.PagingResponse
 import com.store_me.storeme.data.response.StampCouponPasswordResponse
 import com.store_me.storeme.data.response.StampCouponResponse
 import com.store_me.storeme.data.response.StoreMeResponse
 import com.store_me.storeme.data.store.StoreInfoData
 import retrofit2.Response
 import retrofit2.http.Body
-import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
-import retrofit2.http.Query
 
 interface OwnerApiService {
     /**
@@ -223,33 +217,5 @@ interface OwnerApiService {
     suspend fun patchStampCouponPassword(
         @Path("storeId") storeId: String,
         @Body patchStampCouponPasswordRequest: StampCouponPasswordResponse
-    ): Response<StoreMeResponse<Unit>>
-
-    /**
-     * 스토리 목록 조회 API
-     */
-    @GET("story/store/{storeId}/stories")
-    suspend fun getStoreStories(
-        @Path("storeId") storeId: String,
-        @Query("limit") limit: Int = 10,
-        @Query("lastCreatedAt") lastCreatedAt: Timestamp?
-    ): Response<PagingResponse<List<StoryData>>>
-
-    /**
-     * 스토리 추가 API
-     */
-    @POST("story/store/{storeId}/stories")
-    suspend fun postStoreStory(
-        @Path("storeId") storeId: String,
-        @Body postStoreStoryRequest: PostStoryRequest
-    ): Response<PagingResponse<List<StoryData>>>
-
-    /**
-     * 스토리 삭제 API
-     */
-    @DELETE("story/store/{storeId}/stories/{storyId}")
-    suspend fun deleteStoreStory(
-        @Path("storeId") storeId: String,
-        @Path("storyId") storyId: String
     ): Response<StoreMeResponse<Unit>>
 }
