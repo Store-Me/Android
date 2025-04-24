@@ -16,10 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -27,7 +26,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,21 +36,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
-import com.naver.maps.geometry.LatLng
 import com.store_me.storeme.R
-import com.store_me.storeme.data.StampCouponData
 import com.store_me.storeme.data.enums.AccountType
-import com.store_me.storeme.data.enums.StoreHomeItem
 import com.store_me.storeme.data.enums.tab_menu.StoreTabMenu
 import com.store_me.storeme.data.response.BusinessHoursResponse
-import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.LinkSection
 import com.store_me.storeme.ui.component.ProfileImage
@@ -63,26 +60,28 @@ import com.store_me.storeme.ui.home.owner.tab.StampTab
 import com.store_me.storeme.ui.home.owner.tab.StoreHomeTab
 import com.store_me.storeme.ui.home.owner.tab.StoryTab
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
-import com.store_me.storeme.ui.store_setting.stamp.RewardItem
-import com.store_me.storeme.ui.store_setting.stamp.StampCouponItem
-import com.store_me.storeme.ui.theme.GuideColor
-import com.store_me.storeme.ui.theme.SubHighlightColor
-import com.store_me.storeme.ui.theme.storeMeTextStyle
+import com.store_me.storeme.ui.store_setting.story.setting.StoryViewModel
+import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.TEXT_ROUNDING_VALUE
 import com.store_me.storeme.utils.ToastMessageUtils
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 @Composable
 fun OwnerHomeScreen(
-    navController: NavController
+    navController: NavController,
+    storyViewModel: StoryViewModel
 ) {
     val auth = LocalAuth.current
     val storeDataViewModel = LocalStoreDataViewModel.current
 
     var backPressedTime by remember { mutableLongStateOf(0L) }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
+    val listState = rememberLazyListState()
     val pagerState = rememberPagerState()
 
     val tabTitles = enumValues<StoreTabMenu>().map { it.displayName }
@@ -110,9 +109,24 @@ fun OwnerHomeScreen(
             storeDataViewModel.getStoreCoupons()
             storeDataViewModel.getStampCoupon()
             storeDataViewModel.getLabels()
+
+            //첫 페이지 스토리 조회
+            storyViewModel.getStoreStories()
         }
     }
 
+    LaunchedEffect(listState, pagerState.currentPage) {
+        snapshotFlow {
+            val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            val totalItemCount = listState.layoutInfo.totalItemsCount
+            lastVisibleItemIndex to totalItemCount
+        }.distinctUntilChanged()
+            .collect { (lastVisible, total) ->
+                if (pagerState.currentPage == StoreTabMenu.STORY.ordinal && lastVisible != null && lastVisible >= total - 1) {
+                    storyViewModel.getStoreStories()
+                }
+            }
+    }
 
     Scaffold(
         containerColor = Color.White,
@@ -127,7 +141,9 @@ fun OwnerHomeScreen(
                         modifier = Modifier
                             .padding(innerPadding)
                     ) {
-                        LazyColumn {
+                        LazyColumn(
+                            state = listState
+                        ) {
                             item {
                                 Box(
                                     modifier = Modifier
@@ -194,7 +210,7 @@ fun OwnerHomeScreen(
 
                                         }
 
-                                        StoreHomeInfoSection(
+                                        StoreInfoSection(
                                             storeInfoData = storeInfoData!!,
                                             businessHours = businessHours ?: BusinessHoursResponse(),
                                         ) {
@@ -217,7 +233,11 @@ fun OwnerHomeScreen(
                             }
 
                             item {
-                                OwnerHomeContentSection(navController = navController, pagerState = pagerState)
+                                OwnerHomeContentSection(
+                                    navController = navController,
+                                    pagerState = pagerState,
+                                    storyViewModel = storyViewModel
+                                )
                             }
                         }
                     }
@@ -232,7 +252,9 @@ fun OwnerHomeScreen(
             (context as? ComponentActivity)?.finishAffinity()
         } else {
             backPressedTime = currentTime
-            ToastMessageUtils.showToast(context, R.string.backpress_message)
+            scope.launch {
+                ErrorEventBus.errorFlow.emit(context.getString(R.string.backpress_message))
+            }
         }
     }
 }
@@ -240,7 +262,8 @@ fun OwnerHomeScreen(
 @Composable
 fun OwnerHomeContentSection(
     navController: NavController,
-    pagerState: PagerState
+    pagerState: PagerState,
+    storyViewModel: StoryViewModel
 ) {
     val storeDataViewModel = LocalStoreDataViewModel.current
 
@@ -260,7 +283,10 @@ fun OwnerHomeContentSection(
 
         when(StoreTabMenu.entries[page]) {
             StoreTabMenu.HOME -> {
-                StoreHomeTab(navController)
+                StoreHomeTab(
+                    navController,
+                    storyViewModel = storyViewModel
+                )
             }
             StoreTabMenu.POST -> {
                 PostTab()
@@ -275,9 +301,7 @@ fun OwnerHomeContentSection(
                 )
             }
             StoreTabMenu.STAMP -> {
-                StampTab (stampCoupon = stampCoupon) { homeItem ->
-                    navController.navigate(homeItem.route.fullRoute)
-                }
+                StampTab (stampCoupon = stampCoupon)
             }
             StoreTabMenu.FEATURED_IMAGES -> {
                 FeaturedImageTab(
@@ -286,7 +310,9 @@ fun OwnerHomeContentSection(
                 )
             }
             StoreTabMenu.STORY -> {
-                StoryTab()
+                StoryTab(
+                    storyViewModel = storyViewModel
+                )
             }
             StoreTabMenu.REVIEW -> {
                 ReviewTab()

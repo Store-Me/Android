@@ -59,7 +59,7 @@ import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewMod
  * Owner Home 화면의 StoreProfile Composable
  */
 @Composable
-fun StoreHomeInfoSection(
+fun StoreInfoSection(
     storeInfoData: StoreInfoData,
     businessHours: BusinessHoursResponse,
     onClick: (StoreProfileItems) -> Unit
@@ -486,5 +486,4 @@ fun OwnerHomeNaverMapSection() {
                 .aspectRatio(2f / 1f),
         )
     }
-
 }
