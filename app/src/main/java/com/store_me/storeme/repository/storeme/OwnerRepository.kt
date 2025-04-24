@@ -1,9 +1,7 @@
 package com.store_me.storeme.repository.storeme
 
-import com.google.firebase.Timestamp
 import com.store_me.auth.Auth
 import com.store_me.storeme.data.StampCouponData
-import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
 import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
@@ -14,14 +12,12 @@ import com.store_me.storeme.data.request.store.PatchStoreNoticeRequest
 import com.store_me.storeme.data.request.store.PatchStorePhoneNumberRequest
 import com.store_me.storeme.data.request.store.PatchStoreProfileImagesRequest
 import com.store_me.storeme.data.request.store.PostStampCouponRequest
-import com.store_me.storeme.data.request.store.PostStoryRequest
 import com.store_me.storeme.data.response.BusinessHoursResponse
 import com.store_me.storeme.data.response.FeaturedImagesResponse
 import com.store_me.storeme.data.response.LinksResponse
 import com.store_me.storeme.data.response.MenusResponse
 import com.store_me.storeme.data.response.MyStoresResponse
 import com.store_me.storeme.data.response.NoticeResponse
-import com.store_me.storeme.data.response.PagingResponse
 import com.store_me.storeme.data.response.StampCouponPasswordResponse
 import com.store_me.storeme.data.response.StampCouponResponse
 import com.store_me.storeme.data.response.StoreMeResponse
@@ -80,11 +76,7 @@ interface OwnerRepository {
 
     suspend fun patchStampCouponPassword(patchStampCouponPasswordRequest: StampCouponPasswordResponse): Result<StoreMeResponse<Unit>>
 
-    suspend fun getStoreStories(lastCreatedAt: Timestamp?): Result<PagingResponse<List<StoryData>>>
 
-    suspend fun postStoreStory(postStoreStoryRequest: PostStoryRequest): Result<PagingResponse<List<StoryData>>>
-
-    suspend fun deleteStoreStory(storyId: String): Result<StoreMeResponse<Unit>>
 }
 
 class OwnerRepositoryImpl @Inject constructor(
@@ -601,85 +593,6 @@ class OwnerRepositoryImpl @Inject constructor(
             val response = ownerApiService.patchStampCouponPassword(
                 storeId = auth.getStoreId(),
                 patchStampCouponPasswordRequest = patchStampCouponPasswordRequest
-            )
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.d(responseBody.toString())
-
-                if(responseBody != null) {
-                    Result.success(responseBody)
-                } else {
-                    ResponseHandler.handleErrorResponse(response)
-                }
-            } else {
-                ResponseHandler.handleErrorResponse(response)
-            }
-        } catch (e: Exception) {
-            e.toResult()
-        }
-    }
-
-    override suspend fun getStoreStories(lastCreatedAt: Timestamp?): Result<PagingResponse<List<StoryData>>> {
-        return try {
-            val response = ownerApiService.getStoreStories(
-                storeId = auth.getStoreId(),
-                lastCreatedAt = lastCreatedAt
-            )
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.d(responseBody.toString())
-
-                if(responseBody != null) {
-                    Result.success(responseBody)
-                } else {
-                    ResponseHandler.handleErrorResponse(response)
-                }
-            } else {
-                ResponseHandler.handleErrorResponse(response)
-            }
-        } catch (e: Exception) {
-            e.toResult()
-        }
-    }
-
-    override suspend fun postStoreStory(
-        postStoreStoryRequest: PostStoryRequest
-    ): Result<PagingResponse<List<StoryData>>> {
-        return try {
-            val response = ownerApiService.postStoreStory(
-                storeId = auth.getStoreId(),
-                postStoreStoryRequest = postStoreStoryRequest
-            )
-
-            if(response.isSuccessful) {
-                val responseBody = response.body()
-
-                Timber.d(responseBody.toString())
-
-                if(responseBody != null) {
-                    Result.success(responseBody)
-                } else {
-                    ResponseHandler.handleErrorResponse(response)
-                }
-            } else {
-                ResponseHandler.handleErrorResponse(response)
-            }
-        } catch (e: Exception) {
-            e.toResult()
-        }
-    }
-
-    override suspend fun deleteStoreStory(
-        storyId: String
-    ): Result<StoreMeResponse<Unit>> {
-        return try {
-            val response = ownerApiService.deleteStoreStory(
-                storeId = auth.getStoreId(),
-                storyId = storyId
             )
 
             if(response.isSuccessful) {
