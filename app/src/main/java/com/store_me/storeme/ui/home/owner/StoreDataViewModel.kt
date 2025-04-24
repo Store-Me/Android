@@ -42,6 +42,9 @@ class StoreDataViewModel @Inject constructor(
     private val postRepository: PostRepository,
     private val naverRepository: NaverRepository
 ): ViewModel() {
+    private val _lastLoadedStoreId = MutableStateFlow<String?>(null)
+    val lastLoadedStoreId: StateFlow<String?> = _lastLoadedStoreId
+
     private val _storeInfoData = MutableStateFlow<StoreInfoData?>(null)
     val storeInfoData: StateFlow<StoreInfoData?> = _storeInfoData
 
@@ -76,6 +79,13 @@ class StoreDataViewModel @Inject constructor(
     val labels: StateFlow<List<LabelData>> = _labels
 
     /**
+     * 마지막 로드한 StoreId 갱신 함수
+     */
+    fun updateLastLoadedStoreId(storeId: String?) {
+        _lastLoadedStoreId.value = storeId
+    }
+
+    /**
      * StoreData 조회 함수
      */
     fun getStoreData() {
@@ -84,6 +94,10 @@ class StoreDataViewModel @Inject constructor(
 
             response.onSuccess {
                 updateStoreInfoData(it)
+
+                if(it.storeLat != null && it.storeLng != null) {
+                    getStoreImage(LatLng(it.storeLat, it.storeLng))
+                }
             }.onFailure {
                 if(it is ApiException) {
                     ErrorEventBus.errorFlow.emit(it.message)
@@ -97,7 +111,7 @@ class StoreDataViewModel @Inject constructor(
     /**
      * 지도 이미지 조회 함수
      */
-    fun getStoreImage(storeLatLng: LatLng) {
+    private fun getStoreImage(storeLatLng: LatLng) {
         viewModelScope.launch {
             val response = naverRepository.getStaticMap(latLng = storeLatLng, storeName = storeInfoData.value!!.storeName)
 

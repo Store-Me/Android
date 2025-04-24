@@ -88,6 +88,7 @@ fun OwnerHomeScreen(
     val tabTitles = enumValues<StoreTabMenu>().map { it.displayName }
 
     val storeId by auth.storeId.collectAsState()
+    val lastLoadedStoreId by storeDataViewModel.lastLoadedStoreId.collectAsState()
 
     val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
     val businessHours by storeDataViewModel.businessHours.collectAsState()
@@ -98,7 +99,8 @@ fun OwnerHomeScreen(
 
     //스토어 정보 조회
     LaunchedEffect(storeId) {
-        if(storeId != null) {
+        if(lastLoadedStoreId != storeId) {
+            storeDataViewModel.updateLastLoadedStoreId(storeId)
             storeDataViewModel.getStoreData()
             storeDataViewModel.getStoreBusinessHours()
             storeDataViewModel.getStoreLinks()
@@ -111,11 +113,6 @@ fun OwnerHomeScreen(
         }
     }
 
-    LaunchedEffect(storeInfoData?.storeLat, storeInfoData?.storeLng) {
-        if(storeInfoData?.storeLat != null && storeInfoData?.storeLng != null) {
-            storeDataViewModel.getStoreImage(LatLng(storeInfoData!!.storeLat!!, storeInfoData!!.storeLng!!))
-        }
-    }
 
     Scaffold(
         containerColor = Color.White,
