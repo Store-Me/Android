@@ -8,5 +8,6 @@ data class StoryData(
     val thumbNail: String,
     val description: String,
     val createdAt: Timestamp,
-    val likeCount: Long,
+    val likesCount: Long,
+    val userLiked: Boolean
 )
