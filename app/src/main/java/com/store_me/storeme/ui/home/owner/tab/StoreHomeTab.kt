@@ -85,8 +85,6 @@ fun StoreHomeTab(
                     navController.navigate(item.route.fullRoute)
                 }
             }
-
-        Spacer(modifier = Modifier.height(200.dp))
     }
 }
 
@@ -196,6 +194,11 @@ fun NoticeSection(
 fun FeaturedImagePreview(
     featuredImages: List<FeaturedImageData>
 ) {
+    val storeDataViewModel = LocalStoreDataViewModel.current
+    val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
+
+    var showDetailFeaturedImage by remember { mutableStateOf<FeaturedImageData?>(null) }
+
     if(featuredImages.isEmpty()) {
         Column(
             modifier = Modifier
@@ -213,14 +216,30 @@ fun FeaturedImagePreview(
             contentPadding = PaddingValues(start = 20.dp)
         ) {
             items(featuredImages) {
-                FeaturedImageItem(it)
+                FeaturedImageItem(it) {
+                    showDetailFeaturedImage = it
+                }
             }
+        }
+    }
+
+    showDetailFeaturedImage?.let {
+        ImageDetailDialog(
+            storeInfoData = storeInfoData!!,
+            featuredImages = featuredImages,
+            featuredImageData = it,
+        ) {
+            showDetailFeaturedImage = null
+
         }
     }
 }
 
 @Composable
-fun FeaturedImageItem(featuredImageData: FeaturedImageData) {
+fun FeaturedImageItem(
+    featuredImageData: FeaturedImageData,
+    onClick: () -> Unit
+) {
     SubcomposeAsyncImage(
         model = featuredImageData.image,
         contentDescription = featuredImageData.description,
@@ -228,7 +247,8 @@ fun FeaturedImageItem(featuredImageData: FeaturedImageData) {
         modifier = Modifier
             .size(150.dp)
             .clip(shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
-            .aspectRatio(1f),
+            .aspectRatio(1f)
+            .clickable { onClick() },
         loading = {
             SkeletonBox(
                 isLoading = true,
