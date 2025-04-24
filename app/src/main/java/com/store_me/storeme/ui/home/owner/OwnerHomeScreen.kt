@@ -36,7 +36,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -63,7 +62,6 @@ import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.ui.store_setting.story.setting.StoryViewModel
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.TEXT_ROUNDING_VALUE
-import com.store_me.storeme.utils.ToastMessageUtils
 import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
