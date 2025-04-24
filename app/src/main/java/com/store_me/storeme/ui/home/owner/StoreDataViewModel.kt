@@ -9,7 +9,6 @@ import com.store_me.storeme.data.LabelData
 import com.store_me.storeme.data.coupon.CouponData
 import com.store_me.storeme.data.MenuCategoryData
 import com.store_me.storeme.data.StampCouponData
-import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
@@ -71,9 +70,6 @@ class StoreDataViewModel @Inject constructor(
 
     private val _stampCoupon = MutableStateFlow<StampCouponData?>(null)
     val stampCoupon: StateFlow<StampCouponData?> = _stampCoupon
-
-    private val _stories = MutableStateFlow<List<StoryData>>(emptyList())
-    val stories: StateFlow<List<StoryData>> = _stories
 
     private val _labels = MutableStateFlow<List<LabelData>>(emptyList())
     val labels: StateFlow<List<LabelData>> = _labels
@@ -333,10 +329,6 @@ class StoreDataViewModel @Inject constructor(
      */
     fun updateStampCoupon(stampCoupon: StampCouponData?) {
         _stampCoupon.value = stampCoupon
-    }
-
-    fun updateStories(stories: List<StoryData>) {
-        _stories.value = stories
     }
 
     /**
