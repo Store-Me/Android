@@ -5,24 +5,24 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -32,7 +32,10 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -43,9 +46,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.store_me.auth.Auth
 import com.store_me.storeme.R
@@ -55,8 +55,16 @@ import com.store_me.storeme.ui.home.owner.StoreDataViewModel
 import com.store_me.storeme.ui.loading.LoadingScreen
 import com.store_me.storeme.ui.loading.LoadingViewModel
 import com.store_me.storeme.ui.main.navigation.BottomNavItem
-import com.store_me.storeme.ui.main.navigation.customer.CustomerNavigationGraph
-import com.store_me.storeme.ui.main.navigation.owner.OwnerNavigationGraph
+import com.store_me.storeme.ui.main.navigation.customer.CustomerFavoriteNavigationGraph
+import com.store_me.storeme.ui.main.navigation.customer.CustomerHomeNavigationGraph
+import com.store_me.storeme.ui.main.navigation.customer.CustomerNearPlaceNavigationGraph
+import com.store_me.storeme.ui.main.navigation.customer.CustomerMyMenuNavigationGraph
+import com.store_me.storeme.ui.main.navigation.customer.CustomerStoreTalkNavigationGraph
+import com.store_me.storeme.ui.main.navigation.owner.OwnerAddNavigationGraph
+import com.store_me.storeme.ui.main.navigation.owner.OwnerCustomerManagementNavigationGraph
+import com.store_me.storeme.ui.main.navigation.owner.OwnerHomeNavigationGraph
+import com.store_me.storeme.ui.main.navigation.owner.OwnerStoreInfoNavigationGraph
+import com.store_me.storeme.ui.main.navigation.owner.OwnerStoreTalkNavigationGraph
 import com.store_me.storeme.ui.onboarding.OnboardingActivity
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.ui.theme.UnselectedItemColor
@@ -106,14 +114,14 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(Unit) {
                     ErrorEventBus.errorFlow.collect { errorMessage ->
                         loadingViewModel.hideLoading()
-                        snackBarHostState.showSnackbar(message = errorMessage ?: getString(R.string.unknown_error_message))
+                        snackBarHostState.showSnackbar(message = errorMessage ?: getString(R.string.unknown_error_message), duration = SnackbarDuration.Short)
                     }
                 }
 
                 LaunchedEffect(Unit) {
                     SuccessEventBus.successFlow.collect { message ->
                         loadingViewModel.hideLoading()
-                        snackBarHostState.showSnackbar(message = message ?: getString(R.string.default_success_message))
+                        snackBarHostState.showSnackbar(message = message ?: getString(R.string.default_success_message), duration = SnackbarDuration.Short)
                     }
                 }
 
@@ -165,7 +173,22 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun CustomerScreen() {
-        val navController = rememberNavController()
+        val homeNavController = rememberNavController()
+        val favoriteNavController = rememberNavController()
+        val nearPlaceNavController = rememberNavController()
+        val storeTalkNavController = rememberNavController()
+        val profileNavController = rememberNavController()
+
+        val navControllers = mapOf(
+            R.string.owner_home to homeNavController,
+            R.string.customer_management to favoriteNavController,
+            R.string.owner_add to nearPlaceNavController,
+            R.string.customer_store_talk to storeTalkNavController,
+            R.string.store_info to profileNavController,
+        )
+
+        var currentTab by rememberSaveable { mutableStateOf(R.string.owner_home) }
+
         val snackbarHostState = LocalSnackbarHostState.current
 
         Scaffold(
@@ -173,39 +196,92 @@ class MainActivity : ComponentActivity() {
                 hostState = snackbarHostState,
                 snackbar = { StoreMeSnackbar(snackbarData = it) }
             ) },
-            bottomBar = { BottomNavigationBar(navController) }
+            bottomBar = { BottomNavigationBar(
+                currentTab = currentTab,
+                onTabSelected = { currentTab = it }
+            ) }
         ) {
-            Box(
-                Modifier
-                    .padding(it)
-            ) {
-                CustomerNavigationGraph(navController)
+            Box(Modifier.padding(it)) {
+                navControllers.forEach { (tab, navController) ->
+                    AnimatedVisibility(
+                        visible = currentTab == tab,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        when(tab){
+                            R.string.customer_home -> CustomerHomeNavigationGraph(navController)
+                            R.string.customer_favorite -> CustomerFavoriteNavigationGraph(navController)
+                            R.string.customer_near_place -> CustomerNearPlaceNavigationGraph(navController)
+                            R.string.customer_store_talk -> CustomerStoreTalkNavigationGraph(navController)
+                            R.string.customer_my_menu -> CustomerMyMenuNavigationGraph(navController)
+                        }
+                    }
+                }
             }
         }
     }
 
     @Composable
     private fun OwnerScreen() {
-        val navController = rememberNavController()
+        val homeNavController = rememberNavController()
+        val customerManagementNavController = rememberNavController()
+        val addNavController = rememberNavController()
+        val storeTalkNavController = rememberNavController()
+        val storeInfoNavController = rememberNavController()
+
+        val navControllers = mapOf(
+            R.string.owner_home to homeNavController,
+            R.string.customer_management to customerManagementNavController,
+            R.string.owner_add to addNavController,
+            R.string.customer_store_talk to storeTalkNavController,
+            R.string.store_info to storeInfoNavController,
+        )
+
+        var currentTab by rememberSaveable { mutableStateOf(R.string.owner_home) }
+
         val snackbarHostState = LocalSnackbarHostState.current
+
+        BackHandler {
+            if(currentTab != R.string.owner_home) {
+                currentTab = R.string.owner_home
+            }
+        }
 
         Scaffold(
             snackbarHost = { SnackbarHost(
                 hostState = snackbarHostState,
                 snackbar = { StoreMeSnackbar(snackbarData = it) }
             ) },
-            bottomBar = { BottomNavigationBar(navController) }
+            bottomBar = { BottomNavigationBar(
+                currentTab = currentTab,
+                onTabSelected = { currentTab = it }
+            ) }
         ) {
-            Box(
-                Modifier
-                    .padding(it)) {
-                OwnerNavigationGraph(navController)
+            Box(Modifier.padding(it)) {
+                navControllers.forEach { (tab, navController) ->
+                    AnimatedVisibility(
+                        visible = currentTab == tab,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        when(tab){
+                            R.string.owner_home -> OwnerHomeNavigationGraph(navController)
+                            R.string.customer_management -> OwnerCustomerManagementNavigationGraph(navController)
+                            R.string.owner_add -> OwnerAddNavigationGraph(navController)
+                            R.string.customer_store_talk -> OwnerStoreTalkNavigationGraph(navController)
+                            R.string.store_info -> OwnerStoreInfoNavigationGraph(navController)
+                        }
+                    }
+                }
             }
         }
     }
 
     @Composable
-    private fun BottomNavigationBar(navController: NavHostController) {
+    private fun BottomNavigationBar(
+        currentTab: Int,
+        onTabSelected: (Int) -> Unit
+    ) {
         val auth = LocalAuth.current
 
         val accountType by auth.accountType.collectAsState()
@@ -224,13 +300,9 @@ class MainActivity : ComponentActivity() {
                     .height(67.dp),
                 tonalElevation = 0.dp
             ){
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
 
                 items.forEach { item ->
-                    val isSelected = currentDestination
-                        ?.hierarchy
-                        ?.any { it.route?.startsWith(item.screenRoute) == true } == true
+                    val isSelected = currentTab == item.title
 
                     NavigationBarItem(
                         icon = {
@@ -249,13 +321,7 @@ class MainActivity : ComponentActivity() {
                         selected = isSelected,
                         alwaysShowLabel = true,
                         onClick = {
-                            navController.navigate(item.screenRoute) {
-                                navController.graph.startDestinationRoute?.let {
-                                    popUpTo(it) { saveState = true }
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+                           onTabSelected(item.title)
                         },
                         colors = NavigationBarItemDefaults.colors(
                             indicatorColor = Color.Transparent,

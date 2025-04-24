@@ -2,11 +2,11 @@
     <string name="app_name">StoreMe</string>
 
     <!--Customer Bottom Navigation Item-->
-    <string name="home">홈</string>
-    <string name="favorite">마이스토어</string>
-    <string name="near_place">동네가게</string>
-    <string name="store_talk">스토어톡</string>
-    <string name="profile">마이메뉴</string>
+    <string name="customer_home">홈</string>
+    <string name="customer_favorite">마이스토어</string>
+    <string name="customer_near_place">동네가게</string>
+    <string name="customer_store_talk">스토어톡</string>
+    <string name="customer_my_menu">마이메뉴</string>
 
     <!--Owner Bottom Navigation Item-->
     <string name="owner_home">내 가게</string>

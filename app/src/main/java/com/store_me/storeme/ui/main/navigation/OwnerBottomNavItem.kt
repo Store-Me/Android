@@ -30,7 +30,7 @@ sealed class BottomNavItem(
             screenRoute = OwnerRoute.Add.path
         )
         data object StoreTalk : BottomNavItem(
-            title = R.string.store_talk,
+            title = R.string.customer_store_talk,
             icon = R.drawable.bottom_storetalk,
             selectedIcon = R.drawable.bottom_storetalk_selected,
             screenRoute = OwnerRoute.StoreTalk.path
@@ -51,31 +51,31 @@ sealed class BottomNavItem(
 
     sealed class Customer {
         data object Home : BottomNavItem(
-            title = R.string.home,
+            title = R.string.customer_home,
             icon = R.drawable.bottom_home,
             selectedIcon = R.drawable.bottom_home_selected,
             screenRoute = CustomerRoute.Home.path
         )
         data object Favorite : BottomNavItem(
-            title = R.string.favorite,
+            title = R.string.customer_favorite,
             icon = R.drawable.bottom_favorite,
             selectedIcon = R.drawable.bottom_favorite_selected,
             screenRoute = CustomerRoute.Favorite.path
         )
         data object NearPlace : BottomNavItem(
-            title = R.string.near_place,
+            title = R.string.customer_near_place,
             icon = R.drawable.bottom_nearplace,
             selectedIcon = R.drawable.bottom_nearplace_selected,
             screenRoute = CustomerRoute.NearPlace.path
         )
         data object StoreTalk : BottomNavItem(
-            title = R.string.store_talk,
+            title = R.string.customer_store_talk,
             icon = R.drawable.bottom_storetalk,
             selectedIcon = R.drawable.bottom_storetalk_selected,
             screenRoute = CustomerRoute.StoreTalk.path
         )
         data object Profile : BottomNavItem(
-            title = R.string.profile,
+            title = R.string.customer_my_menu,
             icon = R.drawable.bottom_mymenu,
             selectedIcon = R.drawable.bottom_mymenu_selected,
             screenRoute = CustomerRoute.MyMenu.path

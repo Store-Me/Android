@@ -18,38 +18,18 @@ import com.store_me.storeme.ui.store_detail.StoreDetailScreen
 import com.store_me.storeme.ui.store_talk.StoreTalkScreen
 
 @Composable
-fun CustomerNavigationGraph(navController: NavHostController) {
-    NavHost(navController, startDestination = CustomerRoute.Home.fullRoute){
-
-        //Bottom Navigation Screen
+fun CustomerHomeNavigationGraph(navController: NavHostController) {
+    NavHost(navController, startDestination = CustomerRoute.Home.fullRoute) {
         composable(CustomerRoute.Home.fullRoute) { CustomerHomeScreen(navController, locationViewModel = hiltViewModel()) }
-        composable(CustomerRoute.Favorite.fullRoute) { MyStoreScreenWithBottomSheet() }
-        composable(CustomerRoute.NearPlace.fullRoute) { NearPlaceScreen(navController, locationViewModel = hiltViewModel()) }
-        composable(CustomerRoute.StoreTalk.fullRoute) { StoreTalkScreen(navController) }
-        composable(CustomerRoute.MyMenu.fullRoute) { MyMenuScreen(navController) }
 
         composable(CustomerRoute.Notification(parent = CustomerRoute.Home).fullRoute) { NotificationScreen(navController) }
-        composable(CustomerRoute.Notification(parent = CustomerRoute.MyMenu).fullRoute) { NotificationScreen(navController) }
 
         composable(CustomerRoute.MyCoupon(CustomerRoute.Home).fullRoute) { MyCouponScreenWithBottomSheet(navController) }
-        composable(CustomerRoute.MyCoupon(CustomerRoute.MyMenu).fullRoute) { MyCouponScreenWithBottomSheet(navController) }
 
         composable(CustomerRoute.LocationSetting(CustomerRoute.Home).fullRoute) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
-        composable(CustomerRoute.LocationSetting(CustomerRoute.NearPlace).fullRoute) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
 
         composable(CustomerRoute.Banners(CustomerRoute.Home).fullRoute) { BannerListScreen(navController) }
-        composable(CustomerRoute.Banners(CustomerRoute.NearPlace).fullRoute) { BannerListScreen(navController) }
-        composable(CustomerRoute.Banners(CustomerRoute.MyMenu).fullRoute) { BannerListScreen(navController) }
-
         composable(CustomerRoute.BannerDetail(CustomerRoute.Home, null).fullRoute + "/{bannerId}") { backStackEntry ->
-            val bannerId = backStackEntry.arguments?.getString("bannerId")
-            BannerDetailScreen(navController, bannerId = bannerId ?: "")
-        }
-        composable(CustomerRoute.BannerDetail(CustomerRoute.NearPlace, null).fullRoute + "/{bannerId}") { backStackEntry ->
-            val bannerId = backStackEntry.arguments?.getString("bannerId")
-            BannerDetailScreen(navController, bannerId = bannerId ?: "")
-        }
-        composable(CustomerRoute.BannerDetail(CustomerRoute.MyMenu, null).fullRoute + "/{bannerId}") { backStackEntry ->
             val bannerId = backStackEntry.arguments?.getString("bannerId")
             BannerDetailScreen(navController, bannerId = bannerId ?: "")
         }
@@ -57,6 +37,51 @@ fun CustomerNavigationGraph(navController: NavHostController) {
         composable(CustomerRoute.StoreDetail(CustomerRoute.Home, null).fullRoute + "/{storeId}") { backStackEntry ->
             val storeId = backStackEntry.arguments?.getString("storeId")
             StoreDetailScreen(navController, storeId = storeId ?: "")
+        }
+    }
+}
+
+@Composable
+fun CustomerFavoriteNavigationGraph(navController: NavHostController) {
+    NavHost(navController, startDestination = CustomerRoute.Favorite.fullRoute) {
+        composable(CustomerRoute.Favorite.fullRoute) { MyStoreScreenWithBottomSheet() }
+    }
+}
+
+@Composable
+fun CustomerNearPlaceNavigationGraph(navController: NavHostController) {
+    NavHost(navController, startDestination = CustomerRoute.NearPlace.fullRoute) {
+        composable(CustomerRoute.NearPlace.fullRoute) { NearPlaceScreen(navController, locationViewModel = hiltViewModel()) }
+
+        composable(CustomerRoute.LocationSetting(CustomerRoute.NearPlace).fullRoute) { LocationScreen(navController, locationViewModel = hiltViewModel()) }
+
+        composable(CustomerRoute.Banners(CustomerRoute.NearPlace).fullRoute) { BannerListScreen(navController) }
+        composable(CustomerRoute.BannerDetail(CustomerRoute.NearPlace, null).fullRoute + "/{bannerId}") { backStackEntry ->
+            val bannerId = backStackEntry.arguments?.getString("bannerId")
+            BannerDetailScreen(navController, bannerId = bannerId ?: "")
+        }
+    }
+}
+
+@Composable
+fun CustomerStoreTalkNavigationGraph(navController: NavHostController) {
+    NavHost(navController, startDestination = CustomerRoute.StoreTalk.fullRoute) {
+        composable(CustomerRoute.StoreTalk.fullRoute) { StoreTalkScreen(navController) }
+    }
+}
+@Composable
+fun CustomerMyMenuNavigationGraph(navController: NavHostController) {
+    NavHost(navController, startDestination = CustomerRoute.MyMenu.fullRoute) {
+        composable(CustomerRoute.MyMenu.fullRoute) { MyMenuScreen(navController) }
+
+        composable(CustomerRoute.Notification(parent = CustomerRoute.MyMenu).fullRoute) { NotificationScreen(navController) }
+
+        composable(CustomerRoute.MyCoupon(CustomerRoute.MyMenu).fullRoute) { MyCouponScreenWithBottomSheet(navController) }
+
+        composable(CustomerRoute.Banners(CustomerRoute.MyMenu).fullRoute) { BannerListScreen(navController) }
+        composable(CustomerRoute.BannerDetail(CustomerRoute.MyMenu, null).fullRoute + "/{bannerId}") { backStackEntry ->
+            val bannerId = backStackEntry.arguments?.getString("bannerId")
+            BannerDetailScreen(navController, bannerId = bannerId ?: "")
         }
     }
 }

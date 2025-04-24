@@ -35,18 +35,9 @@ import com.store_me.storeme.ui.store_setting.story.setting.StorySettingScreen
 import com.store_me.storeme.ui.store_setting.story.setting.StorySettingViewModel
 
 @Composable
-fun OwnerNavigationGraph(navController: NavHostController) {
+fun OwnerHomeNavigationGraph(navController: NavHostController) {
     NavHost(navController, startDestination = OwnerRoute.Home.fullRoute){
-        //Bottom Navigation Screen
         composable(OwnerRoute.Home.fullRoute) { OwnerHomeScreen(navController) }
-        composable(OwnerRoute.CustomerManagement.fullRoute) {
-
-        }
-        composable(OwnerRoute.Add.fullRoute) { SelectPostTypeScreen(navController) }
-        composable(OwnerRoute.StoreTalk.fullRoute) {
-
-        }
-        composable(OwnerRoute.StoreInfo.fullRoute) { StoreInfoScreen(navController) }
 
         //기본 프로필
         composable(OwnerRoute.IntroSetting.fullRoute) { IntroSettingScreen(navController) }
@@ -56,12 +47,17 @@ fun OwnerNavigationGraph(navController: NavHostController) {
         composable(OwnerRoute.ProfileEdit.fullRoute) { ProfileSettingScreen(navController) }
         composable(OwnerRoute.StoreManagement.fullRoute) { StoreSettingScreen(navController) }
 
+        //링크 관리
         composable(OwnerRoute.LinkSetting.fullRoute) { LinkSettingScreen(navController) }
-
+        //공지 관리
         composable(OwnerRoute.NoticeSetting.fullRoute) { NoticeSettingScreen(navController) }
+        //대표 이미지 관리
         composable(OwnerRoute.FeaturedImageSetting.fullRoute) { FeaturedImageSettingScreen(navController) }
 
-        //메뉴
+        /**
+         * 메뉴 관련 화면
+         */
+        //메뉴 관리
         composable(OwnerRoute.MenuSetting(null).fullRoute) { backStackEntry ->
             val sharedMenuSettingViewModel: MenuSettingViewModel = hiltViewModel(backStackEntry)
 
@@ -70,6 +66,7 @@ fun OwnerNavigationGraph(navController: NavHostController) {
                 menuSettingViewModel = sharedMenuSettingViewModel
             )
         }
+        //메뉴 관리 + 선택된 메뉴
         composable(OwnerRoute.MenuSetting(null).fullRoute + "/{selectedMenuName}") { backStackEntry ->
             val selectedMenuName = backStackEntry.arguments?.getString("selectedMenuName")
             val sharedMenuSettingViewModel: MenuSettingViewModel = hiltViewModel(backStackEntry)
@@ -79,9 +76,8 @@ fun OwnerNavigationGraph(navController: NavHostController) {
                 menuSettingViewModel = sharedMenuSettingViewModel,
                 selectedMenuName = selectedMenuName ?: "")
         }
-
+        //메뉴 추가
         composable(OwnerRoute.MenuManagement(null).fullRoute) { backStackEntry ->
-            //viewModel 공유
             val sharedMenuSettingViewModel: MenuSettingViewModel =
                 if(navController.previousBackStackEntry != null)
                     hiltViewModel(navController.previousBackStackEntry!!)
@@ -94,6 +90,7 @@ fun OwnerNavigationGraph(navController: NavHostController) {
                 menuSettingViewModel = sharedMenuSettingViewModel
             )
         }
+        //메뉴 수정
         composable(OwnerRoute.MenuManagement(null).fullRoute + "/{selectedMenuName}") { backStackEntry ->
             val selectedMenuName = backStackEntry.arguments?.getString("selectedMenuName")
             val sharedMenuSettingViewModel: MenuSettingViewModel =
@@ -108,7 +105,7 @@ fun OwnerNavigationGraph(navController: NavHostController) {
                 menuSettingViewModel = sharedMenuSettingViewModel
             )
         }
-
+        //메뉴 카테고리
         composable(OwnerRoute.MenuCategorySetting.fullRoute) { backStackEntry ->
             //viewModel 공유
             val sharedMenuCategorySettingViewModel: MenuCategorySettingViewModel = hiltViewModel(backStackEntry)
@@ -124,6 +121,7 @@ fun OwnerNavigationGraph(navController: NavHostController) {
                 menuCategorySettingViewModel = sharedMenuCategorySettingViewModel
             )
         }
+        //특정 메뉴 카테고리
         composable(OwnerRoute.MenuCategoryManagement(null).fullRoute + "/{selectedCategoryName}") { backStackEntry ->
             val selectedCategoryName = backStackEntry.arguments?.getString("selectedCategoryName")
 
@@ -140,35 +138,47 @@ fun OwnerNavigationGraph(navController: NavHostController) {
             )
         }
 
-        //쿠폰
+        /**
+         * 쿠폰 관련 화면
+         */
+        //쿠폰 관리
         composable(OwnerRoute.CouponSetting.fullRoute) {
             CouponSettingScreen(navController)
         }
+        //쿠폰 생성
         composable(OwnerRoute.CouponCreate.template()) { backStackEntry ->
             val selectedCouponType = backStackEntry.arguments?.getString("selectedCouponType")
             CouponManagementScreen(navController, selectedCouponType = selectedCouponType ?: "", couponId = null)
         }
-
+        //쿠폰 수정
         composable(OwnerRoute.CouponEdit.template()) { backStackEntry ->
             val couponId = backStackEntry.arguments?.getString("couponId") ?: ""
             val selectedCouponType = backStackEntry.arguments?.getString("selectedCouponType") ?: ""
             CouponManagementScreen(navController, selectedCouponType = selectedCouponType, couponId = couponId)
         }
 
-        //스탬프 쿠폰
+        /**
+         * 스탬프 관련 화면
+         */
+        //스탬프 관리
         composable(OwnerRoute.StampCouponSetting.fullRoute) {
             StampCouponSettingScreen(navController)
         }
+        //스탬프 생성
         composable(OwnerRoute.StampCouponCreate.fullRoute) {
             StampCouponCreateScreen(navController)
         }
 
-        //스토리
+        /**
+         * 스토리 관련 화면
+         */
+        //스토리 관리
         composable(OwnerRoute.StorySetting.fullRoute) { backStackEntry ->
             val sharedStorySettingViewModel: StorySettingViewModel = hiltViewModel(backStackEntry)
 
             StorySettingScreen(navController, storySettingViewModel = sharedStorySettingViewModel)
         }
+        //스토리 추가
         composable(OwnerRoute.StoryManagement.fullRoute) {
             val sharedStorySettingViewModel: StorySettingViewModel =
                 if(navController.previousBackStackEntry != null)
@@ -181,7 +191,49 @@ fun OwnerNavigationGraph(navController: NavHostController) {
 
         composable(OwnerRoute.ReviewSetting.fullRoute) { ReviewSettingScreen(navController) }
         composable(OwnerRoute.NewsSetting.fullRoute) { NewsSettingScreen(navController) }
+    }
+}
+
+@Composable
+fun OwnerCustomerManagementNavigationGraph(navController: NavHostController) {
+    NavHost(
+        navController, startDestination = OwnerRoute.CustomerManagement.fullRoute) {
+
+    }
+}
+
+@Composable
+fun OwnerAddNavigationGraph(navController: NavHostController) {
+    NavHost(
+        navController,
+        startDestination = OwnerRoute.Add.fullRoute
+    ) {
+        composable(OwnerRoute.Add.fullRoute) {
+            SelectPostTypeScreen(navController)
+        }
 
         composable(OwnerRoute.LabelSetting.fullRoute) { LabelSettingScreen(navController) }
+    }
+}
+
+@Composable
+fun OwnerStoreTalkNavigationGraph(navController: NavHostController) {
+    NavHost(
+        navController,
+        startDestination = OwnerRoute.StoreTalk.fullRoute
+    ) {
+        composable(OwnerRoute.StoreTalk.fullRoute) {
+
+        }
+    }
+}
+
+@Composable
+fun OwnerStoreInfoNavigationGraph(navController: NavHostController) {
+    NavHost(
+        navController,
+        startDestination = OwnerRoute.StoreInfo.fullRoute
+    ) {
+        composable(OwnerRoute.StoreInfo.fullRoute) { StoreInfoScreen(navController) }
     }
 }
