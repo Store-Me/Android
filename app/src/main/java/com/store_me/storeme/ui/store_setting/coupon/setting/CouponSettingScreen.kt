@@ -489,6 +489,7 @@ fun CouponImage(
             accountType = AccountType.OWNER,
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
+                .aspectRatio(1f)
         )
 
         Box(
