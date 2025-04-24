@@ -17,14 +17,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
@@ -32,6 +30,8 @@ import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -58,7 +59,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
-import com.google.firebase.Timestamp
+import com.store_me.storeme.R
 import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.store.StoreInfoData
@@ -70,7 +71,6 @@ import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.component.TitleWithDeleteButtonAndRow
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
-import com.store_me.storeme.ui.theme.DisabledColor
 import com.store_me.storeme.ui.theme.ExpiredColor
 import com.store_me.storeme.ui.theme.LightBlack
 import com.store_me.storeme.ui.theme.storeMeTextStyle
@@ -196,9 +196,11 @@ fun StorySettingScreen(
             storeInfoData = storeInfoData!!,
             selectedIndex = selectedIndex,
             stories = stories,
-        ) {
-            showStory = false
-        }
+            onDismiss = { showStory = false },
+            onLike = {
+                storySettingViewModel.updateStoryLike(it)
+            }
+        )
     }
 }
 
@@ -210,7 +212,8 @@ fun StoryDetailDialog(
     storeInfoData: StoreInfoData,
     selectedIndex: Int,
     stories: List<StoryData>,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onLike: (StoryData) -> Unit
 ) {
     val gradientColor by remember { mutableStateOf(listOf(
         Color.Black.copy(alpha = 0.6f),
@@ -253,7 +256,9 @@ fun StoryDetailDialog(
                     .align(Alignment.BottomCenter),
                 storeInfoData = storeInfoData,
                 storyData = stories[selectedIndex]
-            )
+            ) {
+                onLike(stories[selectedIndex])
+            }
         }
     }
 }
@@ -263,6 +268,7 @@ fun StoryDescription(
     modifier: Modifier,
     storeInfoData: StoreInfoData,
     storyData: StoryData,
+    onLike: () -> Unit
 ) {
     var showAllDescription by remember { mutableStateOf(false) }
 
@@ -349,11 +355,23 @@ fun StoryDescription(
                     )
 
                     Text(
-                        text = "좋아요 " + LikeCountUtils.convertLikeCount(storyData.likeCount) + "개",
+                        text = "좋아요 " + LikeCountUtils.convertLikeCount(storyData.likesCount) + "개",
                         style = storeMeTextStyle(FontWeight.Normal, -1),
                         color = ExpiredColor
                     )
                 }
+            }
+
+            IconButton(
+                onClick = { onLike() }
+            ) {
+                Icon(
+                    painter = painterResource(if(storyData.userLiked) R.drawable.ic_like_on else R.drawable.ic_like_off),
+                    modifier = Modifier
+                        .size(24.dp),
+                    contentDescription = null,
+                    tint = if(storyData.userLiked) Color.Unspecified else Color.White
+                )
             }
         }
 
