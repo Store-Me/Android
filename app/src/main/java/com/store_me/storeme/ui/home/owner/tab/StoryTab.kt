@@ -81,7 +81,7 @@ fun StoryTab(
                             )
                         }
 
-                        if(stories.size == 1) {
+                        if(chunkedStory.size == 1) {
                             Spacer(modifier = Modifier.weight(1f))
                         }
                     }
@@ -102,9 +102,5 @@ fun StoryTab(
                 )
             }
         }
-
-        Spacer(
-            modifier = Modifier.height(200.dp)
-        )
     }
 }
