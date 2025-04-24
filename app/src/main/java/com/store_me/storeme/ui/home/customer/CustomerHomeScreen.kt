@@ -37,6 +37,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,8 +68,9 @@ import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTypography
+import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.SampleDataUtils
-import com.store_me.storeme.utils.ToastMessageUtils
+import kotlinx.coroutines.launch
 
 @Composable
 fun CustomerHomeScreen(
@@ -81,6 +83,7 @@ fun CustomerHomeScreen(
 
     var backPressedTime by remember { mutableStateOf(0L) }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -114,7 +117,9 @@ fun CustomerHomeScreen(
            (context as? ComponentActivity)?.finishAffinity()
        } else {
            backPressedTime = currentTime
-           ToastMessageUtils.showToast(context, R.string.backpress_message)
+           scope.launch {
+               ErrorEventBus.errorFlow.emit(context.getString(R.string.backpress_message))
+           }
        }
     }
 }
