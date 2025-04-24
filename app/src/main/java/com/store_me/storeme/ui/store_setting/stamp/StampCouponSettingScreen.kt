@@ -129,7 +129,7 @@ fun StampCouponSettingScreen(
                             verticalArrangement = Arrangement.spacedBy(20.dp)
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.image_stamp_null),
+                                painter = painterResource(id = R.drawable.image_stamp),
                                 modifier = Modifier
                                     .padding(top = 40.dp)
                                     .size(350.dp),
