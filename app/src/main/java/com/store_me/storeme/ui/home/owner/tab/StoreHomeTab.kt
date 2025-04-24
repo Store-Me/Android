@@ -1,12 +1,14 @@
 package com.store_me.storeme.ui.home.owner.tab
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,7 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +36,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.store_me.storeme.R
 import com.store_me.storeme.data.coupon.CouponData
 import com.store_me.storeme.data.MenuCategoryData
@@ -41,7 +46,11 @@ import com.store_me.storeme.data.enums.menu.MenuTag
 import com.store_me.storeme.data.store.FeaturedImageData
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
+import com.store_me.storeme.ui.component.SkeletonBox
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponInfo
+import com.store_me.storeme.ui.store_setting.story.setting.StoryDetailDialog
+import com.store_me.storeme.ui.store_setting.story.setting.StoryThumbnailItem
+import com.store_me.storeme.ui.store_setting.story.setting.StoryViewModel
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.LighterHighlightColor
@@ -51,18 +60,28 @@ import com.store_me.storeme.ui.theme.RecommendBoxColor
 import com.store_me.storeme.ui.theme.RecommendTextColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
+import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.PriceUtils
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
+/**
+ * 사장님 홈 화면의 스토어 홈 탭 Composable
+ */
 @Composable
-fun StoreHomeTab(navController: NavController) {
+fun StoreHomeTab(
+    navController: NavController,
+    storyViewModel: StoryViewModel
+) {
     Column {
         StoreHomeItem.entries
             .forEach { item ->
-                Spacer(modifier = Modifier.padding(top = 20.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                StoreHomeItemSection(item) {
+                StoreHomeItemSection(
+                    storeHomeItem = item,
+                    storyViewModel = storyViewModel
+                ) {
                     navController.navigate(item.route.fullRoute)
                 }
             }
@@ -72,7 +91,11 @@ fun StoreHomeTab(navController: NavController) {
 }
 
 @Composable
-fun StoreHomeItemSection(storeHomeItem: StoreHomeItem, onClick: (StoreHomeItem) -> Unit) {
+fun StoreHomeItemSection(
+    storeHomeItem: StoreHomeItem,
+    storyViewModel: StoryViewModel,
+    onClick: (StoreHomeItem) -> Unit
+) {
     val storeDataViewModel = LocalStoreDataViewModel.current
 
     val notice by storeDataViewModel.notice.collectAsState()
@@ -95,17 +118,29 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItem, onClick: (StoreHomeItem) 
                 .padding(horizontal = 20.dp)
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
-
         when(storeHomeItem) {
-            StoreHomeItem.NOTICE -> NoticeSection(notice) { onClick(it) }
-            StoreHomeItem.FEATURED_IMAGES -> FeaturedImageSection(featuredImages) { onClick(it) }
-            StoreHomeItem.MENU -> MenuSection(menuCategories) { onClick(it) }
-            StoreHomeItem.COUPON -> CouponPreviewSection(coupons) { onClick(it) }
-            StoreHomeItem.STAMP_COUPON -> StampTab(stampCoupon) { onClick(it) }
+            StoreHomeItem.NOTICE -> NoticeSection(notice)
+            StoreHomeItem.FEATURED_IMAGES -> FeaturedImagePreview(featuredImages)
+            StoreHomeItem.MENU -> MenuPreview(menuCategories)
+            StoreHomeItem.COUPON -> CouponPreview(coupons)
+            StoreHomeItem.STAMP_COUPON -> StampTab(stampCoupon)
+            StoreHomeItem.STORY -> RecentStory(storyViewModel)
             else -> {
 
             }
+        }
+
+        DefaultButton(
+            buttonText = "${storeHomeItem.displayName} 관리",
+            diffValue = 2,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = SubHighlightColor,
+                contentColor = Color.Black
+            ),
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+        ) {
+            onClick(StoreHomeItem.MENU)
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -115,47 +150,65 @@ fun StoreHomeItemSection(storeHomeItem: StoreHomeItem, onClick: (StoreHomeItem) 
 }
 
 @Composable
-fun NoticeSection(notice: String, onClick: (StoreHomeItem) -> Unit) {
+fun NoneContentText(
+    modifier: Modifier = Modifier,
+    text: String
+) {
+    Text(
+        text = text,
+        style = storeMeTextStyle(FontWeight.Normal, 0),
+        color = GuideColor,
+        modifier = modifier
+            .fillMaxWidth()
+    )
+}
+
+@Composable
+fun NoticeSection(
+    notice: String
+) {
+    var showAll by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
+            .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
-        Text(
-            text = notice.ifEmpty { "가게의 공지사항을 입력해주세요." },
-            style = storeMeTextStyle(FontWeight.Normal, 0),
-            color = if(notice.isEmpty()) GuideColor else Color.Black
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        DefaultButton(
-            buttonText = "공지사항 수정",
-            diffValue = 2,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = SubHighlightColor,
-                contentColor = Color.Black
+        if(notice.isEmpty()) {
+            NoneContentText(text = stringResource(R.string.owner_home_notice_none))
+        } else {
+            Text(
+                text = notice,
+                style = storeMeTextStyle(FontWeight.Normal, 0),
+                color = Color.Black,
+                maxLines = if(showAll) Int.MAX_VALUE else 3,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .clickable {
+                        showAll = !showAll
+                    }
             )
-        ) {
-            onClick(StoreHomeItem.NOTICE)
         }
     }
 }
 
 @Composable
-fun FeaturedImageSection(featuredImages: List<FeaturedImageData>, onClick: (StoreHomeItem) -> Unit) {
+fun FeaturedImagePreview(
+    featuredImages: List<FeaturedImageData>
+) {
     if(featuredImages.isEmpty()) {
-        Text(
-            text = stringResource(R.string.owner_home_photo_none),
-            style = storeMeTextStyle(FontWeight.Normal, 0),
-            color = GuideColor,
+        Column(
             modifier = Modifier
-                .padding(horizontal = 20.dp)
-        )
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 12.dp)
+        ) {
+            NoneContentText(text = stringResource(R.string.owner_home_photo_none))
+        }
     } else {
         LazyRow(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(vertical = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(start = 20.dp)
         ) {
@@ -164,49 +217,46 @@ fun FeaturedImageSection(featuredImages: List<FeaturedImageData>, onClick: (Stor
             }
         }
     }
-
-    Spacer(modifier = Modifier.height(12.dp))
-
-    DefaultButton(
-        buttonText = "사진 관리",
-        diffValue = 2,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = SubHighlightColor,
-            contentColor = Color.Black
-        ),
-        modifier = Modifier
-            .padding(horizontal = 20.dp)
-    ) {
-        onClick(StoreHomeItem.FEATURED_IMAGES)
-    }
 }
 
 @Composable
 fun FeaturedImageItem(featuredImageData: FeaturedImageData) {
-    AsyncImage(
+    SubcomposeAsyncImage(
         model = featuredImageData.image,
         contentDescription = featuredImageData.description,
+        contentScale = ContentScale.Crop,
         modifier = Modifier
             .size(150.dp)
-            .clip(shape = RoundedCornerShape(20))
+            .clip(shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
             .aspectRatio(1f),
-        contentScale = ContentScale.Crop
+        loading = {
+            SkeletonBox(
+                isLoading = true,
+                modifier = Modifier
+                    .fillMaxSize(),
+            ) {
+
+            }
+        }
     )
 }
 
 @Composable
-fun MenuSection(menuCategories: List<MenuCategoryData>, onClick: (StoreHomeItem) -> Unit) {
+fun MenuPreview(
+    menuCategories: List<MenuCategoryData>
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
         if(menuCategories.isEmpty()) {
-            Text(
-                text = "메뉴를 추가하여 손님들에게 메뉴 정보를 제공해보세요.",
-                style = storeMeTextStyle(FontWeight.Normal, 0),
-                color = GuideColor,
-                modifier = Modifier.padding(horizontal = 20.dp)
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
+            ) {
+                NoneContentText(text = stringResource(R.string.owner_home_menu_none))
+            }
         } else {
             if(menuCategories.size == 1) {
                 //기본 카테고리만 있는 경우
@@ -217,6 +267,8 @@ fun MenuSection(menuCategories: List<MenuCategoryData>, onClick: (StoreHomeItem)
                         DefaultHorizontalDivider()
                 }
             } else {
+                Spacer(modifier = Modifier.height(12.dp))
+
                 Text(
                     text = menuCategories[1].categoryName,
                     style = storeMeTextStyle(FontWeight.ExtraBold, 6),
@@ -233,21 +285,6 @@ fun MenuSection(menuCategories: List<MenuCategoryData>, onClick: (StoreHomeItem)
                 }
             }
 
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        DefaultButton(
-            buttonText = "메뉴 관리",
-            diffValue = 2,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = SubHighlightColor,
-                contentColor = Color.Black
-            ),
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-        ) {
-            onClick(StoreHomeItem.MENU)
         }
     }
 }
@@ -352,11 +389,10 @@ fun MenuItem(menuData: MenuData) {
     }
 }
 
-/**
- *
- */
 @Composable
-fun CouponPreviewSection(coupons: List<CouponData>, onClick: (StoreHomeItem) -> Unit) {
+fun CouponPreview(
+    coupons: List<CouponData>
+) {
     val storeDataViewModel = LocalStoreDataViewModel.current
     val validCoupons = remember(coupons) {
         coupons
@@ -368,24 +404,13 @@ fun CouponPreviewSection(coupons: List<CouponData>, onClick: (StoreHomeItem) -> 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 20.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-
         if(coupons.isEmpty()) {
-            Text(
-                text = "쿠폰을 추가하여 손님들에게 혜택을 제공해보세요.",
-                style = storeMeTextStyle(FontWeight.Normal, 0),
-                color = GuideColor,
-                modifier = Modifier.padding(horizontal = 20.dp)
-            )
+            NoneContentText(text = stringResource(R.string.owner_home_coupon_none))
         } else if(validCoupons.isEmpty()) {
-            Text(
-                text = "발급중인 쿠폰이 없습니다. 쿠폰을 새로 생성하거나 수정해보세요.",
-                style = storeMeTextStyle(FontWeight.Normal, 0),
-                color = GuideColor,
-                modifier = Modifier.padding(horizontal = 20.dp)
-            )
+            NoneContentText(text = stringResource(R.string.owner_home_valid_coupon_none))
         } else {
             validCoupons.forEach {
                 Row(
@@ -408,16 +433,60 @@ fun CouponPreviewSection(coupons: List<CouponData>, onClick: (StoreHomeItem) -> 
                 }
             }
         }
+    }
+}
 
-        DefaultButton(
-            buttonText = "쿠폰 관리",
-            diffValue = 2,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = SubHighlightColor,
-                contentColor = Color.Black
-            )
+@Composable
+fun RecentStory(
+    storyViewModel: StoryViewModel,
+) {
+    val storeDataViewModel = LocalStoreDataViewModel.current
+    val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
+
+    val stories by storyViewModel.stories.collectAsState()
+    var showStory by remember { mutableStateOf(false) }
+    var selectedIndex by remember { mutableStateOf(0) }
+
+    val recentStories = remember(stories) {
+        stories.take(2)
+    }
+
+    if(recentStories.isEmpty()) {
+        NoneContentText(text = stringResource(R.string.owner_home_story_none))
+    } else {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            onClick(StoreHomeItem.COUPON)
+            recentStories.forEachIndexed { index, recentStory ->
+                StoryThumbnailItem(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable {
+                            selectedIndex = index
+                            showStory = true
+                        },
+                    thumbnailUrl = recentStory.thumbNail,
+                )
+            }
+
+            if(recentStories.size == 1) {
+                Spacer(modifier = Modifier.weight(1f))
+            }
         }
+    }
+
+    if(showStory) {
+        StoryDetailDialog(
+            storeInfoData = storeInfoData!!,
+            selectedIndex = selectedIndex,
+            stories = stories,
+            onDismiss = { showStory = false },
+            onLike = {
+                storyViewModel.updateStoryLike(it)
+            }
+        )
     }
 }
