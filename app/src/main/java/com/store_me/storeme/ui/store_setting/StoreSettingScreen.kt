@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -88,7 +89,7 @@ fun StoreSettingScreen(
 
                 item {
                     Text(
-                        text = "추가 정보",
+                        text = "가게 정보",
                         style = storeMeTextStyle(fontWeight = FontWeight.ExtraBold, changeSizeValue = 6),
                         color = Color.Black,
                         modifier = Modifier
@@ -152,6 +153,10 @@ fun StoreSettingScreen(
                     }
 
                     DefaultHorizontalDivider()
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(200.dp))
                 }
             }
         }
