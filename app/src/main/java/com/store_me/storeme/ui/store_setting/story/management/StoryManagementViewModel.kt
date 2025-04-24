@@ -8,7 +8,7 @@ import com.store_me.storeme.data.StoryData
 import com.store_me.storeme.data.request.store.PostStoryRequest
 import com.store_me.storeme.data.response.PagingResponse
 import com.store_me.storeme.repository.storeme.ImageRepository
-import com.store_me.storeme.repository.storeme.OwnerRepository
+import com.store_me.storeme.repository.storeme.StoryRepository
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.StoragePaths
 import com.store_me.storeme.utils.SuccessEventBus
@@ -25,7 +25,7 @@ import javax.inject.Inject
 class StoryManagementViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val imageRepository: ImageRepository,
-    private val ownerRepository: OwnerRepository
+    private val storyRepository: StoryRepository
 ) : ViewModel() {
     private val _videoUri = MutableStateFlow<Uri?>(null)
     val videoUri: StateFlow<Uri?> = _videoUri
@@ -136,7 +136,7 @@ class StoryManagementViewModel @Inject constructor(
                 return@launch
             }
 
-            val response = ownerRepository.postStoreStory(
+            val response = storyRepository.postStoreStory(
                 postStoreStoryRequest = PostStoryRequest(
                     video = videoUrl.value!!,
                     thumbNail = thumbnailUrl.value!!,
