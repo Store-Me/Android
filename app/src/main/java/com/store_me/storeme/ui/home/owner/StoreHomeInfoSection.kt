@@ -5,6 +5,8 @@ import android.content.ClipboardManager
 import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -293,7 +295,11 @@ fun StoreBusinessHoursSection(businessHours: BusinessHoursResponse, onClick: () 
         }
     }
 
-    AnimatedVisibility(showAll.value && !businessHours.businessHours.isNullOrEmpty()) {
+    AnimatedVisibility(
+        visible = showAll.value && !businessHours.businessHours.isNullOrEmpty(),
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
         Column(
             modifier = Modifier.padding(start = 32.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
