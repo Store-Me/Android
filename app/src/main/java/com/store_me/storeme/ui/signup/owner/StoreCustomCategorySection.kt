@@ -41,7 +41,7 @@ import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.composition_locals.signup.LocalStoreSignupDataViewModel
-import com.store_me.storeme.utils.StoreCategory
+import com.store_me.storeme.data.enums.StoreCategory
 
 @Composable
 fun StoreCustomCategorySection(onFinish: () -> Unit) {

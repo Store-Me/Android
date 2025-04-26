@@ -1,6 +1,6 @@
 package com.store_me.storeme.data
 
-import com.store_me.storeme.utils.StoreCategory
+import com.store_me.storeme.data.enums.StoreCategory
 
 /**
  * 가게  Data Class

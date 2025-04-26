@@ -118,11 +118,10 @@ import com.store_me.storeme.ui.theme.SwipeEditColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.storeMeTypography
-import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.SampleDataUtils
 import com.store_me.storeme.utils.SizeUtils
 import com.store_me.storeme.utils.SocialMediaAccountUtils
-import com.store_me.storeme.utils.StoreCategory
+import com.store_me.storeme.data.enums.StoreCategory
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -910,7 +909,6 @@ fun AlphaBackgroundText(text: String, diffValue: Int, modifier: Modifier = Modif
 fun SkeletonBox(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
-    shape: Shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE),
     content: @Composable () -> Unit
 ) {
     val transition = rememberInfiniteTransition(label = "shimmer")
@@ -937,15 +935,12 @@ fun SkeletonBox(
 
     Box(
         modifier = modifier
-    ) {
-        if(isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(brush = brush, shape = shape)
-                    .clip(shape)
+            .then(
+                if (isLoading) Modifier.background(brush)
+                else Modifier
             )
-        } else {
+    ) {
+        if (!isLoading) {
             content()
         }
     }

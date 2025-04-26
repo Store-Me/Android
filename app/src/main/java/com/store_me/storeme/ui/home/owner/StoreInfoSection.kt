@@ -52,7 +52,7 @@ import com.store_me.storeme.ui.theme.UndefinedColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.PhoneNumberUtils
-import com.store_me.storeme.utils.StoreCategory
+import com.store_me.storeme.data.enums.StoreCategory
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
 /**

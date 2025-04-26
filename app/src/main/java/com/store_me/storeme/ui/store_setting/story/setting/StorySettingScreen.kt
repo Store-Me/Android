@@ -76,7 +76,7 @@ import com.store_me.storeme.ui.theme.LightBlack
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.LikeCountUtils
-import com.store_me.storeme.utils.StoreCategory
+import com.store_me.storeme.data.enums.StoreCategory
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import com.store_me.storeme.utils.toTimeAgo
 import kotlinx.coroutines.flow.distinctUntilChanged

@@ -2,8 +2,7 @@ package com.store_me.storeme.ui.mystore
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.store_me.storeme.utils.CategoryUtils
-import com.store_me.storeme.utils.StoreCategory
+import com.store_me.storeme.data.enums.StoreCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,7 +15,7 @@ class CategoryViewModel @Inject constructor(
 ): ViewModel() {
 
     //Category 관련
-    val categoryList = CategoryUtils.getStoreCategories()
+    val categoryList = StoreCategory.entries
 
     private val _selectedCategory = MutableStateFlow(StoreCategory.ALL)
     val selectedCategory: StateFlow<StoreCategory> = _selectedCategory

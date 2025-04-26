@@ -11,7 +11,7 @@ import com.store_me.storeme.repository.storeme.ImageRepository
 import com.store_me.storeme.ui.component.filterNonNumeric
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.StoragePaths
-import com.store_me.storeme.utils.StoreCategory
+import com.store_me.storeme.data.enums.StoreCategory
 import com.store_me.storeme.utils.exception.ApiException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

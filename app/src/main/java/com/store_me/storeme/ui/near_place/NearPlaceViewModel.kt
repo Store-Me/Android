@@ -5,9 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.store_me.storeme.data.NearPlaceStoreWithStoreInfoData
 import com.store_me.storeme.ui.mystore.CategoryViewModel
-import com.store_me.storeme.utils.SampleDataUtils
 import com.store_me.storeme.utils.SampleDataUtils.Companion.sampleNearPlaceStoreWithStoreInfoData
-import com.store_me.storeme.utils.StoreCategory
+import com.store_me.storeme.data.enums.StoreCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
