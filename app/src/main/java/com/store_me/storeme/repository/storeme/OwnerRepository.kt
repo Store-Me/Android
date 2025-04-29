@@ -1,7 +1,7 @@
 package com.store_me.storeme.repository.storeme
 
 import com.store_me.auth.Auth
-import com.store_me.storeme.data.StampCouponData
+import com.store_me.storeme.data.store.coupon.StampCouponData
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
 import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
