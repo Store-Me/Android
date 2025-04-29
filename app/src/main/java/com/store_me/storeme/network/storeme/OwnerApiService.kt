@@ -1,6 +1,6 @@
 package com.store_me.storeme.network.storeme
 
-import com.store_me.storeme.data.StampCouponData
+import com.store_me.storeme.data.store.coupon.StampCouponData
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
 import com.store_me.storeme.data.request.store.PatchStoreDescriptionRequest
