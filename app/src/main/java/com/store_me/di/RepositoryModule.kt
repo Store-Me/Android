@@ -14,6 +14,8 @@ import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.repository.storeme.OwnerRepositoryImpl
 import com.store_me.storeme.repository.storeme.PostRepository
 import com.store_me.storeme.repository.storeme.PostRepositoryImpl
+import com.store_me.storeme.repository.storeme.ReviewRepository
+import com.store_me.storeme.repository.storeme.ReviewRepositoryImpl
 import com.store_me.storeme.repository.storeme.StoryRepository
 import com.store_me.storeme.repository.storeme.StoryRepositoryImpl
 import com.store_me.storeme.repository.storeme.UserRepository
@@ -80,4 +82,10 @@ abstract class RepositoryModule {
     abstract fun bindStoryRepository(
         storyRepositoryImpl: StoryRepositoryImpl
     ): StoryRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindReviewRepository(
+        reviewRepositoryImpl: ReviewRepositoryImpl
+    ): ReviewRepository
 }
