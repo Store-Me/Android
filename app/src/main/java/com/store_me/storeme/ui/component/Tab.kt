@@ -5,7 +5,8 @@ package com.store_me.storeme.ui.component
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
@@ -22,8 +23,6 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
 import com.store_me.storeme.ui.theme.DividerColor
 import com.store_me.storeme.ui.theme.TabDividerLineColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
@@ -126,12 +125,10 @@ fun StoreMeScrollableTabRow(
 
 @Composable
 fun StoreMeTabContent(
-    tabTitles: List<String>,
     pagerState: PagerState,
     content: @Composable (page: Int) -> Unit
 ) {
     HorizontalPager(
-        count = tabTitles.size,
         state = pagerState,
         modifier = Modifier
             .fillMaxSize(),
