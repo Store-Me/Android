@@ -6,19 +6,22 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ContextualFlowRow
+import androidx.compose.foundation.layout.ContextualFlowRowOverflow
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -27,657 +30,992 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarDuration
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
-import com.store_me.storeme.data.ReviewComment
 import com.store_me.storeme.data.enums.AccountType
+import com.store_me.storeme.data.review.ReviewCount
+import com.store_me.storeme.data.review.ReviewData
+import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.ui.component.DefaultBottomSheet
-import com.store_me.storeme.ui.component.KeyBoardInputField
+import com.store_me.storeme.ui.component.DefaultHorizontalDivider
+import com.store_me.storeme.ui.component.ImageDetailDialog
 import com.store_me.storeme.ui.component.ProfileImage
-import com.store_me.storeme.ui.component.StoreMeSnackbar
-import com.store_me.storeme.ui.component.SubTitleSection
+import com.store_me.storeme.ui.component.SimpleTextField
+import com.store_me.storeme.ui.component.SkeletonAsyncImage
+import com.store_me.storeme.ui.component.TextBox
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
+import com.store_me.storeme.ui.theme.ErrorColor
+import com.store_me.storeme.ui.theme.ExpiredColor
+import com.store_me.storeme.ui.theme.FinishedColor
+import com.store_me.storeme.ui.theme.GuideColor
+import com.store_me.storeme.ui.theme.OnboardingSelectedIndicatorColor
 import com.store_me.storeme.ui.theme.OwnerReplyBoxColor
-import com.store_me.storeme.ui.theme.ReviewCountTextColor
-import com.store_me.storeme.ui.theme.ReviewMenuBorderColor
-import com.store_me.storeme.ui.theme.ReviewMenuContentColor
-import com.store_me.storeme.ui.theme.ReviewMenuTitleColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.DateTimeUtils
-import com.store_me.storeme.utils.SizeUtils
+import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
+import com.store_me.storeme.utils.ErrorEventBus
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
+import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
+import com.store_me.storeme.utils.toTimeAgo
 import kotlinx.coroutines.launch
-
-val LocalReviewSettingViewModel = staticCompositionLocalOf<ReviewSettingViewModel> {
-    error("No ReviewSettingViewModel")
-}
 
 @Composable
 fun ReviewSettingScreen(
     navController: NavController,
-    reviewSettingViewModel: ReviewSettingViewModel = viewModel()
+    reviewViewModel: ReviewViewModel
 ) {
+    val storeDataViewModel = LocalStoreDataViewModel.current
+    val loadingViewModel = LocalLoadingViewModel.current
+
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     val focusManager = LocalFocusManager.current
+    val scope = rememberCoroutineScope()
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
 
-    val replyText by reviewSettingViewModel.replyText.collectAsState()
+    val reviewCount by reviewViewModel.reviewCounts.collectAsState()
+    val reviews by reviewViewModel.reviews.collectAsState()
 
     var isWritingReply by remember { mutableStateOf(false) }
 
+    var selectedReview by remember { mutableStateOf<ReviewData?>(null) }
+
     var showWarnDialog by remember { mutableStateOf(false) }
 
-    BackHandler {
+    fun onClose() {
         when {
-            //경고창 보이는 상태
-            showWarnDialog -> { showWarnDialog = false }
-
-            //답글 작성 중 상태
             isWritingReply -> {
-                if(replyText.isNotEmpty())
-                    showWarnDialog = true
-                else {
-                    isWritingReply = false
-                }
+                showWarnDialog = true
             }
-
             else -> {
                 navController.popBackStack()
             }
         }
     }
 
-    CompositionLocalProvider(LocalReviewSettingViewModel provides reviewSettingViewModel) {
-        Scaffold (
-            modifier = Modifier
-                .fillMaxSize()
-                .addFocusCleaner(focusManager)
-                .imePadding(),
-            containerColor = White,
-            topBar = { ReviewSettingTopLayout(navController, scrollBehavior) },
-            snackbarHost = { SnackbarHost(
-                hostState = snackbarHostState,
-                snackbar = { StoreMeSnackbar(snackbarData = it) }
-            ) },
-            content = { innerPadding ->
-                Box(
+    BackHandler {
+        onClose()
+    }
+
+    LaunchedEffect(reviews) {
+        isWritingReply = false
+        selectedReview = null
+    }
+
+    Scaffold (
+        modifier = Modifier
+            .fillMaxSize()
+            .addFocusCleaner(focusManager),
+        containerColor = Color.White,
+        topBar = { TopAppBar(title = {
+            TitleWithDeleteButton(
+                title = "리뷰 관리",
+                isInTopAppBar = true
+            ) {
+                onClose()
+            } },
+            scrollBehavior = scrollBehavior,
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.White,
+                scrolledContainerColor = Color.White
+            )
+        ) },
+        content = { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                LazyColumn(
                     modifier = Modifier
-                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .nestedScroll(scrollBehavior.nestedScrollConnection)
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
                 ) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                            .nestedScroll(scrollBehavior.nestedScrollConnection)
-                            .fillMaxWidth()
-                    ) {
-                        item { Spacer(modifier = Modifier.height(20.dp)) }
+                    item { Spacer(
+                        modifier = Modifier.height(20.dp)
+                    ) }
 
-                        item { TopReviewSection() }
+                    item { StoreReviewCount(
+                        reviewCount = reviewCount
+                    ) }
 
-                        item {
-                            AllReviewSection(navController, snackbarHostState) {
-                                isWritingReply = true
-                            }
-                        }
-                    }
+                    item { Spacer(
+                        modifier = Modifier.height(40.dp)
+                    ) }
 
-                    if (isWritingReply) {
-                        KeyBoardInputField(
-                            text = replyText,
-                            placeholderText = "답글을 입력해 주세요.",
-                            onValueChange = { reviewSettingViewModel.updateReplyText(it) },
-                            onDismiss = {
-                                if(replyText.isNotEmpty()){
-                                    showWarnDialog = true
-                                } else {
-                                    isWritingReply = false
+                    item { StoreReviews(
+                        accountType = AccountType.OWNER,
+                        storeName = storeInfoData!!.storeName,
+                        reviews = reviews,
+                        onClickMenu = {
+                            if(storeDataViewModel.menuCategories.value.any { category ->
+                                    category.menus.any { menu -> menu.name == it }
+                                }) {
+                                navController.navigate(OwnerRoute.MenuSetting(it).fullRoute)
+                            } else {
+                                scope.launch {
+                                    ErrorEventBus.errorFlow.emit("$it 메뉴가 존재하지 않습니다.")
                                 }
+                            }
+                        },
+                        onEditReview = {
+
+                        },
+                        onDeleteReview = {
+                            loadingViewModel.showLoading()
+                            reviewViewModel.deleteReview(it.id)
+                        },
+                        onAddReply = {
+                            if(it.reply != null) {
+                                scope.launch {
+                                    ErrorEventBus.errorFlow.emit("답글이 이미 존재합니다.")
+                                }
+                            } else {
+                                isWritingReply = true
+                                selectedReview = it
+                            }
+                        },
+                        onEditReply = {
+                            isWritingReply = true
+                            selectedReview = it
+                        },
+                        onDeleteReply = {
+                            reviewViewModel.deleteReviewReply(it.id)
+                        },
+                        onReportReview = {
+                            //TODO 신고하기
+                        }
+                    ) }
+                }
+
+                //답글 작성 중
+                if(isWritingReply) {
+                    selectedReview?.let { review ->
+                        WriteReplyBox(
+                            boxScope = this,
+                            selectedReview = review,
+                            storeInfoData = storeInfoData!!,
+                            onPostReply = {
+                                loadingViewModel.showLoading()
+                                reviewViewModel.postReviewReply(reviewId = review.id, text = it)
                             },
-                            onSend = {  }
+                            onPatchReply = {
+                                loadingViewModel.showLoading()
+                                reviewViewModel.patchReviewReply(reviewId = review.id, text = it)
+                            }
                         )
                     }
                 }
+            }
 
-                if(showWarnDialog) {
-                    WarningDialog(
-                        title = "답글 작성을 취소할까요?",
-                        warningContent = "",
-                        content = "취소 시 작성 내용이 모두 사라져요.",
-                        actionText = "확인",
-                        onDismiss = {
-                            showWarnDialog = false
-                        },
-                        onAction = {
-                            showWarnDialog = false
-                            isWritingReply = false
-                            reviewSettingViewModel.clearReplyText()
+            if (showWarnDialog) {
+                WarningDialog(
+                    title = "답글 작성을 취소할까요?",
+                    warningContent = "",
+                    content = "취소 시 작성 내용이 모두 사라져요.",
+                    actionText = "확인",
+                    onDismiss = {
+                        showWarnDialog = false
+                    },
+                    onAction = {
+                        showWarnDialog = false
+                        isWritingReply = false
+                    }
+                )
+            }
+        }
+    )
+}
+
+@Composable
+fun StoreReviewCount(
+    modifier: Modifier = Modifier,
+    reviewCount: List<ReviewCount>
+) {
+    val totalCount by remember(reviewCount) {
+        derivedStateOf { reviewCount.sumOf { it.count } }
+    }
+
+    val sampleReviewCounts = listOf(
+        ReviewCount(emoji = "\uD83D\uDE0D", text = "리뷰 값 1", count = 5),
+        ReviewCount(emoji = "\uD83D\uDE0A", text = "리뷰 값 2", count = 4),
+        ReviewCount(emoji = "\uD83D\uDE2C", text = "리뷰 값 3", count = 3),
+        ReviewCount(emoji = "\uD83D\uDE42", text = "리뷰 값 4", count = 2),
+        ReviewCount(emoji = "\uD83D\uDE33", text = "리뷰 값 5", count = 1)
+    )
+    val sampleRatios = listOf(0.5f, 0.4f, 0.3f, 0.2f, 0.1f)
+
+    val sortedReviewCount by remember(reviewCount) {
+        derivedStateOf {
+            reviewCount
+                .sortedByDescending { it.count }
+                .take(5)
+        }
+    }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "스토어 리뷰 $totalCount",
+            style = storeMeTextStyle(FontWeight.ExtraBold, 4)
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Box(
+            modifier = Modifier
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(
+                        if(totalCount < 10) {
+                            Modifier.blur(16.dp, edgeTreatment = BlurredEdgeTreatment.Unbounded)
+                        } else {
+                            Modifier
                         }
+                    ),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                if(totalCount < 10) {
+                    repeat(5) { index ->
+                        ReviewCountItem(
+                            ratio = sampleRatios[index],
+                            reviewCount = sampleReviewCounts[index]
+                        )
+                    }
+                } else {
+                    sortedReviewCount.forEach {
+                        val ratio by remember(totalCount) { derivedStateOf {
+                            if (totalCount > 0) it.count / totalCount.toFloat() else 0f
+                        } }
+
+                        ReviewCountItem(
+                            ratio = ratio,
+                            reviewCount = it
+                        )
+                    }
+                }
+            }
+
+            if(totalCount < 10) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "등록된 리뷰 10개 이상 부터 \n조회가 가능합니다.",
+                        style = storeMeTextStyle(FontWeight.ExtraBold, 4, color = GuideColor),
+                        modifier = Modifier
+                            .shadow(elevation = 1.dp, shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
+                            .background(color = Color.White, shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
+                            .padding(20.dp)
                     )
                 }
             }
-        )        
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "상위 5개의 항목이 대표 항목으로 노출돼요.",
+            style = storeMeTextStyle(FontWeight.Normal, 0),
+            color = Color.Black
+        )
     }
 }
 
 @Composable
-fun AllReviewSection(navController: NavController, snackbarHostState: SnackbarHostState, onWriteReply: (String) -> Unit) {
-    val reviewSettingViewModel = LocalReviewSettingViewModel.current
-
-    val reviewComment by reviewSettingViewModel.reviewComment.collectAsState()
-
-    val scope = rememberCoroutineScope()
-
-    //답글 수정 종료 경고 dialog 상태
-    var showWarnDialog by remember { mutableStateOf(false) }
-
-    Column(
+fun ReviewCountItem(
+    ratio: Float,
+    reviewCount: ReviewCount
+) {
+    Box(
         modifier = Modifier
-            .padding(horizontal = 20.dp)
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)
+            .shadow(4.dp, shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
+            .background(color = Color.White, shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
+            .clip(shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
     ) {
-        SubTitleSection(text = "전체 후기")
-        
-        Spacer(modifier = Modifier.height(20.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(ratio)
+                .fillMaxHeight()
+                .background(color = OnboardingSelectedIndicatorColor.copy(alpha = 0.3f))
+                .align(Alignment.CenterStart)
+        )
 
-        reviewComment.forEach {
-            //답글 작성 중 상태
-            Column {
-                ReviewItem(
-                    it,
-                    onClickMenu = { menuName ->
-                        val menuExist = false //TODO 메뉴 존재하는지 확인
-                        when (menuExist) {
-                            true -> { navController.navigate(OwnerRoute.MenuSetting(menuName).fullRoute) }
-                            false -> { scope.launch {
-                                snackbarHostState.currentSnackbarData?.dismiss()
-                                snackbarHostState.showSnackbar(
-                                    message = "$menuName 메뉴가 존재하지 않습니다.",
-                                    actionLabel = "확인",
-                                    withDismissAction = true,
-                                    duration = SnackbarDuration.Short)
-                            } }
-                        }
-                    },
-                    onWriteReply = { onWriteReply(it.commentId) }
-                )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = reviewCount.emoji,
+                style = storeMeTextStyle(FontWeight.ExtraBold, 8)
+            )
 
-                Spacer(modifier = Modifier.height(20.dp))
-            }
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = reviewCount.text,
+                style = storeMeTextStyle(FontWeight.Bold, 0),
+                modifier = Modifier
+                    .weight(1f)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = reviewCount.count.toString(),
+                style = storeMeTextStyle(FontWeight.ExtraBold, 2)
+            )
         }
     }
 }
 
+/**
+ * 리뷰 목록 Composable
+ * @param accountType 현재 로그인 계정 타입
+ * @param onClickMenu 메뉴 클릭시 메뉴 이름 반환
+ * @param onEditReview 리뷰 수정 (ONLY CUSTOMER)
+ * @param onDeleteReview 리뷰 삭제 (ONLY CUSTOMER)
+ * @param onEditReply 답글 수정 (ONLY OWNER)
+ * @param onDeleteReply 답글 삭제 (ONLY OWNER)
+ */
 @Composable
-fun ReviewItem(reviewComment: ReviewComment, onClickMenu: (String) -> Unit, onWriteReply: () -> Unit) {
-
-    val density = LocalDensity.current
-
-    val interactionSource = remember { MutableInteractionSource() }
-
-    //comment Text 내용 확장 상태
-    var isTextExpanded by remember { mutableStateOf(false) }
-    //Review 내용 확장 상태
-    var isReviewExpanded by remember { mutableStateOf(false) }
-
-    //보여줄 리뷰 개수
-    val takeValue = if(!isReviewExpanded) 1 else reviewComment.selectedReviews.size
-
-    //Bottom Sheet 상태
-    var showCommentMenu by remember { mutableStateOf(false) }
-    var showReplyMenu by remember { mutableStateOf(false) }
+fun StoreReviews(
+    accountType: AccountType,
+    storeName: String,
+    reviews: List<ReviewData>,
+    onClickMenu: (String) -> Unit,
+    onEditReview: (ReviewData) -> Unit,
+    onDeleteReview: (ReviewData) -> Unit,
+    onAddReply: (ReviewData) -> Unit,
+    onEditReply: (ReviewData) -> Unit,
+    onDeleteReply: (ReviewData) -> Unit,
+    onReportReview: (ReviewData) -> Unit
+) {
+    val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
 
-    Column {
+    var showEditAndDeleteBottomSheetCondition by remember { mutableStateOf(false) }
+    var showAddReplyBottomSheetCondition by remember { mutableStateOf(false) }
+    var selectedReview by remember { mutableStateOf<ReviewData?>(null) }
+
+    Text(
+        text = "전체 후기",
+        style = storeMeTextStyle(FontWeight.ExtraBold, 6),
+        color = Color.Black
+    )
+
+    Spacer(modifier = Modifier.height(20.dp))
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        reviews.forEach { review ->
+            ReviewItem(
+                review = review,
+                storeName = storeName,
+                onClickMenu = {
+                    if(review.purchasedMenus.isNotEmpty()) {
+                        onClickMenu(review.purchasedMenus.first())
+                    }
+                },
+                onClickReviewMenu = {
+                    when(accountType) {
+                        AccountType.CUSTOMER -> {
+                            showEditAndDeleteBottomSheetCondition = true
+                            selectedReview = review
+                        }
+                        AccountType.OWNER -> {
+                            showAddReplyBottomSheetCondition = true
+                            selectedReview = review
+                        }
+                    }
+                },
+                onClickReplyMenu = {
+                    when(accountType) {
+                        AccountType.CUSTOMER -> {  }
+                        AccountType.OWNER -> {
+                            showEditAndDeleteBottomSheetCondition = true
+                            selectedReview = review
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    fun dismissBottomSheet() {
+        scope.launch { sheetState.hide() }.invokeOnCompletion {
+            if(!sheetState.isVisible) {
+                showEditAndDeleteBottomSheetCondition = false
+                showAddReplyBottomSheetCondition = false
+            }
+        }
+    }
+
+    if(showEditAndDeleteBottomSheetCondition) {
+        EditDeleteBottomSheet(
+            sheetState = sheetState,
+            onDismiss = {
+                dismissBottomSheet()
+            },
+            onClickEdit = {
+                when(accountType) {
+                    AccountType.CUSTOMER -> {
+                        selectedReview?.let { onEditReview(it) }
+                    }
+                    AccountType.OWNER -> {
+                        selectedReview?.let { onEditReply(it) }
+                    }
+                }
+
+                dismissBottomSheet()
+            },
+            onClickDelete = {
+                when(accountType) {
+                    AccountType.CUSTOMER -> {
+                        selectedReview?.let { onDeleteReview(it) }
+                        selectedReview = null
+                    }
+                    AccountType.OWNER -> {
+                        selectedReview?.let { onDeleteReply(it) }
+                        selectedReview = null
+                    }
+                }
+
+                dismissBottomSheet()
+            }
+        )
+    }
+
+    if(showAddReplyBottomSheetCondition) {
+        AddReplyBottomSheet(
+            sheetState = sheetState,
+            onDismiss = {
+                dismissBottomSheet()
+            },
+            onClickAddReply = {
+                selectedReview?.let { onAddReply(it) }
+                dismissBottomSheet()
+            },
+            onClickReport = {
+                selectedReview?.let { onReportReview(it) }
+                dismissBottomSheet()
+            }
+        )
+    }
+}
+
+/**
+ * 리뷰 항목 Composable
+ * @param review 리뷰 데이터
+ * @param onClickMenu 메뉴 클릭
+ * @param onClickReviewMenu 리뷰 설정 클릭
+ * @param onClickReplyMenu 리뷰 답글 설정 클릭
+ */
+@Composable
+fun ReviewItem(
+    modifier: Modifier = Modifier,
+    storeName: String,
+    review: ReviewData,
+    onClickMenu: () -> Unit,
+    onClickReviewMenu: () -> Unit,
+    onClickReplyMenu: () -> Unit
+) {
+    //이미지 상세보기
+    var showImageDetailDialog by remember { mutableStateOf(false) }
+    //comment 확장 상태
+    var isCommentExpanded by remember { mutableStateOf(false) }
+    //Reply 확장 상태
+    var isReplyExpanded by remember { mutableStateOf(false) }
+    //Review 내용 확장 상태
+    var isSelectedReviewsExpanded by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = modifier
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        //상단 사용자 정보 및 메뉴
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             ProfileImage(
                 accountType = AccountType.CUSTOMER,
-                url = reviewComment.userData.profileImage,
+                url = review.customerInfoData.profileImage,
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(36.dp)
                     .clip(CircleShape),
             )
 
-            Spacer(modifier = Modifier.width(10.dp))
+            FlowRow (
+                modifier = Modifier
+                    .weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = review.customerInfoData.nickname,
+                    style = storeMeTextStyle(FontWeight.Bold, 0)
+                )
 
+                Text(
+                    text = "•",
+                    style = storeMeTextStyle(FontWeight.Thin, 0)
+                )
+
+                Text(
+                    text = review.createdAt.toTimeAgo(),
+                    style = storeMeTextStyle(FontWeight.Bold, 0)
+                )
+
+                if(review.updatedAt != review.createdAt) {
+                    Text(
+                        text = "수정됨",
+                        style = storeMeTextStyle(FontWeight.Bold, 0)
+                    )
+                }
+            }
+
+            IconButton(
+                onClick = {
+                    onClickReviewMenu()
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_menu),
+                    contentDescription = "메뉴",
+                    modifier = Modifier.size(16.dp),
+                    tint = GuideColor
+                )
+            }
+        }
+
+        //중단 리뷰 내용
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 44.dp),
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
             Column(
                 modifier = Modifier
                     .weight(1f),
-                horizontalAlignment = Alignment.Start
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Text(
-                    text = "${reviewComment.userData.nickName} · ${DateTimeUtils.datetimeAgo(reviewComment.dateTime)}",
-                    style = storeMeTextStyle(FontWeight.Bold, 0)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            Icon(
-                painter = painterResource(id = R.drawable.ic_menu),
-                contentDescription = "메뉴 아이콘",
-                tint = ReviewMenuContentColor,
-                modifier = Modifier
-                    .size(SizeUtils.textSizeToDp(density, 0))
-                    .clickable(
-                        onClick = { showCommentMenu = true },
-                        interactionSource = interactionSource,
-                        indication = ripple(bounded = false),
+                if(review.comment.isNotEmpty()) {
+                    Text(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(
+                                onClick = { isCommentExpanded = !isCommentExpanded },
+                                interactionSource = null,
+                                indication = null
+                            ),
+                        text = review.comment,
+                        style = storeMeTextStyle(FontWeight.Bold, 0),
+                        maxLines = if(isCommentExpanded) Int.MAX_VALUE else 3,
+                        overflow = TextOverflow.Ellipsis
                     )
-            )
-        }
+                }
 
-        //리뷰 comment 내용이 있는 경우
-        if(reviewComment.commentText.isNotEmpty()) {
-            Text(
-                text = reviewComment.commentText,
-                style = storeMeTextStyle(FontWeight.Bold, 0),
-                maxLines = if(isTextExpanded) Int.MAX_VALUE else 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .padding(start = 50.dp, end = SizeUtils.textSizeToDp(density, 0))
-                    .clickable(
-                        onClick = { isTextExpanded = !isTextExpanded },
-                        interactionSource = null,
-                        indication = null
+                ContextualFlowRow (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            onClick = { isSelectedReviewsExpanded = !isSelectedReviewsExpanded },
+                            interactionSource = null,
+                            indication = null
+                        ),
+                    maxLines = if(isSelectedReviewsExpanded) Int.MAX_VALUE else 1,
+                    overflow = ContextualFlowRowOverflow.expandIndicator {
+                        TextBox(
+                            text = "+${totalItemCount - shownItemCount}",
+                            style = storeMeTextStyle(FontWeight.Normal, -2, FinishedColor),
+                            boxColor = SubHighlightColor
+                        )
+                    },
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    itemCount = review.selectedReviews.size
+                ) { index ->
+                    TextBox(
+                        text = review.selectedReviews[index],
+                        style = storeMeTextStyle(FontWeight.Normal, -2, FinishedColor),
+                        boxColor = SubHighlightColor
                     )
-            )
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        //사용자가 선택한 Review 내용
-        FlowRow(
-            modifier = Modifier
-                .padding(start = 50.dp)
-                .clickable(
-                    onClick = { isReviewExpanded = !isReviewExpanded },
-                    indication = null,
-                    interactionSource = null,
-                ),
-            horizontalArrangement = Arrangement.spacedBy(5.dp),
-            verticalArrangement = Arrangement.spacedBy(5.dp)
-        ) {
-            reviewComment.selectedReviews.take(takeValue).forEach {
-                Text(
-                    text = it,
-                    style = storeMeTextStyle(FontWeight.Normal, -2),
-                    modifier = Modifier
-                        .background(
-                            color = SubHighlightColor,
-                            shape = RoundedCornerShape(3.dp)
-                        )
-                        .padding(5.dp)
-                )
+                }
             }
 
-            if(!isReviewExpanded && reviewComment.selectedReviews.size > 1) {
-                val leftCount = reviewComment.selectedReviews.size - 1
-
-                Text(
-                    text = "+$leftCount",
-                    style = storeMeTextStyle(FontWeight.Normal, -2),
+            if(review.images.isNotEmpty()) {
+                SkeletonAsyncImage(
                     modifier = Modifier
-                        .background(
-                            color = SubHighlightColor,
-                            shape = RoundedCornerShape(3.dp)
-                        )
-                        .padding(5.dp)
-                )
+                        .size(100.dp)
+                        .clip(shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)),
+                    imageUrl = review.images.first(),
+                    contentScale = ContentScale.Crop,
+                ) {
+                    showImageDetailDialog = true
+                }
             }
         }
 
-        if(reviewComment.purchasedMenu.isNotEmpty()){
-            val leftMenuCount = reviewComment.purchasedMenu.size - 1
-
-            Spacer(modifier = Modifier.height(10.dp))
+        if(review.purchasedMenus.isNotEmpty()) {
+            val leftMenuCount by remember { mutableStateOf(review.purchasedMenus.size - 1) }
 
             Box(
                 modifier = Modifier
-                    .padding(start = 50.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .border(
-                        color = ReviewMenuBorderColor,
-                        width = 1.dp,
-                        shape = RoundedCornerShape(10.dp)
-                    )
-                    .clickable { onClickMenu(reviewComment.purchasedMenu[0]) },
+                    .fillMaxWidth()
+                    .padding(start = 44.dp)
+                    .border(width = 1.dp, color = ExpiredColor, shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
+                    .clip(shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE))
+                    .clickable { onClickMenu() }
+                    .padding(vertical = 12.dp, horizontal = 8.dp)
             ) {
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .padding(vertical = 12.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Spacer(modifier = Modifier.width(20.dp))
-
                     Text(
                         text = "메뉴",
-                        style = storeMeTextStyle(FontWeight.Bold, -1),
-                        color = ReviewMenuTitleColor
+                        style = storeMeTextStyle(FontWeight.Bold, -1, FinishedColor)
                     )
 
-                    Spacer(modifier = Modifier.width(10.dp))
-
+                    Spacer(modifier = Modifier.width(12.dp))
 
                     Text(
-                        text = reviewComment.purchasedMenu[0] + if(leftMenuCount > 0) " 외 $leftMenuCount" else "",
-                        style = storeMeTextStyle(FontWeight.Bold, -1),
-                        color = ReviewMenuContentColor
+                        text = review.purchasedMenus.first(),
+                        style = storeMeTextStyle(FontWeight.Bold, -1, GuideColor),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
+
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    if(leftMenuCount > 0) {
+                        Text(
+                            text = "외 $leftMenuCount",
+                            style = storeMeTextStyle(FontWeight.Bold, -1, GuideColor)
+                        )
+                    }
 
                     Spacer(modifier = Modifier.weight(1f))
 
                     Icon(
                         painter = painterResource(id = R.drawable.ic_arrow_right),
                         contentDescription = "더보기 아이콘",
-                        modifier = Modifier.size(SizeUtils.textSizeToDp(density, -1)),
-                        tint = ReviewMenuBorderColor
+                        modifier = Modifier.size(12.dp),
+                        tint = ExpiredColor
                     )
-
-                    Spacer(modifier = Modifier.width(20.dp))
                 }
             }
         }
 
-        reviewComment.replies.forEach {
-            val replyInteractionSource = remember { MutableInteractionSource() }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
+        if(review.reply != null) {
             Column(
                 modifier = Modifier
-                    .padding(start = 50.dp)
+                    .padding(start = 44.dp)
                     .background(
                         color = OwnerReplyBoxColor,
-                        shape = RoundedCornerShape(10.dp)
+                        shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)
                     )
+                    .padding(start = 20.dp, bottom = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Column(
+                Row(
                     modifier = Modifier
-                        .padding(15.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
+                    Text(
+                        text = storeName,
+                        style = storeMeTextStyle(FontWeight.Bold, -1),
+                        modifier = Modifier
+                            .weight(1f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+
+                    IconButton(
+                        onClick = {
+                            onClickReplyMenu()
+                        }
                     ) {
-                        Text(
-                            text = it.storeName,
-                            style = storeMeTextStyle(FontWeight.Bold, -1),
-                        )
-
-                        Spacer(modifier = Modifier.weight(1f))
-
                         Icon(
                             painter = painterResource(id = R.drawable.ic_menu),
-                            contentDescription = "메뉴 아이콘",
-                            tint = ReviewMenuContentColor,
+                            contentDescription = "메뉴",
                             modifier = Modifier
-                                .size(SizeUtils.textSizeToDp(density, 0))
-                                .clickable(
-                                    onClick = { showReplyMenu = true },
-                                    interactionSource = replyInteractionSource,
-                                    indication = ripple(bounded = false),
-                                )
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text(
-                        text = it.replyText,
-                        style = storeMeTextStyle(FontWeight.Normal, -2),
-                        modifier = Modifier.padding(end = SizeUtils.textSizeToDp(density, 0))
-                    )
-                }
-
-
-            }
-        }
-
-        if(showCommentMenu) {
-            DefaultBottomSheet(
-                hasDeleteButton = false,
-                onDismiss = { showCommentMenu = false },
-                sheetState = sheetState
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "답글작성",
-                        style = storeMeTextStyle(FontWeight.ExtraBold, 4),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .clickable {
-                                onWriteReply()
-                                showCommentMenu = false
-                            }
-                            .padding(vertical = 20.dp)
-                            .fillMaxWidth()
-                    )
-
-                    Text(
-                        text = "신고하기",
-                        style = storeMeTextStyle(FontWeight.ExtraBold, 4),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .clickable { }
-                            .padding(vertical = 20.dp)
-                            .fillMaxWidth())
-                }
-
-            }
-        }
-
-        if(showReplyMenu) {
-            DefaultBottomSheet(
-                hasDeleteButton = false,
-                onDismiss = { showReplyMenu = false },
-                sheetState = sheetState
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    Text(
-                        text = "수정하기",
-                        style = storeMeTextStyle(FontWeight.ExtraBold, 4),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .clickable { }
-                            .padding(vertical = 20.dp)
-                            .fillMaxWidth()
-                    )
-
-                    Text(
-                        text = "삭제하기",
-                        style = storeMeTextStyle(FontWeight.ExtraBold, 4),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .clickable { }
-                            .padding(vertical = 20.dp)
-                            .fillMaxWidth()
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun TopReviewSection() {
-    val density = LocalDensity.current
-
-    val reviewSettingViewModel = LocalReviewSettingViewModel.current
-
-    val totalCount by reviewSettingViewModel.totalReviews.collectAsState()
-    val storeReviewData by reviewSettingViewModel.storeReviewData.collectAsState()
-
-    var takeValue by remember { mutableStateOf(5) }
-
-    fun showMoreReview(){
-        //보여지는 종류가 더 적다면
-        if(takeValue < storeReviewData.reviewCount.size) {
-            val leftCount = storeReviewData.reviewCount.size - takeValue
-
-            //최대 5개씩 추가로 보여줌
-            takeValue += if(leftCount >= 5) 5 else leftCount
-        }
-    }
-
-    Column(
-        modifier = Modifier.padding(horizontal = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        SubTitleSection(text = "내 가게 후기 $totalCount")
-
-        storeReviewData.reviewCount
-            .sortedByDescending{ it.count }
-            .take(takeValue)
-            .forEach {
-                val ratio = if (totalCount > 0) it.count / totalCount.toFloat() else 0f
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(SizeUtils.textSizeToDp(density, 4, 24))
-                        .background(
-                            color = SubHighlightColor.copy(alpha = 0.4f),
-                            shape = RoundedCornerShape(6.dp)
-                        ),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(ratio)
-                            .fillMaxHeight()
-                            .background(
-                                color = SubHighlightColor,
-                                shape = RoundedCornerShape(6.dp)
-                            )
-                            .align(Alignment.CenterStart)
-                    )
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 20.dp, start = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .weight(1f),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = it.emoji,
-                                style = storeMeTextStyle(FontWeight.Bold, 3),
-                                modifier = Modifier
-                                    .padding(vertical = 10.dp)
-                            )
-
-                            Spacer(modifier = Modifier.width(10.dp))
-
-                            Text(
-                                text = it.text,
-                                style = storeMeTextStyle(FontWeight.Bold, 1),
-                            )
-                        }
-
-                        Text(
-                            text = it.count.toString(),
-                            style = storeMeTextStyle(FontWeight.ExtraBold, 1),
-                            color = ReviewCountTextColor
+                                .size(16.dp),
+                            tint = GuideColor
                         )
                     }
                 }
 
-            }
-
-        if(takeValue < storeReviewData.reviewCount.size) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { showMoreReview() },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_down),
-                    contentDescription = "더보기 아이콘",
+                Text(
+                    text = review.reply.text,
+                    style = storeMeTextStyle(FontWeight.Normal, -2),
+                    maxLines = if(isReplyExpanded) Int.MAX_VALUE else 2,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
-                        .size(18.dp),
-                    tint = ReviewCountTextColor
-                )
-            }
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { takeValue = 5 },
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_up),
-                    contentDescription = "축소 아이콘",
-                    modifier = Modifier
-                        .size(18.dp),
-                    tint = ReviewCountTextColor
+                        .clickable(
+                            onClick = { isReplyExpanded = !isReplyExpanded },
+                            interactionSource = null,
+                            indication = null
+                        )
                 )
             }
         }
     }
-}
 
-@Composable
-fun ReviewSettingTopLayout(navController: NavController, scrollBehavior: TopAppBarScrollBehavior) {
-    TopAppBar(
-        title = {
-            TitleWithDeleteButton(
-                title = "스토어 리뷰",
-                isInTopAppBar = true
-            ) {
-                navController.popBackStack()
-            }
-        },
-        scrollBehavior = scrollBehavior,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = White,
-            scrolledContainerColor = White
+    if(showImageDetailDialog) {
+        ImageDetailDialog(
+            images = review.images,
+            onDismiss = { showImageDetailDialog = false }
         )
-    )
+    }
+}
+
+@Composable
+fun EditDeleteBottomSheet(
+    sheetState: SheetState,
+    onDismiss: () -> Unit,
+    onClickEdit: () -> Unit,
+    onClickDelete: () -> Unit
+) {
+    DefaultBottomSheet(
+        hasDeleteButton = false,
+        onDismiss = onDismiss,
+        sheetState = sheetState
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            TextButton(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onClick = onClickEdit,
+            ) {
+                Text(
+                    text = "수정하기",
+                    style = storeMeTextStyle(FontWeight.Bold, 2, color = Color.Black),
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            TextButton(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onClick = onClickDelete
+            ) {
+                Text(
+                    text = "삭제하기",
+                    style = storeMeTextStyle(FontWeight.Bold, 2),
+                    color = ErrorColor,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+/**
+ * OWNER 가 Review Menu 선택 시 나오는 BottomSheet
+ */
+@Composable
+fun AddReplyBottomSheet(
+    sheetState: SheetState,
+    onDismiss: () -> Unit,
+    onClickAddReply: () -> Unit,
+    onClickReport: () -> Unit
+) {
+    DefaultBottomSheet(
+        hasDeleteButton = false,
+        onDismiss = onDismiss,
+        sheetState = sheetState
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            TextButton(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onClick = onClickAddReply,
+            ) {
+                Text(
+                    text = "답글추가",
+                    style = storeMeTextStyle(FontWeight.Bold, 2, color = Color.Black),
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            TextButton(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                onClick = onClickReport
+            ) {
+                Text(
+                    text = "신고하기",
+                    style = storeMeTextStyle(FontWeight.Bold, 2, color = Color.Black),
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun WriteReplyBox(
+    boxScope: BoxScope,
+    selectedReview: ReviewData,
+    storeInfoData: StoreInfoData,
+    onPostReply: (String) -> Unit,
+    onPatchReply: (String) -> Unit
+) {
+    var replyText by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        if(selectedReview.reply != null) {
+            replyText = selectedReview.reply.text
+        }
+    }
+
+    with(boxScope) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(Color.Black.copy(alpha = 0.3f))
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            event.changes.forEach { it.consume() }
+                        }
+                    }
+                }
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .background(color = Color.White)
+                .padding(top = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            ReviewItem(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp),
+                storeName = storeInfoData.storeName,
+                review = selectedReview,
+                onClickMenu = {  },
+                onClickReviewMenu = {  },
+                onClickReplyMenu = {  }
+            )
+
+            DefaultHorizontalDivider()
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.White),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SimpleTextField(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 20.dp, end = 8.dp, top = 12.dp, bottom = 12.dp)
+                        .heightIn(max = 320.dp),
+                    value = replyText,
+                    onValueChange = { replyText = it },
+                    placeholderText = "답글을 입력해주세요.",
+                    textStyle = storeMeTextStyle(FontWeight.Normal, 0),
+                    singleLine = false,
+                    minLines = 1
+                )
+
+                IconButton(
+                    onClick = {
+                        if(selectedReview.reply == null) {
+                            //추가
+                            onPostReply(replyText)
+                        } else {
+                            //수정
+                            onPatchReply(replyText)
+                        }
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_send),
+                        contentDescription = "답글 작성",
+                        modifier = Modifier.size(16.dp),
+                        tint = GuideColor
+                    )
+                }
+            }
+        }
+    }
 }
