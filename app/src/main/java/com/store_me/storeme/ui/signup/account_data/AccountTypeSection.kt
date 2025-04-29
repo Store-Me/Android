@@ -23,7 +23,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.signup.SignupTitleText
 import com.store_me.storeme.ui.theme.SignupTextBoxColor
