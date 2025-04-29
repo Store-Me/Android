@@ -80,7 +80,6 @@ import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.DateTimeUtils
-import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
 @Composable
@@ -93,7 +92,6 @@ fun BusinessHoursSettingScreen(
     val focusManager = LocalFocusManager.current
 
     val storeDataViewModel = LocalStoreDataViewModel.current
-    val auth = LocalAuth.current
 
     val originalBusinessHours by storeDataViewModel.businessHours.collectAsState()
 
