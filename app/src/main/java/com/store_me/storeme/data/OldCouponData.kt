@@ -12,15 +12,6 @@ data class CouponWithStoreInfoData(
     val content: String
 )
 
-data class UserReceivedCouponData(
-    val userData: UserData
-)
-
-data class UserUsedCouponData(
-    val userData: UserData,
-    val usedAt: String,
-)
-
 
 /**
  * 쿠폰의 상세 정보

@@ -1,7 +1,7 @@
 package com.store_me.storeme.ui.store_setting.coupon.setting
 
 import androidx.lifecycle.ViewModel
-import com.store_me.storeme.data.coupon.CouponData
+import com.store_me.storeme.data.store.coupon.CouponData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

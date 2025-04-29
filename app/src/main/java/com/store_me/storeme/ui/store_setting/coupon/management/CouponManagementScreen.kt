@@ -69,7 +69,6 @@ import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.SimpleNumberOutLinedTextField
 import com.store_me.storeme.ui.component.SimpleOutLinedTextField
 import com.store_me.storeme.ui.component.StoreMeSelectDateCalendar
-import com.store_me.storeme.ui.component.SubTitleSection
 import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.component.WarningDialog
@@ -365,8 +364,10 @@ fun ValueSection(
             }
 
             CouponType.Other -> {
-                SubTitleSection(text = "헤택 내용")
-
+                Text(
+                    text = "혜택 내용",
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 6)
+                )
                 Spacer(modifier = Modifier.height(12.dp))
 
                 SimpleOutLinedTextField(

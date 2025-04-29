@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalPagerApi::class, ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class, ExperimentalFoundationApi::class)
 
 package com.store_me.storeme.ui.store_setting.coupon.detail
 
@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -38,11 +39,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.R
-import com.store_me.storeme.data.coupon.CouponData
-import com.store_me.storeme.data.coupon.CouponStats
+import com.store_me.storeme.data.store.coupon.CouponData
+import com.store_me.storeme.data.store.coupon.CouponStats
 import com.store_me.storeme.data.enums.tab_menu.CouponDetailTabMenu
 import com.store_me.storeme.ui.component.SkeletonBox
 import com.store_me.storeme.ui.component.StoreMeTabContent
@@ -64,7 +63,7 @@ fun OwnerCouponDetailScreen(
     ownerCouponDetailViewModel: OwnerCouponDetailViewModel,
     onEdit: (String) -> Unit
 ){
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = { CouponDetailTabMenu.entries.size })
     val tabTitles = remember { CouponDetailTabMenu.getDisplayNames() }
 
     val coupon by ownerCouponDetailViewModel.coupon.collectAsState()
@@ -104,7 +103,7 @@ fun OwnerCouponDetailScreen(
             stickyHeader { StoreMeTabRow(pagerState = pagerState, tabTitles = tabTitles) }
 
             item {
-                StoreMeTabContent(tabTitles = tabTitles, pagerState = pagerState) {
+                StoreMeTabContent(pagerState = pagerState) {
                     when(it) {
                         CouponDetailTabMenu.Received.ordinal -> {
                             //TODO 수령 사용자

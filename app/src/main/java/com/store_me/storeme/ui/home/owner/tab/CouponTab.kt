@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.store_me.storeme.data.coupon.CouponData
+import com.store_me.storeme.data.store.coupon.CouponData
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponInfo
 import com.store_me.storeme.utils.DateTimeUtils

@@ -3,7 +3,7 @@ package com.store_me.storeme.ui.store_setting.coupon.management
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.store_me.storeme.data.coupon.CouponData
+import com.store_me.storeme.data.store.coupon.CouponData
 import com.store_me.storeme.data.enums.coupon.CouponDiscountType
 import com.store_me.storeme.data.enums.coupon.CouponType
 import com.store_me.storeme.data.request.store.CouponRequest

@@ -1,4 +1,4 @@
-package com.store_me.storeme.data
+package com.store_me.storeme.data.store.coupon
 
 data class StampCouponData(
     val name: String,

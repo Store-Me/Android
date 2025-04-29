@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.store_me.storeme.R
-import com.store_me.storeme.data.StampCouponData
+import com.store_me.storeme.data.store.coupon.StampCouponData
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.SimpleNumberOutLinedTextField

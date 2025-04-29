@@ -2,8 +2,8 @@ package com.store_me.storeme.ui.store_setting.coupon.detail
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.store_me.storeme.data.coupon.CouponData
-import com.store_me.storeme.data.coupon.CouponStats
+import com.store_me.storeme.data.store.coupon.CouponData
+import com.store_me.storeme.data.store.coupon.CouponStats
 import com.store_me.storeme.data.response.CouponUsersResponse
 import com.store_me.storeme.repository.storeme.CouponRepository
 import com.store_me.storeme.utils.ErrorEventBus

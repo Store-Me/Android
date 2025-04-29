@@ -36,8 +36,8 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.store_me.storeme.data.coupon.CouponData
-import com.store_me.storeme.data.StampCouponData
+import com.store_me.storeme.data.store.coupon.CouponData
+import com.store_me.storeme.data.store.coupon.StampCouponData
 import com.store_me.storeme.data.enums.post.PostType
 import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultBottomSheet
@@ -172,7 +172,8 @@ fun CouponTitleItem(
         value = title,
         onValueChange = { onTitleChange(it) },
         placeholderText = "쿠폰 홍보 게시글의 제목을 입력하세요.",
-        singleLine = true
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth()
     )
 }
 
@@ -318,6 +319,7 @@ fun CouponDescriptionItem(
         onValueChange = { onDescriptionChange(it) },
         textStyle = storeMeTextStyle(FontWeight.Bold, 0),
         placeholderText = "쿠폰에 대한 설명을 입력해주세요.",
-        singleLine = false
+        singleLine = false,
+        modifier = Modifier.fillMaxWidth()
     )
 }

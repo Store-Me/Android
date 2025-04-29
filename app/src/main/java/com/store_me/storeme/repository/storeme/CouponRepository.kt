@@ -1,8 +1,8 @@
 package com.store_me.storeme.repository.storeme
 
 import com.store_me.auth.Auth
-import com.store_me.storeme.data.coupon.CouponData
-import com.store_me.storeme.data.coupon.CouponStats
+import com.store_me.storeme.data.store.coupon.CouponData
+import com.store_me.storeme.data.store.coupon.CouponStats
 import com.store_me.storeme.data.request.store.CouponRequest
 import com.store_me.storeme.data.response.AcceptCouponResponse
 import com.store_me.storeme.data.response.CouponUsersResponse

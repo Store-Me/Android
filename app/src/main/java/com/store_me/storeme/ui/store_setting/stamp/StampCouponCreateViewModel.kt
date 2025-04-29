@@ -2,7 +2,7 @@ package com.store_me.storeme.ui.store_setting.stamp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.store_me.storeme.data.StampCouponData
+import com.store_me.storeme.data.store.coupon.StampCouponData
 import com.store_me.storeme.data.request.store.PostStampCouponRequest
 import com.store_me.storeme.repository.storeme.OwnerRepository
 import com.store_me.storeme.utils.DateTimeUtils

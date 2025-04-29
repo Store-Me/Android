@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalPagerApi::class, ExperimentalSharedTransitionApi::class)
+@file:OptIn(ExperimentalSharedTransitionApi::class)
 
 package com.store_me.storeme.ui.store_setting.coupon.setting
 
@@ -31,6 +31,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -57,12 +60,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
-import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.R
-import com.store_me.storeme.data.coupon.CouponData
+import com.store_me.storeme.data.store.coupon.CouponData
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.coupon.CouponTarget
 import com.store_me.storeme.data.enums.coupon.CouponType
@@ -107,7 +106,7 @@ fun CouponSettingScreen(
     val storeDataViewModel = LocalStoreDataViewModel.current
     val originalCoupons by storeDataViewModel.coupons.collectAsState()
 
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = { CouponTabMenu.entries.size })
 
     var showDetail by remember { mutableStateOf(false) }
     val selectedCoupon by ownerCouponDetailViewModel.coupon.collectAsState()
@@ -196,7 +195,7 @@ fun CouponManagementScreen(
     ) {
         StoreMeTabRow(pagerState = pagerState, tabTitles = tabTitles)
 
-        StoreMeTabContent(pagerState = pagerState, tabTitles = tabTitles) {
+        StoreMeTabContent(pagerState = pagerState) {
             when(it){
                 CouponTabMenu.Create.ordinal -> {
                     //쿠폰 만들기 화면
@@ -240,7 +239,7 @@ fun CreateCouponSection(onCreate: (CouponType) -> Unit) {
 @Composable
 fun GuideImageSection() {
     val guideImageList = listOf(R.drawable.coupon_guid_image_1, R.drawable.coupon_guid_image_2, R.drawable.coupon_guid_image_3, R.drawable.coupon_guid_image_4)
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = { guideImageList.size })
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -249,7 +248,6 @@ fun GuideImageSection() {
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         HorizontalPager(
-            count = guideImageList.size,
             state = pagerState,
             contentPadding = PaddingValues(horizontal = 40.dp),
             modifier = Modifier
@@ -257,7 +255,7 @@ fun GuideImageSection() {
                 .aspectRatio(1.1f),
             verticalAlignment = Alignment.CenterVertically
         ) { page ->
-            val pageOffset = (pagerState.currentPage - page) + pagerState.currentPageOffset
+            val pageOffset = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
             val alpha = 1f - pageOffset.absoluteValue.coerceIn(0f, 0.3f)
             val scale = 1f - (0.1f * pageOffset.absoluteValue.coerceIn(0f, 1f))
 
