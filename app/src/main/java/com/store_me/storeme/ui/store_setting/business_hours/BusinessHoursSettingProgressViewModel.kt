@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 class BusinessHoursSettingProgressViewModel: ViewModel() {
     //진행 상태
-    private val _progressState = MutableStateFlow<BusinessHoursSettingProgress>(BusinessHoursSettingProgress.HOLIDAY)
+    private val _progressState = MutableStateFlow(BusinessHoursSettingProgress.HOLIDAY)
     val progressState: StateFlow<BusinessHoursSettingProgress> = _progressState
 
     fun moveToNextProgress() {
