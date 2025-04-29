@@ -16,7 +16,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.store_me.storeme.data.review.ReviewData
+import com.store_me.storeme.data.store.review.ReviewData
 import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.store_setting.review.ReviewViewModel
 import com.store_me.storeme.ui.store_setting.review.StoreReviewCount

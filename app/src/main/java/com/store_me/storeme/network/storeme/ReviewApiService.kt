@@ -5,7 +5,7 @@ import com.store_me.storeme.data.request.store.ReviewRequest
 import com.store_me.storeme.data.response.ReviewCountResponse
 import com.store_me.storeme.data.response.ReviewTextResponse
 import com.store_me.storeme.data.response.StoreMeResponse
-import com.store_me.storeme.data.review.ReviewData
+import com.store_me.storeme.data.store.review.ReviewData
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

@@ -6,9 +6,9 @@ import com.store_me.storeme.data.enums.StoreCategory
 import com.store_me.storeme.data.request.store.ReplyRequest
 import com.store_me.storeme.data.request.store.ReviewRequest
 import com.store_me.storeme.data.response.ReviewCountResponse
-import com.store_me.storeme.data.review.ReviewCount
-import com.store_me.storeme.data.review.ReviewData
-import com.store_me.storeme.data.review.ReviewTextData
+import com.store_me.storeme.data.store.review.ReviewCount
+import com.store_me.storeme.data.store.review.ReviewData
+import com.store_me.storeme.data.store.review.ReviewTextData
 import com.store_me.storeme.repository.storeme.ReviewRepository
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.SuccessEventBus

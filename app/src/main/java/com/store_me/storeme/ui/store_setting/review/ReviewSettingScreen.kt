@@ -66,8 +66,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
-import com.store_me.storeme.data.review.ReviewCount
-import com.store_me.storeme.data.review.ReviewData
+import com.store_me.storeme.data.store.review.ReviewCount
+import com.store_me.storeme.data.store.review.ReviewData
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider

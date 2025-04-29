@@ -2,7 +2,6 @@ package com.store_me.storeme.ui.signup.onboarding
 
 import androidx.lifecycle.ViewModel
 import com.store_me.storeme.R
-import com.store_me.storeme.data.Auth
 import com.store_me.storeme.data.enums.AccountType
 
 class SignupOnboardingViewModel: ViewModel() {

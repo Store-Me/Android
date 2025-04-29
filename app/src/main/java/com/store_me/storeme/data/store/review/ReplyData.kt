@@ -1,4 +1,4 @@
-package com.store_me.storeme.data.review
+package com.store_me.storeme.data.store.review
 
 import com.google.firebase.Timestamp
 
