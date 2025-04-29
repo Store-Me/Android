@@ -5,10 +5,10 @@ import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.naver.maps.geometry.LatLng
-import com.store_me.storeme.data.LabelData
-import com.store_me.storeme.data.coupon.CouponData
-import com.store_me.storeme.data.MenuCategoryData
-import com.store_me.storeme.data.StampCouponData
+import com.store_me.storeme.data.store.post.LabelData
+import com.store_me.storeme.data.store.coupon.CouponData
+import com.store_me.storeme.data.store.menu.MenuCategoryData
+import com.store_me.storeme.data.store.coupon.StampCouponData
 import com.store_me.storeme.data.request.store.PatchBusinessHoursRequest
 import com.store_me.storeme.data.request.store.PatchStoreFeaturedImagesRequest
 import com.store_me.storeme.data.request.store.PatchLinksRequest
