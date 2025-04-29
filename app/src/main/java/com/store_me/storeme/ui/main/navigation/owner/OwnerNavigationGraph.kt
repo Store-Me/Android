@@ -31,6 +31,7 @@ import com.store_me.storeme.ui.store_setting.notice.NoticeSettingScreen
 import com.store_me.storeme.ui.store_setting.phone_number.PhoneNumberSettingScreen
 import com.store_me.storeme.ui.store_setting.profile.ProfileSettingScreen
 import com.store_me.storeme.ui.store_setting.review.ReviewSettingScreen
+import com.store_me.storeme.ui.store_setting.review.ReviewViewModel
 import com.store_me.storeme.ui.store_setting.stamp.StampCouponCreateScreen
 import com.store_me.storeme.ui.store_setting.stamp.StampCouponSettingScreen
 import com.store_me.storeme.ui.store_setting.story.management.StoryManagementScreen
@@ -42,7 +43,8 @@ fun OwnerHomeNavigationGraph(navController: NavHostController) {
     NavHost(navController, startDestination = OwnerRoute.Home.fullRoute){
         composable(OwnerRoute.Home.fullRoute) { backStackEntry ->
             val sharedStoryViewModel: StoryViewModel = hiltViewModel(backStackEntry)
-            OwnerHomeScreen(navController, sharedStoryViewModel)
+            val sharedReviewViewModel: ReviewViewModel = hiltViewModel(backStackEntry)
+            OwnerHomeScreen(navController, sharedStoryViewModel, sharedReviewViewModel)
         }
 
         //기본 프로필
@@ -199,7 +201,15 @@ fun OwnerHomeNavigationGraph(navController: NavHostController) {
             StoryManagementScreen(navController, storyViewModel = sharedStoryViewModel)
         }
 
-        composable(OwnerRoute.ReviewSetting.fullRoute) { ReviewSettingScreen(navController) }
+        composable(OwnerRoute.ReviewSetting.fullRoute) {
+            val currentEntry by navController.currentBackStackEntryAsState()
+            val homeEntry = remember(currentEntry) {
+                navController.getBackStackEntry(OwnerRoute.Home.fullRoute)
+            }
+            val sharedReviewViewModel: ReviewViewModel = hiltViewModel(homeEntry)
+
+            ReviewSettingScreen(navController, sharedReviewViewModel)
+        }
         composable(OwnerRoute.NewsSetting.fullRoute) { NewsSettingScreen(navController) }
     }
 }
