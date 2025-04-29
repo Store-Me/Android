@@ -76,9 +76,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Unspecified
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -86,6 +86,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.Dp
@@ -95,6 +96,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -120,8 +122,8 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.ui.theme.storeMeTypography
 import com.store_me.storeme.utils.SampleDataUtils
 import com.store_me.storeme.utils.SizeUtils
-import com.store_me.storeme.utils.SocialMediaAccountUtils
 import com.store_me.storeme.data.enums.StoreCategory
+import com.store_me.storeme.utils.TEXT_ROUNDING_VALUE
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -238,15 +240,6 @@ fun SaveAndAddButton(
             onAddClick()
         }
     }
-}
-
-@Composable
-fun SubTitleSection(text: String, modifier:Modifier = Modifier) {
-    Text(
-        text = text,
-        style = storeMeTextStyle(FontWeight.ExtraBold, 6),
-        modifier = modifier
-    )
 }
 
 /**
@@ -746,13 +739,18 @@ fun LinkSection(
 /**
  * 링크 아이콘 Composable
  * @param url 링크 주소
- * @param size 크기
  */
 @Composable
 fun LinkIconWithShadow(modifier: Modifier = Modifier, url: String) {
     val context = LocalContext.current
 
-    val type = SocialMediaAccountUtils.getType(url)
+    val linkIconResource = when {
+        url.startsWith("https://www.instagram.com") -> { R.drawable.ic_instagram }
+        url.startsWith("https://naver.me") -> { R.drawable.ic_naver }
+        url.startsWith("https://band.us") -> { R.drawable.ic_band }
+        url.startsWith("https://youtube.com") -> { R.drawable.ic_youtube }
+        else -> { R.drawable.ic_web }
+    }
 
     Box(
         modifier = modifier
@@ -776,7 +774,7 @@ fun LinkIconWithShadow(modifier: Modifier = Modifier, url: String) {
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            imageVector = ImageVector.vectorResource(id = SocialMediaAccountUtils.getIcon(type)),
+            imageVector = ImageVector.vectorResource(id = linkIconResource),
             contentDescription = "프로필 링크",
             modifier = Modifier
                 .clip(shape = RoundedCornerShape(12)),
@@ -788,16 +786,21 @@ fun LinkIconWithShadow(modifier: Modifier = Modifier, url: String) {
 /**
  * 링크 아이콘 Composable
  * @param url 링크 주소
- * @param size 크기
  */
 @Composable
 fun LinkIcon(modifier: Modifier = Modifier, url: String) {
     val context = LocalContext.current
 
-    val type = SocialMediaAccountUtils.getType(url)
+    val linkIconResource = when {
+        url.startsWith("https://www.instagram.com") -> { R.drawable.ic_instagram }
+        url.startsWith("https://naver.me") -> { R.drawable.ic_naver }
+        url.startsWith("https://band.us") -> { R.drawable.ic_band }
+        url.startsWith("https://youtube.com") -> { R.drawable.ic_youtube }
+        else -> { R.drawable.ic_web }
+    }
 
     Icon(
-        imageVector = ImageVector.vectorResource(id = SocialMediaAccountUtils.getIcon(type)),
+        imageVector = ImageVector.vectorResource(id = linkIconResource),
         contentDescription = "프로필 링크",
         modifier = modifier
             .clickable(
@@ -902,7 +905,6 @@ fun AlphaBackgroundText(text: String, diffValue: Int, modifier: Modifier = Modif
 /**
  * Skeleton Box
  * @param isLoading 로딩 여부
- * @param shape 내부 Skelenton Box의 Shape
  * @param content Composable
  */
 @Composable
@@ -946,6 +948,54 @@ fun SkeletonBox(
     }
 }
 
+/**
+ * Text Box
+ */
+@Composable
+fun TextBox(
+    text: String,
+    style: TextStyle,
+    boxColor: Color,
+) {
+    Text(
+        text = text,
+        style = style,
+        modifier = Modifier
+            .background(
+                color = boxColor,
+                shape = RoundedCornerShape(TEXT_ROUNDING_VALUE)
+            )
+            .padding(4.dp)
+    )
+}
+
+/**
+ * Skeleton 이 적용된 AsyncImage Composable
+ */
+@Composable
+fun SkeletonAsyncImage(
+    modifier: Modifier = Modifier,
+    imageUrl: String,
+    contentScale: ContentScale,
+    onClick: () -> Unit
+) {
+    SubcomposeAsyncImage(
+        model = imageUrl,
+        contentDescription = null,
+        contentScale = contentScale,
+        modifier = modifier
+            .clickable { onClick() },
+        loading = {
+            SkeletonBox(
+                isLoading = true,
+                modifier = Modifier
+                    .fillMaxSize(),
+            ) {
+
+            }
+        }
+    )
+}
 
 /**
  * 기본 HorizontalDivider
