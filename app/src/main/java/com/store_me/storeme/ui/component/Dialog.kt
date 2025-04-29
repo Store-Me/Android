@@ -3,45 +3,48 @@
 package com.store_me.storeme.ui.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.store_me.storeme.R
-import com.store_me.storeme.data.enums.AccountType
-import com.store_me.storeme.data.response.MyStoresResponse
+import com.store_me.storeme.data.store.FeaturedImageData
+import com.store_me.storeme.data.store.StoreInfoData
+import com.store_me.storeme.ui.home.owner.tab.ImageDescription
+import com.store_me.storeme.ui.home.owner.tab.ZoomableAsyncImage
 import com.store_me.storeme.ui.theme.CancelButtonColor
-import com.store_me.storeme.ui.theme.HighlightColor
-import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.SizeUtils
+import kotlinx.coroutines.launch
 
 @Composable
 fun WarningDialog(
@@ -170,6 +173,75 @@ fun BackWarningDialog(
                 LargeButton(text = "확인", containerColor = Color.Black, contentColor = Color.White, modifier = Modifier.weight(1f)) {
                     onAction()
                 }
+            }
+        }
+    }
+}
+
+/**
+ * 이미지 상세 Dialog
+ */
+@Composable
+fun ImageDetailDialog(
+    properties: DialogProperties = DialogProperties(
+        usePlatformDefaultWidth = false
+    ),
+    images: List<String>,
+    onDismiss: () -> Unit
+) {
+    val scope = rememberCoroutineScope()
+
+    val pagerState = rememberPagerState(
+        pageCount = { images.size }
+    )
+
+    var scale by remember { mutableStateOf(1f) }
+
+    Dialog(
+        onDismissRequest = { onDismiss() },
+        properties = properties
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color.Black),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            TitleWithDeleteButton(
+                title = "",
+                tint = Color.White
+            ) {
+                onDismiss()
+            }
+
+            HorizontalPager (
+                state = pagerState,
+                modifier = Modifier.weight(1f),
+                userScrollEnabled = scale == 1.0f //확대 시, scroll 불가
+            ) { page ->
+
+                ZoomableAsyncImage(
+                    imageUrl = images[page],
+                    width = null,
+                    height = null,
+                    onScaleChanged = {
+                        scale = it
+                    },
+                    onSwipe = {
+                        scope.launch {
+                            pagerState.scrollBy(-it)
+
+                            val targetPage = if (pagerState.currentPageOffsetFraction > 0.5f) {
+                                pagerState.currentPage + 1
+                            } else {
+                                pagerState.currentPage
+                            }
+
+                            pagerState.animateScrollToPage(targetPage)
+                        }
+                    }
+                )
             }
         }
     }
