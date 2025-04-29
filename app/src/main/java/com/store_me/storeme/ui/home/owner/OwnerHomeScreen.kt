@@ -17,6 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -39,9 +42,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
-import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.tab_menu.StoreTabMenu
@@ -59,6 +59,7 @@ import com.store_me.storeme.ui.home.owner.tab.StampTab
 import com.store_me.storeme.ui.home.owner.tab.StoreHomeTab
 import com.store_me.storeme.ui.home.owner.tab.StoryTab
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
+import com.store_me.storeme.ui.store_setting.review.ReviewViewModel
 import com.store_me.storeme.ui.store_setting.story.setting.StoryViewModel
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.TEXT_ROUNDING_VALUE
@@ -70,7 +71,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun OwnerHomeScreen(
     navController: NavController,
-    storyViewModel: StoryViewModel
+    storyViewModel: StoryViewModel,
+    reviewViewModel: ReviewViewModel
 ) {
     val auth = LocalAuth.current
     val storeDataViewModel = LocalStoreDataViewModel.current
@@ -80,7 +82,7 @@ fun OwnerHomeScreen(
     val scope = rememberCoroutineScope()
 
     val listState = rememberLazyListState()
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = { StoreTabMenu.entries.size })
 
     val tabTitles = enumValues<StoreTabMenu>().map { it.displayName }
 
@@ -110,6 +112,10 @@ fun OwnerHomeScreen(
 
             //첫 페이지 스토리 조회
             storyViewModel.getStoreStories()
+
+            //리뷰 조회
+            reviewViewModel.getReviewCount()
+            reviewViewModel.getReviews()
         }
     }
 
@@ -234,7 +240,8 @@ fun OwnerHomeScreen(
                                 OwnerHomeContentSection(
                                     navController = navController,
                                     pagerState = pagerState,
-                                    storyViewModel = storyViewModel
+                                    storyViewModel = storyViewModel,
+                                    reviewViewModel = reviewViewModel
                                 )
                             }
                         }
@@ -261,8 +268,10 @@ fun OwnerHomeScreen(
 fun OwnerHomeContentSection(
     navController: NavController,
     pagerState: PagerState,
-    storyViewModel: StoryViewModel
+    storyViewModel: StoryViewModel,
+    reviewViewModel: ReviewViewModel
 ) {
+    val scope = rememberCoroutineScope()
     val storeDataViewModel = LocalStoreDataViewModel.current
 
     val menuCategories by storeDataViewModel.menuCategories.collectAsState()
@@ -272,11 +281,11 @@ fun OwnerHomeContentSection(
     val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
 
     HorizontalPager(
-        count = StoreTabMenu.entries.size,
         state = pagerState,
         modifier = Modifier
             .fillMaxSize(),
-        verticalAlignment = Alignment.Top
+        verticalAlignment = Alignment.Top,
+        userScrollEnabled = false
     ) { page ->
 
         Column(
@@ -287,7 +296,8 @@ fun OwnerHomeContentSection(
                 StoreTabMenu.HOME -> {
                     StoreHomeTab(
                         navController,
-                        storyViewModel = storyViewModel
+                        storyViewModel = storyViewModel,
+                        reviewViewModel = reviewViewModel
                     )
                 }
                 StoreTabMenu.POST -> {
@@ -317,11 +327,21 @@ fun OwnerHomeContentSection(
                     )
                 }
                 StoreTabMenu.REVIEW -> {
-                    ReviewTab()
+                    ReviewTab(
+                        reviewViewModel = reviewViewModel,
+                        onClickMenu = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(StoreTabMenu.MENU.ordinal)
+                            }
+                        },
+                        onBack = {
+                            scope.launch {
+                                pagerState.animateScrollToPage(StoreTabMenu.HOME.ordinal)
+                            }
+                        }
+                    )
                 }
             }
-
-            Spacer(modifier = Modifier.height(200.dp))
         }
     }
 }
