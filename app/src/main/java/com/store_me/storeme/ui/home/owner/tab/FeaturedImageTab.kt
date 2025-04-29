@@ -139,7 +139,7 @@ fun FeaturedImageTab(
         }
 
         showDetailFeaturedImage?.let {
-            ImageDetailDialog(
+            FeaturedImageDetailDialog(
                 storeInfoData = storeInfoData,
                 featuredImages = featuredImages,
                 featuredImageData = it,
@@ -152,7 +152,7 @@ fun FeaturedImageTab(
 }
 
 @Composable
-fun ImageDetailDialog(
+fun FeaturedImageDetailDialog(
     properties: DialogProperties = DialogProperties(
         usePlatformDefaultWidth = false
     ),
@@ -232,8 +232,8 @@ fun ImageDetailDialog(
 @Composable
 fun ZoomableAsyncImage(
     imageUrl: String,
-    width: Int,
-    height: Int,
+    width: Int? = null,
+    height: Int? = null,
     onScaleChanged: (Float) -> Unit,
     onSwipe: (Float) -> Unit
 ) {
@@ -288,7 +288,10 @@ fun ZoomableAsyncImage(
             contentScale = ContentScale.Fit,
             modifier = Modifier
                 .weight(1f)
-                .aspectRatio(ratio = width.toFloat() / height)
+                .then(
+                    if(width != null && height != null) Modifier.aspectRatio(ratio = width.toFloat() / height)
+                    else Modifier
+                )
                 .onSizeChanged { containerSize = it }
                 .transformable(state)
                 .graphicsLayer(
@@ -301,7 +304,11 @@ fun ZoomableAsyncImage(
                 SkeletonBox(
                     isLoading = true,
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .then(
+                            if(width == null || height == null) Modifier.aspectRatio(ratio = 1f)
+                            else Modifier
+                        ),
                 ) {
 
                 }
