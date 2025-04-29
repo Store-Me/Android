@@ -8,6 +8,7 @@ import com.store_me.storeme.network.storeme.CouponApiService
 import com.store_me.storeme.network.storeme.CustomerApiService
 import com.store_me.storeme.network.storeme.OwnerApiService
 import com.store_me.storeme.network.storeme.PostApiService
+import com.store_me.storeme.network.storeme.ReviewApiService
 import com.store_me.storeme.network.storeme.StoryApiService
 import com.store_me.storeme.network.storeme.UserApiService
 import com.store_me.storeme.utils.preference.TokenPreferencesHelper
@@ -186,5 +187,13 @@ object StoreMeModule {
         @Named("AuthorizedRetrofit") retrofit: Retrofit
     ): StoryApiService {
         return retrofit.create(StoryApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun ReviewApiService(
+        @Named("AuthorizedRetrofit") retrofit: Retrofit
+    ): ReviewApiService {
+        return retrofit.create(ReviewApiService::class.java)
     }
 }
