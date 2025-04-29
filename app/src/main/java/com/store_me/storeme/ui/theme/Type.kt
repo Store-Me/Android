@@ -1,6 +1,7 @@
 package com.store_me.storeme.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -24,7 +25,7 @@ const val defaultFontSize = 12
  * @param fontWeight FontWeight
  * @param changeSizeValue fontSize 변화량
  */
-fun storeMeTextStyle(fontWeight: FontWeight, changeSizeValue: Int): TextStyle {
+fun storeMeTextStyle(fontWeight: FontWeight, changeSizeValue: Int, color: Color = Color.Unspecified): TextStyle {
     val fontSize = defaultFontSize + changeSizeValue
 
     return TextStyle(
@@ -32,7 +33,8 @@ fun storeMeTextStyle(fontWeight: FontWeight, changeSizeValue: Int): TextStyle {
         fontFamily = appFontFamily,
         fontSize = fontSize.sp,
         letterSpacing = 0.7.sp,
-        lineHeight = (fontSize * 1.4f).sp
+        lineHeight = (fontSize * 1.4f).sp,
+        color = color
     )
 }
 
