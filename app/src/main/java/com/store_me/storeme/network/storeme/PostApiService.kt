@@ -1,6 +1,6 @@
 package com.store_me.storeme.network.storeme
 
-import com.store_me.storeme.data.LabelData
+import com.store_me.storeme.data.store.post.LabelData
 import com.store_me.storeme.data.request.store.CreateCouponPostRequest
 import com.store_me.storeme.data.request.store.CreatePostRequest
 import com.store_me.storeme.data.request.store.CreateSurveyPostRequest

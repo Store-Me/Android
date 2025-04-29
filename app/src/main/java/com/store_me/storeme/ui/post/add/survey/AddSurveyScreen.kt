@@ -222,7 +222,8 @@ fun SurveyTitleItem(
         value = title,
         onValueChange = { onTitleChange(it) },
         placeholderText = "설문의 제목을 입력하세요.",
-        singleLine = true
+        singleLine = true,
+        modifier = Modifier.fillMaxWidth()
     )
 }
 
@@ -239,7 +240,8 @@ fun SurveyDescriptionItem(
         onValueChange = { onDescriptionChange(it) },
         textStyle = storeMeTextStyle(FontWeight.Bold, 0),
         placeholderText = "설문에 대한 간략한 설명을 입력해주세요.",
-        singleLine = false
+        singleLine = false,
+        modifier = Modifier.fillMaxWidth()
     )
 }
 
@@ -282,6 +284,7 @@ fun SurveyQuestionItem(
                     onValueChange = { onTitleChange(it) },
                     placeholderText = "질문을 입력해주세요.",
                     singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 

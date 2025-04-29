@@ -2,7 +2,7 @@ package com.store_me.storeme.ui.post.add.normal
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.store_me.storeme.data.LabelData
+import com.store_me.storeme.data.store.post.LabelData
 import com.store_me.storeme.repository.storeme.PostRepository
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.exception.ApiException

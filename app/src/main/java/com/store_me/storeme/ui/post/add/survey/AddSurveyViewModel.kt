@@ -3,10 +3,8 @@ package com.store_me.storeme.ui.post.add.survey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.store_me.storeme.data.Question
-import com.store_me.storeme.data.SurveyData
 import com.store_me.storeme.data.TimeData
 import com.store_me.storeme.data.request.store.CreateSurveyPostRequest
-import com.store_me.storeme.data.request.store.CreateVotePostRequest
 import com.store_me.storeme.repository.storeme.PostRepository
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.ErrorEventBus
@@ -35,7 +33,7 @@ class AddSurveyViewModel @Inject constructor(
     private val _startLocalDate = MutableStateFlow<LocalDate?>(null)
     val startLocalDate: StateFlow<LocalDate?> = _startLocalDate
 
-    private val _startTime = MutableStateFlow<TimeData>(TimeData(9, 0))
+    private val _startTime = MutableStateFlow(TimeData(9, 0))
     val startTime: StateFlow<TimeData> = _startTime
 
     private val _endLocalDate = MutableStateFlow<LocalDate?>(null)

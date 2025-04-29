@@ -89,7 +89,7 @@ import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditor
 import com.mohamedrejeb.richeditor.ui.material3.RichTextEditorDefaults
 import com.store_me.storeme.R
-import com.store_me.storeme.data.LabelData
+import com.store_me.storeme.data.store.post.LabelData
 import com.store_me.storeme.data.PostContentBlock
 import com.store_me.storeme.data.enums.ToolbarItems
 import com.store_me.storeme.data.enums.post.PostType

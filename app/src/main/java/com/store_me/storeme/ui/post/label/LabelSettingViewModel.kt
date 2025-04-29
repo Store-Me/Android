@@ -2,7 +2,7 @@ package com.store_me.storeme.ui.post.label
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.store_me.storeme.data.LabelData
+import com.store_me.storeme.data.store.post.LabelData
 import com.store_me.storeme.data.request.store.PatchLabelData
 import com.store_me.storeme.data.request.store.PatchLabelRequest
 import com.store_me.storeme.repository.storeme.PostRepository

@@ -203,7 +203,8 @@ fun EditVoteItem(
             value = title,
             onValueChange = { onTitleChange(it) },
             placeholderText = "투표의 제목을 입력해주세요.",
-            singleLine = true
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(4.dp))

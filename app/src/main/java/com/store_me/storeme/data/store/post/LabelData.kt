@@ -1,4 +1,4 @@
-package com.store_me.storeme.data
+package com.store_me.storeme.data.store.post
 
 data class LabelData(
     val labelId: String,
