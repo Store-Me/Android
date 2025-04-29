@@ -38,9 +38,9 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import com.store_me.storeme.R
-import com.store_me.storeme.data.coupon.CouponData
-import com.store_me.storeme.data.MenuCategoryData
-import com.store_me.storeme.data.MenuData
+import com.store_me.storeme.data.store.coupon.CouponData
+import com.store_me.storeme.data.store.menu.MenuCategoryData
+import com.store_me.storeme.data.store.menu.MenuData
 import com.store_me.storeme.data.enums.StoreHomeItem
 import com.store_me.storeme.data.enums.menu.MenuTag
 import com.store_me.storeme.data.store.FeaturedImageData
@@ -48,6 +48,8 @@ import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.SkeletonBox
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponInfo
+import com.store_me.storeme.ui.store_setting.review.ReviewViewModel
+import com.store_me.storeme.ui.store_setting.review.StoreReviewCount
 import com.store_me.storeme.ui.store_setting.story.setting.StoryDetailDialog
 import com.store_me.storeme.ui.store_setting.story.setting.StoryThumbnailItem
 import com.store_me.storeme.ui.store_setting.story.setting.StoryViewModel
@@ -71,7 +73,8 @@ import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewMod
 @Composable
 fun StoreHomeTab(
     navController: NavController,
-    storyViewModel: StoryViewModel
+    storyViewModel: StoryViewModel,
+    reviewViewModel: ReviewViewModel
 ) {
     Column {
         StoreHomeItem.entries
@@ -80,7 +83,8 @@ fun StoreHomeTab(
 
                 StoreHomeItemSection(
                     storeHomeItem = item,
-                    storyViewModel = storyViewModel
+                    storyViewModel = storyViewModel,
+                    reviewViewModel = reviewViewModel
                 ) {
                     navController.navigate(item.route.fullRoute)
                 }
@@ -92,6 +96,7 @@ fun StoreHomeTab(
 fun StoreHomeItemSection(
     storeHomeItem: StoreHomeItem,
     storyViewModel: StoryViewModel,
+    reviewViewModel: ReviewViewModel,
     onClick: (StoreHomeItem) -> Unit
 ) {
     val storeDataViewModel = LocalStoreDataViewModel.current
@@ -102,19 +107,24 @@ fun StoreHomeItemSection(
     val coupons by storeDataViewModel.coupons.collectAsState()
     val stampCoupon by storeDataViewModel.stampCoupon.collectAsState()
 
+    //리뷰 관련
+    val reviewCount by reviewViewModel.reviewCounts.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
         Spacer(modifier = Modifier.height(12.dp))
 
-        Text(
-            text = storeHomeItem.displayName,
-            style = storeMeTextStyle(FontWeight.ExtraBold, 4),
-            color = Color.Black,
-            modifier = Modifier
-                .padding(horizontal = 20.dp)
-        )
+        if(storeHomeItem != StoreHomeItem.REVIEW) {
+            Text(
+                text = storeHomeItem.displayName,
+                style = storeMeTextStyle(FontWeight.ExtraBold, 4),
+                color = Color.Black,
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+            )
+        }
 
         when(storeHomeItem) {
             StoreHomeItem.NOTICE -> NoticeSection(notice)
@@ -123,6 +133,12 @@ fun StoreHomeItemSection(
             StoreHomeItem.COUPON -> CouponPreview(coupons)
             StoreHomeItem.STAMP_COUPON -> StampTab(stampCoupon)
             StoreHomeItem.STORY -> RecentStory(storyViewModel)
+            StoreHomeItem.REVIEW -> { StoreReviewCount(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 12.dp),
+                reviewCount = reviewCount
+            ) }
             else -> {
 
             }
@@ -224,7 +240,7 @@ fun FeaturedImagePreview(
     }
 
     showDetailFeaturedImage?.let {
-        ImageDetailDialog(
+        FeaturedImageDetailDialog(
             storeInfoData = storeInfoData!!,
             featuredImages = featuredImages,
             featuredImageData = it,
