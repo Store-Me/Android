@@ -183,12 +183,6 @@ val RecommendTextColor = Color(0xFFE59F11)
 /**
  * Review Color
  */
-val ReviewCountTextColor = Color(0xFF898C93)
-
-val ReviewMenuBorderColor = Color(0xFFD9D9D9)
-val ReviewMenuTitleColor = Color(0xFF545A68)
-val ReviewMenuContentColor = Color(0xFF898C93)
-
 val OwnerReplyBoxColor = Color(0xFFFEF7FF)
 
 /**
@@ -236,6 +230,20 @@ val CouponQuantityIconColor = Color(0xFF00CD55)
 val CouponQuantityBoxColor = Color(0xFFCCFFD6)
 
 /**
+ * Post Backgrounds
+ */
+val PostBackgroundColor0 = Color(0xFFF9F6FE)
+val PostBackgroundColor1 = Color(0xFFFEF4E3)
+val PostBackgroundColor2 = Color(0xFFF7FCEC)
+val PostBackgroundColor3 = Color(0xFFFEFCEA)
+val PostBackgroundColor4 = Color(0xFFF9F0F0)
+val PostBackgroundColor5 = Color(0xFFF9F6FE)
+val PostBackgroundColor6 = Color(0xFFFEF4E3)
+val PostBackgroundColor7 = Color(0xFFF7FCEC)
+val PostBackgroundColor8 = Color(0xFFFEFCEA)
+val PostBackgroundColor9 = Color(0xFFF9F0F0)
+
+/**
  * Default Color
  */
 val DisabledColor = Color(0xFFAAADB4)
@@ -256,3 +264,5 @@ val ErrorColor = Color(0xFFFE4343)
 val ExpiredColor = Color(0xFFD9D9D9)
 
 val LightBlack = Color(0xFF191919)
+
+val LightGray = Color(0xFFF2F2F2)
