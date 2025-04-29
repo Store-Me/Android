@@ -10,7 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.store_me.storeme.data.StampCouponData
+import com.store_me.storeme.data.store.coupon.StampCouponData
 import com.store_me.storeme.ui.store_setting.stamp.RewardItem
 import com.store_me.storeme.ui.store_setting.stamp.StampCouponItem
 import com.store_me.storeme.ui.theme.GuideColor
