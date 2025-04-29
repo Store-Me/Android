@@ -1,4 +1,4 @@
-package com.store_me.storeme.data
+package com.store_me.storeme.data.store.story
 
 import com.google.firebase.Timestamp
 

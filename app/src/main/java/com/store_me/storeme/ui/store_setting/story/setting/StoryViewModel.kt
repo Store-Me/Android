@@ -3,7 +3,7 @@ package com.store_me.storeme.ui.store_setting.story.setting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
-import com.store_me.storeme.data.StoryData
+import com.store_me.storeme.data.store.story.StoryData
 import com.store_me.storeme.repository.storeme.StoryRepository
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.SuccessEventBus

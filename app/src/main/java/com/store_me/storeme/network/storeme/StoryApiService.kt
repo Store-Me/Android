@@ -1,7 +1,7 @@
 package com.store_me.storeme.network.storeme
 
 import com.google.firebase.Timestamp
-import com.store_me.storeme.data.StoryData
+import com.store_me.storeme.data.store.story.StoryData
 import com.store_me.storeme.data.request.store.PostStoryRequest
 import com.store_me.storeme.data.response.PagingResponse
 import com.store_me.storeme.data.response.StoreMeResponse

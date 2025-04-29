@@ -60,7 +60,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import coil.compose.SubcomposeAsyncImage
 import com.store_me.storeme.R
-import com.store_me.storeme.data.StoryData
+import com.store_me.storeme.data.store.story.StoryData
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.ui.component.ProfileImage

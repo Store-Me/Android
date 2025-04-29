@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.store_me.storeme.data.StoryData
+import com.store_me.storeme.data.store.story.StoryData
 import com.store_me.storeme.data.request.store.PostStoryRequest
 import com.store_me.storeme.data.response.PagingResponse
 import com.store_me.storeme.repository.storeme.ImageRepository

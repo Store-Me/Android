@@ -187,7 +187,8 @@ fun StoryManagementScreen(
                             placeholderText = "스토리에 대한 간략한 설명을 입력해주세요.",
                             singleLine = false,
                             textStyle = storeMeTextStyle(FontWeight.Bold, -1),
-                            minLines = 2
+                            minLines = 2,
+                            modifier = Modifier.fillMaxWidth()
                         )
 
                         DefaultHorizontalDivider()
