@@ -1,8 +1,8 @@
 package com.store_me.storeme.ui.store_setting.menu.category
 
 import androidx.lifecycle.ViewModel
-import com.store_me.storeme.data.MenuCategoryData
-import com.store_me.storeme.data.MenuData
+import com.store_me.storeme.data.store.menu.MenuCategoryData
+import com.store_me.storeme.data.store.menu.MenuData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

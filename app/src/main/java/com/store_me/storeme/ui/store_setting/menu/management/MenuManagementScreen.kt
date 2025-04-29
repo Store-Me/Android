@@ -55,8 +55,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.store_me.storeme.R
-import com.store_me.storeme.data.MenuCategoryData
-import com.store_me.storeme.data.MenuData
+import com.store_me.storeme.data.store.menu.MenuCategoryData
+import com.store_me.storeme.data.store.menu.MenuData
 import com.store_me.storeme.data.enums.menu.MenuPriceType
 import com.store_me.storeme.data.enums.menu.MenuTag
 import com.store_me.storeme.ui.component.BackWarningDialog

@@ -45,7 +45,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.store_me.storeme.data.MenuCategoryData
+import com.store_me.storeme.data.store.menu.MenuCategoryData
 import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultButton

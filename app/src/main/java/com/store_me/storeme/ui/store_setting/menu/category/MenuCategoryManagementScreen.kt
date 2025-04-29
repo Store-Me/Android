@@ -2,7 +2,6 @@
 
 package com.store_me.storeme.ui.store_setting.menu.category
 
-import android.widget.Space
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,8 +32,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.store_me.storeme.data.MenuCategoryData
-import com.store_me.storeme.data.MenuData
+import com.store_me.storeme.data.store.menu.MenuCategoryData
+import com.store_me.storeme.data.store.menu.MenuData
 import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultCheckButton

@@ -3,7 +3,7 @@ package com.store_me.storeme.ui.store_setting.menu.management
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.store_me.storeme.data.MenuData
+import com.store_me.storeme.data.store.menu.MenuData
 import com.store_me.storeme.data.enums.menu.MenuPriceType
 import com.store_me.storeme.repository.storeme.ImageRepository
 import com.store_me.storeme.utils.DEFAULT_MENU_CATEGORY_NAME

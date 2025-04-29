@@ -1,12 +1,11 @@
 package com.store_me.storeme.ui.store_setting.menu
 
 import androidx.lifecycle.ViewModel
-import com.store_me.storeme.data.MenuCategoryData
-import com.store_me.storeme.data.MenuData
+import com.store_me.storeme.data.store.menu.MenuCategoryData
+import com.store_me.storeme.data.store.menu.MenuData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel

@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.store_me.storeme.data.MenuCategoryData
+import com.store_me.storeme.data.store.menu.MenuCategoryData
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 
