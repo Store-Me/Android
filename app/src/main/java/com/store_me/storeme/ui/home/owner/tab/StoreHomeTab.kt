@@ -38,16 +38,20 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import com.store_me.storeme.R
-import com.store_me.storeme.data.store.coupon.CouponData
-import com.store_me.storeme.data.store.menu.MenuCategoryData
-import com.store_me.storeme.data.store.menu.MenuData
+import com.store_me.storeme.data.PostContentType
 import com.store_me.storeme.data.enums.StoreHomeItem
 import com.store_me.storeme.data.enums.menu.MenuTag
 import com.store_me.storeme.data.store.FeaturedImageData
+import com.store_me.storeme.data.store.StoreInfoData
+import com.store_me.storeme.data.store.coupon.CouponData
+import com.store_me.storeme.data.store.menu.MenuCategoryData
+import com.store_me.storeme.data.store.menu.MenuData
+import com.store_me.storeme.data.store.post.NormalPostData
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.SkeletonBox
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponInfo
+import com.store_me.storeme.ui.store_setting.post.PostViewModel
 import com.store_me.storeme.ui.store_setting.review.ReviewViewModel
 import com.store_me.storeme.ui.store_setting.review.StoreReviewCount
 import com.store_me.storeme.ui.store_setting.story.setting.StoryDetailDialog
@@ -74,7 +78,8 @@ import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewMod
 fun StoreHomeTab(
     navController: NavController,
     storyViewModel: StoryViewModel,
-    reviewViewModel: ReviewViewModel
+    reviewViewModel: ReviewViewModel,
+    postViewModel: PostViewModel
 ) {
     Column {
         StoreHomeItem.entries
@@ -84,7 +89,8 @@ fun StoreHomeTab(
                 StoreHomeItemSection(
                     storeHomeItem = item,
                     storyViewModel = storyViewModel,
-                    reviewViewModel = reviewViewModel
+                    reviewViewModel = reviewViewModel,
+                    postViewModel = postViewModel
                 ) {
                     navController.navigate(item.route.fullRoute)
                 }
@@ -97,6 +103,7 @@ fun StoreHomeItemSection(
     storeHomeItem: StoreHomeItem,
     storyViewModel: StoryViewModel,
     reviewViewModel: ReviewViewModel,
+    postViewModel: PostViewModel,
     onClick: (StoreHomeItem) -> Unit
 ) {
     val storeDataViewModel = LocalStoreDataViewModel.current
@@ -107,8 +114,12 @@ fun StoreHomeItemSection(
     val coupons by storeDataViewModel.coupons.collectAsState()
     val stampCoupon by storeDataViewModel.stampCoupon.collectAsState()
 
-    //리뷰 관련
+    //리뷰
     val reviewCount by reviewViewModel.reviewCounts.collectAsState()
+
+    //게시글
+    val normalPosts by postViewModel.normalPostByLabel.collectAsState()
+
 
     Column(
         modifier = Modifier
@@ -139,9 +150,7 @@ fun StoreHomeItemSection(
                     .padding(bottom = 12.dp),
                 reviewCount = reviewCount
             ) }
-            else -> {
-
-            }
+            StoreHomeItem.POST -> RecentPost(normalPosts[null] ?: emptyList())
         }
 
         DefaultButton(
@@ -524,5 +533,51 @@ fun RecentStory(
                 storyViewModel.updateStoryLike(it)
             }
         )
+    }
+}
+
+/**
+ * 최근 게시글을 최대 2개까지 보여주는 Composable
+ */
+@Composable
+fun RecentPost(
+    normalPosts: List<NormalPostData>
+) {
+    val storeDataViewModel = LocalStoreDataViewModel.current
+    val recentNormalPosts = remember(normalPosts) {
+        normalPosts
+            .take(2)
+    }
+
+    if(recentNormalPosts.isEmpty()) {
+        NoneContentText(text = stringResource(R.string.owner_home_post_none))
+    } else {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            recentNormalPosts.forEach {
+
+            }
+        }
+    }
+}
+
+@Composable
+fun NormalPostPreviewItem(
+    storeInfoData: StoreInfoData,
+    normalPost: NormalPostData
+) {
+    val hasImage = normalPost.content.any { it.type == PostContentType.IMAGE.name }
+
+    when(hasImage) {
+        true -> {
+            //Has Image
+        }
+        false -> {
+            //No Image
+        }
     }
 }

@@ -547,7 +547,7 @@ class StoreDataViewModel @Inject constructor(
             val response = postRepository.getLabels()
 
             response.onSuccess {
-                updateLabels(it)
+                updateLabels(it.sortedBy { label -> label.order })
             }.onFailure {
                 if (it is ApiException) {
                     ErrorEventBus.errorFlow.emit(it.message)

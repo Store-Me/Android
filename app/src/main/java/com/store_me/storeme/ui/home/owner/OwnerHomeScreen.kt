@@ -59,6 +59,7 @@ import com.store_me.storeme.ui.home.owner.tab.StampTab
 import com.store_me.storeme.ui.home.owner.tab.StoreHomeTab
 import com.store_me.storeme.ui.home.owner.tab.StoryTab
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
+import com.store_me.storeme.ui.store_setting.post.PostViewModel
 import com.store_me.storeme.ui.store_setting.review.ReviewViewModel
 import com.store_me.storeme.ui.store_setting.story.setting.StoryViewModel
 import com.store_me.storeme.utils.ErrorEventBus
@@ -72,7 +73,8 @@ import kotlinx.coroutines.launch
 fun OwnerHomeScreen(
     navController: NavController,
     storyViewModel: StoryViewModel,
-    reviewViewModel: ReviewViewModel
+    reviewViewModel: ReviewViewModel,
+    postViewModel: PostViewModel
 ) {
     val auth = LocalAuth.current
     val storeDataViewModel = LocalStoreDataViewModel.current
@@ -108,7 +110,10 @@ fun OwnerHomeScreen(
             storeDataViewModel.getStoreMenus()
             storeDataViewModel.getStoreCoupons()
             storeDataViewModel.getStampCoupon()
+
+            //게시글 조회
             storeDataViewModel.getLabels()
+            postViewModel.getNormalPost(null)   //전체 게시글 조회
 
             //첫 페이지 스토리 조회
             storyViewModel.getStoreStories()
@@ -241,7 +246,8 @@ fun OwnerHomeScreen(
                                     navController = navController,
                                     pagerState = pagerState,
                                     storyViewModel = storyViewModel,
-                                    reviewViewModel = reviewViewModel
+                                    reviewViewModel = reviewViewModel,
+                                    postViewModel = postViewModel
                                 )
                             }
                         }
@@ -269,7 +275,8 @@ fun OwnerHomeContentSection(
     navController: NavController,
     pagerState: PagerState,
     storyViewModel: StoryViewModel,
-    reviewViewModel: ReviewViewModel
+    reviewViewModel: ReviewViewModel,
+    postViewModel: PostViewModel
 ) {
     val scope = rememberCoroutineScope()
     val storeDataViewModel = LocalStoreDataViewModel.current
@@ -279,6 +286,8 @@ fun OwnerHomeContentSection(
     val stampCoupon by storeDataViewModel.stampCoupon.collectAsState()
     val coupons by storeDataViewModel.coupons.collectAsState()
     val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
+
+    val labels by storeDataViewModel.labels.collectAsState()
 
     HorizontalPager(
         state = pagerState,
@@ -297,11 +306,15 @@ fun OwnerHomeContentSection(
                     StoreHomeTab(
                         navController,
                         storyViewModel = storyViewModel,
-                        reviewViewModel = reviewViewModel
+                        reviewViewModel = reviewViewModel,
+                        postViewModel = postViewModel
                     )
                 }
                 StoreTabMenu.POST -> {
-                    PostTab()
+                    PostTab(
+                        labels = labels,
+                        postViewModel = postViewModel
+                    )
                 }
                 StoreTabMenu.MENU -> {
                     MenuTab(menuCategories = menuCategories)

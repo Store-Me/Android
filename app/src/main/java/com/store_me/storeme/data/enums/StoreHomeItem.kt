@@ -34,8 +34,8 @@ enum class StoreHomeItem(
         displayName = "리뷰",
         route = OwnerRoute.ReviewSetting
     ),
-    NEWS(
+    POST(
         displayName = "소식",
-        route = OwnerRoute.NewsSetting
+        route = OwnerRoute.PostSetting
     )
 }

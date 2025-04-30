@@ -29,6 +29,7 @@ import com.store_me.storeme.ui.store_setting.menu.category.MenuCategorySettingVi
 import com.store_me.storeme.ui.store_setting.menu.management.MenuManagementScreen
 import com.store_me.storeme.ui.store_setting.notice.NoticeSettingScreen
 import com.store_me.storeme.ui.store_setting.phone_number.PhoneNumberSettingScreen
+import com.store_me.storeme.ui.store_setting.post.PostViewModel
 import com.store_me.storeme.ui.store_setting.profile.ProfileSettingScreen
 import com.store_me.storeme.ui.store_setting.review.ReviewSettingScreen
 import com.store_me.storeme.ui.store_setting.review.ReviewViewModel
@@ -44,7 +45,14 @@ fun OwnerHomeNavigationGraph(navController: NavHostController) {
         composable(OwnerRoute.Home.fullRoute) { backStackEntry ->
             val sharedStoryViewModel: StoryViewModel = hiltViewModel(backStackEntry)
             val sharedReviewViewModel: ReviewViewModel = hiltViewModel(backStackEntry)
-            OwnerHomeScreen(navController, sharedStoryViewModel, sharedReviewViewModel)
+            val sharedPostViewModel: PostViewModel = hiltViewModel(backStackEntry)
+
+            OwnerHomeScreen(
+                navController = navController,
+                storyViewModel = sharedStoryViewModel,
+                reviewViewModel = sharedReviewViewModel,
+                postViewModel = sharedPostViewModel
+            )
         }
 
         //기본 프로필
@@ -210,7 +218,7 @@ fun OwnerHomeNavigationGraph(navController: NavHostController) {
 
             ReviewSettingScreen(navController, sharedReviewViewModel)
         }
-        composable(OwnerRoute.NewsSetting.fullRoute) { NewsSettingScreen(navController) }
+        composable(OwnerRoute.PostSetting.fullRoute) { NewsSettingScreen(navController) }
     }
 }
 

@@ -1,12 +1,14 @@
 package com.store_me.storeme.network.storeme
 
-import com.store_me.storeme.data.store.post.LabelData
+import com.store_me.storeme.data.enums.post.PostType
 import com.store_me.storeme.data.request.store.CreateCouponPostRequest
 import com.store_me.storeme.data.request.store.CreatePostRequest
 import com.store_me.storeme.data.request.store.CreateSurveyPostRequest
 import com.store_me.storeme.data.request.store.CreateVotePostRequest
 import com.store_me.storeme.data.request.store.PatchLabelRequest
+import com.store_me.storeme.data.response.NormalPostListResponse
 import com.store_me.storeme.data.response.StoreMeResponse
+import com.store_me.storeme.data.store.post.LabelData
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -67,4 +69,48 @@ interface PostApiService {
         @Path("storeId") storeId: String,
         @Body createCouponPostRequest: CreateCouponPostRequest
     ): Response<StoreMeResponse<Unit>>
+
+    /**
+     * 전체 Normal 게시글 조회
+     */
+    @GET("post/store/{storeId}/posts")
+    suspend fun getNormalPost(
+        @Path("storeId") storeId: String,
+    ): Response<NormalPostListResponse>
+
+    /**
+     * 특정 Label 게시글 조회
+     */
+    @GET("post/store/{storeId}/posts/{labelId}")
+    suspend fun getNormalPostByLabelId(
+        @Path("storeId") storeId: String,
+        @Path("labelId") labelId: String
+    ): Response<NormalPostListResponse>
+
+    /**
+     * 투표 게시글 조회
+     */
+    @GET("post/store/{storeId}/posts/{labelId}")
+    suspend fun getVotePost(
+        @Path("storeId") storeId: String,
+        @Path("labelId") labelId: String = PostType.VOTE.name
+    )
+
+    /**
+     * 설문 게시글 조회
+     */
+    @GET("post/store/{storeId}/posts/{labelId}")
+    suspend fun getSurveyPost(
+        @Path("storeId") storeId: String,
+        @Path("labelId") labelId: String = PostType.SURVEY.name
+    )
+
+    /**
+     * 쿠폰 홍보 게시글 조회
+     */
+    @GET("post/store/{storeId}/posts/{labelId}")
+    suspend fun getCouponPost(
+        @Path("storeId") storeId: String,
+        @Path("labelId") labelId: String = PostType.COUPON.name
+    )
 }
