@@ -56,7 +56,7 @@ sealed class OwnerRoute(
 
 
     data object ReviewSetting: OwnerRoute("reviewSetting", parent = Home)
-    data object NewsSetting: OwnerRoute("newsSetting", parent = Home)
+    data object PostSetting: OwnerRoute("newsSetting", parent = Home)
 
 
     data object LabelSetting: OwnerRoute("labelSetting", parent = Add)
