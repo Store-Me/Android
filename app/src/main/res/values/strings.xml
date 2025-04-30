@@ -23,7 +23,7 @@
     <string name="owner_home_menu_none">가게의 서비스나 메뉴 가격을 등록해 보세요.</string>
     <string name="owner_home_story_none">가게와 관련된 짧은 영상을 올려 보세요.</string>
     <string name="owner_home_review_none">아직 가게 후기가 없어요.</string>
-    <string name="owner_home_news_none">가게의 소식을 작성하여 홍보를 진행하세요.</string>
+    <string name="owner_home_post_none">가게의 소식을 작성하여 홍보를 진행하세요.</string>
 
     <!--StoreTab None Text-->
     <string name="store_home_featured_images_none">업체에서 등록한 이미지가 없습니다.</string>
