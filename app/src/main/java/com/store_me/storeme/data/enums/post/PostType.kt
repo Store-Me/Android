@@ -5,7 +5,6 @@ package com.store_me.storeme.data.enums.post
  * 게시글 Type 정보
  * @property NORMAL 일반 게시글
  * @property COUPON 쿠폰 홍보 게시글
- * @property EVENT 이벤트 게시글
  * @property SURVEY 투표, 설문 게시글
  * @property NOTICE 공지 게시글
  * @property STORY 스토어 스토리 게시글
