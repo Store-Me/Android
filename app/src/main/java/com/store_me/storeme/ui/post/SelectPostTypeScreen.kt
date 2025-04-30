@@ -49,39 +49,32 @@ import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 
-val LocalSelectPostTypeViewModel = staticCompositionLocalOf<SelectPostTypeViewModel> {
-    error("No AddPostViewModel provided")
-}
-
 @Composable
 fun SelectPostTypeScreen(
-    navController: NavController,
-    selectPostTypeViewModel: SelectPostTypeViewModel = viewModel()
+    navController: NavController
 ) {
     val context = LocalContext.current
 
-    CompositionLocalProvider(LocalSelectPostTypeViewModel provides selectPostTypeViewModel) {
-        Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            containerColor = Color.White,
-            content = { innerPadding ->
-                Column(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize()
-                ) {
-                    SelectPostTypeSection(
-                        onLabelSetting = {
-                            navController.navigate(OwnerRoute.LabelSetting.fullRoute)
-                        }
-                    ) {
-                        navigateToAddPostActivity(context = context, postType = it)
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize(),
+        containerColor = Color.White,
+        content = { innerPadding ->
+            Column(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            ) {
+                SelectPostTypeSection(
+                    onLabelSetting = {
+                        navController.navigate(OwnerRoute.LabelSetting.fullRoute)
                     }
+                ) {
+                    navigateToAddPostActivity(context = context, postType = it)
                 }
             }
-        )
-    }
+        }
+    )
 }
 
 fun navigateToAddPostActivity(context: Context, postType: PostType) {
