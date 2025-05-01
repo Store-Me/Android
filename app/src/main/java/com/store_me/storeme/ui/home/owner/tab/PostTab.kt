@@ -17,7 +17,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,9 +36,6 @@ fun PostTab(
 ) {
     var selectedLabel by remember { mutableStateOf<LabelData?>(null) }
 
-    LaunchedEffect(selectedLabel) {
-        postViewModel.getNormalPost(selectedLabel)
-    }
 
     Column(
         modifier = Modifier

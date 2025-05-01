@@ -997,6 +997,29 @@ fun SkeletonAsyncImage(
     )
 }
 
+@Composable
+fun SkeletonAsyncImage(
+    modifier: Modifier = Modifier,
+    imageUrl: String,
+    contentScale: ContentScale
+) {
+    SubcomposeAsyncImage(
+        model = imageUrl,
+        contentDescription = null,
+        contentScale = contentScale,
+        modifier = modifier,
+        loading = {
+            SkeletonBox(
+                isLoading = true,
+                modifier = Modifier
+                    .fillMaxSize(),
+            ) {
+
+            }
+        }
+    )
+}
+
 /**
  * 기본 HorizontalDivider
  */

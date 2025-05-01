@@ -73,7 +73,7 @@ interface PostApiService {
     /**
      * 전체 Normal 게시글 조회
      */
-    @GET("post/store/{storeId}/posts")
+    @GET("posts/store/{storeId}/posts")
     suspend fun getNormalPost(
         @Path("storeId") storeId: String,
     ): Response<NormalPostListResponse>
@@ -81,7 +81,7 @@ interface PostApiService {
     /**
      * 특정 Label 게시글 조회
      */
-    @GET("post/store/{storeId}/posts/{labelId}")
+    @GET("posts/store/{storeId}/posts/{labelId}")
     suspend fun getNormalPostByLabelId(
         @Path("storeId") storeId: String,
         @Path("labelId") labelId: String
@@ -90,7 +90,7 @@ interface PostApiService {
     /**
      * 투표 게시글 조회
      */
-    @GET("post/store/{storeId}/posts/{labelId}")
+    @GET("posts/store/{storeId}/posts/{labelId}")
     suspend fun getVotePost(
         @Path("storeId") storeId: String,
         @Path("labelId") labelId: String = PostType.VOTE.name
@@ -99,7 +99,7 @@ interface PostApiService {
     /**
      * 설문 게시글 조회
      */
-    @GET("post/store/{storeId}/posts/{labelId}")
+    @GET("posts/store/{storeId}/posts/{labelId}")
     suspend fun getSurveyPost(
         @Path("storeId") storeId: String,
         @Path("labelId") labelId: String = PostType.SURVEY.name
@@ -108,7 +108,7 @@ interface PostApiService {
     /**
      * 쿠폰 홍보 게시글 조회
      */
-    @GET("post/store/{storeId}/posts/{labelId}")
+    @GET("posts /store/{storeId}/posts/{labelId}")
     suspend fun getCouponPost(
         @Path("storeId") storeId: String,
         @Path("labelId") labelId: String = PostType.COUPON.name

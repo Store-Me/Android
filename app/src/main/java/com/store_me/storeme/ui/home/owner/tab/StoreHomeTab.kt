@@ -49,6 +49,7 @@ import com.store_me.storeme.data.store.menu.MenuData
 import com.store_me.storeme.data.store.post.NormalPostData
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
+import com.store_me.storeme.ui.component.NormalPostPreviewItem
 import com.store_me.storeme.ui.component.SkeletonBox
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponInfo
 import com.store_me.storeme.ui.store_setting.post.PostViewModel
@@ -559,25 +560,11 @@ fun RecentPost(
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             recentNormalPosts.forEach {
-
+                NormalPostPreviewItem(
+                    normalPost = it,
+                    storeInfoData = storeDataViewModel.storeInfoData.value!!
+                )
             }
-        }
-    }
-}
-
-@Composable
-fun NormalPostPreviewItem(
-    storeInfoData: StoreInfoData,
-    normalPost: NormalPostData
-) {
-    val hasImage = normalPost.content.any { it.type == PostContentType.IMAGE.name }
-
-    when(hasImage) {
-        true -> {
-            //Has Image
-        }
-        false -> {
-            //No Image
         }
     }
 }
