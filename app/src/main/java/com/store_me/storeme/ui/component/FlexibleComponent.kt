@@ -911,7 +911,7 @@ fun AlphaBackgroundText(text: String, diffValue: Int, modifier: Modifier = Modif
 fun SkeletonBox(
     modifier: Modifier = Modifier,
     isLoading: Boolean,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit = {}
 ) {
     val transition = rememberInfiniteTransition(label = "shimmer")
 

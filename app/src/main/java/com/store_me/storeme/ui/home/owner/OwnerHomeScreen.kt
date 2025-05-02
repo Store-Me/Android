@@ -312,6 +312,7 @@ fun OwnerHomeContentSection(
                 }
                 StoreTabMenu.POST -> {
                     PostTab(
+                        storeInfoData = storeInfoData!!,
                         labels = labels,
                         postViewModel = postViewModel
                     )

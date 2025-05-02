@@ -38,11 +38,9 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import com.store_me.storeme.R
-import com.store_me.storeme.data.PostContentType
 import com.store_me.storeme.data.enums.StoreHomeItem
 import com.store_me.storeme.data.enums.menu.MenuTag
 import com.store_me.storeme.data.store.FeaturedImageData
-import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.data.store.coupon.CouponData
 import com.store_me.storeme.data.store.menu.MenuCategoryData
 import com.store_me.storeme.data.store.menu.MenuData
@@ -498,7 +496,11 @@ fun RecentStory(
     }
 
     if(recentStories.isEmpty()) {
-        NoneContentText(text = stringResource(R.string.owner_home_story_none))
+        NoneContentText(
+            modifier = Modifier
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            text = stringResource(R.string.owner_home_story_none)
+        )
     } else {
         Row(
             modifier = Modifier
@@ -551,7 +553,11 @@ fun RecentPost(
     }
 
     if(recentNormalPosts.isEmpty()) {
-        NoneContentText(text = stringResource(R.string.owner_home_post_none))
+        NoneContentText(
+            modifier = Modifier
+                .padding(horizontal = 20.dp, vertical = 12.dp),
+            text = stringResource(R.string.owner_home_post_none)
+        )
     } else {
         Column(
             modifier = Modifier
@@ -562,7 +568,13 @@ fun RecentPost(
             recentNormalPosts.forEach {
                 NormalPostPreviewItem(
                     normalPost = it,
-                    storeInfoData = storeDataViewModel.storeInfoData.value!!
+                    storeInfoData = storeDataViewModel.storeInfoData.value!!,
+                    onPostClick = {
+
+                    },
+                    onProfileClick = {
+
+                    }
                 )
             }
         }
