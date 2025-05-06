@@ -4,13 +4,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.navArgument
 import com.store_me.storeme.ui.home.owner.OwnerHomeScreen
 import com.store_me.storeme.ui.link.LinkSettingScreen
 import com.store_me.storeme.ui.post.SelectPostTypeScreen
+import com.store_me.storeme.ui.post.detail.PostDetailScreen
 import com.store_me.storeme.ui.post.label.LabelSettingScreen
 import com.store_me.storeme.ui.store_info.StoreInfoScreen
 import com.store_me.storeme.ui.store_setting.NewsSettingScreen
@@ -219,6 +223,8 @@ fun OwnerHomeNavigationGraph(navController: NavHostController) {
             ReviewSettingScreen(navController, sharedReviewViewModel)
         }
         composable(OwnerRoute.PostSetting.fullRoute) { NewsSettingScreen(navController) }
+
+        addOwnerSharedNavigationGraph(this, navController)
     }
 }
 
@@ -267,5 +273,29 @@ fun OwnerStoreInfoNavigationGraph(navController: NavHostController) {
         startDestination = OwnerRoute.StoreInfo.fullRoute
     ) {
         composable(OwnerRoute.StoreInfo.fullRoute) { StoreInfoScreen(navController) }
+    }
+}
+
+fun addOwnerSharedNavigationGraph(
+    navGraphBuilder: NavGraphBuilder,
+    navController: NavHostController,
+) {
+    navGraphBuilder.composable(
+        route = OwnerSharedRoute.PostDetail.template(),
+        arguments = listOf(navArgument("postId") { type = NavType.StringType })
+    ) { backStackEntry ->
+        val postId = backStackEntry.arguments?.getString("postId")
+
+        val homeEntry = remember(backStackEntry) {
+            navController.getBackStackEntry(OwnerRoute.Home.fullRoute)
+        }
+
+        val sharedPostViewModel: PostViewModel = hiltViewModel(homeEntry)
+
+        PostDetailScreen(
+            postId = postId,
+            navController = navController,
+            postViewModel = sharedPostViewModel,
+        )
     }
 }
