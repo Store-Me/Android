@@ -11,6 +11,10 @@ import com.store_me.storeme.data.request.store.ContentData
  * @property content Post Content
  * @property createdAt Post Created At
  * @property updatedAt Post Updated At
+ * @property likesCount Post Likes Count
+ * @property userLiked User Liked
+ * @property commentsCount Post Comments Count
+ * @property views Post Views
  */
 data class NormalPostData(
     val id: String,
@@ -18,5 +22,9 @@ data class NormalPostData(
     val title: String,
     val content: List<ContentData>,
     val createdAt: Timestamp,
-    val updatedAt: Timestamp
+    val updatedAt: Timestamp,
+    val likesCount: Long,
+    val userLiked: Boolean,
+    val commentsCount: Long,
+    val views: Long
 )
