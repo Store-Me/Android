@@ -36,18 +36,9 @@ import com.store_me.storeme.data.PostContentType
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.data.store.post.NormalPostData
-import com.store_me.storeme.ui.theme.PostBackgroundColor0
-import com.store_me.storeme.ui.theme.PostBackgroundColor1
-import com.store_me.storeme.ui.theme.PostBackgroundColor2
-import com.store_me.storeme.ui.theme.PostBackgroundColor3
-import com.store_me.storeme.ui.theme.PostBackgroundColor4
-import com.store_me.storeme.ui.theme.PostBackgroundColor5
-import com.store_me.storeme.ui.theme.PostBackgroundColor6
-import com.store_me.storeme.ui.theme.PostBackgroundColor7
-import com.store_me.storeme.ui.theme.PostBackgroundColor8
-import com.store_me.storeme.ui.theme.PostBackgroundColor9
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
+import com.store_me.storeme.utils.PostBackgroundUtils
 
 
 /**
@@ -57,6 +48,8 @@ import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
  * @param normalPost NormalPostData
  * @param onPostClick onClick of Post
  * @param onProfileClick onClick of Profile
+ * @param onLikeClick onClick of Like
+ * @param onCommentClick onClick of Comment
  */
 @Composable
 fun NormalPostPreviewItem(
@@ -64,7 +57,9 @@ fun NormalPostPreviewItem(
     storeInfoData: StoreInfoData,
     normalPost: NormalPostData,
     onPostClick: () -> Unit,
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    onLikeClick: () -> Unit,
+    onCommentClick: () -> Unit
 ) {
     val imageUrls = normalPost.content.filter { it.type == PostContentType.IMAGE.name }.map { it.content }
     val texts = normalPost.content.filter { it.type == PostContentType.TEXT.name }.map { it.content }
@@ -140,31 +135,16 @@ fun NormalPostPreviewItem(
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp),
                     storeInfoData = storeInfoData,
+                    normalPost = normalPost,
                     onProfileClick = onProfileClick,
-                    onLikeClick = {
-
-                    },
-                    onCommentClick = {
-
-                    }
+                    onLikeClick = onLikeClick,
+                    onCommentClick = onCommentClick
                 )
             }
         }
         true -> {
             //이미지 없는 경우
-            val backgroundColor = when(normalPost.createdAt.seconds % 10) {
-                0L -> PostBackgroundColor0
-                1L -> PostBackgroundColor1
-                2L -> PostBackgroundColor2
-                3L -> PostBackgroundColor3
-                4L -> PostBackgroundColor4
-                5L -> PostBackgroundColor5
-                6L -> PostBackgroundColor6
-                7L -> PostBackgroundColor7
-                8L -> PostBackgroundColor8
-                9L -> PostBackgroundColor9
-                else -> PostBackgroundColor0
-            }
+            val backgroundColor = PostBackgroundUtils.getPostBackgroundColor(normalPost.createdAt)
 
             Box(
                 modifier = modifier
@@ -220,13 +200,10 @@ fun NormalPostPreviewItem(
                         .padding(horizontal = 20.dp)
                         .padding(bottom = 20.dp),
                     storeInfoData = storeInfoData,
+                    normalPost = normalPost,
                     onProfileClick = onProfileClick,
-                    onLikeClick = {
-
-                    },
-                    onCommentClick = {
-
-                    }
+                    onLikeClick = onLikeClick,
+                    onCommentClick = onCommentClick
                 )
             }
         }
@@ -270,6 +247,7 @@ fun TitleAndMenuRow(
 fun StoreInfoAndButtonsRow(
     modifier: Modifier,
     storeInfoData: StoreInfoData,
+    normalPost: NormalPostData,
     onProfileClick: () -> Unit,
     onLikeClick: () -> Unit,
     onCommentClick: () -> Unit
@@ -299,7 +277,7 @@ fun StoreInfoAndButtonsRow(
             onClick = onLikeClick
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_like_off),
+                painter = painterResource(id = if(normalPost.userLiked) R.drawable.ic_like_on else R.drawable.ic_like_off),
                 contentDescription = null,
                 tint = Color.Unspecified,
                 modifier = Modifier
