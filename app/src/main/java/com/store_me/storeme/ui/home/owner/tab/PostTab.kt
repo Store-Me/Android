@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.data.store.post.LabelData
+import com.store_me.storeme.data.store.post.NormalPostData
 import com.store_me.storeme.ui.component.NormalPostPreviewItem
 import com.store_me.storeme.ui.component.SkeletonBox
 import com.store_me.storeme.ui.store_setting.post.PostViewModel
@@ -42,7 +43,8 @@ import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 fun PostTab(
     storeInfoData: StoreInfoData,
     labels : List<LabelData>,
-    postViewModel: PostViewModel
+    postViewModel: PostViewModel,
+    onPostClick: (NormalPostData) -> Unit
 ) {
     var selectedLabel by remember { mutableStateOf<LabelData?>(null) }
     val normalPosts by postViewModel.normalPostByLabel.collectAsState()
@@ -73,11 +75,17 @@ fun PostTab(
                     storeInfoData = storeInfoData,
                     normalPost = normalPost,
                     onPostClick = {
-
+                        onPostClick(normalPost)
                     },
                     onProfileClick = {
 
                     },
+                    onLikeClick = {
+                        postViewModel.likeNormalPost(normalPost)
+                    },
+                    onCommentClick = {
+
+                    }
                 )
             }
         } ?: run {
