@@ -49,6 +49,8 @@ import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.NormalPostPreviewItem
 import com.store_me.storeme.ui.component.SkeletonBox
+import com.store_me.storeme.ui.main.navigation.owner.OwnerSharedRoute
+import com.store_me.storeme.ui.main.navigation.owner.withArgs
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponInfo
 import com.store_me.storeme.ui.store_setting.post.PostViewModel
 import com.store_me.storeme.ui.store_setting.review.ReviewViewModel
@@ -86,6 +88,7 @@ fun StoreHomeTab(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 StoreHomeItemSection(
+                    navController = navController,
                     storeHomeItem = item,
                     storyViewModel = storyViewModel,
                     reviewViewModel = reviewViewModel,
@@ -99,6 +102,7 @@ fun StoreHomeTab(
 
 @Composable
 fun StoreHomeItemSection(
+    navController: NavController,
     storeHomeItem: StoreHomeItem,
     storyViewModel: StoryViewModel,
     reviewViewModel: ReviewViewModel,
@@ -149,7 +153,10 @@ fun StoreHomeItemSection(
                     .padding(bottom = 12.dp),
                 reviewCount = reviewCount
             ) }
-            StoreHomeItem.POST -> RecentPost(normalPosts[null] ?: emptyList())
+            StoreHomeItem.POST -> RecentPost(
+                navController = navController,
+                normalPosts[null] ?: emptyList()
+            )
         }
 
         DefaultButton(
@@ -544,6 +551,7 @@ fun RecentStory(
  */
 @Composable
 fun RecentPost(
+    navController: NavController,
     normalPosts: List<NormalPostData>
 ) {
     val storeDataViewModel = LocalStoreDataViewModel.current
@@ -570,9 +578,15 @@ fun RecentPost(
                     normalPost = it,
                     storeInfoData = storeDataViewModel.storeInfoData.value!!,
                     onPostClick = {
-
+                        navController.navigate(OwnerSharedRoute.PostDetail(it.id).withArgs())
                     },
                     onProfileClick = {
+
+                    },
+                    onLikeClick = {
+
+                    },
+                    onCommentClick = {
 
                     }
                 )
