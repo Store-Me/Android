@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.store_me.auth.Auth
 import com.store_me.storeme.R
@@ -65,6 +66,7 @@ import com.store_me.storeme.ui.main.navigation.owner.OwnerAddNavigationGraph
 import com.store_me.storeme.ui.main.navigation.owner.OwnerCustomerManagementNavigationGraph
 import com.store_me.storeme.ui.main.navigation.owner.OwnerHomeNavigationGraph
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
+import com.store_me.storeme.ui.main.navigation.owner.OwnerSharedRoute
 import com.store_me.storeme.ui.main.navigation.owner.OwnerStoreInfoNavigationGraph
 import com.store_me.storeme.ui.main.navigation.owner.OwnerStoreTalkNavigationGraph
 import com.store_me.storeme.ui.onboarding.OnboardingActivity
@@ -243,6 +245,13 @@ class MainActivity : ComponentActivity() {
 
         val snackbarHostState = LocalSnackbarHostState.current
 
+        val navBackStackEntry by homeNavController.currentBackStackEntryAsState()
+        val currentRoute = navBackStackEntry?.destination?.route
+
+        val hideBottomBarRoutes = listOf(
+            OwnerSharedRoute.PostDetail.template()
+        )
+
         BackHandler {
             if(currentTab != OwnerRoute.Home.path) {
                 currentTab = OwnerRoute.Home.path
@@ -254,10 +263,14 @@ class MainActivity : ComponentActivity() {
                 hostState = snackbarHostState,
                 snackbar = { StoreMeSnackbar(snackbarData = it) }
             ) },
-            bottomBar = { BottomNavigationBar(
-                currentTab = currentTab,
-                onTabSelected = { currentTab = it }
-            ) }
+            bottomBar = {
+                if (currentRoute !in hideBottomBarRoutes) {
+                    BottomNavigationBar(
+                        currentTab = currentTab,
+                        onTabSelected = { currentTab = it }
+                    )
+                }
+            }
         ) {
             Box(Modifier.padding(it)) {
                 navControllers.forEach { (tab, navController) ->
