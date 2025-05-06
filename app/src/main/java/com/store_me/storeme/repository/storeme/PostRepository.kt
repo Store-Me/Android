@@ -1,14 +1,17 @@
 package com.store_me.storeme.repository.storeme
 
 import com.store_me.auth.Auth
+import com.store_me.storeme.data.request.store.CommentRequest
 import com.store_me.storeme.data.store.post.LabelData
 import com.store_me.storeme.data.request.store.CreateCouponPostRequest
 import com.store_me.storeme.data.request.store.CreatePostRequest
 import com.store_me.storeme.data.request.store.CreateSurveyPostRequest
 import com.store_me.storeme.data.request.store.CreateVotePostRequest
 import com.store_me.storeme.data.request.store.PatchLabelRequest
+import com.store_me.storeme.data.response.CommentResponse
 import com.store_me.storeme.data.response.NormalPostListResponse
 import com.store_me.storeme.data.response.StoreMeResponse
+import com.store_me.storeme.data.store.post.NormalPostData
 import com.store_me.storeme.network.storeme.PostApiService
 import com.store_me.storeme.utils.exception.ApiExceptionHandler.toResult
 import com.store_me.storeme.utils.response.ResponseHandler
@@ -29,6 +32,24 @@ interface PostRepository {
     suspend fun createCouponPost(createCouponPostRequest: CreateCouponPostRequest): Result<StoreMeResponse<Unit>>
 
     suspend fun getNormalPostByLabelId(labelId: String?): Result<NormalPostListResponse>
+
+
+
+
+
+    suspend fun postNormalPostLike(postId: String): Result<StoreMeResponse<NormalPostData>>
+
+    suspend fun deleteNormalPostLike(postId: String): Result<StoreMeResponse<NormalPostData>>
+
+    suspend fun postPostComment(postId: String, commentRequest: CommentRequest): Result<StoreMeResponse<Unit>>
+
+    suspend fun getPostComment(postId: String): Result<CommentResponse>
+
+    suspend fun patchPostComment(postId: String, commentId: String, commentRequest: CommentRequest): Result<StoreMeResponse<Unit>>
+
+    suspend fun deletePostComment(postId: String, commentId: String): Result<StoreMeResponse<Unit>>
+
+    suspend fun postPostViews(postId: String): Result<StoreMeResponse<Unit>>
 }
 
 class PostRepositoryImpl @Inject constructor(
@@ -201,6 +222,195 @@ class PostRepositoryImpl @Inject constructor(
                         storeId = auth.getStoreId()
                     )
                 }
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun postNormalPostLike(postId: String): Result<StoreMeResponse<NormalPostData>> {
+        return try {
+            val response = postApiService.postNormalPostLike(
+                storeId = auth.getStoreId(),
+                postId = postId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun deleteNormalPostLike(postId: String): Result<StoreMeResponse<NormalPostData>> {
+        return try {
+            val response = postApiService.deleteNormalPostLike(
+                storeId = auth.getStoreId(),
+                postId = postId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun postPostComment(
+        postId: String,
+        commentRequest: CommentRequest
+    ): Result<StoreMeResponse<Unit>> {
+        return try {
+            val response = postApiService.postPostComment(
+                storeId = auth.getStoreId(),
+                postId = postId,
+                postCommentRequest = commentRequest
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun getPostComment(postId: String): Result<CommentResponse> {
+        return try {
+            val response = postApiService.getPostComment(
+                storeId = auth.getStoreId(),
+                postId = postId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun patchPostComment(
+        postId: String,
+        commentId: String,
+        commentRequest: CommentRequest
+    ): Result<StoreMeResponse<Unit>> {
+        return try {
+            val response = postApiService.patchPostComment(
+                storeId = auth.getStoreId(),
+                postId = postId,
+                commentId = commentId,
+                patchCommentRequest = commentRequest
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun deletePostComment(
+        postId: String,
+        commentId: String
+    ): Result<StoreMeResponse<Unit>> {
+        return try {
+            val response = postApiService.deletePostComment(
+                storeId = auth.getStoreId(),
+                postId = postId,
+                commentId = commentId
+            )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun postPostViews(postId: String): Result<StoreMeResponse<Unit>> {
+        return try {
+            val response = postApiService.postPostViews(
+                storeId = auth.getStoreId(),
+                postId = postId
+            )
 
             if(response.isSuccessful) {
                 val responseBody = response.body()

@@ -28,6 +28,14 @@ class PostViewModel @Inject constructor(
         }
     }
 
+    private fun updateNormalPost(normalPost: NormalPostData) {
+        _normalPostByLabel.value = _normalPostByLabel.value.mapValues { (_, postList) ->
+            postList.map { post ->
+                if (post.id == normalPost.id) normalPost else post
+            }
+        }
+    }
+
     fun getNormalPost(label: LabelData?) {
         viewModelScope.launch {
             val response = postRepository.getNormalPostByLabelId(
@@ -39,6 +47,29 @@ class PostViewModel @Inject constructor(
             }.onFailure {
                 ErrorEventBus.errorFlow.emit(it.message)
             }
+        }
+    }
+
+    fun likeNormalPost(normalPost: NormalPostData) {
+        viewModelScope.launch {
+            val response = if(normalPost.userLiked)
+                postRepository.deleteNormalPostLike(normalPost.id)
+            else
+                postRepository.postNormalPostLike(normalPost.id)
+
+            response.onSuccess {
+                updateNormalPost(it.result)
+            }.onFailure {
+
+            }
+        }
+    }
+
+    fun postNormalPostViews(normalPost: NormalPostData) {
+        updateNormalPost(normalPost.copy(views = normalPost.views + 1))
+
+        viewModelScope.launch {
+            val response = postRepository.postPostViews(normalPost.id)
         }
     }
 }
