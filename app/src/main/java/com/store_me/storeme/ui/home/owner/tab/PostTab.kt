@@ -38,6 +38,7 @@ import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 
 @Composable
 fun PostTab(
@@ -46,6 +47,8 @@ fun PostTab(
     postViewModel: PostViewModel,
     onPostClick: (NormalPostData) -> Unit
 ) {
+    val loadingViewModel = LocalLoadingViewModel.current
+
     var selectedLabel by remember { mutableStateOf<LabelData?>(null) }
     val normalPosts by postViewModel.normalPostByLabel.collectAsState()
 
@@ -75,6 +78,7 @@ fun PostTab(
                     storeInfoData = storeInfoData,
                     normalPost = normalPost,
                     onPostClick = {
+                        postViewModel.updateSelectedNormalPost(normalPost)
                         onPostClick(normalPost)
                     },
                     onProfileClick = {
@@ -84,6 +88,16 @@ fun PostTab(
                         postViewModel.likeNormalPost(normalPost)
                     },
                     onCommentClick = {
+
+                    },
+                    onClickEdit = {
+                        //TODO EDIT
+                    },
+                    onClickDelete = {
+                        loadingViewModel.showLoading()
+                        postViewModel.deletePost(normalPost.id)
+                    },
+                    onClickReport = {
 
                     }
                 )
