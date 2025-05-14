@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
+import com.store_me.storeme.ui.customer_management.CustomerManagementScreen
 import com.store_me.storeme.ui.home.owner.OwnerHomeScreen
 import com.store_me.storeme.ui.link.LinkSettingScreen
 import com.store_me.storeme.ui.post.SelectPostTypeScreen
@@ -235,7 +236,7 @@ fun OwnerCustomerManagementNavigationGraph(navController: NavHostController) {
         startDestination = OwnerRoute.CustomerManagement.fullRoute
     ) {
         composable(OwnerRoute.CustomerManagement.fullRoute) {
-
+            CustomerManagementScreen(navController)
         }
     }
 }
@@ -281,10 +282,8 @@ fun addOwnerSharedNavigationGraph(
     navController: NavHostController,
 ) {
     navGraphBuilder.composable(
-        route = OwnerSharedRoute.PostDetail.template(),
-        arguments = listOf(navArgument("postId") { type = NavType.StringType })
+        route = OwnerSharedRoute.PostDetail.path,
     ) { backStackEntry ->
-        val postId = backStackEntry.arguments?.getString("postId")
 
         val homeEntry = remember(backStackEntry) {
             navController.getBackStackEntry(OwnerRoute.Home.fullRoute)
@@ -293,7 +292,6 @@ fun addOwnerSharedNavigationGraph(
         val sharedPostViewModel: PostViewModel = hiltViewModel(homeEntry)
 
         PostDetailScreen(
-            postId = postId,
             navController = navController,
             postViewModel = sharedPostViewModel,
         )
