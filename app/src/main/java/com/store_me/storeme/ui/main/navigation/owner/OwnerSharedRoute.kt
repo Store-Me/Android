@@ -7,13 +7,5 @@ sealed class OwnerSharedRoute(
     val fullRoute: String
         get() = parent?.fullRoute?.let { "$it/$path" } ?: path
 
-    data class PostDetail(val postId: String): OwnerSharedRoute("postDetail/$postId") {
-        companion object {
-            fun template() = "postDetail/{postId}"
-        }
-    }
-}
-
-fun OwnerSharedRoute.PostDetail.withArgs(): String {
-    return "postDetail/$postId"
+    data object PostDetail: OwnerSharedRoute("postDetail")
 }

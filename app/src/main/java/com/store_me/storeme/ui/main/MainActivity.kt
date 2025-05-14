@@ -249,7 +249,7 @@ class MainActivity : ComponentActivity() {
         val currentRoute = navBackStackEntry?.destination?.route
 
         val hideBottomBarRoutes = listOf(
-            OwnerSharedRoute.PostDetail.template()
+            OwnerSharedRoute.PostDetail.path
         )
 
         BackHandler {
