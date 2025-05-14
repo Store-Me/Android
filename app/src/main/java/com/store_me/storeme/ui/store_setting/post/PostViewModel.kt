@@ -6,6 +6,7 @@ import com.store_me.storeme.data.store.post.LabelData
 import com.store_me.storeme.data.store.post.NormalPostData
 import com.store_me.storeme.repository.storeme.PostRepository
 import com.store_me.storeme.utils.ErrorEventBus
+import com.store_me.storeme.utils.SuccessEventBus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,6 +20,13 @@ class PostViewModel @Inject constructor(
     private val _normalPostByLabel = MutableStateFlow<Map<LabelData?, List<NormalPostData>>>(mapOf())
     val normalPostByLabel: StateFlow<Map<LabelData?, List<NormalPostData>>> = _normalPostByLabel
 
+    private val _selectedNormalPost = MutableStateFlow<NormalPostData?>(null)
+    val selectedNormalPost: StateFlow<NormalPostData?> = _selectedNormalPost
+
+    fun updateSelectedNormalPost(normalPost: NormalPostData?) {
+        _selectedNormalPost.value = normalPost
+    }
+
     private fun updateNormalPost(
         label: LabelData?,
         normalPosts: List<NormalPostData>
@@ -28,11 +36,19 @@ class PostViewModel @Inject constructor(
         }
     }
 
-    private fun updateNormalPost(normalPost: NormalPostData) {
+    private fun updateNormalPost(
+        normalPost: NormalPostData
+    ) {
         _normalPostByLabel.value = _normalPostByLabel.value.mapValues { (_, postList) ->
             postList.map { post ->
                 if (post.id == normalPost.id) normalPost else post
             }
+        }
+    }
+
+    private fun deleteNormalPost(postId: String) {
+        _normalPostByLabel.value = _normalPostByLabel.value.mapValues { (_, postList) ->
+            postList.filterNot { it.id == postId }
         }
     }
 
@@ -70,6 +86,19 @@ class PostViewModel @Inject constructor(
 
         viewModelScope.launch {
             val response = postRepository.postPostViews(normalPost.id)
+        }
+    }
+
+    fun deletePost(postId: String){
+        viewModelScope.launch {
+            val response = postRepository.deletePost(postId)
+
+            response.onSuccess {
+                deleteNormalPost(postId)
+                SuccessEventBus.successFlow.emit(it.message)
+            }.onFailure {
+                ErrorEventBus.errorFlow.emit(it.message)
+            }
         }
     }
 }
