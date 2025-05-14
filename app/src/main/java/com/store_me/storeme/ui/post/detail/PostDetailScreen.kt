@@ -22,12 +22,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,46 +43,50 @@ import com.mohamedrejeb.richeditor.model.rememberRichTextState
 import com.mohamedrejeb.richeditor.ui.material3.RichText
 import com.store_me.storeme.R
 import com.store_me.storeme.data.PostContentType
-import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.store.post.NormalPostData
+import com.store_me.storeme.ui.component.DefaultBottomSheet
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
+import com.store_me.storeme.ui.component.NormalPostBottomSheetContent
 import com.store_me.storeme.ui.component.SkeletonAsyncImage
 import com.store_me.storeme.ui.component.StoreInfoAndButtonsRow
+import com.store_me.storeme.ui.component.WarningDialog
 import com.store_me.storeme.ui.store_setting.post.PostViewModel
 import com.store_me.storeme.ui.theme.FinishedColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.PostBackgroundUtils
 import com.store_me.storeme.utils.composition_locals.LocalAuth
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 import com.store_me.storeme.utils.toTimeAgo
+import kotlinx.coroutines.launch
 
 @Composable
 fun PostDetailScreen(
-    postId: String?,
     navController: NavController,
     postViewModel: PostViewModel,
 ) {
     val auth = LocalAuth.current
     val storeDataViewModel = LocalStoreDataViewModel.current
+    val loadingViewModel = LocalLoadingViewModel.current
     val storeInfoData by storeDataViewModel.storeInfoData.collectAsState()
-    val normalPost by postViewModel.normalPostByLabel.collectAsState()
+    val selectedNormalPost by postViewModel.selectedNormalPost.collectAsState()
 
     val accountType by auth.accountType.collectAsState()
 
-    val selectedPost = remember(normalPost) {
-        normalPost.values.flatten().find { it.id == postId }
+    val scope = rememberCoroutineScope()
+    val sheetState =  rememberModalBottomSheetState()
+    var showMenuBottomSheet by remember { mutableStateOf(false) }
+
+    var deleteNormalPost by remember { mutableStateOf<NormalPostData?>(null) }
+
+    val images = remember(selectedNormalPost) {
+        selectedNormalPost?.content?.filter { it.type == PostContentType.IMAGE.name } ?: emptyList()
     }
 
-    val images = remember(selectedPost) {
-        selectedPost?.content?.filter { it.type == PostContentType.IMAGE.name } ?: emptyList()
-    }
-
-    LaunchedEffect(selectedPost) {
-        selectedPost?.let {
-            postViewModel.postNormalPostViews(it)
-        }
+    LaunchedEffect(Unit) {
+        selectedNormalPost?.let { postViewModel.postNormalPostViews(it) }
     }
 
     Scaffold(
@@ -94,7 +100,7 @@ fun PostDetailScreen(
 
         }
     ) { innerPadding ->
-        selectedPost?.let { post ->
+        selectedNormalPost?.let { post ->
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -141,15 +147,15 @@ fun PostDetailScreen(
                                     .padding(horizontal = 20.dp)
                                     .offset(y = (-24).dp),
                                 storeInfoData = storeInfo,
-                                normalPost = selectedPost,
+                                normalPost = post,
                                 onProfileClick = {
 
                                 },
                                 onLikeClick = {
-
+                                    postViewModel.likeNormalPost(normalPost = post)
                                 },
                                 onCommentClick = {
-
+                                    //TODO COMMENT
                                 }
                             )
                         }
@@ -158,9 +164,11 @@ fun PostDetailScreen(
                     item {
                         NormalPostContent(
                             normalPost = post,
-                            accountType = accountType,
                             onShareClick = {
 
+                            },
+                            onMenuClick = {
+                                showMenuBottomSheet = true
                             }
                         )
                     }
@@ -175,16 +183,63 @@ fun PostDetailScreen(
             }
         }
     }
+
+    if(showMenuBottomSheet) {
+        fun dismissBottomSheet() {
+            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                if(!sheetState.isVisible) {
+                    showMenuBottomSheet = false
+                }
+            }
+        }
+
+        DefaultBottomSheet(
+            sheetState = sheetState,
+            hasDeleteButton = false,
+            onDismiss = { dismissBottomSheet() }
+        ) {
+            NormalPostBottomSheetContent(
+                accountType = accountType,
+                onClickEdit = {
+                    //TODO NAVIGATE TO EDIT
+                    dismissBottomSheet()
+                },
+                onClickDelete = {
+                    deleteNormalPost = selectedNormalPost
+                    dismissBottomSheet()
+                },
+                onClickReport = {
+                    //TODO REPORT
+                    dismissBottomSheet()
+                }
+            )
+        }
+    }
+
+    deleteNormalPost?.let {
+        WarningDialog(
+            title = "소식을 삭제할까요?",
+            warningContent = it.title,
+            content = "위의 소식이 삭제되며, 삭제 이후 복구되지않아요.",
+            actionText = "삭제",
+            onDismiss = {
+                deleteNormalPost = null
+            },
+            onAction = {
+                loadingViewModel.showLoading()
+                postViewModel.deletePost(it.id)
+                deleteNormalPost = null
+            }
+        )
+    }
 }
 
 @Composable
 fun NormalPostContent(
     normalPost: NormalPostData,
-    accountType: AccountType,
-    onShareClick: () -> Unit
+    onShareClick: () -> Unit,
+    onMenuClick: () -> Unit,
 ) {
-    var showMenuBottomSheet by remember { mutableStateOf(false) }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -207,7 +262,7 @@ fun NormalPostContent(
             IconButton(
                 modifier = Modifier
                     .size(48.dp),
-                onClick = { showMenuBottomSheet = true },
+                onClick = onMenuClick,
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_menu),
@@ -269,7 +324,7 @@ fun NormalPostContent(
                         state = state,
                         modifier = Modifier
                             .fillMaxWidth(),
-                        style = storeMeTextStyle(FontWeight.Normal, 0),
+                        style = storeMeTextStyle(FontWeight.Normal, 2),
                     )
                 }
                 PostContentType.EMOJI.name -> {
