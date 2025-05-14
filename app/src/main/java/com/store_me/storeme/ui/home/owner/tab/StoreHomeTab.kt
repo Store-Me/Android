@@ -50,7 +50,6 @@ import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.NormalPostPreviewItem
 import com.store_me.storeme.ui.component.SkeletonBox
 import com.store_me.storeme.ui.main.navigation.owner.OwnerSharedRoute
-import com.store_me.storeme.ui.main.navigation.owner.withArgs
 import com.store_me.storeme.ui.store_setting.coupon.setting.CouponInfo
 import com.store_me.storeme.ui.store_setting.post.PostViewModel
 import com.store_me.storeme.ui.store_setting.review.ReviewViewModel
@@ -70,6 +69,7 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.DateTimeUtils
 import com.store_me.storeme.utils.PriceUtils
+import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
 /**
@@ -110,6 +110,7 @@ fun StoreHomeItemSection(
     onClick: (StoreHomeItem) -> Unit
 ) {
     val storeDataViewModel = LocalStoreDataViewModel.current
+    val loadingViewModel = LocalLoadingViewModel.current
 
     val notice by storeDataViewModel.notice.collectAsState()
     val featuredImages by storeDataViewModel.featuredImages.collectAsState()
@@ -154,8 +155,30 @@ fun StoreHomeItemSection(
                 reviewCount = reviewCount
             ) }
             StoreHomeItem.POST -> RecentPost(
-                navController = navController,
-                normalPosts[null] ?: emptyList()
+                normalPosts = normalPosts[null] ?: emptyList(),
+                onPostClick = {
+                    postViewModel.updateSelectedNormalPost(it)
+                    navController.navigate(OwnerSharedRoute.PostDetail.path)
+                },
+                onProfileClick = {
+
+                },
+                onLikeClick = {
+                    postViewModel.likeNormalPost(it)
+                },
+                onCommentClick = {
+
+                },
+                onClickEdit = {
+                    //TODO EDIT
+                },
+                onClickDelete = {
+                    loadingViewModel.showLoading()
+                    postViewModel.deletePost(it.id)
+                },
+                onClickReport = {
+                    //TODO REPORT
+                }
             )
         }
 
@@ -551,8 +574,14 @@ fun RecentStory(
  */
 @Composable
 fun RecentPost(
-    navController: NavController,
-    normalPosts: List<NormalPostData>
+    normalPosts: List<NormalPostData>,
+    onPostClick: (NormalPostData) -> Unit,
+    onProfileClick: () -> Unit,
+    onLikeClick: (NormalPostData) -> Unit,
+    onCommentClick: (NormalPostData) -> Unit,
+    onClickEdit: (NormalPostData) -> Unit,
+    onClickDelete: (NormalPostData) -> Unit,
+    onClickReport: (NormalPostData) -> Unit,
 ) {
     val storeDataViewModel = LocalStoreDataViewModel.current
     val recentNormalPosts = remember(normalPosts) {
@@ -578,16 +607,25 @@ fun RecentPost(
                     normalPost = it,
                     storeInfoData = storeDataViewModel.storeInfoData.value!!,
                     onPostClick = {
-                        navController.navigate(OwnerSharedRoute.PostDetail(it.id).withArgs())
+                        onPostClick(it)
                     },
                     onProfileClick = {
-
+                        onProfileClick()
                     },
                     onLikeClick = {
-
+                        onLikeClick(it)
                     },
                     onCommentClick = {
-
+                        onCommentClick(it)
+                    },
+                    onClickEdit = {
+                        onClickEdit(it)
+                    },
+                    onClickDelete = {
+                        onClickDelete(it)
+                    },
+                    onClickReport = {
+                        onClickReport(it)
                     }
                 )
             }
