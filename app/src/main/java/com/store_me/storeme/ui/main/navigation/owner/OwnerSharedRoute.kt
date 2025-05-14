@@ -8,4 +8,6 @@ sealed class OwnerSharedRoute(
         get() = parent?.fullRoute?.let { "$it/$path" } ?: path
 
     data object PostDetail: OwnerSharedRoute("postDetail")
+
+    data object EditNormalPost: OwnerSharedRoute("editNormalPost")
 }

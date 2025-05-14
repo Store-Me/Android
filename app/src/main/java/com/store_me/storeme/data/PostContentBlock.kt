@@ -12,7 +12,7 @@ sealed class PostContentBlock(open val id: String = UUID.randomUUID().toString()
     ) : PostContentBlock(id = id)
 
     data class ImageBlock(
-        val uri: Uri,
+        val uri: Uri?,
         val url: String,
         val progress: Float = 0.0f,
         override val id: String = UUID.randomUUID().toString(),

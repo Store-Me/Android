@@ -1,4 +1,6 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class,
+@file:OptIn(
+    ExperimentalMaterial3Api::class,
+    ExperimentalLayoutApi::class,
     ExperimentalFoundationApi::class
 )
 
@@ -608,7 +610,6 @@ fun ReorderableImageBlockContent(
             val interactionSource = remember { MutableInteractionSource() }
             val indication = if (isDragging) null else ripple(bounded = true)
 
-
             ImageBlockContent(
                 modifier = Modifier
                     .combinedClickable(
@@ -658,7 +659,7 @@ fun ImageBlockContent(
             .scale(scale)
     ) {
         AsyncImage(
-            model = item.uri,
+            model = item.url.ifEmpty { item.uri },
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth(),

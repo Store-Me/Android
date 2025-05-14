@@ -170,7 +170,8 @@ fun StoreHomeItemSection(
 
                 },
                 onClickEdit = {
-                    //TODO EDIT
+                    postViewModel.updateSelectedNormalPost(it)
+                    navController.navigate(OwnerSharedRoute.EditNormalPost.path)
                 },
                 onClickDelete = {
                     loadingViewModel.showLoading()

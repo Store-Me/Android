@@ -27,11 +27,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.data.store.post.LabelData
 import com.store_me.storeme.data.store.post.NormalPostData
 import com.store_me.storeme.ui.component.NormalPostPreviewItem
 import com.store_me.storeme.ui.component.SkeletonBox
+import com.store_me.storeme.ui.main.navigation.owner.OwnerSharedRoute
 import com.store_me.storeme.ui.store_setting.post.PostViewModel
 import com.store_me.storeme.ui.theme.ExpiredColor
 import com.store_me.storeme.ui.theme.GuideColor
@@ -43,9 +45,9 @@ import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewMod
 @Composable
 fun PostTab(
     storeInfoData: StoreInfoData,
+    navController: NavController,
     labels : List<LabelData>,
     postViewModel: PostViewModel,
-    onPostClick: (NormalPostData) -> Unit
 ) {
     val loadingViewModel = LocalLoadingViewModel.current
 
@@ -79,7 +81,7 @@ fun PostTab(
                     normalPost = normalPost,
                     onPostClick = {
                         postViewModel.updateSelectedNormalPost(normalPost)
-                        onPostClick(normalPost)
+                        navController.navigate(OwnerSharedRoute.PostDetail.path)
                     },
                     onProfileClick = {
 
@@ -91,7 +93,8 @@ fun PostTab(
 
                     },
                     onClickEdit = {
-                        //TODO EDIT
+                        postViewModel.updateSelectedNormalPost(normalPost)
+                        navController.navigate(OwnerSharedRoute.EditNormalPost.path)
                     },
                     onClickDelete = {
                         loadingViewModel.showLoading()

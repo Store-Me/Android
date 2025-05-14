@@ -314,11 +314,9 @@ fun OwnerHomeContentSection(
                 StoreTabMenu.POST -> {
                     PostTab(
                         storeInfoData = storeInfoData!!,
+                        navController = navController,
                         labels = labels,
-                        postViewModel = postViewModel,
-                        onPostClick = {
-                            navController.navigate(OwnerSharedRoute.PostDetail.path)
-                        }
+                        postViewModel = postViewModel
                     )
                 }
                 StoreTabMenu.MENU -> {

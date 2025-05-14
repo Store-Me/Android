@@ -16,6 +16,7 @@ import com.store_me.storeme.ui.home.owner.OwnerHomeScreen
 import com.store_me.storeme.ui.link.LinkSettingScreen
 import com.store_me.storeme.ui.post.SelectPostTypeScreen
 import com.store_me.storeme.ui.post.detail.PostDetailScreen
+import com.store_me.storeme.ui.post.edit.EditNormalPostScreen
 import com.store_me.storeme.ui.post.label.LabelSettingScreen
 import com.store_me.storeme.ui.store_info.StoreInfoScreen
 import com.store_me.storeme.ui.store_setting.NewsSettingScreen
@@ -281,6 +282,7 @@ fun addOwnerSharedNavigationGraph(
     navGraphBuilder: NavGraphBuilder,
     navController: NavHostController,
 ) {
+    //게시글 상세 보기
     navGraphBuilder.composable(
         route = OwnerSharedRoute.PostDetail.path,
     ) { backStackEntry ->
@@ -292,6 +294,22 @@ fun addOwnerSharedNavigationGraph(
         val sharedPostViewModel: PostViewModel = hiltViewModel(homeEntry)
 
         PostDetailScreen(
+            navController = navController,
+            postViewModel = sharedPostViewModel,
+        )
+    }
+
+    //일반 게시글 수정
+    navGraphBuilder.composable(
+        route = OwnerSharedRoute.EditNormalPost.path,
+    ) { backStackEntry ->
+        val homeEntry = remember(backStackEntry) {
+            navController.getBackStackEntry(OwnerRoute.Home.fullRoute)
+        }
+
+        val sharedPostViewModel: PostViewModel = hiltViewModel(homeEntry)
+
+        EditNormalPostScreen(
             navController = navController,
             postViewModel = sharedPostViewModel,
         )

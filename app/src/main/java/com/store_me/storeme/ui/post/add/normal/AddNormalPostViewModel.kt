@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mohamedrejeb.richeditor.model.RichTextState
 import com.store_me.storeme.data.PostContentBlock
+import com.store_me.storeme.data.PostContentType
 import com.store_me.storeme.data.enums.post.PostType
 import com.store_me.storeme.data.request.store.ContentData
 import com.store_me.storeme.data.request.store.CreatePostRequest
+import com.store_me.storeme.data.store.post.NormalPostData
 import com.store_me.storeme.repository.storeme.ImageRepository
 import com.store_me.storeme.repository.storeme.PostRepository
 import com.store_me.storeme.utils.ErrorEventBus
@@ -219,6 +221,34 @@ class AddNormalPostViewModel @Inject constructor(
                     ErrorEventBus.errorFlow.emit(null)
                 }
             }
+        }
+    }
+
+    fun syncNormalPost(
+        normalPost: NormalPostData
+    ) {
+        updateTitle(normalPost.title)
+
+        normalPost.content.forEach { content ->
+            when(content.type) {
+                PostContentType.IMAGE.name -> {
+                    val imageBlock = PostContentBlock.ImageBlock(uri = null, url = content.content)
+                    _content.value = _content.value.plus(imageBlock)
+                }
+                PostContentType.TEXT.name -> {
+                    val textBlock = PostContentBlock.TextBlock(state = RichTextState())
+                    textBlock.state.setHtml(content.content)
+                    _content.value = _content.value.plus(textBlock)
+                }
+                PostContentType.EMOJI.name -> {
+
+                }
+            }
+        }
+
+        if(normalPost.content.last().type != PostContentType.TEXT.name) {
+            val textBlock = PostContentBlock.TextBlock(state = RichTextState())
+            _content.value = _content.value.plus(textBlock)
         }
     }
 
