@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.store_me.storeme.ui.component
 
 import android.text.Html
@@ -15,12 +17,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.store_me.storeme.R
@@ -36,10 +47,12 @@ import com.store_me.storeme.data.PostContentType
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.store.StoreInfoData
 import com.store_me.storeme.data.store.post.NormalPostData
+import com.store_me.storeme.ui.theme.ErrorColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.PostBackgroundUtils
-
+import com.store_me.storeme.utils.composition_locals.LocalAuth
+import kotlinx.coroutines.launch
 
 /**
  * Normal Post Preview Composable
@@ -50,6 +63,9 @@ import com.store_me.storeme.utils.PostBackgroundUtils
  * @param onProfileClick onClick of Profile
  * @param onLikeClick onClick of Like
  * @param onCommentClick onClick of Comment
+ * @param onClickEdit onClick of Edit
+ * @param onClickDelete onClick of Delete
+ * @param onClickReport onClick of Report
  */
 @Composable
 fun NormalPostPreviewItem(
@@ -59,10 +75,23 @@ fun NormalPostPreviewItem(
     onPostClick: () -> Unit,
     onProfileClick: () -> Unit,
     onLikeClick: () -> Unit,
-    onCommentClick: () -> Unit
+    onCommentClick: () -> Unit,
+    onClickEdit: () -> Unit,
+    onClickDelete: () -> Unit,
+    onClickReport: () -> Unit
 ) {
+    val auth = LocalAuth.current
+    val accountType by auth.accountType.collectAsState()
+
+    val scope = rememberCoroutineScope()
+
     val imageUrls = normalPost.content.filter { it.type == PostContentType.IMAGE.name }.map { it.content }
     val texts = normalPost.content.filter { it.type == PostContentType.TEXT.name }.map { it.content }
+
+    val sheetState =  rememberModalBottomSheetState()
+    var showMenuBottomSheet by remember { mutableStateOf(false) }
+
+    var deleteNormalPost by remember { mutableStateOf<NormalPostData?>(null) }
 
     val plainText = remember(texts) {
         texts.joinToString(separator = " ") {
@@ -111,7 +140,7 @@ fun NormalPostPreviewItem(
                                 .fillMaxWidth(),
                             title = normalPost.title,
                             onMenuClick = {
-
+                                showMenuBottomSheet = true
                             }
                         )
 
@@ -173,7 +202,7 @@ fun NormalPostPreviewItem(
                                 .fillMaxWidth(),
                             title = normalPost.title,
                             onMenuClick = {
-
+                                showMenuBottomSheet = true
                             }
                         )
 
@@ -207,6 +236,54 @@ fun NormalPostPreviewItem(
                 )
             }
         }
+    }
+
+    if(showMenuBottomSheet) {
+        fun dismissBottomSheet() {
+            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                if(!sheetState.isVisible) {
+                    showMenuBottomSheet = false
+                }
+            }
+        }
+
+        DefaultBottomSheet(
+            sheetState = sheetState,
+            hasDeleteButton = false,
+            onDismiss = { dismissBottomSheet() }
+        ) {
+            NormalPostBottomSheetContent(
+                accountType = accountType,
+                onClickEdit = {
+                    onClickEdit()
+                    dismissBottomSheet()
+                },
+                onClickDelete = {
+                    deleteNormalPost = normalPost
+                    dismissBottomSheet()
+                },
+                onClickReport = {
+                    onClickReport()
+                    dismissBottomSheet()
+                }
+            )
+        }
+    }
+
+    deleteNormalPost?.let {
+        WarningDialog(
+            title = "소식을 삭제할까요?",
+            warningContent = it.title,
+            content = "위의 소식이 삭제되며, 삭제 이후 복구되지않아요.",
+            actionText = "삭제",
+            onDismiss = {
+               deleteNormalPost = null
+            },
+            onAction = {
+                deleteNormalPost = null
+                onClickDelete()
+            }
+        )
     }
 }
 
@@ -339,6 +416,75 @@ fun PostPreviewProfileBox(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+        }
+    }
+}
+
+/**
+ * 일반 게시글 메뉴 아이콘 클릭 시 보여지는 BottomSheet
+ * @param accountType AccountType
+ * @param onClickEdit onClick of Edit
+ * @param onClickDelete onClick of Delete
+ * @param onClickReport onClick of Report
+ */
+@Composable
+fun NormalPostBottomSheetContent(
+    accountType: AccountType,
+    onClickEdit: () -> Unit,
+    onClickDelete: () -> Unit,
+    onClickReport: () -> Unit,
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        when(accountType) {
+            AccountType.OWNER -> {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    onClick = onClickEdit,
+                ) {
+                    Text(
+                        text = "수정하기",
+                        style = storeMeTextStyle(FontWeight.Bold, 2, color = Color.Black),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
+
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    onClick = onClickDelete
+                ) {
+                    Text(
+                        text = "삭제하기",
+                        style = storeMeTextStyle(FontWeight.Bold, 2, color = ErrorColor),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
+            AccountType.CUSTOMER -> {
+                TextButton(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    onClick = onClickReport
+                ) {
+                    Text(
+                        text = "신고하기",
+                        style = storeMeTextStyle(FontWeight.Bold, 2, color = Color.Black),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        textAlign = TextAlign.Center
+                    )
+                }
+            }
         }
     }
 }
