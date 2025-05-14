@@ -31,6 +31,8 @@ interface PostRepository {
 
     suspend fun createCouponPost(createCouponPostRequest: CreateCouponPostRequest): Result<StoreMeResponse<Unit>>
 
+    suspend fun deletePost(postId: String): Result<StoreMeResponse<Unit>>
+
     suspend fun getNormalPostByLabelId(labelId: String?): Result<NormalPostListResponse>
 
 
@@ -190,6 +192,32 @@ class PostRepositoryImpl @Inject constructor(
                 storeId = auth.getStoreId(),
                 createCouponPostRequest = createCouponPostRequest
             )
+
+            if(response.isSuccessful) {
+                val responseBody = response.body()
+
+                Timber.d(responseBody.toString())
+
+                if(responseBody != null) {
+                    Result.success(responseBody)
+                } else {
+                    ResponseHandler.handleErrorResponse(response)
+                }
+            } else {
+                ResponseHandler.handleErrorResponse(response)
+            }
+        } catch (e: Exception) {
+            e.toResult()
+        }
+    }
+
+    override suspend fun deletePost(postId: String): Result<StoreMeResponse<Unit>> {
+        return try {
+            val response =
+                postApiService.deletePost(
+                    storeId = auth.getStoreId(),
+                    postId = postId
+                )
 
             if(response.isSuccessful) {
                 val responseBody = response.body()
