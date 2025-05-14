@@ -184,4 +184,13 @@ interface PostApiService {
         @Path("storeId") storeId: String,
         @Path("postId") postId: String
     ): Response<StoreMeResponse<Unit>>
+
+    /**
+     * 게시글 삭제
+     */
+    @DELETE("posts/store/{storeId}/posts/{postId}")
+    suspend fun deletePost(
+        @Path("storeId") storeId: String,
+        @Path("postId") postId: String
+    ): Response<StoreMeResponse<Unit>>
 }
