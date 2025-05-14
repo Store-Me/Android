@@ -60,7 +60,6 @@ import com.store_me.storeme.ui.home.owner.tab.StoreHomeTab
 import com.store_me.storeme.ui.home.owner.tab.StoryTab
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
 import com.store_me.storeme.ui.main.navigation.owner.OwnerSharedRoute
-import com.store_me.storeme.ui.main.navigation.owner.withArgs
 import com.store_me.storeme.ui.store_setting.post.PostViewModel
 import com.store_me.storeme.ui.store_setting.review.ReviewViewModel
 import com.store_me.storeme.ui.store_setting.story.setting.StoryViewModel
@@ -318,7 +317,7 @@ fun OwnerHomeContentSection(
                         labels = labels,
                         postViewModel = postViewModel,
                         onPostClick = {
-                            navController.navigate(OwnerSharedRoute.PostDetail(it.id).withArgs())
+                            navController.navigate(OwnerSharedRoute.PostDetail.path)
                         }
                     )
                 }
