@@ -20,13 +20,13 @@ fun getApiKey(key: String) = localProps.getProperty(key, "") ?: ""
 
 android {
     namespace = "com.store_me.storeme"
-    compileSdk = 34
+    compileSdk = 35
     buildFeatures.buildConfig = true
 
     defaultConfig {
         applicationId = "com.store_me.storeme"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
