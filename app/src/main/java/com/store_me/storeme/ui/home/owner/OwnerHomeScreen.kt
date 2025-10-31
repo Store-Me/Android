@@ -21,7 +21,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -138,125 +137,117 @@ fun OwnerHomeScreen(
             }
     }
 
-    Scaffold(
-        containerColor = Color.White,
-        content = { innerPadding -> // 컨텐츠 영역
-            when(storeInfoData) {
-                null -> {
+    when(storeInfoData) {
+        null -> {
 
-                }
+        }
 
-                else -> {
-                    Column(
-                        modifier = Modifier
-                            .padding(innerPadding)
-                    ) {
-                        LazyColumn(
-                            state = listState
+        else -> {
+            Column {
+                LazyColumn(
+                    state = listState
+                ) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .background(color = Color.White)
+                                .fillMaxWidth(),
+                            contentAlignment = Alignment.TopCenter
                         ) {
-                            item {
-                                Box(
+                            BackgroundSection(
+                                imageUrl = storeInfoData!!.backgroundImage,
+                                modifier = Modifier
+                                    .onGloballyPositioned {
+                                        backgroundSectionHeight.value = it.size.height
+                                    },
+                                showCanvas = storeInfoData!!.backgroundImage != null
+                            )
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                            ) {
+                                Spacer(modifier = Modifier.height(with(LocalDensity.current) { (backgroundSectionHeight.value).toDp() - 64.dp }))
+
+                                Row(
                                     modifier = Modifier
-                                        .background(color = Color.White)
-                                        .fillMaxWidth(),
-                                    contentAlignment = Alignment.TopCenter
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 20.dp)
+                                        .onGloballyPositioned {
+                                            profileSectionHeight.value = it.size.height
+                                        },
+                                    verticalAlignment = Alignment.Bottom
                                 ) {
-                                    BackgroundSection(
-                                        imageUrl = storeInfoData!!.backgroundImage,
+                                    //프로필 이미지
+                                    Box(
                                         modifier = Modifier
-                                            .onGloballyPositioned {
-                                                backgroundSectionHeight.value = it.size.height
-                                            },
-                                        showCanvas = storeInfoData!!.backgroundImage != null
-                                    )
-
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
+                                            .size(100.dp)
+                                            .background(color = Color.White, shape = RoundedCornerShape(TEXT_ROUNDING_VALUE))
+                                            .clip(shape = RoundedCornerShape(TEXT_ROUNDING_VALUE))
+                                            .padding(4.dp),
                                     ) {
-                                        Spacer(modifier = Modifier.height(with(LocalDensity.current) { (backgroundSectionHeight.value).toDp() - 64.dp }))
-
-                                        Row(
+                                        ProfileImage(
+                                            accountType = AccountType.OWNER,
+                                            url = storeInfoData!!.storeProfileImage,
                                             modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = 20.dp)
-                                                .onGloballyPositioned {
-                                                    profileSectionHeight.value = it.size.height
-                                                },
-                                            verticalAlignment = Alignment.Bottom
-                                        ) {
-                                            //프로필 이미지
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(100.dp)
-                                                    .background(color = Color.White, shape = RoundedCornerShape(TEXT_ROUNDING_VALUE))
-                                                    .clip(shape = RoundedCornerShape(TEXT_ROUNDING_VALUE))
-                                                    .padding(4.dp),
-                                            ) {
-                                                ProfileImage(
-                                                    accountType = AccountType.OWNER,
-                                                    url = storeInfoData!!.storeProfileImage,
-                                                    modifier = Modifier
-                                                        .fillMaxSize()
-                                                        .clip(shape = RoundedCornerShape(TEXT_ROUNDING_VALUE))
-                                                )
-                                            }
-
-                                            Spacer(modifier = Modifier.weight(1f))
-                                            Column (
-                                                modifier = Modifier
-                                                    .padding(bottom = 16.dp)
-                                            ) {
-                                                //링크 정보
-                                                LinkSection(
-                                                    storeLink = links ?: emptyList(),
-                                                    onShareClick = {  },
-                                                    onEditClick = {
-                                                        navController.navigate(OwnerRoute.LinkSetting.fullRoute)
-                                                    },
-                                                    accountType = AccountType.OWNER
-                                                )
-                                            }
-
-                                        }
-
-                                        StoreInfoSection(
-                                            storeInfoData = storeInfoData!!,
-                                            businessHours = businessHours ?: BusinessHoursResponse(),
-                                        ) {
-                                            navController.navigate(it.route.fullRoute)
-                                        }
+                                                .fillMaxSize()
+                                                .clip(shape = RoundedCornerShape(TEXT_ROUNDING_VALUE))
+                                        )
                                     }
+
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    Column (
+                                        modifier = Modifier
+                                            .padding(bottom = 16.dp)
+                                    ) {
+                                        //링크 정보
+                                        LinkSection(
+                                            storeLink = links ?: emptyList(),
+                                            onShareClick = {  },
+                                            onEditClick = {
+                                                navController.navigate(OwnerRoute.LinkSetting.fullRoute)
+                                            },
+                                            accountType = AccountType.OWNER
+                                        )
+                                    }
+
+                                }
+
+                                StoreInfoSection(
+                                    storeInfoData = storeInfoData!!,
+                                    businessHours = businessHours ?: BusinessHoursResponse(),
+                                ) {
+                                    navController.navigate(it.route.fullRoute)
                                 }
                             }
-
-                            item {
-                                Spacer(modifier = Modifier.height(8.dp))
-                            }
-
-                            item {
-                                DefaultHorizontalDivider(thickness = 8.dp)
-                            }
-
-                            stickyHeader {
-                                StoreMeScrollableTabRow(pagerState = pagerState, tabTitles = tabTitles)
-                            }
-
-                            item {
-                                OwnerHomeContentSection(
-                                    navController = navController,
-                                    pagerState = pagerState,
-                                    storyViewModel = storyViewModel,
-                                    reviewViewModel = reviewViewModel,
-                                    postViewModel = postViewModel
-                                )
-                            }
                         }
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    item {
+                        DefaultHorizontalDivider(thickness = 8.dp)
+                    }
+
+                    stickyHeader {
+                        StoreMeScrollableTabRow(pagerState = pagerState, tabTitles = tabTitles)
+                    }
+
+                    item {
+                        OwnerHomeContentSection(
+                            navController = navController,
+                            pagerState = pagerState,
+                            storyViewModel = storyViewModel,
+                            reviewViewModel = reviewViewModel,
+                            postViewModel = postViewModel
+                        )
                     }
                 }
             }
         }
-    )
+    }
 
     BackHandler {
         val currentTime = System.currentTimeMillis()
@@ -301,6 +292,7 @@ fun OwnerHomeContentSection(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(color = Color.White),
         ) {
             when(StoreTabMenu.entries[page]) {
                 StoreTabMenu.HOME -> {
