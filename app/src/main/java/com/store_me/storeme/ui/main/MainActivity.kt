@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -71,6 +72,7 @@ import com.store_me.storeme.ui.main.navigation.owner.OwnerSharedRoute
 import com.store_me.storeme.ui.main.navigation.owner.OwnerStoreInfoNavigationGraph
 import com.store_me.storeme.ui.main.navigation.owner.OwnerStoreTalkNavigationGraph
 import com.store_me.storeme.ui.onboarding.OnboardingActivity
+import com.store_me.storeme.ui.status_bar.StatusBarProtection
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.storeMeTypography
@@ -97,9 +99,11 @@ class MainActivity : ComponentActivity() {
     private lateinit var keyboardHeightObserver: KeyboardHeightObserver
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b), android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b))
+        )
 
-        enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
 
         setContent {
             keyboardHeightObserver = KeyboardHeightObserver(this) { height ->
@@ -166,6 +170,8 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+
+                StatusBarProtection()
             }
         }
     }
@@ -277,7 +283,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         ) {
-            Box(Modifier.padding(it)) {
+            Box {
                 navControllers.forEach { (tab, navController) ->
                     AnimatedVisibility(
                         visible = currentTab == tab,
@@ -317,10 +323,8 @@ class MainActivity : ComponentActivity() {
             NavigationBar (
                 containerColor = Color.White,
                 modifier = Modifier
-                    .height(67.dp),
-                tonalElevation = 0.dp
+                    .height(67.dp)
             ){
-
                 items.forEach { item ->
                     val isSelected = currentTab == item.screenRoute
 
@@ -349,7 +353,6 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
-
         }
     }
 
