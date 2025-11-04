@@ -141,7 +141,10 @@ fun OwnerHomeScreen(
         }
 
         else -> {
-            Column {
+            Column(
+                modifier = Modifier
+                    .background(color = Color.White)
+            ) {
                 LazyColumn(
                     state = listState
                 ) {
