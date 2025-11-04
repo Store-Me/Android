@@ -170,7 +170,7 @@ dependencies {
     implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc10")
 
     //reorderable
-    implementation("sh.calvin.reorderable:reorderable:2.3.1")
+    implementation("sh.calvin.reorderable:reorderable:3.0.0")
 
     //ExoPlayer
     implementation("com.google.android.exoplayer:exoplayer:2.19.1")
@@ -181,8 +181,8 @@ dependencies {
     implementation("com.github.yalantis:ucrop:2.2.10")
 
     //Timber
-    implementation("com.jakewharton.timber:timber:4.7.1")
+    implementation("com.jakewharton.timber:timber:5.0.1")
 
     //Lottie
-    implementation("com.airbnb.android:lottie-compose:6.0.1")
+    implementation("com.airbnb.android:lottie-compose:6.7.0")
 }
