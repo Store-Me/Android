@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalPagerApi::class, ExperimentalFoundationApi::class)
+@file:OptIn(ExperimentalFoundationApi::class)
 
 package com.store_me.storeme.ui.home.owner
 
@@ -40,7 +40,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.enums.tab_menu.StoreTabMenu
@@ -58,7 +57,6 @@ import com.store_me.storeme.ui.home.owner.tab.StampTab
 import com.store_me.storeme.ui.home.owner.tab.StoreHomeTab
 import com.store_me.storeme.ui.home.owner.tab.StoryTab
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
-import com.store_me.storeme.ui.main.navigation.owner.OwnerSharedRoute
 import com.store_me.storeme.ui.store_setting.post.PostViewModel
 import com.store_me.storeme.ui.store_setting.review.ReviewViewModel
 import com.store_me.storeme.ui.store_setting.story.setting.StoryViewModel

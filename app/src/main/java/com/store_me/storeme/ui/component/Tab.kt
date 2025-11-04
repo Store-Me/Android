@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalPagerApi::class)
-
 package com.store_me.storeme.ui.component
 
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +20,6 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.pager.ExperimentalPagerApi
 import com.store_me.storeme.ui.theme.DividerColor
 import com.store_me.storeme.ui.theme.TabDividerLineColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle

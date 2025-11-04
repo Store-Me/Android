@@ -1,7 +1,3 @@
-@file:OptIn( ExperimentalPagerApi::class,
-    ExperimentalPagerApi::class
-)
-
 package com.store_me.storeme.ui.notification
 
 import androidx.compose.foundation.background
@@ -17,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
@@ -46,9 +44,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.data.NotificationType
 import com.store_me.storeme.data.NotificationWithStoreInfoData
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
@@ -97,7 +92,7 @@ fun NotificationTabLayout(notificationList: MutableList<NotificationWithStoreInf
 
     val tabTitles = listOf(NotificationType.ALL.displayName, NotificationType.NORMAL.displayName, NotificationType.RESERVATION.displayName)
 
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = { tabTitles.size })
     val coroutineScope = rememberCoroutineScope()
 
     Column {
@@ -141,7 +136,6 @@ fun NotificationTabLayout(notificationList: MutableList<NotificationWithStoreInf
         }
 
         HorizontalPager(
-            count = tabTitles.size,
             state = pagerState,
             modifier = Modifier
                 .fillMaxSize(),

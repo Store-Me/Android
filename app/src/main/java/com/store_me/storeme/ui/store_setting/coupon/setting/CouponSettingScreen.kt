@@ -376,7 +376,7 @@ fun CouponItem(
         CouponInfo(
             modifier = Modifier
                 .sharedElement(
-                    state = rememberSharedContentState(key = coupon.couponId),
+                    sharedContentState = rememberSharedContentState(key = coupon.couponId),
                     animatedVisibilityScope = animatedVisibilityScope
                 )
                 .clickable(

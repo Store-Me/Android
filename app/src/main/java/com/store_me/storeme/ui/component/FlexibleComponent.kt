@@ -43,6 +43,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -97,9 +99,6 @@ import androidx.core.net.toUri
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -520,11 +519,10 @@ fun LocationLayout(navController: NavController, locationViewModel: LocationView
     }
 }
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun BannerLayout(navController: NavController) {
     val bannerUrls = SampleDataUtils.sampleBannerImage()
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = { bannerUrls.size })
     val scope = rememberCoroutineScope()
 
     BoxWithConstraints (
@@ -541,7 +539,6 @@ fun BannerLayout(navController: NavController) {
                 .height(bannerHeight)
         ) {
             HorizontalPager(
-                count = bannerUrls.size,
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth()

@@ -99,9 +99,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var keyboardHeightObserver: KeyboardHeightObserver
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge(
-            statusBarStyle = SystemBarStyle.auto(android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b), android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b))
-        )
+        enableEdgeToEdge()
 
         super.onCreate(savedInstanceState)
 
@@ -282,8 +280,12 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
-        ) {
-            Box {
+        ) { innerPadding ->
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
                 navControllers.forEach { (tab, navController) ->
                     AnimatedVisibility(
                         visible = currentTab == tab,

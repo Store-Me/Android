@@ -1,5 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalPagerApi::class,
-)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.store_me.storeme.ui.mycoupon
 
@@ -24,6 +23,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -64,9 +65,6 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.R
 import com.store_me.storeme.data.UserCouponWithStoreInfoData
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
@@ -204,7 +202,7 @@ fun CouponTabLayout(myCouponViewModel: MyCouponViewModel, showSheet: () -> Unit)
     val validCouponList by myCouponViewModel.myValidCouponList.collectAsState()
     val expiredCouponList by myCouponViewModel.myExpiredCouponList.collectAsState()
 
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = { myCouponViewModel.tabTitles.size })
     val scope = rememberCoroutineScope()
 
     Column {
@@ -248,7 +246,6 @@ fun CouponTabLayout(myCouponViewModel: MyCouponViewModel, showSheet: () -> Unit)
         }
 
         HorizontalPager(
-            count = myCouponViewModel.tabTitles.size,
             state = pagerState,
             modifier = Modifier
                 .fillMaxHeight(),

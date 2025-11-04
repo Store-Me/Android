@@ -41,6 +41,7 @@ import com.store_me.storeme.ui.loading.LoadingViewModel
 import com.store_me.storeme.ui.login.LoginScreen
 import com.store_me.storeme.ui.main.MainActivity
 import com.store_me.storeme.ui.signup.SignupScreen
+import com.store_me.storeme.ui.status_bar.StatusBarProtection
 import com.store_me.storeme.ui.theme.StoreMeTheme
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.SuccessEventBus
@@ -67,6 +68,8 @@ class OnboardingActivity : ComponentActivity() {
     lateinit var auth: Auth
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+
         super.onCreate(savedInstanceState)
         setContent{
             val onboardingComposition by rememberLottieComposition(
@@ -141,6 +144,8 @@ class OnboardingActivity : ComponentActivity() {
                         }
                     }
                 }
+
+                StatusBarProtection()
             }
         }
     }

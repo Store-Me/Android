@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalPagerApi::class)
-
 package com.store_me.storeme.ui.signup.onboarding
 
 import androidx.compose.foundation.Image
@@ -13,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,9 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.theme.OnboardingSelectedIndicatorColor
@@ -48,7 +45,7 @@ fun SignupOnboardingSection(onFinish: () -> Unit) {
     val onboardingTitleList = signupOnboardingViewModel.getOnboardingTitleList(accountType ?: AccountType.CUSTOMER)
     val onboardingContentList = signupOnboardingViewModel.getOnboardingContentList(accountType ?: AccountType.CUSTOMER)
 
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(pageCount = { onboardingImageList.size })
     val coroutineScope = rememberCoroutineScope()
 
     Column(
@@ -56,7 +53,6 @@ fun SignupOnboardingSection(onFinish: () -> Unit) {
             .padding(horizontal = 20.dp)
     ) {
         HorizontalPager(
-            count = onboardingImageList.size,
             state = pagerState,
             modifier = Modifier
                 .fillMaxWidth()

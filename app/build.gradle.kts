@@ -93,8 +93,9 @@ android {
 }
 
 dependencies {
-    val composeBom = platform("androidx.compose:compose-bom:2025.03.01")
+    val composeBom = platform("androidx.compose:compose-bom:2025.10.01")
     implementation(composeBom)
+    testImplementation(composeBom)
     androidTestImplementation(composeBom)
 
     implementation("androidx.core:core-ktx:1.13.0")
@@ -114,25 +115,24 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     implementation("androidx.navigation:navigation-compose:2.8.9")
-    implementation("com.google.accompanist:accompanist-permissions:0.36.0")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1")
+
+    //Permission
+    implementation("com.google.accompanist:accompanist-permissions:0.37.3")
 
     //liveData
     implementation("androidx.compose.runtime:runtime")
     implementation("androidx.compose.runtime:runtime-livedata")
 
     //Test
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.2.1")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-
+    testImplementation("androidx.compose.ui:ui-test-junit4")
+    androidTestImplementation("androidx.compose.ui:ui-test")
 
     //EncryptedSharedPreferences
     implementation("androidx.security:security-crypto-ktx:1.1.0-alpha07")
 
     //Kakao Login
-    implementation("com.kakao.sdk:v2-user:2.21.1")
+    implementation("com.kakao.sdk:v2-user:2.22.0")
 
     //Hilt
     implementation("com.google.dagger:hilt-android:2.48.1")
@@ -165,10 +165,6 @@ dependencies {
 
     //Load Url Image
     implementation("io.coil-kt:coil-compose:2.7.0")
-
-    //indicator
-    implementation("com.google.accompanist:accompanist-pager:0.20.3")
-    implementation("com.google.accompanist:accompanist-pager-indicators:0.20.3")
 
     //rich-editor
     implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc10")
