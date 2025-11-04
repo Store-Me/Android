@@ -14,6 +14,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -268,6 +269,7 @@ class MainActivity : ComponentActivity() {
         }
 
         Scaffold(
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
             snackbarHost = { SnackbarHost(
                 hostState = snackbarHostState,
                 snackbar = { StoreMeSnackbar(snackbarData = it) }
@@ -323,9 +325,7 @@ class MainActivity : ComponentActivity() {
             HorizontalDivider(color = UnselectedItemColor, thickness = 0.2.dp)
 
             NavigationBar (
-                containerColor = Color.White,
-                modifier = Modifier
-                    .height(67.dp)
+                containerColor = Color.White
             ){
                 items.forEach { item ->
                     val isSelected = currentTab == item.screenRoute
@@ -336,8 +336,8 @@ class MainActivity : ComponentActivity() {
                                 painter = painterResource(id = if (isSelected) item.selectedIcon else item.icon),
                                 contentDescription = stringResource(id = item.title),
                                 modifier = Modifier
-                                    .width(27.dp)
-                                    .height(27.dp),
+                                    .width(24.dp)
+                                    .height(24.dp),
                                 tint = Color.Unspecified
                             )
                         },
