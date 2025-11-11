@@ -281,7 +281,8 @@ class MainActivity : ComponentActivity() {
                         onTabSelected = { currentTab = it }
                     )
                 }
-            }
+            },
+            containerColor = Color.White
         ) { innerPadding ->
             Box(
                 Modifier
