@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,138 +26,139 @@ import com.store_me.storeme.data.enums.StoreProfileItems
 import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.main.navigation.owner.OwnerRoute
+import com.store_me.storeme.ui.status_bar.StatusBarPadding
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 
 @Composable
 fun StoreSettingScreen(
     navController: NavController
 ) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        item {
+            StatusBarPadding()
+        }
 
-    Scaffold(
-        containerColor = Color.White,
-        topBar = { TitleWithDeleteButton(title = "가게정보 관리") {
-            navController.popBackStack()
-        } },
-        content = { innerPadding ->
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-            ) {
-                item {
-                    Text(
-                        text = "기본 정보",
-                        style = storeMeTextStyle(fontWeight = FontWeight.ExtraBold, changeSizeValue = 6),
-                        color = Color.Black,
-                        modifier = Modifier
-                            .padding(20.dp)
-                    )
-
-                    DefaultHorizontalDivider()
-                }
-
-                items(StoreProfileItems.entries) {
-                    if(it != StoreProfileItems.ProfileEdit && it != StoreProfileItems.StoreManagement) {
-                        Row (
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { navController.navigate(it.route.fullRoute) }
-                                .padding(20.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = it.displayName,
-                                style = storeMeTextStyle(FontWeight.ExtraBold, 2),
-                                color = Color.Black
-                            )
-
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_arrow_right),
-                                contentDescription = "이동 아이콘",
-                                modifier = Modifier
-                                    .size(18.dp),
-                                tint = Color.Black
-                            )
-                        }
-
-                        DefaultHorizontalDivider()
-                    }
-                }
-
-                item {
-                    Text(
-                        text = "가게 정보",
-                        style = storeMeTextStyle(fontWeight = FontWeight.ExtraBold, changeSizeValue = 6),
-                        color = Color.Black,
-                        modifier = Modifier
-                            .padding(20.dp)
-                    )
-
-                    DefaultHorizontalDivider()
-                }
-
-                item {
-                    Row (
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { navController.navigate(OwnerRoute.LinkSetting.fullRoute) }
-                            .padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "링크",
-                            style = storeMeTextStyle(FontWeight.ExtraBold, 2),
-                            color = Color.Black
-                        )
-
-                        Spacer(modifier = Modifier.weight(1f))
-
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_right),
-                            contentDescription = "이동 아이콘",
-                            modifier = Modifier
-                                .size(18.dp),
-                            tint = Color.Black
-                        )
-                    }
-
-                    DefaultHorizontalDivider()
-                }
-
-                items(StoreHomeItem.entries) {
-                    Row (
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { navController.navigate(it.route.fullRoute) }
-                            .padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = it.displayName,
-                            style = storeMeTextStyle(FontWeight.ExtraBold, 2),
-                            color = Color.Black
-                        )
-
-                        Spacer(modifier = Modifier.weight(1f))
-
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_right),
-                            contentDescription = "이동 아이콘",
-                            modifier = Modifier
-                                .size(18.dp),
-                            tint = Color.Black
-                        )
-                    }
-
-                    DefaultHorizontalDivider()
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(200.dp))
-                }
+        item {
+            TitleWithDeleteButton(title = "가게정보 관리") {
+                navController.popBackStack()
             }
         }
-    )
+
+        item {
+            Text(
+                text = "기본 정보",
+                style = storeMeTextStyle(fontWeight = FontWeight.ExtraBold, changeSizeValue = 6),
+                color = Color.Black,
+                modifier = Modifier
+                    .padding(20.dp)
+            )
+
+            DefaultHorizontalDivider()
+        }
+
+        items(StoreProfileItems.entries) {
+            if(it != StoreProfileItems.ProfileEdit && it != StoreProfileItems.StoreManagement) {
+                Row (
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { navController.navigate(it.route.fullRoute) }
+                        .padding(20.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = it.displayName,
+                        style = storeMeTextStyle(FontWeight.ExtraBold, 2),
+                        color = Color.Black
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_right),
+                        contentDescription = "이동 아이콘",
+                        modifier = Modifier
+                            .size(18.dp),
+                        tint = Color.Black
+                    )
+                }
+
+                DefaultHorizontalDivider()
+            }
+        }
+
+        item {
+            Text(
+                text = "가게 정보",
+                style = storeMeTextStyle(fontWeight = FontWeight.ExtraBold, changeSizeValue = 6),
+                color = Color.Black,
+                modifier = Modifier
+                    .padding(20.dp)
+            )
+
+            DefaultHorizontalDivider()
+        }
+
+        item {
+            Row (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navController.navigate(OwnerRoute.LinkSetting.fullRoute) }
+                    .padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "링크",
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
+                    color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_right),
+                    contentDescription = "이동 아이콘",
+                    modifier = Modifier
+                        .size(18.dp),
+                    tint = Color.Black
+                )
+            }
+
+            DefaultHorizontalDivider()
+        }
+
+        items(StoreHomeItem.entries) {
+            Row (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { navController.navigate(it.route.fullRoute) }
+                    .padding(20.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = it.displayName,
+                    style = storeMeTextStyle(FontWeight.ExtraBold, 2),
+                    color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_right),
+                    contentDescription = "이동 아이콘",
+                    modifier = Modifier
+                        .size(18.dp),
+                    tint = Color.Black
+                )
+            }
+
+            DefaultHorizontalDivider()
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(200.dp))
+        }
+    }
 }
