@@ -15,8 +15,8 @@
     <string name="store_info">스토어 정보</string>
 
     <!--StoreHomeItem None Text-->
-    <string name="owner_home_notice_none">가게의 공지사항을 입력해주세요.</string>
-    <string name="owner_home_intro_none">가게의 소개를 입력해주세요.</string>
+    <string name="owner_home_notice_none">가게의 공지사항을 작성해주세요.</string>
+    <string name="owner_home_intro_none">가게에 대한 소개를 작성해주세요.</string>
     <string name="owner_home_photo_none">대표 사진을 업로드하여 메뉴나 서비스를 홍보하세요.</string>
     <string name="owner_home_coupon_none">쿠폰을 만들어 가게 홍보를 진행하세요.</string>
     <string name="owner_home_valid_coupon_none">발급중인 쿠폰이 없습니다. 쿠폰을 새로 생성해보세요.</string>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StoreMe</string>
+
+    <!--Customer Bottom Navigation Item-->
+    <string name="customer_home">홈</string>
+    <string name="customer_favorite">마이스토어</string>
+    <string name="customer_near_place">동네가게</string>
+    <string name="customer_store_talk">스토어톡</string>
+    <string name="customer_my_menu">마이메뉴</string>
+
+    <!--Owner Bottom Navigation Item-->
+    <string name="owner_home">내 가게</string>
+    <string name="customer_management">손님 관리</string>
+    <string name="owner_add">추가하기</string>
+    <string name="store_info">스토어 정보</string>
+
+
+</resources>

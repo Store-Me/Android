@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">StoreMe</string>
+
+    <!--Customer Bottom Navigation Item-->
+    <string name="customer_home">Home</string>
+    <string name="customer_favorite">MyStore</string>
+    <string name="customer_near_place">NearStore</string>
+    <string name="customer_store_talk">StoreTalk</string>
+    <string name="customer_my_menu">MyMenu</string>
+
+    <!--Owner Bottom Navigation Item-->
+    <string name="owner_home">MyStore</string>
+    <string name="customer_management">Customers</string>
+    <string name="owner_add">Add</string>
+    <string name="store_info">StoreInfo</string>
+</resources>
