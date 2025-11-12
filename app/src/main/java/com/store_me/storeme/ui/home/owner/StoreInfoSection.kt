@@ -35,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -200,7 +201,7 @@ fun StoreIntroSection(intro: String?, onClick: () -> Unit) {
     when {
         intro.isNullOrEmpty() -> {
             Text(
-                text = "가게에 대한 소개를 작성해주세요.",
+                text = stringResource(R.string.owner_home_intro_none),
                 style = storeMeTextStyle(FontWeight.Normal, -1),
                 color = UndefinedColor,
                 modifier = Modifier
