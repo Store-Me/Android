@@ -44,6 +44,7 @@ import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.ui.main.navigation.customer.CustomerRoute
 import com.store_me.storeme.ui.theme.CopyButtonColor
+import com.store_me.storeme.ui.theme.DisabledColor
 import com.store_me.storeme.ui.theme.ExpiredColor
 import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.SelectedCheckBoxColor
@@ -51,6 +52,7 @@ import com.store_me.storeme.ui.theme.SubHighlightColor
 import com.store_me.storeme.ui.theme.TextClearIconColor
 import com.store_me.storeme.ui.theme.ToggleButtonBorderColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
+import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.SizeUtils
 import kotlinx.coroutines.delay
 
@@ -80,7 +82,9 @@ fun DefaultButton(
     enabled: Boolean = true,
     colors: ButtonColors = ButtonDefaults.buttonColors(
         contentColor = Color.White,
-        containerColor = Color.Black
+        containerColor = Color.Black,
+        disabledContainerColor = DisabledColor,
+        disabledContentColor = Color.White
     ),
     diffValue: Int = 3,
     fontWeight: FontWeight = FontWeight.ExtraBold,
@@ -96,7 +100,7 @@ fun DefaultButton(
                 minWidth = 20.dp,
                 minHeight = 20.dp
             ),
-        shape = RoundedCornerShape(30),
+        shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE),
         colors = colors,
         enabled = enabled,
         contentPadding = PaddingValues(vertical = paddingValue, horizontal = paddingValue + 4.dp),
@@ -124,7 +128,9 @@ fun DefaultButton(
     enabled: Boolean = true,
     colors: ButtonColors = ButtonDefaults.buttonColors(
         contentColor = Color.White,
-        containerColor = Color.Black
+        containerColor = Color.Black,
+        disabledContainerColor = DisabledColor,
+        disabledContentColor = Color.White
     ),
     diffValue: Int = 3,
     fontWeight: FontWeight = FontWeight.ExtraBold,
@@ -147,7 +153,7 @@ fun DefaultButton(
                 minWidth = 20.dp,
                 minHeight = 20.dp
             ),
-        shape = RoundedCornerShape(30),
+        shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE),
         colors = colors,
         enabled = enabled,
         contentPadding = PaddingValues(vertical = paddingValue, horizontal = paddingValue + 4.dp),
