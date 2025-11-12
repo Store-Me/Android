@@ -1,18 +1,22 @@
 package com.store_me.storeme.ui.store_setting.intro
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Scaffold
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -20,21 +24,28 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.store_me.storeme.R
 import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultButton
-import com.store_me.storeme.ui.component.DefaultHorizontalDivider
 import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
+import com.store_me.storeme.ui.status_bar.StatusBarPadding
 import com.store_me.storeme.ui.theme.ErrorColor
 import com.store_me.storeme.ui.theme.GuideColor
+import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
-import com.store_me.storeme.utils.composition_locals.LocalAuth
+import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
@@ -43,7 +54,6 @@ fun IntroSettingScreen(
     navController: NavController,
     introSettingViewModel: IntroSettingViewModel = viewModel()
 ) {
-    val auth = LocalAuth.current
     val loadingViewModel = LocalLoadingViewModel.current
     val storeDataViewModel = LocalStoreDataViewModel.current
 
@@ -78,56 +88,60 @@ fun IntroSettingScreen(
         onClose()
     }
 
-    Scaffold(
-        containerColor = Color.White,
-        topBar = { TitleWithDeleteButton(title = "소개 수정") {
-            onClose()
-        } },
-        content = { innerPadding ->
+    Box {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            StatusBarPadding()
+
+            TitleWithDeleteButton(title = "소개 수정") {
+                onClose()
+            }
+
             LazyColumn(
                 modifier = Modifier
-                    .padding(innerPadding)
                     .fillMaxSize()
+                    .padding(horizontal = 20.dp)
             ) {
                 item {
-                    Text(
-                        text = "스토어 소개글을 입력해주세요.",
-                        style = storeMeTextStyle(FontWeight.ExtraBold, 6),
-                        color = Color.Black,
-                        modifier = Modifier
-                            .padding(20.dp)
-                    )
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
-
-                item {
-                    TextField(
+                    OutlinedTextField(
                         value = intro,
-                        onValueChange = { introSettingViewModel.updateStoreIntro(it) },
-                        textStyle = storeMeTextStyle(FontWeight.Normal, 1),
+                        onValueChange = {
+                            introSettingViewModel.updateStoreIntro(it)
+                        },
+                        textStyle = storeMeTextStyle(FontWeight.Normal, 1),                        modifier = Modifier
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE),
+                        trailingIcon = {
+                            if(intro.isNotEmpty()){
+                                IconButton(onClick = { introSettingViewModel.updateStoreIntro("") }) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.ic_text_clear),
+                                        contentDescription = "삭제",
+                                        modifier = Modifier
+                                            .size(24.dp),
+                                        tint = Color.Unspecified
+                                    )
+                                }
+                            }
+                        },
                         placeholder = {
                             Text(
-                                text = "손님들에게 알리고 싶은 내용을 남겨보세요.\n우리 스토어만의 차별점과 특별한 서비스를 안내하면 좋아요.",
+                                text = "손님들에게 알리고 싶은 내용을 남겨보세요.",
                                 style = storeMeTextStyle(FontWeight.Normal, 1),
                                 color = GuideColor
                             )
                         },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .heightIn(min = 350.dp) //최소 높이
-                            .padding(horizontal = 4.dp),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.White,
-                            unfocusedContainerColor = Color.White,
-                            focusedIndicatorColor = Color.White,
-                            unfocusedIndicatorColor = Color.White,
-                            errorTextColor = ErrorColor
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
                         ),
-                        singleLine = false,
-                        minLines = 2,   //1 -> 2줄 변화시 글자 크기 문제 해결
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = HighlightColor,
+                            errorBorderColor = ErrorColor,
+                            errorLabelColor = ErrorColor,
+                        ),
                         isError = isError.value,
                         supportingText = {
                             if(isError.value){
@@ -142,39 +156,30 @@ fun IntroSettingScreen(
                 }
 
                 item {
-                    DefaultHorizontalDivider(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                    )
+                    TextLengthRow(text = intro, limitSize = 100)
                 }
 
                 item {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 20.dp)
-                    ) {
-                        TextLengthRow(text = intro, limitSize = 100)
-                    }
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
-
-                item {
-                    DefaultButton(
-                        buttonText = "저장",
-                        enabled = hasDifference && !isError.value,
-                        modifier = Modifier
-                            .padding(20.dp)
-                    ) {
-                        loadingViewModel.showLoading()
-
-                        storeDataViewModel.patchStoreIntro(storeIntro = intro)
-                    }
+                    Spacer(modifier = Modifier.height(400.dp))
                 }
             }
         }
-    )
+
+        DefaultButton(
+            buttonText = "저장",
+            enabled = hasDifference && !isError.value,
+            modifier = Modifier
+                .padding(20.dp)
+                .shadow(
+                    elevation = 4.dp, shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)
+                )
+                .align(alignment = Alignment.BottomCenter)
+        ) {
+            loadingViewModel.showLoading()
+
+            storeDataViewModel.patchStoreIntro(storeIntro = intro)
+        }
+    }
 
     if (showDialog.value) {
         BackWarningDialog(
