@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -55,6 +56,7 @@ import com.store_me.auth.Auth
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.ui.component.StoreMeSnackbar
+import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.home.owner.StoreDataViewModel
 import com.store_me.storeme.ui.loading.LoadingScreen
 import com.store_me.storeme.ui.loading.LoadingViewModel
@@ -203,8 +205,12 @@ class MainActivity : ComponentActivity() {
         var currentTab by rememberSaveable { mutableStateOf(CustomerRoute.Home.path) }
 
         val snackbarHostState = LocalSnackbarHostState.current
+        val focusManager = LocalFocusManager.current
 
         Scaffold(
+            modifier = Modifier
+                .addFocusCleaner(focusManager),
+            containerColor = Color.White,
             snackbarHost = { SnackbarHost(
                 hostState = snackbarHostState,
                 snackbar = { StoreMeSnackbar(snackbarData = it) }
@@ -253,6 +259,7 @@ class MainActivity : ComponentActivity() {
         var currentTab by rememberSaveable { mutableStateOf(OwnerRoute.Home.path) }
 
         val snackbarHostState = LocalSnackbarHostState.current
+        val focusManager = LocalFocusManager.current
 
         val navBackStackEntry by homeNavController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
@@ -270,6 +277,8 @@ class MainActivity : ComponentActivity() {
 
         Scaffold(
             contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            modifier = Modifier
+                .addFocusCleaner(focusManager),
             snackbarHost = { SnackbarHost(
                 hostState = snackbarHostState,
                 snackbar = { StoreMeSnackbar(snackbarData = it) }
