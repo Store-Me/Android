@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,6 +41,7 @@ import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
+import com.store_me.storeme.ui.signup.GuideTextBoxItem
 import com.store_me.storeme.ui.status_bar.StatusBarPadding
 import com.store_me.storeme.ui.theme.ErrorColor
 import com.store_me.storeme.ui.theme.GuideColor
@@ -110,7 +112,8 @@ fun IntroSettingScreen(
                         onValueChange = {
                             introSettingViewModel.updateStoreIntro(it)
                         },
-                        textStyle = storeMeTextStyle(FontWeight.Normal, 1),                        modifier = Modifier
+                        textStyle = storeMeTextStyle(FontWeight.Normal, 1),
+                        modifier = Modifier
                             .fillMaxWidth(),
                         shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE),
                         trailingIcon = {
@@ -128,7 +131,7 @@ fun IntroSettingScreen(
                         },
                         placeholder = {
                             Text(
-                                text = "손님들에게 알리고 싶은 내용을 남겨보세요.",
+                                text = stringResource(id = R.string.owner_home_intro_none),
                                 style = storeMeTextStyle(FontWeight.Normal, 1),
                                 color = GuideColor
                             )
@@ -157,6 +160,17 @@ fun IntroSettingScreen(
 
                 item {
                     TextLengthRow(text = intro, limitSize = 100)
+                }
+
+                item {
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
+
+                item {
+                    GuideTextBoxItem(
+                        title = "스토어 소개 가이드",
+                        content = "스토어 프로필에 노출되는 짧은 소개글이에요. 손님들에게 간단하게 가게에 대한 소개를 해주세요."
+                    )
                 }
 
                 item {
