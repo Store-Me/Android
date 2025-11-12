@@ -63,9 +63,9 @@ import com.store_me.storeme.ui.component.SearchButton
 import com.store_me.storeme.ui.component.TitleSearchSection
 import com.store_me.storeme.ui.location.LocationViewModel
 import com.store_me.storeme.ui.theme.DownloadCouponColor
+import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.HomeCouponTitleTextColor
 import com.store_me.storeme.ui.theme.SubHighlightColor
-import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.appFontFamily
 import com.store_me.storeme.ui.theme.storeMeTypography
 import com.store_me.storeme.utils.ErrorEventBus
@@ -195,7 +195,7 @@ fun BasicStoreListLayout(navController: NavController, storeList: MutableList<St
             text = description,
             style = storeMeTypography.titleSmall,
             fontSize = 10.sp,
-            color = UnselectedItemColor,
+            color = GuideColor,
             modifier = Modifier.padding(start = 20.dp, top = 8.dp)
         )
 
@@ -225,7 +225,7 @@ fun BasicStoreListLayout(navController: NavController, storeList: MutableList<St
                     Column(modifier = Modifier.padding(start = 7.dp, end = 7.dp)){
                         Box(
                             modifier = Modifier
-                                .background(UnselectedItemColor, shape = RoundedCornerShape(4.dp))
+                                .background(GuideColor, shape = RoundedCornerShape(4.dp))
                                 .wrapContentSize()
                                 .padding(horizontal = 6.dp)
                         ) {
@@ -281,7 +281,7 @@ fun CouponLayout(navController: NavController, couponList: MutableList<CouponWit
             text = "쿠폰으로 혜택받을 수 있는 가게",
             style = storeMeTypography.titleSmall,
             fontSize = 10.sp,
-            color = UnselectedItemColor,
+            color = GuideColor,
             modifier = Modifier.padding(start = 20.dp, top = 8.dp)
         )
 

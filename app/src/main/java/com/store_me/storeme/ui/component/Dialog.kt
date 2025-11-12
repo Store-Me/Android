@@ -37,12 +37,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.store_me.storeme.R
-import com.store_me.storeme.data.store.FeaturedImageData
-import com.store_me.storeme.data.store.StoreInfoData
-import com.store_me.storeme.ui.home.owner.tab.ImageDescription
 import com.store_me.storeme.ui.home.owner.tab.ZoomableAsyncImage
 import com.store_me.storeme.ui.theme.CancelButtonColor
-import com.store_me.storeme.ui.theme.UnselectedItemColor
+import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
 import kotlinx.coroutines.launch
 
@@ -101,7 +98,7 @@ fun WarningDialog(
                 Text(
                     text= content,
                     style = storeMeTextStyle(FontWeight.Bold, 2),
-                    color = UnselectedItemColor,
+                    color = GuideColor,
                     textAlign = TextAlign.Center
                 )
             }
@@ -157,7 +154,7 @@ fun BackWarningDialog(
             Text(
                 text= "이전 페이지로 이동하면 현재 작성된 내용은 사라지고, 진행중이었던 작업은 처음부터 진행해야해요.",
                 style = storeMeTextStyle(FontWeight.Bold, 2),
-                color = UnselectedItemColor,
+                color = GuideColor,
                 textAlign = TextAlign.Center
             )
 

@@ -45,8 +45,8 @@ import com.store_me.storeme.R
 import com.store_me.storeme.data.ChatRoomWithStoreInfoData
 import com.store_me.storeme.ui.component.SearchButton
 import com.store_me.storeme.ui.component.TitleSearchSection
-import com.store_me.storeme.ui.theme.NewNoticeColor
-import com.store_me.storeme.ui.theme.UnselectedItemColor
+import com.store_me.storeme.ui.theme.GuideColor
+import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.storeMeTypography
 
 @Composable
@@ -160,7 +160,7 @@ fun ChatRoomItem(chatRoomWithStoreInfoData: ChatRoomWithStoreInfoData, onClick: 
                     modifier = Modifier
                         .height(18.dp)
                         .padding(end = 20.dp)
-                        .background(color = NewNoticeColor, shape = RoundedCornerShape(9.dp)),
+                        .background(color = HighlightColor, shape = RoundedCornerShape(9.dp)),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -215,7 +215,7 @@ fun ChatRoomItem(chatRoomWithStoreInfoData: ChatRoomWithStoreInfoData, onClick: 
                         text = chatRoomWithStoreInfoData.timeStamp,
                         style = storeMeTypography.titleSmall,
                         fontSize = 10.sp,
-                        color = UnselectedItemColor
+                        color = GuideColor
                     )
                 }
 
@@ -226,7 +226,7 @@ fun ChatRoomItem(chatRoomWithStoreInfoData: ChatRoomWithStoreInfoData, onClick: 
                     style = storeMeTypography.titleSmall.copy(
                         lineHeight = 17.sp
                     ),
-                    color = UnselectedItemColor,
+                    color = GuideColor,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )

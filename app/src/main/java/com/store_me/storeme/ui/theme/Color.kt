@@ -10,9 +10,6 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-//Bottom Navigation Color
-val UnselectedItemColor = Color(0xFF898C93)
-
 //Home Coupon Title Text Color
 val HomeCouponTitleTextColor = Color(0xFFD44ADA)
 
@@ -37,9 +34,6 @@ val HighlightTextColor = Color(0xFFD440D6)
 //MyPick Item Stroke Color
 val MyPickStrokeColor = Color(0xFFEFF0F5)
 
-//New Notice Color
-val NewNoticeColor = Color(0xFFD449DA)
-
 /*   Category Color   */
 //Selected
 val SelectedCategoryColor = Color(0xFF545A68)
@@ -61,13 +55,8 @@ val ToggleButtonBorderColor = Color(0xFFD9D9D9)
 //Management Button
 val ManagementButtonColor = Color(0xFFD449DA)
 
-val SaveButtonColor = Color(0xFFD449DA)
-
 //Copy Button
 val CopyButtonColor = Color(0xFFD449DA)
-
-//Next Button Color
-val NextButtonColor = Color(0xFFD44ADA)
 
 //Kakao Login Color
 val KakaoLoginButtonColor = Color(0xFFFEE500)
@@ -264,5 +253,3 @@ val ErrorColor = Color(0xFFFE4343)
 val ExpiredColor = Color(0xFFD9D9D9)
 
 val LightBlack = Color(0xFF191919)
-
-val LightGray = Color(0xFFF2F2F2)

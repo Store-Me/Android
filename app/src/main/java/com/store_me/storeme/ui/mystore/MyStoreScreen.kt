@@ -59,8 +59,8 @@ import com.store_me.storeme.data.NormalPostWithStoreInfoData
 import com.store_me.storeme.data.MyPickWithStoreInfoData
 import com.store_me.storeme.ui.component.CategorySection
 import com.store_me.storeme.ui.component.StrokeButton
+import com.store_me.storeme.ui.theme.HighlightColor
 import com.store_me.storeme.ui.theme.MyPickStrokeColor
-import com.store_me.storeme.ui.theme.NewNoticeColor
 import com.store_me.storeme.ui.theme.PostStrokeColor
 import com.store_me.storeme.ui.theme.PostTimeTextColor
 import com.store_me.storeme.ui.theme.appFontFamily
@@ -275,7 +275,7 @@ fun MyPickNewCircle(){
             modifier = Modifier
                 .size(18.dp)
                 .clip(CircleShape)
-                .background(NewNoticeColor, CircleShape),
+                .background(HighlightColor, CircleShape),
         )
     }
 }

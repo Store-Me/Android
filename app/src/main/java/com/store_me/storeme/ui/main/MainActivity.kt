@@ -76,8 +76,8 @@ import com.store_me.storeme.ui.main.navigation.owner.OwnerStoreInfoNavigationGra
 import com.store_me.storeme.ui.main.navigation.owner.OwnerStoreTalkNavigationGraph
 import com.store_me.storeme.ui.onboarding.OnboardingActivity
 import com.store_me.storeme.ui.status_bar.StatusBarProtection
+import com.store_me.storeme.ui.theme.GuideColor
 import com.store_me.storeme.ui.theme.StoreMeTheme
-import com.store_me.storeme.ui.theme.UnselectedItemColor
 import com.store_me.storeme.ui.theme.storeMeTypography
 import com.store_me.storeme.utils.ErrorEventBus
 import com.store_me.storeme.utils.KeyboardHeightObserver
@@ -332,7 +332,7 @@ class MainActivity : ComponentActivity() {
         }
 
         Column {
-            HorizontalDivider(color = UnselectedItemColor, thickness = 0.2.dp)
+            HorizontalDivider(color = GuideColor, thickness = 0.2.dp)
 
             NavigationBar (
                 containerColor = Color.White
@@ -352,7 +352,7 @@ class MainActivity : ComponentActivity() {
                             )
                         },
                         label = {
-                            val textColor = if(isSelected) Color.Black else UnselectedItemColor
+                            val textColor = if(isSelected) Color.Black else GuideColor
                             Text(stringResource(id = item.title), style = storeMeTypography.titleSmall, fontSize = 10.sp, color = textColor) },
                         selected = isSelected,
                         alwaysShowLabel = true,
