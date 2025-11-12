@@ -8,6 +8,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,7 +31,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -44,7 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -69,8 +68,8 @@ import com.store_me.storeme.ui.component.DefaultToggleButton
 import com.store_me.storeme.ui.component.StoreMeTimePicker
 import com.store_me.storeme.ui.component.TextLengthRow
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
-import com.store_me.storeme.ui.component.addFocusCleaner
 import com.store_me.storeme.ui.signup.GuideTextBoxItem
+import com.store_me.storeme.ui.status_bar.StatusBarPadding
 import com.store_me.storeme.ui.theme.ErrorColor
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.GuideColor
@@ -89,8 +88,6 @@ fun BusinessHoursSettingScreen(
     temporaryBusinessSettingViewModel: TemporaryBusinessSettingViewModel = viewModel(),
     businessHoursSettingProgressViewModel: BusinessHoursSettingProgressViewModel = viewModel()
 ) {
-    val focusManager = LocalFocusManager.current
-
     val storeDataViewModel = LocalStoreDataViewModel.current
 
     val originalBusinessHours by storeDataViewModel.businessHours.collectAsState()
@@ -170,18 +167,19 @@ fun BusinessHoursSettingScreen(
         }
     }
 
-    Scaffold(
-        modifier = Modifier
-            .fillMaxSize()
-            .addFocusCleaner(focusManager),
-        containerColor = Color.White,
-        topBar = { TitleWithDeleteButton(title = "영업 시간 관리") {
-            onClose()
-        } },
-        content = { innerPadding ->
+    Box {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            StatusBarPadding()
+
+            TitleWithDeleteButton(title = "영업 시간 관리") {
+                onClose()
+            }
+
             Column(
                 modifier = Modifier
-                    .padding(innerPadding)
                     .padding(horizontal = 20.dp)
                     .fillMaxSize()
             ) {
@@ -207,7 +205,7 @@ fun BusinessHoursSettingScreen(
                 }
             }
         }
-    )
+    }
 
     if(showBackWarningDialog.value) {
         BackWarningDialog(
