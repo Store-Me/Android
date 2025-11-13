@@ -167,7 +167,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.7.0")
 
     //rich-editor
-    implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc10")
+    implementation("com.mohamedrejeb.richeditor:richeditor-compose:1.0.0-rc13")
 
     //reorderable
     implementation("sh.calvin.reorderable:reorderable:3.0.0")
