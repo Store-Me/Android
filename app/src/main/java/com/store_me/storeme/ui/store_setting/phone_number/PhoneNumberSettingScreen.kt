@@ -1,6 +1,8 @@
 package com.store_me.storeme.ui.store_setting.phone_number
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +16,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,7 +24,9 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,13 +40,14 @@ import com.store_me.storeme.ui.component.BackWarningDialog
 import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.TitleWithDeleteButton
 import com.store_me.storeme.ui.signup.GuideTextBoxItem
+import com.store_me.storeme.ui.status_bar.StatusBarPadding
 import com.store_me.storeme.ui.theme.ErrorTextFieldColor
 import com.store_me.storeme.ui.theme.HighlightTextFieldColor
 import com.store_me.storeme.ui.theme.UndefinedTextColor
 import com.store_me.storeme.ui.theme.storeMeTextStyle
+import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.PhoneNumberUtils
 import com.store_me.storeme.utils.StoreNumberVisualTransformation
-import com.store_me.storeme.utils.composition_locals.LocalAuth
 import com.store_me.storeme.utils.composition_locals.loading.LocalLoadingViewModel
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
@@ -52,7 +56,6 @@ fun PhoneNumberSettingScreen(
     navController: NavController,
     phoneNumberSettingViewModel: PhoneNumberSettingViewModel = viewModel()
 ) {
-    val auth = LocalAuth.current
     val storeDataViewModel = LocalStoreDataViewModel.current
     val loadingViewModel = LocalLoadingViewModel.current
 
@@ -90,30 +93,30 @@ fun PhoneNumberSettingScreen(
             isError.value = false
     }
 
-    Scaffold(
-        containerColor = Color.White,
-        topBar = { TitleWithDeleteButton(title = "전화번호 수정") {
-            onClose()
-        } },
-        content = { innerPadding ->
+    Box {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            StatusBarPadding()
+
+            TitleWithDeleteButton(title = "전화번호 수정") {
+                onClose()
+            }
+
             LazyColumn(
                 modifier = Modifier
-                    .padding(innerPadding)
                     .padding(horizontal = 20.dp)
                     .fillMaxSize()
             ) {
                 item {
                     Text(
-                        text = "스토어 전화번호를 입력해주세요.",
-                        style = storeMeTextStyle(FontWeight.ExtraBold, 6),
+                        text = "전화번호",
+                        style = storeMeTextStyle(FontWeight.ExtraBold, 2),
                         color = Color.Black,
                         modifier = Modifier
                             .padding(vertical = 20.dp)
                     )
-                }
-
-                item {
-                    Spacer(modifier = Modifier.height(20.dp))
                 }
 
                 item {
@@ -142,7 +145,7 @@ fun PhoneNumberSettingScreen(
                         },
                         placeholder = {
                             Text(
-                                text = "스토어 전화번호를 입력해주세요.",
+                                text = "전화번호를 입력해주세요.",
                                 style = storeMeTextStyle(FontWeight.Normal, 1),
                                 color = UndefinedTextColor
                             )
@@ -174,29 +177,31 @@ fun PhoneNumberSettingScreen(
                 item {
                     GuideTextBoxItem(
                         title = "스토어 전화번호 가이드",
-                        content = "다른 사람들에게 노출되는 번호이기 때문에, 개인 핸드폰 번호가 아닌 안심번호, 가게 유선 전화번호로 등록하는 것이 권장돼요."
+                        content = "다른 사람들에게 노출되는 번호이기 때문에, 개인 핸드폰 번호가 아닌 안심번호나 가게 유선 전화번호를 등록하는 것이 권장돼요."
                     )
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
-
-                item {
-                    DefaultButton(
-                        buttonText = "저장",
-                        enabled = hasDifference && !isError.value,
-                        modifier = Modifier
-                            .padding(vertical = 20.dp)
-                    ) {
-                        loadingViewModel.showLoading()
-
-                        storeDataViewModel.patchStorePhoneNumber(storePhoneNumber = phoneNumber)
-                    }
+                    Spacer(modifier = Modifier.height(320.dp))
                 }
             }
         }
-    )
+
+        DefaultButton(
+            buttonText = "저장",
+            enabled = hasDifference && !isError.value,
+            modifier = Modifier
+                .padding(20.dp)
+                .shadow(
+                    elevation = 4.dp, shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)
+                )
+                .align(alignment = Alignment.BottomCenter)
+        ) {
+            loadingViewModel.showLoading()
+
+            storeDataViewModel.patchStorePhoneNumber(storePhoneNumber = phoneNumber)
+        }
+    }
 
     if (showDialog.value) {
         BackWarningDialog(
