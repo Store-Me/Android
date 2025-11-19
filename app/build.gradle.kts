@@ -135,9 +135,9 @@ dependencies {
     implementation("com.kakao.sdk:v2-user:2.22.0")
 
     //Hilt
-    implementation("com.google.dagger:hilt-android:2.48.1")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    kapt("com.google.dagger:hilt-android-compiler:2.48.1")
+    implementation("com.google.dagger:hilt-android:2.57.2")
+    implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
+    kapt("com.google.dagger:hilt-android-compiler:2.57.2")
 
     //Location
     implementation ("com.google.android.gms:play-services-location:21.3.0")
