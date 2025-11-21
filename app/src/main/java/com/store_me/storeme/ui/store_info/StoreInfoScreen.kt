@@ -1,11 +1,10 @@
 package com.store_me.storeme.ui.store_info
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,9 +13,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -27,7 +29,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -37,7 +41,6 @@ import androidx.navigation.NavController
 import com.store_me.storeme.R
 import com.store_me.storeme.data.enums.AccountType
 import com.store_me.storeme.data.store.StoreInfoData
-import com.store_me.storeme.ui.component.DefaultButton
 import com.store_me.storeme.ui.component.ProfileImage
 import com.store_me.storeme.ui.status_bar.StatusBarPadding
 import com.store_me.storeme.ui.theme.MyMenuIconColor
@@ -45,6 +48,9 @@ import com.store_me.storeme.ui.theme.storeMeTextStyle
 import com.store_me.storeme.utils.COMPOSABLE_ROUNDING_VALUE
 import com.store_me.storeme.utils.composition_locals.owner.LocalStoreDataViewModel
 
+/**
+ * 스토어 정보 화면 Composable
+ */
 @Composable
 fun StoreInfoScreen(
     navController: NavController,
@@ -71,9 +77,13 @@ fun StoreInfoScreen(
 
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+
             item {
+                Spacer(modifier = Modifier.height(16.dp))
+
                 storeInfoData?.let {
                     StoreProfile(
                         storeInfoData = it,
@@ -91,6 +101,10 @@ fun StoreInfoScreen(
                         }
                     )
                 }
+            }
+
+            item {
+
             }
         }
     }
@@ -120,7 +134,7 @@ fun TitleWithSettingNotificationRow(
 
         Text(
             text = stringResource(stringId),
-            style = storeMeTextStyle(FontWeight.W900, 6)
+            style = storeMeTextStyle(FontWeight.ExtraBold, 6)
         )
 
         Spacer(modifier = Modifier.weight(1f))
@@ -159,6 +173,10 @@ fun TitleWithSettingNotificationRow(
     }
 }
 
+/**
+ * 가게 프로필 Composable
+ * @param storeInfoData 가게 정보 데이터
+ */
 @Composable
 fun StoreProfile(
     storeInfoData: StoreInfoData,
@@ -172,15 +190,15 @@ fun StoreProfile(
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
             .clip(RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)),
-        verticalArrangement = Arrangement.spacedBy(2.dp)
+        verticalArrangement = Arrangement.spacedBy(1.dp)
     ) {
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = Color.Black, shape = RoundedCornerShape(topStart = COMPOSABLE_ROUNDING_VALUE, topEnd = COMPOSABLE_ROUNDING_VALUE))
-                .padding(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
@@ -188,7 +206,7 @@ fun StoreProfile(
                 accountType = AccountType.OWNER,
                 url = storeInfoData.storeProfileImage,
                 modifier = Modifier
-                    .size(100.dp)
+                    .size(80.dp)
                     .clip(shape = CircleShape)
             )
 
@@ -196,25 +214,37 @@ fun StoreProfile(
                 text = storeInfoData.storeName,
                 style = storeMeTextStyle(fontWeight = FontWeight.ExtraBold, 6, Color.White),
                 maxLines = 1,
-                overflow = TextOverflow.Visible,
+                overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .weight(1f)
             )
 
-            Column(
+            Button(
                 modifier = Modifier
-                    .width(IntrinsicSize.Max),
-                verticalArrangement = Arrangement.SpaceEvenly
-            ) {
-                DefaultButton(
-                    modifier = Modifier
-                        .border(1.dp, color = Color.White, shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE)),
-                    buttonText = "계정 전환",
-                    diffValue = 0,
-                    leftIconResource = R.drawable.ic_change,
-                    leftIconTint = Color.White
-                ) { onSwapClick() }
-            }
+                    .wrapContentSize(),
+                onClick = { onSwapClick },
+                shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE),
+                border = BorderStroke(2.dp, Color.White),
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.White,
+                    containerColor = Color.Black
+                ),
+                content = {
+                    Icon(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(R.drawable.ic_change),
+                        contentDescription = null,
+                    )
+
+                    Spacer(modifier = Modifier.width(4.dp))
+
+                    Text(
+                        text = "계정 전환",
+                        style = storeMeTextStyle(fontWeight = FontWeight.Bold, 0),
+                    )
+                },
+                contentPadding =  PaddingValues(top = 0.dp, bottom = 0.dp, start = 12.dp, end = 12.dp)
+            )
         }
 
         Row(
@@ -223,36 +253,64 @@ fun StoreProfile(
                 .background(color = Color.Black, shape = RoundedCornerShape(bottomStart = COMPOSABLE_ROUNDING_VALUE, bottomEnd = COMPOSABLE_ROUNDING_VALUE)),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            DefaultButton(
+            ProfileBoxButton(
                 modifier = Modifier
                     .weight(1f),
                 buttonText = "스탬프 랭킹",
-                diffValue = 0,
-                fontWeight = FontWeight.Bold,
-                leftIconResource = R.drawable.ic_regular_customer,
-                leftIconTint = MyMenuIconColor
-            ) { onStampRankClick() }
+                painter = painterResource(R.drawable.ic_regular_customer),
+                onClick = { onStampRankClick() }
+            )
 
-            DefaultButton(
+            ProfileBoxButton(
                 modifier = Modifier
                     .weight(1f),
                 buttonText = "설문 관리",
-                diffValue = 0,
-                fontWeight = FontWeight.Bold,
-                leftIconResource = R.drawable.ic_survey,
-                leftIconTint = MyMenuIconColor
-            ) { onManageSurveyClick() }
+                painter = painterResource(R.drawable.ic_survey),
+                onClick = { onManageSurveyClick() }
+            )
 
-            DefaultButton(
+            ProfileBoxButton(
                 modifier = Modifier
                     .weight(1f),
                 buttonText = "투표 관리",
-                diffValue = 0,
-                fontWeight = FontWeight.Bold,
-                leftIconResource = R.drawable.ic_vote,
-                leftIconTint = MyMenuIconColor
-            ) { onManageVoteClick() }
+                painter = painterResource(R.drawable.ic_vote),
+                onClick = { onManageVoteClick() }
+            )
         }
     }
+}
 
+@Composable
+private fun ProfileBoxButton(
+    modifier: Modifier,
+    buttonText: String,
+    painter: Painter,
+    onClick: () -> Unit
+) {
+    Button(
+        modifier = modifier
+            .fillMaxSize(),
+        onClick = { onClick },
+        shape = RoundedCornerShape(COMPOSABLE_ROUNDING_VALUE),
+        colors = ButtonDefaults.buttonColors(
+            contentColor = Color.White,
+            containerColor = Color.Transparent
+        ),
+        content = {
+            Icon(
+                modifier = Modifier.size(20.dp),
+                painter = painter,
+                contentDescription = null,
+                tint = MyMenuIconColor
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = buttonText,
+                style = storeMeTextStyle(fontWeight = FontWeight.Bold, 0),
+            )
+        },
+        contentPadding =  PaddingValues(top = 0.dp, bottom = 0.dp, start = 12.dp, end = 12.dp)
+    )
 }
